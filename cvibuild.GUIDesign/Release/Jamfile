@@ -1,0 +1,194 @@
+HDRS = 	"c:\\ADwin\\Developer\\C\\LabWindowsCVI"
+	"c:\\ADwin\\Developer\\C"
+	"c:\\program files (x86)\\national instruments\\cvi2019\\toolslib\\activex\\word"
+	"c:\\program files (x86)\\national instruments\\cvi2019\\toolslib\\activex\\excel"
+	"c:\\program files (x86)\\national instruments\\cvi2019\\toolslib\\custctrl"
+	"c:\\program files (x86)\\national instruments\\cvi2019\\toolslib\\custctrl\\custsupp"
+	"c:\\program files (x86)\\national instruments\\cvi2019\\toolslib\\cvirtsup"
+	"c:\\program files (x86)\\national instruments\\cvi2019\\toolslib\\datasock"
+	"c:\\program files (x86)\\national instruments\\cvi2019\\toolslib\\daqUtil"
+	"c:\\program files (x86)\\national instruments\\cvi2019\\toolslib\\printing"
+	"c:\\program files (x86)\\national instruments\\cvi2019\\toolslib\\toolbox"
+	"c:\\program files (x86)\\national instruments\\cvi2019\\toolslib\\reportgen"
+	"c:\\program files (x86)\\national instruments\\cvi2019\\toolslib\\localui"
+	"c:\\program files (x86)\\national instruments\\cvi2019\\instr"
+	"C:\\Program Files (x86)\\National Instruments\\Shared\\CVI\\toolslib\\custctrl"
+	"C:\\Program Files (x86)\\National Instruments\\Shared\\CVI\\toolslib\\custctrl\\custsupp"
+	"C:\\Program Files (x86)\\National Instruments\\Shared\\CVI\\instr"
+	"C:\\ProgramData\\National Instruments\\CVI2019\\instr"
+	"c:\\program files (x86)\\national instruments\\cvi2019\\include"
+	"C:\\Program Files (x86)\\National Instruments\\Shared\\CVI\\include"
+	"C:\\ProgramData\\National Instruments\\CVI2019\\include"
+	"C:\\ProgramData\\National Instruments\\CVI\\include"
+	"c:\\program files (x86)\\national instruments\\cvi2019\\include\\ansi"
+	"c:\\program files (x86)\\national instruments\\cvi2019\\include\\clang\\3.3"
+	"C:\\Program Files (x86)\\IVI Foundation\\IVI\\Include"
+	"C:\\Program Files (x86)\\IVI Foundation\\VISA\\winnt\\include"
+	"C:\\Program Files (x86)\\National Instruments\\Shared\\MSDTRedistributables\\SDKHeaderFiles\\8.1"
+	"c:\\Program Files (x86)\\National Instruments\\CVI2019\\bin"
+	"c:\\Program Files (x86)\\National Instruments\\Shared\\CVI\\bin"
+	;
+include Jamfile_instr ;
+LOCATE on "Adwin.c" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta" ;
+LOCATE on "Adwin.h" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta" ;
+LOCATE on "AnalogControl.c" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta" ;
+LOCATE on "AnalogControl.h" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta" ;
+LOCATE on "AnalogControl2.h" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta" ;
+LOCATE on "AnalogSettings.c" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta" ;
+LOCATE on "AnalogSettings.h" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta" ;
+LOCATE on "AnalogSettings2.h" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta" ;
+LOCATE on "AnritsuCommands.c" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta" ;
+LOCATE on "AnritsuControl.h" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta" ;
+LOCATE on "AnritsuControl2.h" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta" ;
+LOCATE on "AnritsuSettings.h" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta" ;
+LOCATE on "AnritsuSettings2.h" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta" ;
+LOCATE on "DDSControl.c" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta" ;
+LOCATE on "DDSControl.h" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta" ;
+LOCATE on "DDSControl2.h" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta" ;
+LOCATE on "DDSSettings.c" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta" ;
+LOCATE on "DDSSettings.h" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta" ;
+LOCATE on "DDSSettings2.h" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta" ;
+LOCATE on "ddstranslator.c" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta" ;
+LOCATE on "ddstranslator.h" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta" ;
+LOCATE on "DigitalSettings.c" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta" ;
+LOCATE on "DigitalSettings.h" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta" ;
+LOCATE on "DigitalSettings2.h" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta" ;
+LOCATE on "GPIB_SRS_SETUP.h" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta" ;
+LOCATE on "GPIB_SRS_SETUP2.h" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta" ;
+LOCATE on "GUIDesign.c" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta" ;
+LOCATE on "GUIDesign.h" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta" ;
+LOCATE on "GUIDesign2.h" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta" ;
+LOCATE on "LaserControl.c" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta" ;
+LOCATE on "LaserControl.h" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta" ;
+LOCATE on "LaserControl2.h" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta" ;
+LOCATE on "LaserSettings.c" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta" ;
+LOCATE on "LaserSettings.h" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta" ;
+LOCATE on "LaserSettings2.h" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta" ;
+LOCATE on "LaserTuning.c" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta" ;
+LOCATE on "LaserTuning.h" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta" ;
+LOCATE on "main.c" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta" ;
+LOCATE on "main.h" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta" ;
+LOCATE on "NumSet.c" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta" ;
+LOCATE on "NumSet.h" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta" ;
+LOCATE on "Processor.c" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta" ;
+LOCATE on "Processor.h" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta" ;
+LOCATE on "RabbitCom9858.h" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta" ;
+LOCATE on "scan.c" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta" ;
+LOCATE on "Scan.h" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta" ;
+LOCATE on "scan2.h" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta" ;
+LOCATE on "ScanTableLoader.c" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta" ;
+LOCATE on "ScanTableLoader.h" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta" ;
+LOCATE on "ScanTableLoader2.h" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta" ;
+LOCATE on "vars.h" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta" ;
+LOCATE on "VISA_SRS_SETUP.c" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta" ;
+Object "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\Adwin.obj" : "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\Adwin.c" ;
+FILENUM on "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\Adwin.obj" = 1 ;
+DEFPROTS on "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\Adwin.obj" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\Adwin.obj.cvidefprots" ;
+OUTFILE on "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\Adwin.obj" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\Adwin.obj.out" ;
+PrjObjects += "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\Adwin.obj" ;
+Object "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\AnalogControl.obj" : "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\AnalogControl.c" ;
+FILENUM on "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\AnalogControl.obj" = 2 ;
+DEFPROTS on "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\AnalogControl.obj" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\AnalogControl.obj.cvidefprots" ;
+OUTFILE on "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\AnalogControl.obj" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\AnalogControl.obj.out" ;
+PrjObjects += "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\AnalogControl.obj" ;
+Object "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\AnalogSettings.obj" : "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\AnalogSettings.c" ;
+FILENUM on "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\AnalogSettings.obj" = 3 ;
+DEFPROTS on "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\AnalogSettings.obj" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\AnalogSettings.obj.cvidefprots" ;
+OUTFILE on "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\AnalogSettings.obj" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\AnalogSettings.obj.out" ;
+PrjObjects += "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\AnalogSettings.obj" ;
+Object "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\AnritsuCommands.obj" : "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\AnritsuCommands.c" ;
+FILENUM on "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\AnritsuCommands.obj" = 4 ;
+DEFPROTS on "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\AnritsuCommands.obj" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\AnritsuCommands.obj.cvidefprots" ;
+OUTFILE on "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\AnritsuCommands.obj" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\AnritsuCommands.obj.out" ;
+PrjObjects += "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\AnritsuCommands.obj" ;
+Object "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\DDSControl.obj" : "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\DDSControl.c" ;
+FILENUM on "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\DDSControl.obj" = 5 ;
+DEFPROTS on "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\DDSControl.obj" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\DDSControl.obj.cvidefprots" ;
+OUTFILE on "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\DDSControl.obj" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\DDSControl.obj.out" ;
+PrjObjects += "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\DDSControl.obj" ;
+Object "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\DDSSettings.obj" : "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\DDSSettings.c" ;
+FILENUM on "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\DDSSettings.obj" = 6 ;
+DEFPROTS on "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\DDSSettings.obj" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\DDSSettings.obj.cvidefprots" ;
+OUTFILE on "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\DDSSettings.obj" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\DDSSettings.obj.out" ;
+PrjObjects += "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\DDSSettings.obj" ;
+Object "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\ddstranslator.obj" : "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\ddstranslator.c" ;
+FILENUM on "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\ddstranslator.obj" = 7 ;
+DEFPROTS on "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\ddstranslator.obj" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\ddstranslator.obj.cvidefprots" ;
+OUTFILE on "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\ddstranslator.obj" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\ddstranslator.obj.out" ;
+PrjObjects += "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\ddstranslator.obj" ;
+Object "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\DigitalSettings.obj" : "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\DigitalSettings.c" ;
+FILENUM on "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\DigitalSettings.obj" = 8 ;
+DEFPROTS on "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\DigitalSettings.obj" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\DigitalSettings.obj.cvidefprots" ;
+OUTFILE on "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\DigitalSettings.obj" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\DigitalSettings.obj.out" ;
+PrjObjects += "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\DigitalSettings.obj" ;
+Object "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\GUIDesign.obj" : "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\GUIDesign.c" ;
+FILENUM on "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\GUIDesign.obj" = 9 ;
+DEFPROTS on "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\GUIDesign.obj" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\GUIDesign.obj.cvidefprots" ;
+OUTFILE on "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\GUIDesign.obj" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\GUIDesign.obj.out" ;
+PrjObjects += "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\GUIDesign.obj" ;
+Object "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\LaserControl.obj" : "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\LaserControl.c" ;
+FILENUM on "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\LaserControl.obj" = 10 ;
+DEFPROTS on "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\LaserControl.obj" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\LaserControl.obj.cvidefprots" ;
+OUTFILE on "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\LaserControl.obj" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\LaserControl.obj.out" ;
+PrjObjects += "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\LaserControl.obj" ;
+Object "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\LaserSettings.obj" : "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\LaserSettings.c" ;
+FILENUM on "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\LaserSettings.obj" = 11 ;
+DEFPROTS on "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\LaserSettings.obj" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\LaserSettings.obj.cvidefprots" ;
+OUTFILE on "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\LaserSettings.obj" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\LaserSettings.obj.out" ;
+PrjObjects += "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\LaserSettings.obj" ;
+Object "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\LaserTuning.obj" : "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\LaserTuning.c" ;
+FILENUM on "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\LaserTuning.obj" = 12 ;
+DEFPROTS on "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\LaserTuning.obj" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\LaserTuning.obj.cvidefprots" ;
+OUTFILE on "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\LaserTuning.obj" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\LaserTuning.obj.out" ;
+PrjObjects += "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\LaserTuning.obj" ;
+Object "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\main.obj" : "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\main.c" ;
+FILENUM on "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\main.obj" = 13 ;
+DEFPROTS on "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\main.obj" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\main.obj.cvidefprots" ;
+OUTFILE on "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\main.obj" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\main.obj.out" ;
+PrjObjects += "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\main.obj" ;
+Object "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\NumSet.obj" : "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\NumSet.c" ;
+FILENUM on "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\NumSet.obj" = 14 ;
+DEFPROTS on "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\NumSet.obj" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\NumSet.obj.cvidefprots" ;
+OUTFILE on "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\NumSet.obj" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\NumSet.obj.out" ;
+PrjObjects += "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\NumSet.obj" ;
+Object "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\Processor.obj" : "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\Processor.c" ;
+FILENUM on "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\Processor.obj" = 15 ;
+DEFPROTS on "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\Processor.obj" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\Processor.obj.cvidefprots" ;
+OUTFILE on "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\Processor.obj" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\Processor.obj.out" ;
+PrjObjects += "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\Processor.obj" ;
+Object "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\scan.obj" : "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\scan.c" ;
+FILENUM on "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\scan.obj" = 16 ;
+DEFPROTS on "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\scan.obj" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\scan.obj.cvidefprots" ;
+OUTFILE on "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\scan.obj" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\scan.obj.out" ;
+PrjObjects += "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\scan.obj" ;
+Object "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\ScanTableLoader.obj" : "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\ScanTableLoader.c" ;
+FILENUM on "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\ScanTableLoader.obj" = 17 ;
+DEFPROTS on "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\ScanTableLoader.obj" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\ScanTableLoader.obj.cvidefprots" ;
+OUTFILE on "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\ScanTableLoader.obj" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\ScanTableLoader.obj.out" ;
+PrjObjects += "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\ScanTableLoader.obj" ;
+Object "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\VISA_SRS_SETUP.obj" : "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\VISA_SRS_SETUP.c" ;
+FILENUM on "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\VISA_SRS_SETUP.obj" = 18 ;
+DEFPROTS on "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\VISA_SRS_SETUP.obj" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\VISA_SRS_SETUP.obj.cvidefprots" ;
+OUTFILE on "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\VISA_SRS_SETUP.obj" = "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\VISA_SRS_SETUP.obj.out" ;
+PrjObjects += "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\VISA_SRS_SETUP.obj" ;
+Object "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\resources.res" : "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\resources.in.rc" ;
+Depends "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\resources.res" : "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\manifest.xml" ;
+MainFromObjects "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\GUIDesign.exe" : $(PrjObjects) $(InstrObjects) ;
+Depends "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\GUIDesign.exe" : "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\link_options.txt" ;
+Depends "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\GUIDesign.exe" : "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\resources.res" ;
+Depends "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\resources.res" :  "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\AnalogControl.uir" ;
+Depends "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\resources.res" :  "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\AnalogSettings.uir" ;
+Depends "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\resources.res" :  "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\AnritsuControl.uir" ;
+Depends "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\resources.res" :  "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\AnritsuSettings.uir" ;
+Depends "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\resources.res" :  "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\DDSControl.uir" ;
+Depends "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\resources.res" :  "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\DDSSettings.uir" ;
+Depends "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\resources.res" :  "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\DigitalSettings.uir" ;
+Depends "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\resources.res" :  "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\GPIB_SRS_SETUP.uir" ;
+Depends "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\resources.res" :  "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\GUIDesign.uir" ;
+Depends "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\resources.res" :  "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\LaserControl.uir" ;
+Depends "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\resources.res" :  "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\LaserSettings.uir" ;
+Depends "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\resources.res" :  "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\NumSet.uir" ;
+Depends "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\resources.res" :  "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\Processor.uir" ;
+Depends "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\resources.res" :  "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\Scan.uir" ;
+Depends "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\resources.res" :  "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\ScanTableLoader.uir" ;
+Depends all : "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\GUIDesign.exe" ;

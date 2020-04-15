@@ -1,0 +1,65 @@
+[GPIB_OK_CALLBACK]
+Class="Function"
+Prototype="int GPIB_OK_CALLBACK(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\VISA_SRS_SETUP.c:41:1"
+
+[SetGPIBPanel]
+Class="Function"
+Prototype="void SetGPIBPanel();"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\VISA_SRS_SETUP.c:61:1"
+
+[ApplyGPIBPanel]
+Class="Function"
+Prototype="void ApplyGPIBPanel();"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\VISA_SRS_SETUP.c:81:1"
+
+[GPIB_BUILD_CALLBACK]
+Class="Function"
+Prototype="int GPIB_BUILD_CALLBACK(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\VISA_SRS_SETUP.c:105:1"
+
+[BuildGPIBString]
+Class="Function"
+Prototype="void BuildGPIBString(int j, char *outstr);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\VISA_SRS_SETUP.c:129:1"
+
+[SendGPIBString]
+Class="Function"
+Prototype="void SendGPIBString(int j);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\VISA_SRS_SETUP.c:222:1"
+
+[SendVISAWaveform]
+Class="Function"
+Prototype="void SendVISAWaveform(unsigned long instrVISA, double *pars);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\VISA_SRS_SETUP.c:449:1"
+
+[convertRigolDataToCmd]
+Class="Function"
+Prototype="void convertRigolDataToCmd(double *data, char *rigolCmd, int ndata, int nChars, int chNum);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\VISA_SRS_SETUP.c:547:1"
+
+[BuildRIGOLWaveform]
+Class="Function"
+Prototype="int BuildRIGOLWaveform(char *voltages, double *pars, int *wavfchk, int nChars);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\VISA_SRS_SETUP.c:586:1"
+
+[BuildSRSWaveform]
+Class="Function"
+Prototype="int BuildSRSWaveform(short *data, double *pars, int *wavfchk);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\VISA_SRS_SETUP.c:802:1"
+
+[SendGPIBWaveform]
+Class="Function"
+Prototype="void SendGPIBWaveform(int device, double *pars);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\VISA_SRS_SETUP.c:1314:1"
+
+[DEVICENO_CALLBACK]
+Class="Function"
+Prototype="int DEVICENO_CALLBACK(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\VISA_SRS_SETUP.c:1355:1"
+
+[MultiScan_AddGPIBCellToScan]
+Class="Function"
+Prototype="void MultiScan_AddGPIBCellToScan(int panelHandle, int controlID, int MenuItemID, void *callbackData);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\VISA_SRS_SETUP.c:1366:1"
+

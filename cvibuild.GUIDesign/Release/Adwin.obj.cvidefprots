@@ -1,0 +1,530 @@
+[LoadDLLIfNeeded]
+Class="Function"
+Prototype="int LoadDLLIfNeeded();"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:98:1"
+
+[Iserv]
+Class="Function"
+Prototype="long Iserv(char *Filename, long Memsize);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:227:1"
+
+[Boot]
+Class="Function"
+Prototype="long Boot(char *Filename, long Memsize);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:238:1"
+
+[ADboot]
+Class="Function"
+Prototype="long ADboot(char *Filename, short DeviceNo1, long Memsize);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:247:1"
+
+[ADBPrLoad]
+Class="Function"
+Prototype="short ADBPrLoad(char *Filename);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:258:1"
+
+[ADBload]
+Class="Function"
+Prototype="short ADBload(char *Filename, short DeviceNo1, short msgbox);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:269:1"
+
+[Load_Process]
+Class="Function"
+Prototype="short Load_Process(char *Filename);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:280:1"
+
+[ADBStart]
+Class="Function"
+Prototype="short ADBStart(short ProcessNo);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:291:1"
+
+[Start_Process]
+Class="Function"
+Prototype="short Start_Process(short ProcessNo);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:302:1"
+
+[ADBStop]
+Class="Function"
+Prototype="short ADBStop(short ProcessNo);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:313:1"
+
+[Stop_Process]
+Class="Function"
+Prototype="short Stop_Process(short ProcessNo);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:324:1"
+
+[SetPar]
+Class="Function"
+Prototype="short SetPar(short Index, long Value);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:335:1"
+
+[Set_Par]
+Class="Function"
+Prototype="short Set_Par(short Index, long Value);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:346:1"
+
+[SetFPar]
+Class="Function"
+Prototype="short SetFPar(short Index, float Value);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:357:1"
+
+[Set_FPar]
+Class="Function"
+Prototype="short Set_FPar(short Index, float Value);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:368:1"
+
+[GetPar]
+Class="Function"
+Prototype="long GetPar(short Index);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:379:1"
+
+[Get_Par]
+Class="Function"
+Prototype="long Get_Par(short Index);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:390:1"
+
+[GetFPar]
+Class="Function"
+Prototype="float GetFPar(short Index);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:401:1"
+
+[Get_FPar]
+Class="Function"
+Prototype="float Get_FPar(short Index);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:412:1"
+
+[GetData]
+Class="Function"
+Prototype="short GetData(short DataNo, short Data[], long Startindex, long Count);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:424:1"
+
+[GetlData]
+Class="Function"
+Prototype="short GetlData(short DataNo, long Data[], long Startindex, long Count);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:436:1"
+
+[GetData_Long]
+Class="Function"
+Prototype="short GetData_Long(short DataNo, long Data[], long Startindex, long Count);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:447:1"
+
+[GetData_Double]
+Class="Function"
+Prototype="short GetData_Double(short DataNo, double Data[], long Startindex, long Count);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:458:1"
+
+[GetfData]
+Class="Function"
+Prototype="short GetfData(short DataNo, float Data[], long Startindex, long Count);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:469:1"
+
+[GetData_Float]
+Class="Function"
+Prototype="short GetData_Float(short DataNo, float Data[], long Startindex, long Count);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:481:1"
+
+[SetData]
+Class="Function"
+Prototype="short SetData(short DataNo, short Data[], long Startindex, long Count);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:492:1"
+
+[SetlData]
+Class="Function"
+Prototype="short SetlData(short DataNo, long Data[], long Startindex, long Count);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:503:1"
+
+[SetData_Long]
+Class="Function"
+Prototype="short SetData_Long(short DataNo, long Data[], long Startindex, long Count);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:514:1"
+
+[SetData_Double]
+Class="Function"
+Prototype="short SetData_Double(short DataNo, double Data[], long Startindex, long Count);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:525:1"
+
+[SetfData]
+Class="Function"
+Prototype="short SetfData(short DataNo, float Data[], long Startindex, long Count);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:536:1"
+
+[SetData_Float]
+Class="Function"
+Prototype="short SetData_Float(short DataNo, float Data[], long Startindex, long Count);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:547:1"
+
+[Data2File]
+Class="Function"
+Prototype="short Data2File(char *Filename, short DataNo, long Startindex, long Count, short Mode);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:558:1"
+
+[GetFifo]
+Class="Function"
+Prototype="short GetFifo(short FifoNo, short Data[], long Count);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:569:1"
+
+[GetlFifo]
+Class="Function"
+Prototype="short GetlFifo(short FifoNo, long Data[], long Count);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:580:1"
+
+[GetFifo_Long]
+Class="Function"
+Prototype="short GetFifo_Long(short FifoNo, long Data[], long Count);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:591:1"
+
+[GetFifo_Double]
+Class="Function"
+Prototype="short GetFifo_Double(short FifoNo, double Data[], long Count);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:602:1"
+
+[GetfFifo]
+Class="Function"
+Prototype="short GetfFifo(short FifoNo, float Data[], long Count);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:613:1"
+
+[GetFifo_Float]
+Class="Function"
+Prototype="short GetFifo_Float(short FifoNo, float Data[], long Count);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:624:1"
+
+[SetFifo]
+Class="Function"
+Prototype="short SetFifo(short FifoNo, short Data[], long Count);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:635:1"
+
+[SetlFifo]
+Class="Function"
+Prototype="short SetlFifo(short FifoNo, long Data[], long Count);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:646:1"
+
+[SetFifo_Long]
+Class="Function"
+Prototype="short SetFifo_Long(short FifoNo, long Data[], long Count);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:657:1"
+
+[SetFifo_Double]
+Class="Function"
+Prototype="short SetFifo_Double(short FifoNo, double Data[], long Count);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:668:1"
+
+[SetfFifo]
+Class="Function"
+Prototype="short SetfFifo(short FifoNo, float Data[], long Count);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:679:1"
+
+[SetFifo_Float]
+Class="Function"
+Prototype="short SetFifo_Float(short FifoNo, float Data[], long Count);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:690:1"
+
+[GetFifoCount]
+Class="Function"
+Prototype="long GetFifoCount(short FifoNo);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:701:1"
+
+[Fifo_Full]
+Class="Function"
+Prototype="long Fifo_Full(short FifoNo);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:712:1"
+
+[GetFifoEmpty]
+Class="Function"
+Prototype="long GetFifoEmpty(short FifoNo);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:723:1"
+
+[Fifo_Empty]
+Class="Function"
+Prototype="long Fifo_Empty(short FifoNo);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:734:1"
+
+[ClearFifo]
+Class="Function"
+Prototype="short ClearFifo(short FifoNo);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:745:1"
+
+[Fifo_Clear]
+Class="Function"
+Prototype="short Fifo_Clear(short FifoNo);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:756:1"
+
+[ADC]
+Class="Function"
+Prototype="unsigned short ADC(short Value);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:767:1"
+
+[SetDAC]
+Class="Function"
+Prototype="short SetDAC(short Channel, unsigned short Value);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:779:1"
+
+[DAC]
+Class="Function"
+Prototype="short DAC(short Channel, unsigned short Value);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:790:1"
+
+[DigIn]
+Class="Function"
+Prototype="long DigIn();"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:801:1"
+
+[Get_Digin]
+Class="Function"
+Prototype="long Get_Digin();"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:812:1"
+
+[SetDigOut]
+Class="Function"
+Prototype="short SetDigOut(short Value);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:823:1"
+
+[Set_Digout]
+Class="Function"
+Prototype="short Set_Digout(short Value);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:834:1"
+
+[DigOut]
+Class="Function"
+Prototype="long DigOut();"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:845:1"
+
+[Get_Digout]
+Class="Function"
+Prototype="long Get_Digout();"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:857:1"
+
+[Auslast]
+Class="Function"
+Prototype="short Auslast();"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:868:1"
+
+[Workload]
+Class="Function"
+Prototype="short Workload(long Priority);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:879:1"
+
+[Test]
+Class="Function"
+Prototype="short Test();"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:890:1"
+
+[Test_Version]
+Class="Function"
+Prototype="short Test_Version();"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:901:1"
+
+[Freemem]
+Class="Function"
+Prototype="long Freemem();"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:913:1"
+
+[Freemem_T9]
+Class="Function"
+Prototype="long Freemem_T9(short Mem_Spec);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:924:1"
+
+[Free_Mem]
+Class="Function"
+Prototype="long Free_Mem(short Mem_Spec);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:946:1"
+
+[ErrMessage]
+Class="Function"
+Prototype="void ErrMessage(short OnOff);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:968:1"
+
+[Show_Errors]
+Class="Function"
+Prototype="void Show_Errors(short OnOff);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:975:1"
+
+[Net_Connect]
+Class="Function"
+Prototype="short Net_Connect(char *Protocol, char *Address, char *Endpoint, char *Password);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:984:1"
+
+[Net_Disconnect]
+Class="Function"
+Prototype="short Net_Disconnect();"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:996:1"
+
+[Get_Last_Error]
+Class="Function"
+Prototype="long Get_Last_Error();"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:1007:1"
+
+[Get_Last_Error_Text]
+Class="Function"
+Prototype="char *Get_Last_Error_Text(long Last_Error);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:1018:1"
+
+[Processor_Type]
+Class="Function"
+Prototype="short Processor_Type();"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:1036:1"
+
+[Clear_Process]
+Class="Function"
+Prototype="long Clear_Process(short ProcessNo);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:1057:1"
+
+[Process_Status]
+Class="Function"
+Prototype="long Process_Status(short ProcessNo);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:1068:1"
+
+[Get_Par_Block]
+Class="Function"
+Prototype="short Get_Par_Block(long Array[], short Startindex, short Count);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:1081:1"
+
+[Get_FPar_Block]
+Class="Function"
+Prototype="short Get_FPar_Block(float Array[], short Startindex, short Count);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:1092:1"
+
+[Get_Par_All]
+Class="Function"
+Prototype="short Get_Par_All(long Array[]);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:1103:1"
+
+[Get_FPar_All]
+Class="Function"
+Prototype="short Get_FPar_All(float Array[]);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:1114:1"
+
+[Get_FPar_All_Double]
+Class="Function"
+Prototype="short Get_FPar_All_Double(double Array[]);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:1125:1"
+
+[Get_FPar_Block_Double]
+Class="Function"
+Prototype="short Get_FPar_Block_Double(double Array[], short Startindex, short Count);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:1145:1"
+
+[Data_Length]
+Class="Function"
+Prototype="long Data_Length(long DataNo);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:1165:1"
+
+[Set_Globaldelay]
+Class="Function"
+Prototype="long Set_Globaldelay(long ProcessNo, long Globaldelay);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:1176:1"
+
+[Get_Globaldelay]
+Class="Function"
+Prototype="long Get_Globaldelay(long ProcessNo);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:1187:1"
+
+[Set_Language]
+Class="Function"
+Prototype="long Set_Language(long language);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:1198:1"
+
+[GetData_String]
+Class="Function"
+Prototype="long GetData_String(long DataNo, char *Data, long MaxCount);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:1209:1"
+
+[String_Length]
+Class="Function"
+Prototype="long String_Length(long DataNo);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:1220:1"
+
+[SetData_String]
+Class="Function"
+Prototype="long SetData_String(long DataNo, char *Data);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:1231:1"
+
+[GetData_Packed_Short]
+Class="Function"
+Prototype="short GetData_Packed_Short(long DataNo, short *Data, long Startindex, long Count);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:1242:1"
+
+[GetData_Packed_Long]
+Class="Function"
+Prototype="short GetData_Packed_Long(long DataNo, long *Data, long Startindex, long Count);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:1253:1"
+
+[GetData_Packed_Float]
+Class="Function"
+Prototype="short GetData_Packed_Float(long DataNo, float *Data, long Startindex, long Count);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:1264:1"
+
+[GetData_Packed_Double]
+Class="Function"
+Prototype="short GetData_Packed_Double(long DataNo, double *Data, long Startindex, long Count);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:1275:1"
+
+[GetActivate]
+Class="Function"
+Prototype="long GetActivate(short ProcessNo);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:1287:1"
+
+[Activate_PC]
+Class="Function"
+Prototype="long Activate_PC(short ProcessNo);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:1302:1"
+
+[SetOpt]
+Class="Function"
+Prototype="short SetOpt(short Index, long Value);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:1317:1"
+
+[GetOpt]
+Class="Function"
+Prototype="long GetOpt(short Index);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:1328:1"
+
+[SetDACListe]
+Class="Function"
+Prototype="short SetDACListe(short Channel, long Count, short Value[]);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:1339:1"
+
+[ReadADListe]
+Class="Function"
+Prototype="short ReadADListe(short Channel, long Count, short Value[]);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:1350:1"
+
+[ZykStart]
+Class="Function"
+Prototype="short ZykStart(short ProzessNoZyk);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:1361:1"
+
+[ZykStop]
+Class="Function"
+Prototype="short ZykStop(short ProzessNoZyk);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:1372:1"
+
+[Get_Known_DeviceNo]
+Class="Function"
+Prototype="short Get_Known_DeviceNo(short *Devices, long *Count_Devices);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:1383:1"
+
+[Get_Known_USB_SerialNo]
+Class="Function"
+Prototype="long Get_Known_USB_SerialNo(long *SerialNo);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:1394:1"
+
+[ADwin_Debug_Mode_On]
+Class="Function"
+Prototype="int ADwin_Debug_Mode_On(char *Filename, long Size);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:1405:1"
+
+[ADwin_Debug_Mode_Off]
+Class="Function"
+Prototype="int ADwin_Debug_Mode_Off();"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:1416:1"
+
+[GetFifo_Packed_Short]
+Class="Function"
+Prototype="short GetFifo_Packed_Short(short FifoNo, short Data[], long Count);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:1427:1"
+
+[GetFifo_Packed_Long]
+Class="Function"
+Prototype="short GetFifo_Packed_Long(short FifoNo, long Data[], long Count);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Adwin.c:1438:1"
+

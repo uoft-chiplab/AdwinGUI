@@ -1,0 +1,35 @@
+This documents the changes to the ADwin Sequencer program over the years. This file was created 2019-10-01 so knowledge of all previous versions comes from labbooks and notes in the code itself.
+
+
+
+-----------------------
+ADwin Sequencer V16.4.4
+Status: Done
+In Use: 20xx-xx-xx to 20yy-yy-yy
+Changes:
+
+-----------------------
+ADwin Sequencer V16.4.5
+Status: Done
+In Use: 20xx-xx-xx to 20yy-yy-yy
+Changes:
+1) Both Rigols can now be sent VISA commands via ethernet.
+
+-----------------------
+ADwin Sequencer V16.4.6
+Status: BETA
+In Use: Not used
+Changes:
+We were trying to get the cheap Rigol to do arbitrary phase pi pulses but we failed at coding.
+
+-----------------------
+ADwin Sequencer V16.4.7
+Status: Done
+In Use: 2019-10-01 to 20yy-yy-yy
+Changes:
+1) Sequencer version after transfer to new computer. Did not have to change any of the code. All configuration was done external to Sequencer program.
+2) Added this change_log.txt file.
+
+
+
+

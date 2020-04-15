@@ -1,0 +1,15 @@
+[CancelLasConCALLBACK]
+Class="Function"
+Prototype="int CancelLasConCALLBACK(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\LaserControl.c:14:1"
+
+[SetLasConCALLBACK]
+Class="Function"
+Prototype="int SetLasConCALLBACK(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\LaserControl.c:27:1"
+
+[SetLaserControlPanel]
+Class="Function"
+Prototype="void SetLaserControlPanel(int laserNum);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\LaserControl.c:59:1"
+

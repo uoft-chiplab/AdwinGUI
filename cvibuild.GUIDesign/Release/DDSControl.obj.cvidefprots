@@ -1,0 +1,20 @@
+[CMD_OK_CALLBACK]
+Class="Function"
+Prototype="int CMD_OK_CALLBACK(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\DDSControl.c:11:1"
+
+[CMD_CANCEL_CALLBACK]
+Class="Function"
+Prototype="int CMD_CANCEL_CALLBACK(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\DDSControl.c:81:1"
+
+[CMD_ONOFF_CALLBACK]
+Class="Function"
+Prototype="int CMD_ONOFF_CALLBACK(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\DDSControl.c:95:1"
+
+[SetDDSControlPanel]
+Class="Function"
+Prototype="void SetDDSControlPanel(int Active_DDS);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\DDSControl.c:122:1"
+

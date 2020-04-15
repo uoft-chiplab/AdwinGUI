@@ -1,0 +1,58 @@
+-nologo
+-out:d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\cvibuild.GUIDesign\Release\GUIDesign.exe
+-arch:x86
+-timestamp
+-loadextmod
+-res:d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\cvibuild.GUIDesign\Release\resources.res
+-entry:_CVIWinMainStartupCode@0
+-base:0x400000
+-linked:d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\cvibuild.GUIDesign\Release\linkersummary.txt
+-dlldeps:d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\cvibuild.GUIDesign\Release\dlldependencies.txt
+-licensing:d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\cvibuild.GUIDesign\Release\linkerlicensing.txt
+-browsedeps:d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\cvibuild.GUIDesign\Release\moduledependencies.txt
+-stackreserve:16777216
+-stackcommit:4096
+-in:d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\cvibuild.GUIDesign\Release\Adwin.obj
+-in:d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\cvibuild.GUIDesign\Release\AnalogControl.obj
+-in:d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\cvibuild.GUIDesign\Release\AnalogSettings.obj
+-in:d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\cvibuild.GUIDesign\Release\AnritsuCommands.obj
+-in:d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\cvibuild.GUIDesign\Release\DDSControl.obj
+-in:d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\cvibuild.GUIDesign\Release\DDSSettings.obj
+-in:d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\cvibuild.GUIDesign\Release\ddstranslator.obj
+-in:d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\cvibuild.GUIDesign\Release\DigitalSettings.obj
+-in:d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\cvibuild.GUIDesign\Release\GUIDesign.obj
+-in:d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\cvibuild.GUIDesign\Release\LaserControl.obj
+-in:d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\cvibuild.GUIDesign\Release\LaserSettings.obj
+-in:d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\cvibuild.GUIDesign\Release\LaserTuning.obj
+-in:d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\cvibuild.GUIDesign\Release\main.obj
+-in:d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\cvibuild.GUIDesign\Release\NumSet.obj
+-in:d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\cvibuild.GUIDesign\Release\Processor.obj
+-in:d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\cvibuild.GUIDesign\Release\scan.obj
+-in:d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\cvibuild.GUIDesign\Release\ScanTableLoader.obj
+-in:d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\cvibuild.GUIDesign\Release\VISA_SRS_SETUP.obj
+-more:c:\program files (x86)\national instruments\cvi2019\bin\msvc\cvistart.lib
+-more:c:\program files (x86)\national instruments\cvi2019\bin\msvc\cvi.lib
+-more:c:\Program Files (x86)\National Instruments\CVI2019\bin\msvc\advanlys.lib
+-more:C:\Program Files (x86)\Windows Kits\8.1\Lib\winv6.3\um\x86\advapi32.lib
+-more:C:\Program Files (x86)\Windows Kits\8.1\Lib\winv6.3\um\x86\bufferoverflowu.lib
+-more:c:\Program Files (x86)\National Instruments\Shared\CVI\bin\msvc\cvi_db.lib
+-more:c:\Program Files (x86)\National Instruments\CVI2019\bin\msvc\cviauto.lib
+-more:c:\Program Files (x86)\National Instruments\CVI2019\bin\msvc\cvidotnet.lib
+-more:c:\Program Files (x86)\National Instruments\CVI2019\bin\msvc\cvinetstreams.lib
+-more:c:\Program Files (x86)\National Instruments\CVI2019\bin\msvc\cvinetv.lib
+-more:c:\Program Files (x86)\National Instruments\CVI2019\bin\msvc\cvintwrk.lib
+-more:c:\Program Files (x86)\National Instruments\CVI2019\bin\msvc\cvitdms.lib
+-more:C:\Program Files (x86)\Windows Kits\8.1\Lib\winv6.3\um\x86\gdi32.lib
+-more:c:\Program Files (x86)\National Instruments\CVI2019\bin\msvc\gpib.lib
+-more:c:\Program Files (x86)\National Instruments\Shared\CVI\bin\msvc\ivi.lib
+-more:C:\Program Files (x86)\Windows Kits\8.1\Lib\winv6.3\um\x86\kernel32.lib
+-more:c:\Program Files (x86)\National Instruments\Shared\CVI\bin\msvc\NIDAQmx.lib
+-more:c:\Program Files (x86)\National Instruments\Shared\CVI\bin\msvc\nisyscfg.lib
+-more:c:\Program Files (x86)\National Instruments\CVI2019\bin\msvc\nivxi.lib
+-more:c:\Program Files (x86)\National Instruments\CVI2019\bin\msvc\omp.lib
+-more:c:\Program Files (x86)\National Instruments\Shared\CVI\bin\msvc\pid.lib
+-more:c:\Program Files (x86)\National Instruments\CVI2019\toolslib\toolbox\msvc\toolbox.obj
+-more:C:\Program Files (x86)\Windows Kits\8.1\Lib\winv6.3\um\x86\user32.lib
+-more:C:\Program Files (x86)\Windows Kits\8.1\Lib\winv6.3\um\x86\uuid.lib
+-more:c:\Program Files (x86)\National Instruments\Shared\CVI\bin\msvc\visa.lib
+-more:C:\Program Files (x86)\Windows Kits\8.1\Lib\winv6.3\um\x86\winmm.lib

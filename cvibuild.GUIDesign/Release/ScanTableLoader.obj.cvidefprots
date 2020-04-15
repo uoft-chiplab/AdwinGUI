@@ -1,0 +1,30 @@
+[SCAN_LOAD_CANCEL]
+Class="Function"
+Prototype="int SCAN_LOAD_CANCEL(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\ScanTableLoader.c:12:1"
+
+[SCAN_TYPE_CALLBACK]
+Class="Function"
+Prototype="int SCAN_TYPE_CALLBACK(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\ScanTableLoader.c:25:1"
+
+[SCAN_LOAD_OK]
+Class="Function"
+Prototype="int SCAN_LOAD_OK(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\ScanTableLoader.c:52:1"
+
+[LoadLinearRamp]
+Class="Function"
+Prototype="void LoadLinearRamp(int tableHandle, int tableColumn, int steps, double first, double last, int iter, int STCELLNUMS);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\ScanTableLoader.c:122:2"
+
+[LoadExpRamp]
+Class="Function"
+Prototype="void LoadExpRamp(int tableHandle, int tableColumn, int steps, double first, double last, int iter, int STCELLNUMS);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\ScanTableLoader.c:149:2"
+
+[LoadFixedToMaster]
+Class="Function"
+Prototype="void LoadFixedToMaster(int tableHandle, int tableColumn, int masterColumn, int mode, double fixedVal);"
+SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\ScanTableLoader.c:179:2"
+
