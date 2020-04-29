@@ -2,9 +2,11 @@ Feature Requests
 
 
 
+Move config files to a separate (sub)directory.
 
+Decouple saving a sequence from the gui itself. Now, there are things saved in the .pan file that get lost if loading with a changed gui version.
 
+Add capability for another analog and digital card.
 
-
-
+Broadly, clean up (duplicate and misplaced) function definitions.
 

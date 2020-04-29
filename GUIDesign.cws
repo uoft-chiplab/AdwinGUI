@@ -13,7 +13,7 @@ VXIplug&play Framework 64-bit Dir = "/C/Program Files/IVI Foundation/VISA/win64"
 Number of Projects = 1
 Active Project = 1
 Project 0001 = "GUIDesign.prj"
-Drag Bar Left = 267
+Drag Bar Left = 275
 Window Top = 95
 Window Left = 205
 Window Bottom = 890
@@ -31,9 +31,9 @@ Save Changes Before Compiling = "Always"
 Hide Windows = False
 Break At First Statement = False
 Sort Type = "File Name"
-Number of Opened Files = 4
+Number of Opened Files = 6
 Window Confinement Region Enabled = True
-MainColumnWidth = 250
+MainColumnWidth = 258
 FileDateColumnWidth = 70
 FileSizeColumnWidth = 70
 
@@ -63,30 +63,30 @@ Path Line0002 = "ign.c"
 File Type = "CSource"
 Disk Date = 3652800902
 In Projects = "1,"
-Source Window State = "1,894,894,894,12,12,12,0,0,0,0,0,0,0,0,0,891,0,894,12,401,602,1,0,"
+Source Window State = "1,222,222,222,60,60,60,0,0,0,0,0,0,0,0,0,196,0,222,60,401,602,1,0,"
 Window Top = 33
 Window Left = 10
-Window Z-Order = 1
+Window Z-Order = 5
 
 [File 0003]
 Path = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/vars.h"
 File Type = "Include"
 Disk Date = 3652794201
 In Projects = "1,"
-Source Window State = "1,48,48,48,26,26,26,0,0,0,0,0,0,0,0,0,3,0,48,26,401,602,1,0,"
+Source Window State = "1,72,72,72,8,8,8,0,0,0,0,0,0,0,0,0,44,0,72,8,401,602,1,0,"
 Window Top = 64
 Window Left = 26
-Window Z-Order = 3
+Window Z-Order = 4
 
 [File 0004]
 Path = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/main.c"
 File Type = "CSource"
 Disk Date = 3631219910
 In Projects = "1,"
-Source Window State = "1,170,206,170,10,18,10,0,3,0,0,0,0,0,0,0,206,0,206,18,349,700,1,0,"
+Source Window State = "1,159,159,159,19,19,19,0,0,0,0,0,0,0,0,0,147,0,159,19,349,700,1,0,"
 Window Top = 32
 Window Left = 6
-Window Z-Order = 2
+Window Z-Order = 3
 
 [File 0005]
 Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Adwin."
@@ -97,7 +97,6 @@ In Projects = "1,"
 Source Window State = "1,506,506,506,28,28,28,0,0,0,0,0,0,0,0,0,483,0,506,28,392,510,1,0,"
 Window Top = 31
 Window Left = 4
-Window Z-Order = 4
 
 [File 0006]
 Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Adwin."
@@ -433,9 +432,10 @@ Path Line0002 = "ign.h"
 File Type = "Include"
 Disk Date = 3556495154
 In Projects = "1,"
-Source Window State = "1,178,178,178,17,17,17,0,0,0,0,0,0,0,0,0,136,0,178,17,315,631,1,0,"
+Source Window State = "1,16,16,16,42,42,42,0,0,0,0,0,0,0,0,0,0,0,16,42,315,631,1,0,"
 Window Top = 431
 Window Left = 26
+Window Z-Order = 1
 
 [File 0039]
 Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/GUIDes"
@@ -447,6 +447,7 @@ Window Top = 130
 Window Left = 15
 Window Height = 417
 Window Width = 615
+Window Z-Order = 6
 
 [File 0040]
 Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/GUIDes"
@@ -454,9 +455,10 @@ Path Line0002 = "ign2.h"
 File Type = "Include"
 Disk Date = 3585081718
 In Projects = "1,"
-Source Window State = "1,69,70,69,0,0,0,0,0,0,0,0,0,0,0,0,0,0,35,29,356,402,1,0,"
+Source Window State = "1,48,48,48,5,5,5,0,0,0,0,0,0,0,0,0,41,0,48,5,356,402,1,0,"
 Window Top = 485
 Window Left = 141
+Window Z-Order = 2
 
 [File 0041]
 Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/LaserC"
@@ -565,7 +567,7 @@ Path = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_rep
 File Type = "Include"
 Disk Date = 3442458068
 In Projects = "1,"
-Source Window State = "1,16,16,16,0,27,27,0,0,0,0,0,0,0,0,0,13,26,17,30,135,115,1,0,"
+Source Window State = "1,25,25,25,0,0,0,0,0,0,0,0,0,0,0,0,0,0,25,0,135,115,1,0,"
 Window Top = 199
 Window Left = 428
 
@@ -709,7 +711,7 @@ In Projects = "1,"
 Window Top = 706
 Window Left = 322
 Window Height = 135
-Window Width = 115
+Window Width = 124
 
 [File 0066]
 Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/ScanTa"
@@ -736,8 +738,12 @@ Tab 0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI
 Tab 0002 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/vars.h"
 Tab 0003 Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/GUIDes"
 Tab 0003 Line0002 = "ign.c"
-Tab 0004 Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Adwin."
-Tab 0004 Line0002 = "c"
+Tab 0004 Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/GUIDes"
+Tab 0004 Line0002 = "ign.uir"
+Tab 0005 Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/GUIDes"
+Tab 0005 Line0002 = "ign.h"
+Tab 0006 Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/GUIDes"
+Tab 0006 Line0002 = "ign2.h"
 
 [Default Build Config 0001 Debug]
 Generate Browse Info = True
