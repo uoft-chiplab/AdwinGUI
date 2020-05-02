@@ -10,6 +10,8 @@ Add capability for another analog and digital card.
 
 Broadly, clean up (duplicate and misplaced) function definitions.
 
+Refactor code into appropriate files.
+	Clean up #include statements in each file.
 
 
 Possible ideas:
