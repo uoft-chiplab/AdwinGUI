@@ -22,6 +22,8 @@ The file that starts everything off.
 int main (int argc, char *argv[])
 {
 	int i,j,k,status;
+	int fileHandle;
+	
 	if (InitCVIRTE (0, argv, 0) == 0)
 		return -1;	/* out of memory */
 	if ((panelHandle = LoadPanel (0, "GUIDesign.uir", PANEL)) < 0)
@@ -62,12 +64,12 @@ int main (int argc, char *argv[])
 	
 	panelHandle0 = panelHandle; // since panelhandle is usually used as a parameter in functions
 	
-	file = OpenFile ("processordefault.txt",VAL_READ_ONLY,VAL_OPEN_AS_IS,VAL_BINARY );
-	ReadFile (file,procbuff, 1);
+	fileHandle = OpenFile ("processordefault.txt",VAL_READ_ONLY,VAL_OPEN_AS_IS,VAL_BINARY );
+	ReadFile (fileHandle,procbuff, 1);
 	processorT1x = *procbuff-48;
 	SetCtrlVal (panelHandle12, PANEL_PROCESSORSWITCH, processorT1x);
 	GetCtrlVal (panelHandle12, PANEL_PROCESSORSWITCH, &processorT1x);
-	CloseFile (file);
+	CloseFile (fileHandle);
 	
 		
 //	SetCtrlAttribute (panelHandle, PANEL_DEBUG, ATTR_VISIBLE, 0);

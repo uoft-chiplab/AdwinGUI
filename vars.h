@@ -1,15 +1,22 @@
-#include <visatype.h>
-#include <userint.h>// For MAX_PATHNAME_LEN
-
 #ifndef VAR_DEFS          // Make sure this file is included only once
 #define VAR_DEFS
+
+#include <visatype.h>
+#include <userint.h>// For MAX_PATHNAME_LEN
 
 /************************************************************************
 Macro Definitions
 *************************************************************************/
 
+#define SEQUENCER_VERSION "ADwin Sequencer V16.4.7 - "
+
+#define TRUE 1
+#define FALSE 0
+
+
 #define DefaultEventPeriod (0.100)   // in milliseconds
-///#define AdwinTick	(0.000025)       //Adwin clock cycle, in ms.
+
+// Channel stuff
 #define NUMBERANALOGCHANNELS (40)   // Number of analog Channels available for control
 #define NUMBERDIGITALCHANNELS (48) 	// number of digital channels DISPLAYED!!!
 									// some are not user controlled, e.g. DDS lines
@@ -18,7 +25,29 @@ Macro Definitions
 									// reserved for DDS1
 									// reserved for DDS2
 									// reserved for DDS3				  NU
-									
+#define NUMBERDDS (3)				// Number of DDS's
+#define DDS2_CLOCK (983.04)			// clock speed of DDS 2 in MHz
+#define DDS3CLOCK (300.0)			// clock speed of DDS 2 in MHz  
+#define NUMBERLASERS (4)			// Number of Lasers
+#define NUMBEROFANRITSU (1) 	 	// Number of microwave generators (on the off chance we get more than one)
+#define NUMBEROFCOLUMNS (17)		//
+
+//Explicitly make extra space in analog and digital arrays
+#define MAXANALOG (50)				// Need 40 lines, leave room for 48
+#define MAXDIGITAL (70)				// need 64 lines, leave some leeway
+
+//total number of different analog channels (Adwin and otherwise) that we care about
+#define NUMBERANALOGROWS NUMBERANALOGCHANNELS+NUMBERDDS+NUMBERLASERS+2*NUMBEROFANRITSU
+
+#define NUMBEROFPAGES (11)			//currently hardwired up to 10
+									// to be quick & dirty about it, just change 
+									//numberofpages to 1 more than actual (WTF???)
+// number of columns needed in the meta-tables (with some overhead)
+// reducing it to (NUMBEROFPAGES+1)*(NUMBEROFCOLUMNS+1) leads to a 
+// screwed-up update list.
+#define NUMBEROFMETACOLUMNS (500)
+									   
+
 #define NUMBERGPIBDEV (20)			// number of programmable GPIB devices
 #define NUMGPIBPROGVALS (20)		// max number of numerical values to be used in programming -- should match number of columns in settings table
 #define NUMGPIBCMDREPS (10)			// max number of "%f"'s that can be replaced in a single command (between ";"'s)
@@ -29,50 +58,27 @@ Macro Definitions
 
 #define RIGOL_DG4162_NAME ("Rigol_DG4162")// VISA resouce name or alias of the Rigol DG4162
 #define RIGOL_DG4162_ADDR (101)	// pseudo-address of the Rigol DG4162
-									
-#define NUMBERDDS (3)				// Number of DDS's
-#define NUMBERLASERS (4)			// Number of Lasers
-#define NUMBEROFANRITSU (1) 	 	// Number of microwave generators (on the off chance we get more than one)
-#define NUMBEROFCOLUMNS (17)		//
-
-//total number of different analog channels (Adwin and otherwise) that we care about
-#define NUMBERANALOGROWS NUMBERANALOGCHANNELS+NUMBERDDS+NUMBERLASERS+2*NUMBEROFANRITSU
-
-#define TRUE 1
-#define FALSE 0
-#define NUMBEROFPAGES (11)			//currently hardwired up to 10
-									// to be quick & dirty about it, just change 
-									//numberofpages to 1 more than actual (WTF???)
-								   
-// number of columns needed in the meta-tables (with some overhead)
-// reducing it to (NUMBEROFPAGES+1)*(NUMBEROFCOLUMNS+1) leads to a 
-// screwed-up update list.
-#define NUMBEROFMETACOLUMNS (500)
-									   
-#define DDS2_CLOCK (983.04)			// clock speed of DDS 2 in MHz
-#define DDS3CLOCK (300.0)			// clock speed of DDS 2 in MHz  
-
-#define MAXANALOG (50)				// Need 40 lines, leave room for 48
-#define MAXDIGITAL (70)				// need 64 lines, leave some leeway
 
 
-#define SEQUENCER_VERSION "ADwin Sequencer V16.4.7 - "
-#define MAXERRS (10)
 
+// MultiScan
 #define NUMMAXSCANPARAMETERS (70)	// Number of allowed scan parameters
 #define NUMDIGITALSCANOFFSET (100)	// Offset for digital channels in row-addressing
 									// Should be larger than NUMBERANALOGROWS
 #define NUMGPIBSCANOFFSET	 (200)
-
 #define NUMANALOGTIMESCALEOFFSET (1000)	// Offset to create pseudo-rows corresponding to the timescale
 										// variable for each analog channel cell.
 										// Should be <panel> <regular column> <regular row + 1000>
 #define DDS_EOR_SCAN_COLUMN_VALUE	(1000)	// The column value (not offset) of the psuedo-column
 											// MultiScan uses for the EOR of the DDS's.
-									
+
+
+// User interface stuff
 #define LASTGUISAVELOCATION "c:\\LastGui.pan"
-									
-									
+#define MAXERRS (10)// Size of sequencer error list
+
+
+
 /***********************************************************************
 Color definitions for panel display
 *************************************************************************/									
@@ -121,23 +127,17 @@ int PANEL_OLD_LABEL[NUMBEROFPAGES];   	// Old column labels
 
 
 /***********************************************************************
-Structure/Typedef Declarations
+Typedef Declarations
 *************************************************************************/
-// expand the array sizes to allow for further growth.  Need 32 analog, leave room for 48
-// digital lines   leave room for 64 (2 digital io cards)
-typedef int  BOOL;
-//typedef int ViSession;
 
-typedef struct anritsuoptions_struct {
-	//float start_frequency; /* in GHz*/
-	float end_frequency;
-	//float start_power;  /*in dBm*/
-	float end_power;
-	int framptype;
-	int pramptype;
-	BOOL is_stop;
-} anritsuoptions_struct;
+typedef int BOOL;
 
+
+/************************************************************************
+Global Variables
+*************************************************************************/
+
+// DDS stuff
 typedef struct ddsoptions_struct {
 	float start_frequency; /* in MHz*/
 	float end_frequency;
@@ -161,36 +161,69 @@ typedef struct dds3options_struct {
 	float delta_time;
 	BOOL is_stop;
 } dds3options_struct;
-/************************************************************************
-Global Variables
-*************************************************************************/
 
-//panelHandles: 8: ScanTableLoader  9:NumSet  10:LaserSettings  11:LaserControl
+ddsoptions_struct ddstable[NUMBEROFCOLUMNS+1][NUMBEROFPAGES]; //17 columns (actually only 14, but in case we expand), 10 pages
+ddsoptions_struct dds2table[NUMBEROFCOLUMNS+1][NUMBEROFPAGES]; //17 columns (actually only 14, but in case we expand), 10 pages
+dds3options_struct dds3table[NUMBEROFCOLUMNS+1][NUMBEROFPAGES];
+
+int Active_DDS_Panel; // 1 for Rb evap dds, 2 for K40 evap dds, 3 for HFS dds   !!!!
+
+
+// Anritsu stuff
+typedef struct anritsuoptions_struct {
+	//float start_frequency; /* in GHz*/
+	float end_frequency;
+	//float start_power;  /*in dBm*/
+	float end_power;
+	int framptype;
+	int pramptype;
+	BOOL is_stop;
+} anritsuoptions_struct;
+
+anritsuoptions_struct anritsutable[NUMBEROFCOLUMNS+1][NUMBEROFPAGES];
+
+
+
+
 
 ViSession VIsess;
 ViSession rmSession;
-int processorT1x,file;
+
+// ADwin info
+int processorT1x;
 double AdwinTick;
+
+// Various panels
+//panelHandles: 8: ScanTableLoader  9:NumSet  10:LaserSettings  11:LaserControl
 int panelHandle0;
 int panelHandle,panelHandle2,panelHandle3,panelHandle4,panelHandle5;
 int panelHandle6,panelHandle7,panelHandle8,panelHandle9,panelHandle10;
 int panelHandle11,panelHandle12,panelHandle13;
 int panelHandleANRITSU, panelHandleANRITSUSETTINGS; 
 int panelHandle_sub1,panelHandle_sub2;
-//int panelHandleComFile;
 int  menuHandle;
-int currentx,currenty,currentpage;
-int pic_off,pic_static,pic_change,pic_don;
-int ischecked[NUMBEROFPAGES],isdimmed;
-BOOL ChangedVals;
-BOOL UseSimpleTiming,TwoParam,ChangeScan1Param;
 
+// Keep track of where in a table things are taking place
+int currentx,currenty,currentpage;
+
+// Pages enable/disable
+int ischecked[NUMBEROFPAGES],isdimmed;
+
+// Flow of control variables
+BOOL ChangedVals;
+BOOL UseSimpleTiming;
+BOOL TwoParam;
+BOOL ChangeScan1Param;
+
+// MultiScan
 int parameterscanmode; // 0: multi-scan, 1: one-parameter, 2: two-parameter
 
+// Error reporting
 static char* SeqErrorBuffer[MAXERRS];	   // Holds error messages
 static int SeqErrorCount;
 static char procbuff[1];
 
+// GPIB stuff
 int GPIB_device;
 int GPIB_address;
 int GPIB_ON;
@@ -206,32 +239,23 @@ struct GPIBDDeviceProperties{
 	BOOL	active;
 } GPIBDev[NUMBERGPIBDEV];
 
-struct Switches{
-	BOOL loop_active;
-} Switches;
-
-struct LoopPoints{
-	int startpage;
-	int endpage;
-	int startcol;
-	int endcol;
-} LoopPoints;
-
+// Table cell structs
 struct AnalogTableValues{
 	int		fcn;		//fcn is an integer refering to a function to use.
 						// 1-step, 2-linear, 3- exp, 4- 'S' curve 5-sine 6-"same as last cell"
 	double 	fval;		//the final value
 	double	tscale;		//the timescale to approach final value
 	};
-	
+
 struct AnalogTableValues AnalogTable[NUMBEROFCOLUMNS+1][NUMBERANALOGROWS+1][NUMBEROFPAGES]; //+1 needed because all code done assumed base 1 arrays...
 	// the structure is the values/elements contained at each point in the 
 	// analog panel.  The array aval, is set up as [x][y][page]
-	
-int DigTableValues[NUMBEROFCOLUMNS+1][MAXDIGITAL][NUMBEROFPAGES];
 
 int ChMap[MAXANALOG];	// The channel mapping (for analog). i.e. if we program line 1 as channel 
 				// 12, the ChMap[12]=1
+
+int DigTableValues[NUMBEROFCOLUMNS+1][MAXDIGITAL][NUMBEROFPAGES];
+
 
 // The array with the time values
 double TimeArray[NUMBEROFCOLUMNS+1][NUMBEROFPAGES];
@@ -250,6 +274,7 @@ struct LaserTableValues{
 };
 struct LaserTableValues LaserTable[NUMBERLASERS][NUMBEROFCOLUMNS+1][NUMBEROFPAGES];
 
+// Channel properties structs
 struct LaserProps{
 	int Active;				 	  // 1 if that laser is being used, 0 otherwise
 	char Name[20];			 	  // Laser name
@@ -291,127 +316,18 @@ struct AnritsuSetting{
 	};
 struct AnritsuSetting	AnritsuSettingValues[NUMBEROFANRITSU];
 
+
+// Interfacing with the ADwin
 double EventPeriod;  //The Update Period Defined by the pull down menu (in ms)
 int processnum;
 
-struct DDSClock{
-	double 	extclock;
-	int 	PLLmult;
-	double	clock;	
-}	DDSFreq;
 
-
-anritsuoptions_struct anritsutable[NUMBEROFCOLUMNS+1][NUMBEROFPAGES];
-ddsoptions_struct ddstable[NUMBEROFCOLUMNS+1][NUMBEROFPAGES]; //17 columns (actually only 14, but in case we expand), 10 pages
-ddsoptions_struct dds2table[NUMBEROFCOLUMNS+1][NUMBEROFPAGES]; //17 columns (actually only 14, but in case we expand), 10 pages
-dds3options_struct dds3table[NUMBEROFCOLUMNS+1][NUMBEROFPAGES];
-int Active_DDS_Panel; // 1 for Rb evap dds, 2 for K40 evap dds, 3 for HFS dds
 
 // Mark and Interval vars for Synchronous Scan and Repeat wait periods
 static double beginProcMark;
 static double CycleTime;			// Min time allocated for sequence calculations and execution
 
 
-/* Parameter Scan variables*/
-typedef struct AnalogScanParameters{
-	double Start_Of_Scan;
-	double End_Of_Scan;
-	double Scan_Step_Size;
-	int	   Iterations_Per_Step;
-	int	   Analog_Channel;
-	int	   Analog_Mode;
-} AnalogScan;
-
-typedef struct TimeScanParameters{
-	double 	Start_Of_Scan;
-	double 	End_Of_Scan;
-	double 	Scan_Step_Size;
-	int	   	Iterations_Per_Step;
-}	TimeScan;
-
-typedef struct DDSScanParameters{
-	double  Base_Freq;
-	double  Start_Of_Scan;
-	double 	End_Of_Scan;
-	double 	Scan_Step_Size;
-	double  Current;
-	int	   	Iterations_Per_Step;
-
-} DDSScan;
-
-typedef struct DDSFloorScanParameters{
-	double 	Floor_Start;
-	double 	Floor_End;
-	double 	Floor_Step;
-	int		Iterations_Per_Step;
-} DDSFloorScan;
-
-typedef struct SRSScanParameters{
-	double 	SRS_Start;
-	double 	SRS_End;
-	double 	SRS_Step;
-	int		Iterations_Per_Step;
-} SRSScan;
-
-typedef struct LaserScanParameters{
-	double 	Start_Of_Scan;
-	double 	End_Of_Scan;
-	double 	Scan_Step_Size;
-	int		Iterations_Per_Step;
-} LaserScan;
-
-
-struct ScanParameters{
-	int    Row;
-	int    Column;
-	int    Page;
-	int    ScanMode;// 0 for Analog, 1 for Time, 2 for DDS, 3 for Anritsu
-	BOOL   ScanDone;
-	BOOL   Scan_Active;
-	BOOL   Use_Scan_List;
-	struct AnalogScanParameters	Analog;
-	struct TimeScanParameters	Time;
-	struct DDSScanParameters   	DDS;
-	struct DDSFloorScanParameters DDSFloor;
-	struct SRSScanParameters SRS; 
-	struct LaserScanParameters Laser;
-}  PScan;
-
-struct Scan2Parameters{
-	int    Row;
-	int    Column;
-	int    Page;
-	int    ScanMode;// 0 for Analog, 1 for Time, 2 for DDS
-	BOOL   ScanDone;
-	BOOL   Scan_Active;
-	BOOL   Use_Scan_List;
-	struct AnalogScanParameters	Analog;
-	struct TimeScanParameters	Time;
-	struct DDSScanParameters   	DDS;
-	struct DDSFloorScanParameters DDSFloor;
-	struct SRSScanParameters SRS; 
-	struct LaserScanParameters Laser;
-}  PScan2;
-
-struct ScanSet{
-	double Start;
-	double End;
-	double Step;
-	int	   Iterations;
-	int    Current_Step;
-	double Current_Value;
-	int    Current_Iteration;	
-}	ScanVal;
-
-struct Scan2Set{
-	double Start;
-	double End;
-	double Step;
-	int	   Iterations;
-	int    Current_Step;
-	double Current_Value;
-	int    Current_Iteration;	
-}	Scan2Val;
 
 // The length of ScanBuffer used to be ScanBuffer[1000] hard coded. I want to be able to change it.
 // Nobody uses Scan2Buffer anymore so I will leave that as is.
@@ -431,16 +347,6 @@ struct ScanBuff{ // Needing a scan buffer to watch scan, since list can be updat
 } ScanBuffer[SCANBUFFER_LENGTH];
 
 
-struct Scan2Buff{
-	int Iteration1;
-	int Step1;
-	double Value1;
-	int Iteration2;
-	int Step2;
-	double Value2;
-	char Time[100];
-	int BufferSize;
-} Scan2Buffer[1000];
 
 // Multi-parameter scan structures and global variables
 // 2012-10-06 Stefan Trotzky - V16.0.0
@@ -538,6 +444,155 @@ int DEBUG_NUMBER_IBWRT_CALLS;
 
 
 
+
+// Don't know stuff past here.
+
+
+
+
+
+
+
+
+/* Parameter Scan variables*/
+typedef struct AnalogScanParameters{
+	double Start_Of_Scan;
+	double End_Of_Scan;
+	double Scan_Step_Size;
+	int	   Iterations_Per_Step;
+	int	   Analog_Channel;
+	int	   Analog_Mode;
+} AnalogScan;
+
+typedef struct TimeScanParameters{
+	double 	Start_Of_Scan;
+	double 	End_Of_Scan;
+	double 	Scan_Step_Size;
+	int	   	Iterations_Per_Step;
+}	TimeScan;
+
+typedef struct DDSScanParameters{
+	double  Base_Freq;
+	double  Start_Of_Scan;
+	double 	End_Of_Scan;
+	double 	Scan_Step_Size;
+	double  Current;
+	int	   	Iterations_Per_Step;
+} DDSScan;
+
+typedef struct DDSFloorScanParameters{
+	double 	Floor_Start;
+	double 	Floor_End;
+	double 	Floor_Step;
+	int		Iterations_Per_Step;
+} DDSFloorScan;
+
+typedef struct SRSScanParameters{
+	double 	SRS_Start;
+	double 	SRS_End;
+	double 	SRS_Step;
+	int		Iterations_Per_Step;
+} SRSScan;
+
+typedef struct LaserScanParameters{
+	double 	Start_Of_Scan;
+	double 	End_Of_Scan;
+	double 	Scan_Step_Size;
+	int		Iterations_Per_Step;
+} LaserScan;
+
+
+struct ScanParameters{
+	int    Row;
+	int    Column;
+	int    Page;
+	int    ScanMode;// 0 for Analog, 1 for Time, 2 for DDS, 3 for Anritsu
+	BOOL   ScanDone;
+	BOOL   Scan_Active;
+	BOOL   Use_Scan_List;
+	struct AnalogScanParameters	Analog;
+	struct TimeScanParameters	Time;
+	struct DDSScanParameters   	DDS;
+	struct DDSFloorScanParameters DDSFloor;
+	struct SRSScanParameters SRS; 
+	struct LaserScanParameters Laser;
+}  PScan;
+
+struct Scan2Parameters{
+	int    Row;
+	int    Column;
+	int    Page;
+	int    ScanMode;// 0 for Analog, 1 for Time, 2 for DDS
+	BOOL   ScanDone;
+	BOOL   Scan_Active;
+	BOOL   Use_Scan_List;
+	struct AnalogScanParameters	Analog;
+	struct TimeScanParameters	Time;
+	struct DDSScanParameters   	DDS;
+	struct DDSFloorScanParameters DDSFloor;
+	struct SRSScanParameters SRS; 
+	struct LaserScanParameters Laser;
+}  PScan2;
+
+struct ScanSet{
+	double Start;
+	double End;
+	double Step;
+	int	   Iterations;
+	int    Current_Step;
+	double Current_Value;
+	int    Current_Iteration;	
+}	ScanVal;
+
+struct Scan2Set{
+	double Start;
+	double End;
+	double Step;
+	int	   Iterations;
+	int    Current_Step;
+	double Current_Value;
+	int    Current_Iteration;	
+}	Scan2Val;
+
+
+
+
+
+struct Scan2Buff{
+	int Iteration1;
+	int Step1;
+	double Value1;
+	int Iteration2;
+	int Step2;
+	double Value2;
+	char Time[100];
+	int BufferSize;
+} Scan2Buffer[1000];
+
+
+
+
+
+struct DDSClock{
+	double 	extclock;
+	int 	PLLmult;
+	double	clock;
+}	DDSFreq;
+
+
+
+int pic_off,pic_static,pic_change,pic_don;
+
+struct Switches{
+	BOOL loop_active;
+} Switches;
+
+struct LoopPoints{
+	int startpage;
+	int endpage;
+	int startcol;
+	int endcol;
+} LoopPoints;
 
 
 
