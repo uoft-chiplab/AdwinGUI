@@ -1,10 +1,10 @@
 [NumSet_Ok]
 Class="Function"
 Prototype="int NumSet_Ok(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\NumSet.c:12:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\NumSet.c:12:1"
 
 [NumSet_Cancel]
 Class="Function"
 Prototype="int NumSet_Cancel(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\NumSet.c:38:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\NumSet.c:38:1"
 

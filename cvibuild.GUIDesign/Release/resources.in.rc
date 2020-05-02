@@ -1,7 +1,7 @@
 #include "C:\Program Files (x86)\National Instruments\Shared\MSDTRedistributables\SDKHeaderFiles\8.1\winver.h"
 
 2 ICON "c:\\program files (x86)\\national instruments\\cvi2019\\bin\\default.ico"
-1 24 "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\cvibuild.GUIDesign\\Release\\manifest.xml"
+1 24 "c:\\Users\\coldatoms\\Documents\\Lab\\LocalCode\\ADwin_sequencers\\AdwinGUI_repo\\cvibuild.GUIDesign\\Release\\manifest.xml"
 
 
 STRINGTABLE DISCARDABLE
@@ -38,18 +38,18 @@ BEGIN
     END
 END
 
-AnalogControl.uir UIRFileType "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\AnalogControl.uir"
-AnalogSettings.uir UIRFileType "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\AnalogSettings.uir"
-AnritsuControl.uir UIRFileType "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\AnritsuControl.uir"
-AnritsuSettings.uir UIRFileType "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\AnritsuSettings.uir"
-DDSControl.uir UIRFileType "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\DDSControl.uir"
-DDSSettings.uir UIRFileType "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\DDSSettings.uir"
-DigitalSettings.uir UIRFileType "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\DigitalSettings.uir"
-GPIB:SRS:SETUP.uir UIRFileType "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\GPIB_SRS_SETUP.uir"
-GUIDesign.uir UIRFileType "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\GUIDesign.uir"
-LaserControl.uir UIRFileType "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\LaserControl.uir"
-LaserSettings.uir UIRFileType "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\LaserSettings.uir"
-NumSet.uir UIRFileType "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\NumSet.uir"
-Processor.uir UIRFileType "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\Processor.uir"
-Scan.uir UIRFileType "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\Scan.uir"
-ScanTableLoader.uir UIRFileType "d:\\LocalCode\\ADwin_sequencers\\AdwinGUI V16.4.7_beta\\ScanTableLoader.uir"
+AnalogControl.uir UIRFileType "c:\\Users\\coldatoms\\Documents\\Lab\\LocalCode\\ADwin_sequencers\\AdwinGUI_repo\\AnalogControl.uir"
+AnalogSettings.uir UIRFileType "c:\\Users\\coldatoms\\Documents\\Lab\\LocalCode\\ADwin_sequencers\\AdwinGUI_repo\\AnalogSettings.uir"
+AnritsuControl.uir UIRFileType "c:\\Users\\coldatoms\\Documents\\Lab\\LocalCode\\ADwin_sequencers\\AdwinGUI_repo\\AnritsuControl.uir"
+AnritsuSettings.uir UIRFileType "c:\\Users\\coldatoms\\Documents\\Lab\\LocalCode\\ADwin_sequencers\\AdwinGUI_repo\\AnritsuSettings.uir"
+DDSControl.uir UIRFileType "c:\\Users\\coldatoms\\Documents\\Lab\\LocalCode\\ADwin_sequencers\\AdwinGUI_repo\\DDSControl.uir"
+DDSSettings.uir UIRFileType "c:\\Users\\coldatoms\\Documents\\Lab\\LocalCode\\ADwin_sequencers\\AdwinGUI_repo\\DDSSettings.uir"
+DigitalSettings.uir UIRFileType "c:\\Users\\coldatoms\\Documents\\Lab\\LocalCode\\ADwin_sequencers\\AdwinGUI_repo\\DigitalSettings.uir"
+GPIB:SRS:SETUP.uir UIRFileType "c:\\Users\\coldatoms\\Documents\\Lab\\LocalCode\\ADwin_sequencers\\AdwinGUI_repo\\GPIB_SRS_SETUP.uir"
+GUIDesign.uir UIRFileType "c:\\Users\\coldatoms\\Documents\\Lab\\LocalCode\\ADwin_sequencers\\AdwinGUI_repo\\GUIDesign.uir"
+LaserControl.uir UIRFileType "c:\\Users\\coldatoms\\Documents\\Lab\\LocalCode\\ADwin_sequencers\\AdwinGUI_repo\\LaserControl.uir"
+LaserSettings.uir UIRFileType "c:\\Users\\coldatoms\\Documents\\Lab\\LocalCode\\ADwin_sequencers\\AdwinGUI_repo\\LaserSettings.uir"
+NumSet.uir UIRFileType "c:\\Users\\coldatoms\\Documents\\Lab\\LocalCode\\ADwin_sequencers\\AdwinGUI_repo\\NumSet.uir"
+Processor.uir UIRFileType "c:\\Users\\coldatoms\\Documents\\Lab\\LocalCode\\ADwin_sequencers\\AdwinGUI_repo\\Processor.uir"
+Scan.uir UIRFileType "c:\\Users\\coldatoms\\Documents\\Lab\\LocalCode\\ADwin_sequencers\\AdwinGUI_repo\\Scan.uir"
+ScanTableLoader.uir UIRFileType "c:\\Users\\coldatoms\\Documents\\Lab\\LocalCode\\ADwin_sequencers\\AdwinGUI_repo\\ScanTableLoader.uir"

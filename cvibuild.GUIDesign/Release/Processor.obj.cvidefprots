@@ -1,10 +1,10 @@
 [PROCESSORSWITCH_CALLBACK]
 Class="Function"
 Prototype="int PROCESSORSWITCH_CALLBACK(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Processor.c:6:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\Processor.c:6:1"
 
 [PROCESSOR_OK]
 Class="Function"
 Prototype="int PROCESSOR_OK(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\Processor.c:20:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\Processor.c:20:1"
 

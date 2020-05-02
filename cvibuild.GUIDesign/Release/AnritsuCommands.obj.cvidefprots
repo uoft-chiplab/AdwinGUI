@@ -1,45 +1,45 @@
 [round]
 Class="Function"
 Prototype="int round(double x);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\AnritsuCommands.c:32:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\AnritsuCommands.c:32:1"
 
 [TOTALTIME]
 Class="Function"
 Prototype="double TOTALTIME();"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\AnritsuCommands.c:55:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\AnritsuCommands.c:55:1"
 
 [AnritsuCOMMUNICATE]
 Class="Function"
 Prototype="int AnritsuCOMMUNICATE();"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\AnritsuCommands.c:253:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\AnritsuCommands.c:253:1"
 
 [CancelANRITSUConCALLBACK]
 Class="Function"
 Prototype="int CancelANRITSUConCALLBACK(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\AnritsuCommands.c:565:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\AnritsuCommands.c:565:1"
 
 [SetANRITSUConCALLBACK]
 Class="Function"
 Prototype="int SetANRITSUConCALLBACK(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\AnritsuCommands.c:581:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\AnritsuCommands.c:581:1"
 
 [SetAnritsuControlPanel]
 Class="Function"
 Prototype="void SetAnritsuControlPanel();"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\AnritsuCommands.c:625:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\AnritsuCommands.c:625:1"
 
 [ANRITSU_SET_TABLECALLBACK]
 Class="Function"
 Prototype="int ANRITSU_SET_TABLECALLBACK(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\AnritsuCommands.c:656:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\AnritsuCommands.c:656:1"
 
 [ANRITSU_SET_DONE_CALLBACK]
 Class="Function"
 Prototype="int ANRITSU_SET_DONE_CALLBACK(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\AnritsuCommands.c:668:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\AnritsuCommands.c:668:1"
 
 [LoadAnritsuSettings]
 Class="Function"
 Prototype="void LoadAnritsuSettings();"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\AnritsuCommands.c:699:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\AnritsuCommands.c:699:1"
 

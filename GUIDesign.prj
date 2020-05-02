@@ -1,12 +1,32 @@
 [Project Header]
-Version = 711
-Pathname = "/c/ADWinProgs/AdwinGUI V16.4.4/GUIDesign.prj"
-CVI Dir = "/c/program files/national instruments7.11/cvi71"
-IVI Standard Root Dir = "/C/Program Files/IVI Foundation/IVI"
-VXIplug&play Framework Dir = "/C/VXIpnp/winnt"
+Version = 1900
+Pathname Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/GUIDes"
+Pathname Line0002 = "ign.prj"
+CVI Dir = "/c/program files (x86)/national instruments/cvi2019"
+CVI Shared Dir = "/C/Program Files (x86)/National Instruments/Shared/CVI"
+CVI Pub Local Dir = "/C/ProgramData/National Instruments/CVI2019"
+CVI Pub Global Dir = "/C/ProgramData/National Instruments/CVI"
+IVI Standard Root Dir = "/C/Program Files (x86)/IVI Foundation/IVI"
+VXIplug&play Framework Dir = "/C/Program Files (x86)/IVI Foundation/VISA/winnt"
+IVI Standard Root 64-bit Dir = "/C/Program Files/IVI Foundation/IVI"
+VXIplug&play Framework 64-bit Dir = "/C/Program Files/IVI Foundation/VISA/win64"
 Number of Files = 67
 Target Type = "Executable"
 Flags = 16
+Copied From Locked InstrDrv Directory = False
+Copied from VXIPNP Directory = False
+Locked InstrDrv Name = ""
+Don't Display Deploy InstrDrv Dialog = False
+
+[Folders]
+Instrument Files Folder Not Added Yet = True
+Library Files Folder Not Added Yet = True
+Folder 0 = "Source Files"
+FolderEx 0 = "Source Files"
+Folder 1 = "Include Files"
+FolderEx 1 = "Include Files"
+Folder 2 = "User Interface Files"
+FolderEx 2 = "User Interface Files"
 
 [File 0001]
 File Type = "CSource"
@@ -14,415 +34,496 @@ Res Id = 1
 Path Is Rel = True
 Path Rel To = "Project"
 Path Rel Path = "Adwin.c"
-Path = "/c/ADWinProgs/AdwinGUI V16.4.4/Adwin.c"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Adwin."
+Path Line0002 = "c"
 Exclude = False
 Compile Into Object File = False
 Project Flags = 0
 Folder = "Source Files"
+Folder Id = 0
 
 [File 0002]
-File Type = "Include"
+File Type = "CSource"
 Res Id = 2
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "Adwin.h"
-Path = "/c/ADWinProgs/AdwinGUI V16.4.4/Adwin.h"
+Path Rel Path = "AnalogControl.c"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Analog"
+Path Line0002 = "Control.c"
 Exclude = False
+Compile Into Object File = False
 Project Flags = 0
-Folder = "Include Files"
+Folder = "Source Files"
+Folder Id = 0
 
 [File 0003]
 File Type = "CSource"
 Res Id = 3
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "AnalogControl.c"
-Path = "/c/ADWinProgs/AdwinGUI V16.4.4/AnalogControl.c"
+Path Rel Path = "AnalogSettings.c"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Analog"
+Path Line0002 = "Settings.c"
 Exclude = False
 Compile Into Object File = False
 Project Flags = 0
 Folder = "Source Files"
+Folder Id = 0
 
 [File 0004]
-File Type = "Include"
+File Type = "CSource"
 Res Id = 4
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "AnalogControl.h"
-Path = "/c/ADWinProgs/AdwinGUI V16.4.4/AnalogControl.h"
+Path Rel Path = "AnritsuCommands.c"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Anrits"
+Path Line0002 = "uCommands.c"
 Exclude = False
+Compile Into Object File = False
 Project Flags = 0
-Folder = "Include Files"
+Folder = "Source Files"
+Folder Id = 0
 
 [File 0005]
-File Type = "User Interface Resource"
+File Type = "CSource"
 Res Id = 5
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "AnalogControl.uir"
-Path = "/c/ADWinProgs/AdwinGUI V16.4.4/AnalogControl.uir"
+Path Rel Path = "DDSControl.c"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/DDSCon"
+Path Line0002 = "trol.c"
 Exclude = False
+Compile Into Object File = False
 Project Flags = 0
-Folder = "User Interface Files"
+Folder = "Source Files"
+Folder Id = 0
 
 [File 0006]
-File Type = "Include"
+File Type = "CSource"
 Res Id = 6
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "AnalogControl2.h"
-Path = "/c/ADWinProgs/AdwinGUI V16.4.4/AnalogControl2.h"
+Path Rel Path = "DDSSettings.c"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/DDSSet"
+Path Line0002 = "tings.c"
 Exclude = False
+Compile Into Object File = False
 Project Flags = 0
-Folder = "Include Files"
+Folder = "Source Files"
+Folder Id = 0
 
 [File 0007]
 File Type = "CSource"
 Res Id = 7
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "AnalogSettings.c"
-Path = "/c/ADWinProgs/AdwinGUI V16.4.4/AnalogSettings.c"
+Path Rel Path = "ddstranslator.c"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/ddstra"
+Path Line0002 = "nslator.c"
 Exclude = False
 Compile Into Object File = False
 Project Flags = 0
 Folder = "Source Files"
+Folder Id = 0
 
 [File 0008]
-File Type = "Include"
+File Type = "CSource"
 Res Id = 8
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "AnalogSettings.h"
-Path = "/c/ADWinProgs/AdwinGUI V16.4.4/AnalogSettings.h"
+Path Rel Path = "DigitalSettings.c"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Digita"
+Path Line0002 = "lSettings.c"
 Exclude = False
+Compile Into Object File = False
 Project Flags = 0
-Folder = "Include Files"
+Folder = "Source Files"
+Folder Id = 0
 
 [File 0009]
-File Type = "User Interface Resource"
+File Type = "CSource"
 Res Id = 9
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "AnalogSettings.uir"
-Path = "/c/ADWinProgs/AdwinGUI V16.4.4/AnalogSettings.uir"
+Path Rel Path = "GUIDesign.c"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/GUIDes"
+Path Line0002 = "ign.c"
 Exclude = False
+Compile Into Object File = False
 Project Flags = 0
-Folder = "User Interface Files"
+Folder = "Source Files"
+Folder Id = 0
 
 [File 0010]
-File Type = "Include"
+File Type = "CSource"
 Res Id = 10
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "AnalogSettings2.h"
-Path = "/c/ADWinProgs/AdwinGUI V16.4.4/AnalogSettings2.h"
+Path Rel Path = "LaserControl.c"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/LaserC"
+Path Line0002 = "ontrol.c"
 Exclude = False
+Compile Into Object File = False
 Project Flags = 0
-Folder = "Include Files"
+Folder = "Source Files"
+Folder Id = 0
 
 [File 0011]
 File Type = "CSource"
 Res Id = 11
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "AnritsuCommands.c"
-Path = "/c/ADWinProgs/AdwinGUI V16.4.4/AnritsuCommands.c"
+Path Rel Path = "LaserSettings.c"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/LaserS"
+Path Line0002 = "ettings.c"
 Exclude = False
 Compile Into Object File = False
 Project Flags = 0
 Folder = "Source Files"
+Folder Id = 0
 
 [File 0012]
-File Type = "Include"
+File Type = "CSource"
 Res Id = 12
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "AnritsuControl.h"
-Path = "/c/ADWinProgs/AdwinGUI V16.4.4/AnritsuControl.h"
+Path Rel Path = "LaserTuning.c"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/LaserT"
+Path Line0002 = "uning.c"
 Exclude = False
+Compile Into Object File = False
 Project Flags = 0
-Folder = "Include Files"
+Folder = "Source Files"
+Folder Id = 0
 
 [File 0013]
-File Type = "User Interface Resource"
+File Type = "CSource"
 Res Id = 13
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "AnritsuControl.uir"
-Path = "/c/ADWinProgs/AdwinGUI V16.4.4/AnritsuControl.uir"
+Path Rel Path = "main.c"
+Path = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/main.c"
 Exclude = False
+Compile Into Object File = False
 Project Flags = 0
-Folder = "User Interface Files"
+Folder = "Source Files"
+Folder Id = 0
 
 [File 0014]
-File Type = "Include"
+File Type = "CSource"
 Res Id = 14
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "AnritsuControl2.h"
-Path = "/c/ADWinProgs/AdwinGUI V16.4.4/AnritsuControl2.h"
+Path Rel Path = "NumSet.c"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/NumSet"
+Path Line0002 = ".c"
 Exclude = False
+Compile Into Object File = False
 Project Flags = 0
-Folder = "Include Files"
+Folder = "Source Files"
+Folder Id = 0
 
 [File 0015]
-File Type = "Include"
+File Type = "CSource"
 Res Id = 15
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "AnritsuSettings.h"
-Path = "/c/ADWinProgs/AdwinGUI V16.4.4/AnritsuSettings.h"
+Path Rel Path = "Processor.c"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Proces"
+Path Line0002 = "sor.c"
 Exclude = False
+Compile Into Object File = False
 Project Flags = 0
-Folder = "Include Files"
+Folder = "Source Files"
+Folder Id = 0
 
 [File 0016]
-File Type = "User Interface Resource"
+File Type = "CSource"
 Res Id = 16
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "AnritsuSettings.uir"
-Path = "/c/ADWinProgs/AdwinGUI V16.4.4/AnritsuSettings.uir"
+Path Rel Path = "scan.c"
+Path = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/scan.c"
 Exclude = False
+Compile Into Object File = False
 Project Flags = 0
-Folder = "User Interface Files"
+Folder = "Source Files"
+Folder Id = 0
 
 [File 0017]
-File Type = "Include"
+File Type = "CSource"
 Res Id = 17
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "AnritsuSettings2.h"
-Path = "/c/ADWinProgs/AdwinGUI V16.4.4/AnritsuSettings2.h"
+Path Rel Path = "ScanTableLoader.c"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/ScanTa"
+Path Line0002 = "bleLoader.c"
 Exclude = False
+Compile Into Object File = False
 Project Flags = 0
-Folder = "Include Files"
+Folder = "Source Files"
+Folder Id = 0
 
 [File 0018]
 File Type = "CSource"
 Res Id = 18
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "DDSControl.c"
-Path = "/c/ADWinProgs/AdwinGUI V16.4.4/DDSControl.c"
+Path Rel Path = "VISA_SRS_SETUP.c"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/VISA_S"
+Path Line0002 = "RS_SETUP.c"
 Exclude = False
 Compile Into Object File = False
 Project Flags = 0
 Folder = "Source Files"
+Folder Id = 0
 
 [File 0019]
 File Type = "Include"
 Res Id = 19
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "DDSControl.h"
-Path = "/c/ADWinProgs/AdwinGUI V16.4.4/DDSControl.h"
+Path Rel Path = "Adwin.h"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Adwin."
+Path Line0002 = "h"
 Exclude = False
 Project Flags = 0
 Folder = "Include Files"
+Folder Id = 1
 
 [File 0020]
-File Type = "User Interface Resource"
+File Type = "Include"
 Res Id = 20
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "DDSControl.uir"
-Path = "/c/ADWinProgs/AdwinGUI V16.4.4/DDSControl.uir"
+Path Rel Path = "AnalogControl.h"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Analog"
+Path Line0002 = "Control.h"
 Exclude = False
 Project Flags = 0
-Folder = "User Interface Files"
+Folder = "Include Files"
+Folder Id = 1
 
 [File 0021]
 File Type = "Include"
 Res Id = 21
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "DDSControl2.h"
-Path = "/c/ADWinProgs/AdwinGUI V16.4.4/DDSControl2.h"
+Path Rel Path = "AnalogControl2.h"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Analog"
+Path Line0002 = "Control2.h"
 Exclude = False
 Project Flags = 0
 Folder = "Include Files"
+Folder Id = 1
 
 [File 0022]
-File Type = "CSource"
+File Type = "Include"
 Res Id = 22
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "DDSSettings.c"
-Path = "/c/ADWinProgs/AdwinGUI V16.4.4/DDSSettings.c"
+Path Rel Path = "AnalogSettings.h"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Analog"
+Path Line0002 = "Settings.h"
 Exclude = False
-Compile Into Object File = False
 Project Flags = 0
-Folder = "Source Files"
+Folder = "Include Files"
+Folder Id = 1
 
 [File 0023]
 File Type = "Include"
 Res Id = 23
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "DDSSettings.h"
-Path = "/c/ADWinProgs/AdwinGUI V16.4.4/DDSSettings.h"
+Path Rel Path = "AnalogSettings2.h"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Analog"
+Path Line0002 = "Settings2.h"
 Exclude = False
 Project Flags = 0
 Folder = "Include Files"
+Folder Id = 1
 
 [File 0024]
-File Type = "User Interface Resource"
+File Type = "Include"
 Res Id = 24
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "DDSSettings.uir"
-Path = "/c/ADWinProgs/AdwinGUI V16.4.4/DDSSettings.uir"
+Path Rel Path = "AnritsuControl.h"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Anrits"
+Path Line0002 = "uControl.h"
 Exclude = False
 Project Flags = 0
-Folder = "User Interface Files"
+Folder = "Include Files"
+Folder Id = 1
 
 [File 0025]
 File Type = "Include"
 Res Id = 25
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "DDSSettings2.h"
-Path = "/c/ADWinProgs/AdwinGUI V16.4.4/DDSSettings2.h"
+Path Rel Path = "AnritsuControl2.h"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Anrits"
+Path Line0002 = "uControl2.h"
 Exclude = False
 Project Flags = 0
 Folder = "Include Files"
+Folder Id = 1
 
 [File 0026]
-File Type = "CSource"
+File Type = "Include"
 Res Id = 26
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "ddstranslator.c"
-Path = "/c/ADWinProgs/AdwinGUI V16.4.4/ddstranslator.c"
+Path Rel Path = "AnritsuSettings.h"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Anrits"
+Path Line0002 = "uSettings.h"
 Exclude = False
-Compile Into Object File = False
 Project Flags = 0
-Folder = "Source Files"
+Folder = "Include Files"
+Folder Id = 1
 
 [File 0027]
 File Type = "Include"
 Res Id = 27
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "ddstranslator.h"
-Path = "/c/ADWinProgs/AdwinGUI V16.4.4/ddstranslator.h"
+Path Rel Path = "AnritsuSettings2.h"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Anrits"
+Path Line0002 = "uSettings2.h"
 Exclude = False
 Project Flags = 0
 Folder = "Include Files"
+Folder Id = 1
 
 [File 0028]
-File Type = "CSource"
+File Type = "Include"
 Res Id = 28
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "DigitalSettings.c"
-Path = "/c/ADWinProgs/AdwinGUI V16.4.4/DigitalSettings.c"
+Path Rel Path = "DDSControl.h"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/DDSCon"
+Path Line0002 = "trol.h"
 Exclude = False
-Compile Into Object File = False
 Project Flags = 0
-Folder = "Source Files"
+Folder = "Include Files"
+Folder Id = 1
 
 [File 0029]
 File Type = "Include"
 Res Id = 29
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "DigitalSettings.h"
-Path = "/c/ADWinProgs/AdwinGUI V16.4.4/DigitalSettings.h"
+Path Rel Path = "DDSControl2.h"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/DDSCon"
+Path Line0002 = "trol2.h"
 Exclude = False
 Project Flags = 0
 Folder = "Include Files"
+Folder Id = 1
 
 [File 0030]
-File Type = "User Interface Resource"
+File Type = "Include"
 Res Id = 30
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "DigitalSettings.uir"
-Path = "/c/ADWinProgs/AdwinGUI V16.4.4/DigitalSettings.uir"
+Path Rel Path = "DDSSettings.h"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/DDSSet"
+Path Line0002 = "tings.h"
 Exclude = False
 Project Flags = 0
-Folder = "User Interface Files"
+Folder = "Include Files"
+Folder Id = 1
 
 [File 0031]
 File Type = "Include"
 Res Id = 31
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "DigitalSettings2.h"
-Path = "/c/ADWinProgs/AdwinGUI V16.4.4/DigitalSettings2.h"
+Path Rel Path = "DDSSettings2.h"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/DDSSet"
+Path Line0002 = "tings2.h"
 Exclude = False
 Project Flags = 0
 Folder = "Include Files"
+Folder Id = 1
 
 [File 0032]
 File Type = "Include"
 Res Id = 32
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "GPIB_SRS_SETUP.h"
-Path = "/c/ADWinProgs/AdwinGUI V16.4.4/GPIB_SRS_SETUP.h"
+Path Rel Path = "ddstranslator.h"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/ddstra"
+Path Line0002 = "nslator.h"
 Exclude = False
 Project Flags = 0
 Folder = "Include Files"
+Folder Id = 1
 
 [File 0033]
-File Type = "User Interface Resource"
+File Type = "Include"
 Res Id = 33
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "GPIB_SRS_SETUP.uir"
-Path = "/c/ADWinProgs/AdwinGUI V16.4.4/GPIB_SRS_SETUP.uir"
+Path Rel Path = "DigitalSettings.h"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Digita"
+Path Line0002 = "lSettings.h"
 Exclude = False
 Project Flags = 0
-Folder = "User Interface Files"
+Folder = "Include Files"
+Folder Id = 1
 
 [File 0034]
 File Type = "Include"
 Res Id = 34
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "GPIB_SRS_SETUP2.h"
-Path = "/c/ADWinProgs/AdwinGUI V16.4.4/GPIB_SRS_SETUP2.h"
+Path Rel Path = "DigitalSettings2.h"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Digita"
+Path Line0002 = "lSettings2.h"
 Exclude = False
 Project Flags = 0
 Folder = "Include Files"
+Folder Id = 1
 
 [File 0035]
-File Type = "CSource"
+File Type = "Include"
 Res Id = 35
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "GUIDesign.c"
-Path = "/c/ADWinProgs/AdwinGUI V16.4.4/GUIDesign.c"
+Path Rel Path = "GPIB_SRS_SETUP.h"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/GPIB_S"
+Path Line0002 = "RS_SETUP.h"
 Exclude = False
-Compile Into Object File = False
 Project Flags = 0
-Folder = "Source Files"
+Folder = "Include Files"
+Folder Id = 1
 
 [File 0036]
 File Type = "Include"
 Res Id = 36
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "GUIDesign.h"
-Path = "/c/ADWinProgs/AdwinGUI V16.4.4/GUIDesign.h"
+Path Rel Path = "GPIB_SRS_SETUP2.h"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/GPIB_S"
+Path Line0002 = "RS_SETUP2.h"
 Exclude = False
 Project Flags = 0
 Folder = "Include Files"
+Folder Id = 1
 
 [File 0037]
-File Type = "User Interface Resource"
+File Type = "Include"
 Res Id = 37
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "GUIDesign.uir"
-Path = "/c/ADWinProgs/AdwinGUI V16.4.4/GUIDesign.uir"
+Path Rel Path = "GUIDesign.h"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/GUIDes"
+Path Line0002 = "ign.h"
 Exclude = False
 Project Flags = 0
-Folder = "User Interface Files"
+Folder = "Include Files"
+Folder Id = 1
 
 [File 0038]
 File Type = "Include"
@@ -430,344 +531,737 @@ Res Id = 38
 Path Is Rel = True
 Path Rel To = "Project"
 Path Rel Path = "GUIDesign2.h"
-Path = "/c/ADWinProgs/AdwinGUI V16.4.4/GUIDesign2.h"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/GUIDes"
+Path Line0002 = "ign2.h"
 Exclude = False
 Project Flags = 0
 Folder = "Include Files"
+Folder Id = 1
 
 [File 0039]
-File Type = "CSource"
+File Type = "Include"
 Res Id = 39
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "LaserControl.c"
-Path = "/c/ADWinProgs/AdwinGUI V16.4.4/LaserControl.c"
+Path Rel Path = "LaserControl.h"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/LaserC"
+Path Line0002 = "ontrol.h"
 Exclude = False
-Compile Into Object File = False
 Project Flags = 0
-Folder = "Source Files"
+Folder = "Include Files"
+Folder Id = 1
 
 [File 0040]
 File Type = "Include"
 Res Id = 40
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "LaserControl.h"
-Path = "/c/ADWinProgs/AdwinGUI V16.4.4/LaserControl.h"
+Path Rel Path = "LaserControl2.h"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/LaserC"
+Path Line0002 = "ontrol2.h"
 Exclude = False
 Project Flags = 0
 Folder = "Include Files"
+Folder Id = 1
 
 [File 0041]
-File Type = "User Interface Resource"
+File Type = "Include"
 Res Id = 41
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "LaserControl.uir"
-Path = "/c/ADWinProgs/AdwinGUI V16.4.4/LaserControl.uir"
+Path Rel Path = "LaserSettings.h"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/LaserS"
+Path Line0002 = "ettings.h"
 Exclude = False
 Project Flags = 0
-Folder = "User Interface Files"
+Folder = "Include Files"
+Folder Id = 1
 
 [File 0042]
 File Type = "Include"
 Res Id = 42
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "LaserControl2.h"
-Path = "/c/ADWinProgs/AdwinGUI V16.4.4/LaserControl2.h"
+Path Rel Path = "LaserSettings2.h"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/LaserS"
+Path Line0002 = "ettings2.h"
 Exclude = False
 Project Flags = 0
 Folder = "Include Files"
+Folder Id = 1
 
 [File 0043]
-File Type = "CSource"
+File Type = "Include"
 Res Id = 43
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "LaserSettings.c"
-Path = "/c/ADWinProgs/AdwinGUI V16.4.4/LaserSettings.c"
+Path Rel Path = "LaserTuning.h"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/LaserT"
+Path Line0002 = "uning.h"
 Exclude = False
-Compile Into Object File = False
 Project Flags = 0
-Folder = "Source Files"
+Folder = "Include Files"
+Folder Id = 1
 
 [File 0044]
 File Type = "Include"
 Res Id = 44
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "LaserSettings.h"
-Path = "/c/ADWinProgs/AdwinGUI V16.4.4/LaserSettings.h"
+Path Rel Path = "main.h"
+Path = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/main.h"
 Exclude = False
 Project Flags = 0
 Folder = "Include Files"
+Folder Id = 1
 
 [File 0045]
-File Type = "User Interface Resource"
+File Type = "Include"
 Res Id = 45
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "LaserSettings.uir"
-Path = "/c/ADWinProgs/AdwinGUI V16.4.4/LaserSettings.uir"
+Path Rel Path = "NumSet.h"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/NumSet"
+Path Line0002 = ".h"
 Exclude = False
 Project Flags = 0
-Folder = "User Interface Files"
+Folder = "Include Files"
+Folder Id = 1
 
 [File 0046]
 File Type = "Include"
 Res Id = 46
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "LaserSettings2.h"
-Path = "/c/ADWinProgs/AdwinGUI V16.4.4/LaserSettings2.h"
+Path Rel Path = "Processor.h"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Proces"
+Path Line0002 = "sor.h"
 Exclude = False
 Project Flags = 0
 Folder = "Include Files"
+Folder Id = 1
 
 [File 0047]
-File Type = "CSource"
+File Type = "Include"
 Res Id = 47
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "LaserTuning.c"
-Path = "/c/ADWinProgs/AdwinGUI V16.4.4/LaserTuning.c"
+Path Rel Path = "RabbitCom9858.h"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Rabbit"
+Path Line0002 = "Com9858.h"
 Exclude = False
-Compile Into Object File = False
 Project Flags = 0
-Folder = "Source Files"
+Folder = "Include Files"
+Folder Id = 1
 
 [File 0048]
 File Type = "Include"
 Res Id = 48
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "LaserTuning.h"
-Path = "/c/ADWinProgs/AdwinGUI V16.4.4/LaserTuning.h"
+Path Rel Path = "Scan.h"
+Path = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Scan.h"
 Exclude = False
 Project Flags = 0
 Folder = "Include Files"
+Folder Id = 1
 
 [File 0049]
-File Type = "CSource"
+File Type = "Include"
 Res Id = 49
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "main.c"
-Path = "/c/ADWinProgs/AdwinGUI V16.4.4/main.c"
+Path Rel Path = "scan2.h"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/scan2."
+Path Line0002 = "h"
 Exclude = False
-Compile Into Object File = False
 Project Flags = 0
-Folder = "Source Files"
+Folder = "Include Files"
+Folder Id = 1
 
 [File 0050]
 File Type = "Include"
 Res Id = 50
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "main.h"
-Path = "/c/ADWinProgs/AdwinGUI V16.4.4/main.h"
+Path Rel Path = "ScanTableLoader.h"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/ScanTa"
+Path Line0002 = "bleLoader.h"
 Exclude = False
 Project Flags = 0
 Folder = "Include Files"
+Folder Id = 1
 
 [File 0051]
-File Type = "CSource"
+File Type = "Include"
 Res Id = 51
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "NumSet.c"
-Path = "/c/ADWinProgs/AdwinGUI V16.4.4/NumSet.c"
+Path Rel Path = "ScanTableLoader2.h"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/ScanTa"
+Path Line0002 = "bleLoader2.h"
 Exclude = False
-Compile Into Object File = False
 Project Flags = 0
-Folder = "Source Files"
+Folder = "Include Files"
+Folder Id = 1
 
 [File 0052]
 File Type = "Include"
 Res Id = 52
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "NumSet.h"
-Path = "/c/ADWinProgs/AdwinGUI V16.4.4/NumSet.h"
+Path Rel Path = "vars.h"
+Path = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/vars.h"
 Exclude = False
 Project Flags = 0
 Folder = "Include Files"
+Folder Id = 1
 
 [File 0053]
 File Type = "User Interface Resource"
 Res Id = 53
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "NumSet.uir"
-Path = "/c/ADWinProgs/AdwinGUI V16.4.4/NumSet.uir"
+Path Rel Path = "AnalogControl.uir"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Analog"
+Path Line0002 = "Control.uir"
 Exclude = False
 Project Flags = 0
 Folder = "User Interface Files"
+Folder Id = 2
 
 [File 0054]
-File Type = "CSource"
+File Type = "User Interface Resource"
 Res Id = 54
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "Processor.c"
-Path = "/c/ADWinProgs/AdwinGUI V16.4.4/Processor.c"
+Path Rel Path = "AnalogSettings.uir"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Analog"
+Path Line0002 = "Settings.uir"
 Exclude = False
-Compile Into Object File = False
 Project Flags = 0
-Folder = "Source Files"
+Folder = "User Interface Files"
+Folder Id = 2
 
 [File 0055]
-File Type = "Include"
+File Type = "User Interface Resource"
 Res Id = 55
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "Processor.h"
-Path = "/c/ADWinProgs/AdwinGUI V16.4.4/Processor.h"
+Path Rel Path = "AnritsuControl.uir"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Anrits"
+Path Line0002 = "uControl.uir"
 Exclude = False
 Project Flags = 0
-Folder = "Include Files"
+Folder = "User Interface Files"
+Folder Id = 2
 
 [File 0056]
 File Type = "User Interface Resource"
 Res Id = 56
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "Processor.uir"
-Path = "/c/ADWinProgs/AdwinGUI V16.4.4/Processor.uir"
+Path Rel Path = "AnritsuSettings.uir"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Anrits"
+Path Line0002 = "uSettings.uir"
 Exclude = False
 Project Flags = 0
 Folder = "User Interface Files"
+Folder Id = 2
 
 [File 0057]
-File Type = "Include"
+File Type = "User Interface Resource"
 Res Id = 57
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "RabbitCom9858.h"
-Path = "/c/ADWinProgs/AdwinGUI V16.4.4/RabbitCom9858.h"
+Path Rel Path = "DDSControl.uir"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/DDSCon"
+Path Line0002 = "trol.uir"
 Exclude = False
 Project Flags = 0
-Folder = "Include Files"
+Folder = "User Interface Files"
+Folder Id = 2
 
 [File 0058]
-File Type = "CSource"
+File Type = "User Interface Resource"
 Res Id = 58
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "scan.c"
-Path = "/c/ADWinProgs/AdwinGUI V16.4.4/scan.c"
+Path Rel Path = "DDSSettings.uir"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/DDSSet"
+Path Line0002 = "tings.uir"
 Exclude = False
-Compile Into Object File = False
 Project Flags = 0
-Folder = "Source Files"
+Folder = "User Interface Files"
+Folder Id = 2
 
 [File 0059]
-File Type = "Include"
+File Type = "User Interface Resource"
 Res Id = 59
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "Scan.h"
-Path = "/c/ADWinProgs/AdwinGUI V16.4.4/Scan.h"
+Path Rel Path = "DigitalSettings.uir"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Digita"
+Path Line0002 = "lSettings.uir"
 Exclude = False
 Project Flags = 0
-Folder = "Include Files"
+Folder = "User Interface Files"
+Folder Id = 2
 
 [File 0060]
 File Type = "User Interface Resource"
 Res Id = 60
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "Scan.uir"
-Path = "/c/ADWinProgs/AdwinGUI V16.4.4/Scan.uir"
+Path Rel Path = "GPIB_SRS_SETUP.uir"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/GPIB_S"
+Path Line0002 = "RS_SETUP.uir"
 Exclude = False
 Project Flags = 0
 Folder = "User Interface Files"
+Folder Id = 2
 
 [File 0061]
-File Type = "Include"
+File Type = "User Interface Resource"
 Res Id = 61
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "scan2.h"
-Path = "/c/ADWinProgs/AdwinGUI V16.4.4/scan2.h"
+Path Rel Path = "GUIDesign.uir"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/GUIDes"
+Path Line0002 = "ign.uir"
 Exclude = False
 Project Flags = 0
-Folder = "Include Files"
+Folder = "User Interface Files"
+Folder Id = 2
 
 [File 0062]
-File Type = "CSource"
+File Type = "User Interface Resource"
 Res Id = 62
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "ScanTableLoader.c"
-Path = "/c/ADWinProgs/AdwinGUI V16.4.4/ScanTableLoader.c"
+Path Rel Path = "LaserControl.uir"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/LaserC"
+Path Line0002 = "ontrol.uir"
 Exclude = False
-Compile Into Object File = False
 Project Flags = 0
-Folder = "Source Files"
+Folder = "User Interface Files"
+Folder Id = 2
 
 [File 0063]
-File Type = "Include"
+File Type = "User Interface Resource"
 Res Id = 63
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "ScanTableLoader.h"
-Path = "/c/ADWinProgs/AdwinGUI V16.4.4/ScanTableLoader.h"
+Path Rel Path = "LaserSettings.uir"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/LaserS"
+Path Line0002 = "ettings.uir"
 Exclude = False
 Project Flags = 0
-Folder = "Include Files"
+Folder = "User Interface Files"
+Folder Id = 2
 
 [File 0064]
 File Type = "User Interface Resource"
 Res Id = 64
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "ScanTableLoader.uir"
-Path = "/c/ADWinProgs/AdwinGUI V16.4.4/ScanTableLoader.uir"
+Path Rel Path = "NumSet.uir"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/NumSet"
+Path Line0002 = ".uir"
 Exclude = False
 Project Flags = 0
 Folder = "User Interface Files"
+Folder Id = 2
 
 [File 0065]
-File Type = "Include"
+File Type = "User Interface Resource"
 Res Id = 65
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "ScanTableLoader2.h"
-Path = "/c/ADWinProgs/AdwinGUI V16.4.4/ScanTableLoader2.h"
+Path Rel Path = "Processor.uir"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Proces"
+Path Line0002 = "sor.uir"
 Exclude = False
 Project Flags = 0
-Folder = "Include Files"
+Folder = "User Interface Files"
+Folder Id = 2
 
 [File 0066]
-File Type = "Include"
+File Type = "User Interface Resource"
 Res Id = 66
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "vars.h"
-Path = "/c/ADWinProgs/AdwinGUI V16.4.4/vars.h"
+Path Rel Path = "Scan.uir"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Scan.u"
+Path Line0002 = "ir"
 Exclude = False
 Project Flags = 0
-Folder = "Include Files"
+Folder = "User Interface Files"
+Folder Id = 2
 
 [File 0067]
-File Type = "CSource"
+File Type = "User Interface Resource"
 Res Id = 67
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "VISA_SRS_SETUP.c"
-Path = "/c/ADWinProgs/AdwinGUI V16.4.4/VISA_SRS_SETUP.c"
+Path Rel Path = "ScanTableLoader.uir"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/ScanTa"
+Path Line0002 = "bleLoader.uir"
 Exclude = False
-Compile Into Object File = False
 Project Flags = 0
-Folder = "Source Files"
+Folder = "User Interface Files"
+Folder Id = 2
 
-[Folders]
-Instrument Files Folder Not Added Yet = True
-Folder 0 = "Source Files"
-Folder 1 = "Include Files"
-Folder 2 = "User Interface Files"
+[Custom Build Configs]
+Num Custom Build Configs = 0
+
+[Default Build Config Debug]
+Config Name = "Debug"
+Is 64-Bit = False
+Is Release = False
+Default Calling Convention = "cdecl"
+Optimization Level = "No optimizations"
+Require Prototypes = True
+Show Warning IDs in Build Output = False
+Selected Warning Level = "None"
+Warning List None = "4,9,41,84,105,106,107,108,109,110,111"
+Error List None = "41"
+Warning List Common = ""
+Error List Common = ""
+Warning List Extended = ""
+Error List Extended = ""
+Warning List All = ""
+Error List All = ""
+Warning Mode = 0
+Enable Unreferenced Identifiers Warning = False
+Enable Pointer Mismatch Warning = False
+Enable Unreachable Code Warning = False
+Enable Assignment In Conditional Warning = False
+Uninitialized Locals Compile Warning = "Aggressive"
+Require Return Values = True
+Enable C99 Extensions = False
+Enable OpenMP Extensions = False
+Stack Size = 16000000
+Stack Reserve = 16777216
+Stack Commit = 4096
+Image Base Address = 4194304
+Image Base Address x64 = 4194304
+Compiler Defines = "/DWIN32_LEAN_AND_MEAN"
+Sign = False
+Sign Store = ""
+Sign Certificate = ""
+Sign Timestamp URL = ""
+Sign URL = ""
+Manifest Embed = False
+Icon File Is Rel = False
+Icon File = ""
+Application Title = ""
+Use IVI Subdirectories for Import Libraries = False
+Use VXIPNP Subdirectories for Import Libraries = False
+Use Dflt Import Lib Base Name = True
+Where to Copy DLL = "Do not copy"
+Custom Directory to Copy DLL Is Rel = False
+Custom Directory to Copy DLL = ""
+Generate Source Documentation = "None"
+Runtime Support = "Full Runtime Support"
+Runtime Binding = "Shared"
+Embed Project .UIRs = True
+Generate Map File = False
+Embed Timestamp = True
+Create Console Application = False
+Using LoadExternalModule = True
+DLL Exports = "Include File Symbols"
+Register ActiveX Server = False
+Numeric File Version = "1,0,2,3"
+Numeric Prod Version = "1,0,2,3"
+Comments = ""
+Comments Ex = ""
+Company Name = "U of T"
+Company Name Ex = "U of T"
+File Version = "1.0.2.3"
+File Version Ex = "1.0.2.3"
+Legal Copyright = "Copyright © U of T, 2004"
+Legal Copyright Ex = "Copyright © U of T, 2004"
+Legal Trademarks = ""
+Legal Trademarks Ex = ""
+Private Build = ""
+Private Build Ex = ""
+Product Version = "16.0.1"
+Product Version Ex = "16.0.1"
+Special Build = ""
+Special Build Ex = ""
+Add Type Lib To DLL = False
+Include Type Lib Help Links = False
+TLB Help Style = "HLP"
+Type Lib FP File Is Rel = False
+Type Lib FP File = ""
+Add NI Type Info To DLL = False
+Use Single Header for NI Type Info = False
+Single Header NI Type Info File Is Rel = False
+Single Header NI Type Info File = ""
+
+[Default Build Config Release]
+Config Name = "Release"
+Is 64-Bit = False
+Is Release = True
+Default Calling Convention = "cdecl"
+Optimization Level = "No optimizations"
+Require Prototypes = True
+Show Warning IDs in Build Output = False
+Selected Warning Level = "None"
+Warning List None = "4,9,41,84,105,106,107,108,109,110,111"
+Error List None = "41"
+Warning List Common = ""
+Error List Common = ""
+Warning List Extended = ""
+Error List Extended = ""
+Warning List All = ""
+Error List All = ""
+Warning Mode = 0
+Enable Unreferenced Identifiers Warning = False
+Enable Pointer Mismatch Warning = False
+Enable Unreachable Code Warning = False
+Enable Assignment In Conditional Warning = False
+Uninitialized Locals Compile Warning = "Aggressive"
+Require Return Values = True
+Enable C99 Extensions = False
+Enable OpenMP Extensions = False
+Stack Size = 16000000
+Stack Reserve = 16777216
+Stack Commit = 4096
+Image Base Address = 4194304
+Image Base Address x64 = 4194304
+Compiler Defines = "/DWIN32_LEAN_AND_MEAN"
+Sign = False
+Sign Store = ""
+Sign Certificate = ""
+Sign Timestamp URL = ""
+Sign URL = ""
+Manifest Embed = False
+Icon File Is Rel = False
+Icon File = ""
+Application Title = ""
+Use IVI Subdirectories for Import Libraries = False
+Use VXIPNP Subdirectories for Import Libraries = False
+Use Dflt Import Lib Base Name = True
+Where to Copy DLL = "Do not copy"
+Custom Directory to Copy DLL Is Rel = False
+Custom Directory to Copy DLL = ""
+Generate Source Documentation = "None"
+Runtime Support = "Full Runtime Support"
+Runtime Binding = "Shared"
+Embed Project .UIRs = True
+Generate Map File = False
+Embed Timestamp = True
+Create Console Application = False
+Using LoadExternalModule = True
+DLL Exports = "Include File Symbols"
+Register ActiveX Server = False
+Numeric File Version = "1,0,2,3"
+Numeric Prod Version = "1,0,2,3"
+Comments = ""
+Comments Ex = ""
+Company Name = "U of T"
+Company Name Ex = "U of T"
+File Description = "GUIDesign (Release x86)"
+File Description Ex = "%application (%rel_dbg %arch)"
+File Version = "1.0.2.3"
+File Version Ex = "1.0.2.3"
+Internal Name = "GUIDesign"
+Internal Name Ex = "%basename"
+Legal Copyright = "Copyright © U of T, 2004"
+Legal Copyright Ex = "Copyright © U of T, 2004"
+Legal Trademarks = ""
+Legal Trademarks Ex = ""
+Original Filename = "GUIDesign.exe"
+Original Filename Ex = "%filename"
+Private Build = ""
+Private Build Ex = ""
+Product Name = " GUIDesign"
+Product Name Ex = "%company %application"
+Product Version = "16.0.1"
+Product Version Ex = "16.0.1"
+Special Build = ""
+Special Build Ex = ""
+Add Type Lib To DLL = False
+Include Type Lib Help Links = False
+TLB Help Style = "HLP"
+Type Lib FP File Is Rel = False
+Type Lib FP File = ""
+Add NI Type Info To DLL = False
+Use Single Header for NI Type Info = False
+Single Header NI Type Info File Is Rel = False
+Single Header NI Type Info File = ""
+
+[Default Build Config Debug64]
+Config Name = "Debug64"
+Is 64-Bit = True
+Is Release = False
+Default Calling Convention = "cdecl"
+Optimization Level = "No optimizations"
+Require Prototypes = True
+Show Warning IDs in Build Output = False
+Selected Warning Level = "None"
+Warning List None = "4,9,41,84,105,106,107,108,109,110,111"
+Error List None = "41"
+Warning List Common = ""
+Error List Common = ""
+Warning List Extended = ""
+Error List Extended = ""
+Warning List All = ""
+Error List All = ""
+Warning Mode = 0
+Enable Unreferenced Identifiers Warning = False
+Enable Pointer Mismatch Warning = False
+Enable Unreachable Code Warning = False
+Enable Assignment In Conditional Warning = False
+Uninitialized Locals Compile Warning = "Aggressive"
+Require Return Values = True
+Enable C99 Extensions = False
+Enable OpenMP Extensions = False
+Stack Size = 16000000
+Stack Reserve = 16777216
+Stack Commit = 4096
+Image Base Address = 4194304
+Image Base Address x64 = 4194304
+Compiler Defines = "/DWIN32_LEAN_AND_MEAN"
+Sign = False
+Sign Store = ""
+Sign Certificate = ""
+Sign Timestamp URL = ""
+Sign URL = ""
+Manifest Embed = False
+Icon File Is Rel = False
+Icon File = ""
+Application Title = ""
+Use IVI Subdirectories for Import Libraries = False
+Use VXIPNP Subdirectories for Import Libraries = False
+Use Dflt Import Lib Base Name = True
+Where to Copy DLL = "Do not copy"
+Custom Directory to Copy DLL Is Rel = False
+Custom Directory to Copy DLL = ""
+Generate Source Documentation = "None"
+Runtime Support = "Full Runtime Support"
+Runtime Binding = "Shared"
+Embed Project .UIRs = True
+Generate Map File = False
+Embed Timestamp = True
+Create Console Application = False
+Using LoadExternalModule = True
+DLL Exports = "Include File Symbols"
+Register ActiveX Server = False
+Numeric File Version = "1,0,2,3"
+Numeric Prod Version = "1,0,2,3"
+Comments = ""
+Comments Ex = ""
+Company Name = "U of T"
+Company Name Ex = "U of T"
+File Version = "1.0.2.3"
+File Version Ex = "1.0.2.3"
+Legal Copyright = "Copyright © U of T, 2004"
+Legal Copyright Ex = "Copyright © U of T, 2004"
+Legal Trademarks = ""
+Legal Trademarks Ex = ""
+Private Build = ""
+Private Build Ex = ""
+Product Version = "16.0.1"
+Product Version Ex = "16.0.1"
+Special Build = ""
+Special Build Ex = ""
+Add Type Lib To DLL = False
+Include Type Lib Help Links = False
+TLB Help Style = "HLP"
+Type Lib FP File Is Rel = False
+Type Lib FP File = ""
+Add NI Type Info To DLL = False
+Use Single Header for NI Type Info = False
+Single Header NI Type Info File Is Rel = False
+Single Header NI Type Info File = ""
+
+[Default Build Config Release64]
+Config Name = "Release64"
+Is 64-Bit = True
+Is Release = True
+Default Calling Convention = "cdecl"
+Optimization Level = "No optimizations"
+Require Prototypes = True
+Show Warning IDs in Build Output = False
+Selected Warning Level = "None"
+Warning List None = "4,9,41,84,105,106,107,108,109,110,111"
+Error List None = "41"
+Warning List Common = ""
+Error List Common = ""
+Warning List Extended = ""
+Error List Extended = ""
+Warning List All = ""
+Error List All = ""
+Warning Mode = 0
+Enable Unreferenced Identifiers Warning = False
+Enable Pointer Mismatch Warning = False
+Enable Unreachable Code Warning = False
+Enable Assignment In Conditional Warning = False
+Uninitialized Locals Compile Warning = "Aggressive"
+Require Return Values = True
+Enable C99 Extensions = False
+Enable OpenMP Extensions = False
+Stack Size = 16000000
+Stack Reserve = 16777216
+Stack Commit = 4096
+Image Base Address = 4194304
+Image Base Address x64 = 4194304
+Compiler Defines = "/DWIN32_LEAN_AND_MEAN"
+Sign = False
+Sign Store = ""
+Sign Certificate = ""
+Sign Timestamp URL = ""
+Sign URL = ""
+Manifest Embed = False
+Icon File Is Rel = False
+Icon File = ""
+Application Title = ""
+Use IVI Subdirectories for Import Libraries = False
+Use VXIPNP Subdirectories for Import Libraries = False
+Use Dflt Import Lib Base Name = True
+Where to Copy DLL = "Do not copy"
+Custom Directory to Copy DLL Is Rel = False
+Custom Directory to Copy DLL = ""
+Generate Source Documentation = "None"
+Runtime Support = "Full Runtime Support"
+Runtime Binding = "Shared"
+Embed Project .UIRs = True
+Generate Map File = False
+Embed Timestamp = True
+Create Console Application = False
+Using LoadExternalModule = True
+DLL Exports = "Include File Symbols"
+Register ActiveX Server = False
+Numeric File Version = "1,0,2,3"
+Numeric Prod Version = "1,0,2,3"
+Comments = ""
+Comments Ex = ""
+Company Name = "U of T"
+Company Name Ex = "U of T"
+File Version = "1.0.2.3"
+File Version Ex = "1.0.2.3"
+Legal Copyright = "Copyright © U of T, 2004"
+Legal Copyright Ex = "Copyright © U of T, 2004"
+Legal Trademarks = ""
+Legal Trademarks Ex = ""
+Private Build = ""
+Private Build Ex = ""
+Product Version = "16.0.1"
+Product Version Ex = "16.0.1"
+Special Build = ""
+Special Build Ex = ""
+Add Type Lib To DLL = False
+Include Type Lib Help Links = False
+TLB Help Style = "HLP"
+Type Lib FP File Is Rel = False
+Type Lib FP File = ""
+Add NI Type Info To DLL = False
+Use Single Header for NI Type Info = False
+Single Header NI Type Info File Is Rel = False
+Single Header NI Type Info File = ""
 
 [Compiler Options]
 Default Calling Convention = "cdecl"
@@ -777,52 +1271,91 @@ Enable Pointer Mismatch Warning = True
 Enable Unreachable Code Warning = True
 Enable Unreferenced Identifiers Warning = False
 Enable Assignment In Conditional Warning = False
-O Option Compatible With 5.0 = False
+Enable C99 Extensions = False
 Uninitialized Locals Compile Warning = "Conservative"
+Precompile Prefix Header = False
+Prefix Header File = ""
 
 [Run Options]
 Stack Size = 16000000
+Stack Commit = 4096
 Image Base Address = 4194304
+Image Base Address x64 = 4194304
 
 [Compiler Defines]
 Compiler Defines = "/DWIN32_LEAN_AND_MEAN"
 
 [Include Paths]
-Include Path 1 Is Rel = False
+Include Path 1 Is Rel = True
+Include Path 1 Rel To = "Project"
+Include Path 1 Rel Path = "../../../../../../../ADwin/Developer/C/LabWindowsCVI"
 Include Path 1 = "/c/ADwin/Developer/C/LabWindowsCVI"
-Include Path 2 Is Rel = False
+Include Path 2 Is Rel = True
+Include Path 2 Rel To = "Project"
+Include Path 2 Rel Path = "../../../../../../../ADwin/Developer/C"
 Include Path 2 = "/c/ADwin/Developer/C"
 
 [Create Executable]
 Executable File_Debug Is Rel = True
 Executable File_Debug Rel To = "Project"
 Executable File_Debug Rel Path = "GUIDesign_dbg.exe"
-Executable File_Debug = "/c/ADWinProgs/AdwinGUI V16.4.4/GUIDesign_dbg.exe"
+Executable File_Debug Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/GUIDes"
+Executable File_Debug Line0002 = "ign_dbg.exe"
 Executable File_Release Is Rel = True
 Executable File_Release Rel To = "Project"
 Executable File_Release Rel Path = "GUIDesign.exe"
-Executable File_Release = "/c/ADWinProgs/AdwinGUI V16.4.4/GUIDesign.exe"
+Executable File_Release Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/GUIDes"
+Executable File_Release Line0002 = "ign.exe"
+Executable File_Debug64 Is Rel = True
+Executable File_Debug64 Rel To = "Project"
+Executable File_Debug64 Rel Path = "GUIDesign.exe"
+Executable File_Debug64 Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/GUIDes"
+Executable File_Debug64 Line0002 = "ign.exe"
+Executable File_Release64 Is Rel = True
+Executable File_Release64 Rel To = "Project"
+Executable File_Release64 Rel Path = "GUIDesign.exe"
+Executable File_Release64 Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/GUIDes"
+Executable File_Release64 Line0002 = "ign.exe"
 Icon File Is Rel = False
 Icon File = ""
 Application Title = ""
 Numeric File Version = "1,0,2,3"
 Numeric Prod Version = "1,0,2,3"
 Comments = ""
+Comments Ex = ""
 Company Name = "U of T"
+Company Name Ex = "U of T"
+File Description = "GUIDesign (Release x86)"
+File Description Ex = "%application (%rel_dbg %arch)"
 File Version = "1.0.2.3"
+File Version Ex = "1.0.2.3"
+Internal Name = "GUIDesign"
+Internal Name Ex = "%basename"
 Legal Copyright = "Copyright © U of T, 2004"
+Legal Copyright Ex = "Copyright © U of T, 2004"
 Legal Trademarks = ""
+Legal Trademarks Ex = ""
+Original Filename = "GUIDesign.exe"
+Original Filename Ex = "%filename"
 Private Build = ""
+Private Build Ex = ""
+Product Name = " GUIDesign"
+Product Name Ex = "%company %application"
 Product Version = "16.0.1"
+Product Version Ex = "16.0.1"
 Special Build = ""
+Special Build Ex = ""
 DLL Exports = "Include File Symbols"
-DLL Import Library Choice = "Gen Lib For Current Mode"
 Use IVI Subdirectories for Import Libraries = False
 Use VXIPNP Subdirectories for Import Libraries = False
 Use Dflt Import Lib Base Name = True
 Where to Copy DLL = "Do not copy"
+Custom Directory to Copy DLL Is Rel = False
+Custom Directory to Copy DLL = ""
+Generate Source Documentation = "None"
 Add Type Lib To DLL = False
 Include Type Lib Help Links = False
+TLB Help Style = "HLP"
 Type Lib FP File Is Rel = False
 Type Lib FP File = ""
 Type Lib Guid = ""
@@ -852,4 +1385,21 @@ Include File = ""
 IDL File Is Rel = False
 IDL File = ""
 Register ActiveX Server = False
+
+[Signing Info]
+Sign = False
+Sign Debug Build = False
+Store = ""
+Certificate = ""
+Timestamp URL = ""
+URL = ""
+
+[Manifest Info]
+Embed = False
+
+[tpcSection]
+tpcEnabled = 0
+tpcOverrideEnvironment = 0
+tpcEnabled x64 = 0
+tpcOverrideEnvironment x64 = 0
 

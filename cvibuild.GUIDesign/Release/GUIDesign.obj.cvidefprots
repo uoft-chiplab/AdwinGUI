@@ -1,615 +1,615 @@
 [CMD_RUN_CALLBACK]
 Class="Function"
 Prototype="int CMD_RUN_CALLBACK(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:70:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:70:1"
 
 [CMD_SCAN_CALLBACK]
 Class="Function"
 Prototype="int CMD_SCAN_CALLBACK(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:105:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:105:1"
 
 [SetupScanFiles]
 Class="Function"
 Prototype="int SetupScanFiles(int version, char *outputCmdsDirPath);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:167:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:167:1"
 
 [TIMER_CALLBACK]
 Class="Function"
 Prototype="int TIMER_CALLBACK(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:459:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:459:1"
 
 [CMDSTOP_CALLBACK]
 Class="Function"
 Prototype="int CMDSTOP_CALLBACK(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:548:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:548:1"
 
 [VALS_CHANGED_CALLBACK]
 Class="Function"
 Prototype="int VALS_CHANGED_CALLBACK(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:620:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:620:1"
 
 [RunOnce]
 Class="Function"
 Prototype="void RunOnce();"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:637:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:637:1"
 
 [BuildUpdateList]
 Class="Function"
 Prototype="void BuildUpdateList(double TMatrix[], struct AnVals AMat[41][500], int DMat[49][500], struct ddsoptions_struct DDSArray[500], struct ddsoptions_struct DDS2Array[500], struct dds3options_struct DDS3Array[500], unsigned int LaserTriggerArray[4][500], int numtimes, int forceBuild);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:895:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:895:1"
 
 [CalcFcnValue]
 Class="Function"
 Prototype="double CalcFcnValue(int fcn, double Vinit, double Vfinal, double timescale, double telapsed, double celltime);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:1540:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:1540:1"
 
 [OptimizeTimeLoop]
 Class="Function"
 Prototype="void OptimizeTimeLoop(int *UpdateNum, int count, int *newcount);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:1611:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:1611:1"
 
 [UpdateScanValue]
 Class="Function"
 Prototype="void UpdateScanValue(int Reset);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:1684:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:1684:1"
 
 [UpdateScan1Value]
 Class="Function"
 Prototype="void UpdateScan1Value(int Reset);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:1707:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:1707:1"
 
 [UpdateScan2Value]
 Class="Function"
 Prototype="void UpdateScan2Value(int Reset);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:1955:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:1955:1"
 
 [UpdateMultiScanValues]
 Class="Function"
 Prototype="void UpdateMultiScanValues(int Reset);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:2294:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:2294:1"
 
 [GetNewMultiScanCommands]
 Class="Function"
 Prototype="void GetNewMultiScanCommands();"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:2941:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:2941:1"
 
 [updateScannedCellsWithScanTableLine]
 Class="Function"
 Prototype="void updateScannedCellsWithScanTableLine(int scanTableLine);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:3378:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:3378:1"
 
 [updateScannedCellsWithOriginalValues]
 Class="Function"
 Prototype="void updateScannedCellsWithOriginalValues();"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:3459:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:3459:1"
 
 [writeToScanInfoFile]
 Class="Function"
 Prototype="void writeToScanInfoFile();"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:3537:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:3537:1"
 
 [LoadSettings]
 Class="Function"
 Prototype="void LoadSettings(int version);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:3638:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:3638:1"
 
 [LoadLastSettings]
 Class="Function"
 Prototype="void LoadLastSettings(int check);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:3704:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:3704:1"
 
 [SaveSettings]
 Class="Function"
 Prototype="void SaveSettings(int version);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:3742:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:3742:1"
 
 [DrawNewTable]
 Class="Function"
 Prototype="void DrawNewTable(int isdimmed);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:3810:2"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:3810:2"
 
 [ANALOGSET_CALLBACK]
 Class="Function"
 Prototype="void ANALOGSET_CALLBACK(int menuBar, int menuItem, void *callbackData, int panel);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:4260:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:4260:1"
 
 [ANRITSUSET_CALLBACK]
 Class="Function"
 Prototype="void ANRITSUSET_CALLBACK(int menuBar, int menuItem, void *callbackData, int panel);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:4292:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:4292:1"
 
 [DIGITALSET_CALLBACK]
 Class="Function"
 Prototype="void DIGITALSET_CALLBACK(int menuBar, int menuItem, void *callbackData, int panel);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:4301:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:4301:1"
 
 [PROCESSOR_CALLBACK]
 Class="Function"
 Prototype="void PROCESSOR_CALLBACK(int menuBar, int menuItem, void *callbackData, int panel);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:4309:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:4309:1"
 
 [MENU_CALLBACK]
 Class="Function"
 Prototype="void MENU_CALLBACK(int menuBar, int menuItem, void *callbackData, int panel);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:4317:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:4317:1"
 
 [ANALOGTABLE_CALLBACK]
 Class="Function"
 Prototype="int ANALOGTABLE_CALLBACK(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:4330:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:4330:1"
 
 [GetPage]
 Class="Function"
 Prototype="int GetPage();"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:4394:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:4394:1"
 
 [DrawLoopIndicators]
 Class="Function"
 Prototype="void DrawLoopIndicators();"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:4401:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:4401:1"
 
 [TOGGLE_ALL_CALLBACK]
 Class="Function"
 Prototype="int TOGGLE_ALL_CALLBACK(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:4472:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:4472:1"
 
 [CheckActivePages]
 Class="Function"
 Prototype="void CheckActivePages();"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:4529:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:4529:1"
 
 [DIGTABLE_CALLBACK]
 Class="Function"
 Prototype="int DIGTABLE_CALLBACK(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:4557:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:4557:1"
 
 [TIMETABLE_CALLBACK]
 Class="Function"
 Prototype="int TIMETABLE_CALLBACK(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:4588:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:4588:1"
 
 [INFOTABLE_CALLBACK]
 Class="Function"
 Prototype="int INFOTABLE_CALLBACK(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:4640:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:4640:1"
 
 [TITLE1_CALLBACK]
 Class="Function"
 Prototype="void TITLE1_CALLBACK(int menuBar, int menuItem, void *callbackData, int panel);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:4660:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:4660:1"
 
 [TITLE2_CALLBACK]
 Class="Function"
 Prototype="void TITLE2_CALLBACK(int menuBar, int menuItem, void *callbackData, int panel);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:4673:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:4673:1"
 
 [TITLE3_CALLBACK]
 Class="Function"
 Prototype="void TITLE3_CALLBACK(int menuBar, int menuItem, void *callbackData, int panel);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:4686:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:4686:1"
 
 [TITLE4_CALLBACK]
 Class="Function"
 Prototype="void TITLE4_CALLBACK(int menuBar, int menuItem, void *callbackData, int panel);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:4699:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:4699:1"
 
 [TITLE5_CALLBACK]
 Class="Function"
 Prototype="void TITLE5_CALLBACK(int menuBar, int menuItem, void *callbackData, int panel);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:4712:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:4712:1"
 
 [TITLE6_CALLBACK]
 Class="Function"
 Prototype="void TITLE6_CALLBACK(int menuBar, int menuItem, void *callbackData, int panel);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:4725:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:4725:1"
 
 [TITLE7_CALLBACK]
 Class="Function"
 Prototype="void TITLE7_CALLBACK(int menuBar, int menuItem, void *callbackData, int panel);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:4738:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:4738:1"
 
 [TITLE8_CALLBACK]
 Class="Function"
 Prototype="void TITLE8_CALLBACK(int menuBar, int menuItem, void *callbackData, int panel);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:4751:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:4751:1"
 
 [TITLE9_CALLBACK]
 Class="Function"
 Prototype="void TITLE9_CALLBACK(int menuBar, int menuItem, void *callbackData, int panel);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:4764:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:4764:1"
 
 [TITLEX_CALLBACK]
 Class="Function"
 Prototype="void TITLEX_CALLBACK(int menuBar, int menuItem, void *callbackData, int panel);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:4777:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:4777:1"
 
 [SETGD5_CALLBACK]
 Class="Function"
 Prototype="void SETGD5_CALLBACK(int menuBar, int menuItem, void *callbackData, int panel);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:4791:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:4791:1"
 
 [SETGD10_CALLBACK]
 Class="Function"
 Prototype="void SETGD10_CALLBACK(int menuBar, int menuItem, void *callbackData, int panel);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:4805:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:4805:1"
 
 [SETGD15_CALLBACK]
 Class="Function"
 Prototype="void SETGD15_CALLBACK(int menuBar, int menuItem, void *callbackData, int panel);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:4818:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:4818:1"
 
 [SETGD25_CALLBACK]
 Class="Function"
 Prototype="void SETGD25_CALLBACK(int menuBar, int menuItem, void *callbackData, int panel);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:4831:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:4831:1"
 
 [SETGD50_CALLBACK]
 Class="Function"
 Prototype="void SETGD50_CALLBACK(int menuBar, int menuItem, void *callbackData, int panel);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:4844:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:4844:1"
 
 [SETGD100_CALLBACK]
 Class="Function"
 Prototype="void SETGD100_CALLBACK(int menuBar, int menuItem, void *callbackData, int panel);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:4857:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:4857:1"
 
 [SETGD1000_CALLBACK]
 Class="Function"
 Prototype="void SETGD1000_CALLBACK(int menuBar, int menuItem, void *callbackData, int panel);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:4870:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:4870:1"
 
 [BOOTADWIN_CALLBACK]
 Class="Function"
 Prototype="void BOOTADWIN_CALLBACK(int menuBar, int menuItem, void *callbackData, int panel);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:4885:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:4885:1"
 
 [BOOTLOAD_CALLBACK]
 Class="Function"
 Prototype="void BOOTLOAD_CALLBACK(int menuBar, int menuItem, void *callbackData, int panel);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:4908:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:4908:1"
 
 [CLEARPANEL_CALLBACK]
 Class="Function"
 Prototype="void CLEARPANEL_CALLBACK(int menuBar, int menuItem, void *callbackData, int panel);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:4918:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:4918:1"
 
 [INSERTCOLUMN_CALLBACK]
 Class="Function"
 Prototype="void INSERTCOLUMN_CALLBACK(int menuBar, int menuItem, void *callbackData, int panel);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:4959:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:4959:1"
 
 [DELETECOLUMN_CALLBACK]
 Class="Function"
 Prototype="void DELETECOLUMN_CALLBACK(int menuBar, int menuItem, void *callbackData, int panel);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:4978:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:4978:1"
 
 [ShiftColumn3]
 Class="Function"
 Prototype="void ShiftColumn3(int col, int page, int dir);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:4999:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:4999:1"
 
 [COPYCOLUMN_CALLBACK]
 Class="Function"
 Prototype="void COPYCOLUMN_CALLBACK(int menuBar, int menuItem, void *callbackData, int panel);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:5123:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:5123:1"
 
 [PASTECOLUMN_CALLBACK]
 Class="Function"
 Prototype="void PASTECOLUMN_CALLBACK(int menuBar, int menuItem, void *callbackData, int panel);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:5185:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:5185:1"
 
 [TGLNUMERIC_CALLBACK]
 Class="Function"
 Prototype="int TGLNUMERIC_CALLBACK(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:5249:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:5249:1"
 
 [DDSSETUP_CALLBACK]
 Class="Function"
 Prototype="void DDSSETUP_CALLBACK(int menuBar, int menuItem, void *callbackData, int panel);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:5275:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:5275:1"
 
 [LASERSET_CALLBACK]
 Class="Function"
 Prototype="void LASERSET_CALLBACK(int menubar, int menuItem, void *callbackData, int panel);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:5283:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:5283:1"
 
 [LoadArraysV16]
 Class="Function"
 Prototype="int LoadArraysV16(char savedname[500], int csize);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:5292:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:5292:1"
 
 [LoadArraysV15]
 Class="Function"
 Prototype="void LoadArraysV15(char savedname[500], int csize);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:5447:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:5447:1"
 
 [LoadArraysV13]
 Class="Function"
 Prototype="void LoadArraysV13(char savedname[500], int csize);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:5602:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:5602:1"
 
 [SaveArraysV16]
 Class="Function"
 Prototype="void SaveArraysV16(char savedname[500], int csize);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:5763:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:5763:1"
 
 [SaveArraysV15]
 Class="Function"
 Prototype="void SaveArraysV15(char savedname[500], int csize);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:5876:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:5876:1"
 
 [SaveLaserData]
 Class="Function"
 Prototype="void SaveLaserData(char savedname[500], int nameSize);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:5975:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:5975:1"
 
 [LoadLaserData]
 Class="Function"
 Prototype="void LoadLaserData(char savedname[500], int nameSize);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:6003:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:6003:1"
 
 [DISPLAYDIAL_CALLBACK]
 Class="Function"
 Prototype="int DISPLAYDIAL_CALLBACK(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:6033:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:6033:1"
 
 [ReshapeAnalogTable]
 Class="Function"
 Prototype="void ReshapeAnalogTable(int top, int left, int height);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:6063:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:6063:1"
 
 [EnableScanControls]
 Class="Function"
 Prototype="void EnableScanControls();"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:6126:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:6126:1"
 
 [ReshapeMultiScanTable]
 Class="Function"
 Prototype="void ReshapeMultiScanTable(int top, int left, int height);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:6189:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:6189:1"
 
 [ReshapeDigitalTable]
 Class="Function"
 Prototype="void ReshapeDigitalTable(int top, int left, int height);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:6252:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:6252:1"
 
 [SetDisplayType]
 Class="Function"
 Prototype="void SetDisplayType(int display_setting);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:6289:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:6289:1"
 
 [SetChannelDisplayed]
 Class="Function"
 Prototype="void SetChannelDisplayed(int display_setting);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:6332:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:6332:1"
 
 [CheckIfWithinLimits]
 Class="Function"
 Prototype="double CheckIfWithinLimits(double OutputVoltage, int linenumber);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:6405:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:6405:1"
 
 [RESETZERO_CALLBACK]
 Class="Function"
 Prototype="void RESETZERO_CALLBACK(int menuBar, int menuItem, void *callbackData, int panel);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:6415:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:6415:1"
 
 [SaveLastGuiSettings]
 Class="Function"
 Prototype="void SaveLastGuiSettings();"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:6425:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:6425:1"
 
 [EXPORT_PANEL_CALLBACK]
 Class="Function"
 Prototype="void EXPORT_PANEL_CALLBACK(int menuBar, int menuItem, void *callbackData, int panel);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:6439:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:6439:1"
 
 [ExportPanel]
 Class="Function"
 Prototype="void ExportPanel(char fexportname[200], int fnamesize);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:6449:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:6449:1"
 
 [CONFIG_EXPORT_CALLBACK]
 Class="Function"
 Prototype="void CONFIG_EXPORT_CALLBACK(int menuBar, int menuItem, void *callbackData, int panel);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:6575:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:6575:1"
 
 [MENU_ALLLOW_CALLBACK]
 Class="Function"
 Prototype="void MENU_ALLLOW_CALLBACK(int menuBar, int menuItem, void *callbackData, int panel);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:6623:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:6623:1"
 
 [MENU_HOLD_CALLBACK]
 Class="Function"
 Prototype="void MENU_HOLD_CALLBACK(int menuBar, int menuItem, void *callbackData, int panel);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:6629:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:6629:1"
 
 [MENU_BYCHANNEL_CALLBACK]
 Class="Function"
 Prototype="void MENU_BYCHANNEL_CALLBACK(int menuBar, int menuItem, void *callbackData, int panel);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:6635:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:6635:1"
 
 [NUM_INSERTIONPAGE_CALLBACK]
 Class="Function"
 Prototype="int NUM_INSERTIONPAGE_CALLBACK(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:6642:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:6642:1"
 
 [NUM_INSERTIONCOL_CALLBACK]
 Class="Function"
 Prototype="int NUM_INSERTIONCOL_CALLBACK(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:6653:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:6653:1"
 
 [COMPRESSION_CALLBACK]
 Class="Function"
 Prototype="void COMPRESSION_CALLBACK(int menuBar, int menuItem, void *callbackData, int panel);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:6665:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:6665:1"
 
 [SHOWARRAY_CALLBACK]
 Class="Function"
 Prototype="void SHOWARRAY_CALLBACK(int menuBar, int menuItem, void *callbackData, int panel);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:6681:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:6681:1"
 
 [DDS_OFF_CALLBACK]
 Class="Function"
 Prototype="void DDS_OFF_CALLBACK(int menuBar, int menuItem, void *callbackData, int panel);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:6698:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:6698:1"
 
 [SIMPLETIMING_CALLBACK]
 Class="Function"
 Prototype="void SIMPLETIMING_CALLBACK(int menuBar, int menuItem, void *callbackData, int panel);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:6713:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:6713:1"
 
 [SCANSETTING_CALLBACK]
 Class="Function"
 Prototype="void SCANSETTING_CALLBACK(int menuBar, int menuItem, void *callbackData, int panel);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:6729:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:6729:1"
 
 [NOTECHECK_CALLBACK]
 Class="Function"
 Prototype="void NOTECHECK_CALLBACK(int menuBar, int menuItem, void *callbackData, int panel);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:6738:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:6738:1"
 
 [COMFILE_CALLBACK]
 Class="Function"
 Prototype="void COMFILE_CALLBACK(int menuBar, int menuItem, void *callbackData, int panel);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:6757:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:6757:1"
 
 [STREAM_CALLBACK]
 Class="Function"
 Prototype="void STREAM_CALLBACK(int menuBar, int menuItem, void *callbackData, int panel);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:6764:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:6764:1"
 
 [ExportScanBuffer]
 Class="Function"
 Prototype="void ExportScanBuffer();"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:6777:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:6777:1"
 
 [ExportScan2Buffer]
 Class="Function"
 Prototype="void ExportScan2Buffer();"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:6822:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:6822:1"
 
 [AutoExportMultiScanBuffer]
 Class="Function"
 Prototype="void AutoExportMultiScanBuffer();"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:6871:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:6871:1"
 
 [ExportMultiScanBuffer]
 Class="Function"
 Prototype="void ExportMultiScanBuffer();"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:7014:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:7014:1"
 
 [MoveCanvasStart]
 Class="Function"
 Prototype="void MoveCanvasStart(int XPos, int IsVisible);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:7097:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:7097:1"
 
 [MoveCanvasEnd]
 Class="Function"
 Prototype="void MoveCanvasEnd(int XPos, int IsVisible);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:7107:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:7107:1"
 
 [MULTICSAN_NUM_CALLBACK]
 Class="Function"
 Prototype="int MULTICSAN_NUM_CALLBACK(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:7120:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:7120:1"
 
 [MULTISCAN_NUMROWS_CALLBACK]
 Class="Function"
 Prototype="int MULTISCAN_NUMROWS_CALLBACK(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:7152:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:7152:1"
 
 [SWITCH_LOOP_CALLBACK]
 Class="Function"
 Prototype="int SWITCH_LOOP_CALLBACK(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:7184:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:7184:1"
 
 [Dig_Cell_Copy]
 Class="Function"
 Prototype="void Dig_Cell_Copy(int panelHandle, int controlID, int MenuItemID, void *callbackData);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:7245:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:7245:1"
 
 [Dig_Cell_Paste]
 Class="Function"
 Prototype="void Dig_Cell_Paste(int panelHandle, int controlID, int MenuItemID, void *callbackData);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:7258:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:7258:1"
 
 [Analog_Cell_Copy]
 Class="Function"
 Prototype="void Analog_Cell_Copy(int panelHandle, int controlID, int MenuItemID, void *callbackData);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:7297:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:7297:1"
 
 [Analog_Cell_Paste]
 Class="Function"
 Prototype="void Analog_Cell_Paste(int panelHandle, int controlID, int MenuItemID, void *callbackData);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:7332:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:7332:1"
 
 [MultiScan_AddCellToScan]
 Class="Function"
 Prototype="void MultiScan_AddCellToScan(int panelHandle, int controlID, int MenuItemID, void *callbackData);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:7451:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:7451:1"
 
 [MultiScan_AddAnalogCellTimeScaleToScan]
 Class="Function"
 Prototype="void MultiScan_AddAnalogCellTimeScaleToScan(int panelHandle, int controlID, int MenuItemID, void *callbackData);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:7493:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:7493:1"
 
 [DDS_OFFSET_CALLBACK]
 Class="Function"
 Prototype="int DDS_OFFSET_CALLBACK(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:7528:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:7528:1"
 
 [MultiScan_Table_SetVals]
 Class="Function"
 Prototype="void MultiScan_Table_SetVals(int panelHandle, int controlID, int MenuItemID, void *callbackData);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:7576:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:7576:1"
 
 [MultiScan_Table_DeleteColumn]
 Class="Function"
 Prototype="void MultiScan_Table_DeleteColumn(int panelHandle, int controlID, int MenuItemID, void *callbackData);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:7588:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:7588:1"
 
 [MultiScan_Table_Shuffle]
 Class="Function"
 Prototype="void MultiScan_Table_Shuffle(int panelHandle, int controlID, int MenuItemID, void *callbackData);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:7625:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:7625:1"
 
 [EXIT]
 Class="Function"
 Prototype="void EXIT(int menuBar, int menuItem, void *callbackData, int panel);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:7697:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:7697:1"
 
 [Scan_Table_Load]
 Class="Function"
 Prototype="void Scan_Table_Load(int panelHandle, int controlID, int MenuItemID, void *callbackData);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:7708:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:7708:1"
 
 [Scan_Table_NumSet_Load]
 Class="Function"
 Prototype="void Scan_Table_NumSet_Load(int panelHandle, int controlID, int MenuItemID, void *callbackData);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:7716:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:7716:1"
 
 [Scan_Table_Shuffle]
 Class="Function"
 Prototype="void Scan_Table_Shuffle(int panelHandle, int controlID, int MenuItemID, void *callbackData);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:7722:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:7722:1"
 
 [findLastVal]
 Class="Function"
 Prototype="double findLastVal(int row, int column, int page);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:7768:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:7768:1"
 
 [SeqError]
 Class="Function"
 Prototype="void SeqError(char *msg);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:7879:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:7879:1"
 
 [int_power]
 Class="Function"
 Prototype="int int_power(int base, int power);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:7888:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:7888:1"
 
 [GPIB_SRS_CALLBACK]
 Class="Function"
 Prototype="void GPIB_SRS_CALLBACK(int menuBar, int menuItem, void *callbackData, int panel);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\GUIDesign.c:7897:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:7897:1"
 

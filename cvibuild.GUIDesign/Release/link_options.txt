@@ -1,35 +1,35 @@
 -nologo
--out:d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\cvibuild.GUIDesign\Release\GUIDesign.exe
+-out:c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\cvibuild.GUIDesign\Release\GUIDesign.exe
 -arch:x86
 -timestamp
 -loadextmod
--res:d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\cvibuild.GUIDesign\Release\resources.res
+-res:c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\cvibuild.GUIDesign\Release\resources.res
 -entry:_CVIWinMainStartupCode@0
 -base:0x400000
--linked:d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\cvibuild.GUIDesign\Release\linkersummary.txt
--dlldeps:d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\cvibuild.GUIDesign\Release\dlldependencies.txt
--licensing:d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\cvibuild.GUIDesign\Release\linkerlicensing.txt
--browsedeps:d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\cvibuild.GUIDesign\Release\moduledependencies.txt
+-linked:c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\cvibuild.GUIDesign\Release\linkersummary.txt
+-dlldeps:c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\cvibuild.GUIDesign\Release\dlldependencies.txt
+-licensing:c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\cvibuild.GUIDesign\Release\linkerlicensing.txt
+-browsedeps:c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\cvibuild.GUIDesign\Release\moduledependencies.txt
 -stackreserve:16777216
 -stackcommit:4096
--in:d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\cvibuild.GUIDesign\Release\Adwin.obj
--in:d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\cvibuild.GUIDesign\Release\AnalogControl.obj
--in:d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\cvibuild.GUIDesign\Release\AnalogSettings.obj
--in:d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\cvibuild.GUIDesign\Release\AnritsuCommands.obj
--in:d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\cvibuild.GUIDesign\Release\DDSControl.obj
--in:d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\cvibuild.GUIDesign\Release\DDSSettings.obj
--in:d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\cvibuild.GUIDesign\Release\ddstranslator.obj
--in:d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\cvibuild.GUIDesign\Release\DigitalSettings.obj
--in:d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\cvibuild.GUIDesign\Release\GUIDesign.obj
--in:d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\cvibuild.GUIDesign\Release\LaserControl.obj
--in:d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\cvibuild.GUIDesign\Release\LaserSettings.obj
--in:d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\cvibuild.GUIDesign\Release\LaserTuning.obj
--in:d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\cvibuild.GUIDesign\Release\main.obj
--in:d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\cvibuild.GUIDesign\Release\NumSet.obj
--in:d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\cvibuild.GUIDesign\Release\Processor.obj
--in:d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\cvibuild.GUIDesign\Release\scan.obj
--in:d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\cvibuild.GUIDesign\Release\ScanTableLoader.obj
--in:d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\cvibuild.GUIDesign\Release\VISA_SRS_SETUP.obj
+-in:c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\cvibuild.GUIDesign\Release\Adwin.obj
+-in:c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\cvibuild.GUIDesign\Release\AnalogControl.obj
+-in:c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\cvibuild.GUIDesign\Release\AnalogSettings.obj
+-in:c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\cvibuild.GUIDesign\Release\AnritsuCommands.obj
+-in:c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\cvibuild.GUIDesign\Release\DDSControl.obj
+-in:c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\cvibuild.GUIDesign\Release\DDSSettings.obj
+-in:c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\cvibuild.GUIDesign\Release\ddstranslator.obj
+-in:c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\cvibuild.GUIDesign\Release\DigitalSettings.obj
+-in:c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\cvibuild.GUIDesign\Release\GUIDesign.obj
+-in:c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\cvibuild.GUIDesign\Release\LaserControl.obj
+-in:c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\cvibuild.GUIDesign\Release\LaserSettings.obj
+-in:c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\cvibuild.GUIDesign\Release\LaserTuning.obj
+-in:c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\cvibuild.GUIDesign\Release\main.obj
+-in:c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\cvibuild.GUIDesign\Release\NumSet.obj
+-in:c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\cvibuild.GUIDesign\Release\Processor.obj
+-in:c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\cvibuild.GUIDesign\Release\scan.obj
+-in:c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\cvibuild.GUIDesign\Release\ScanTableLoader.obj
+-in:c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\cvibuild.GUIDesign\Release\VISA_SRS_SETUP.obj
 -more:c:\program files (x86)\national instruments\cvi2019\bin\msvc\cvistart.lib
 -more:c:\program files (x86)\national instruments\cvi2019\bin\msvc\cvi.lib
 -more:c:\Program Files (x86)\National Instruments\CVI2019\bin\msvc\advanlys.lib

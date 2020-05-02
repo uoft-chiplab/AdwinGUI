@@ -1,105 +1,105 @@
 [CALLBACK_SCANOK]
 Class="Function"
 Prototype="int CALLBACK_SCANOK(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\scan.c:15:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\scan.c:15:1"
 
 [InitializeScanPanel]
 Class="Function"
 Prototype="void InitializeScanPanel();"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\scan.c:32:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\scan.c:32:1"
 
 [ReadScanValues]
 Class="Function"
 Prototype="void ReadScanValues();"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\scan.c:84:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\scan.c:84:1"
 
 [CALLBACK_SCAN_CANCEL]
 Class="Function"
 Prototype="int CALLBACK_SCAN_CANCEL(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\scan.c:136:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\scan.c:136:1"
 
 [CALLBACK_TIMESCANOK]
 Class="Function"
 Prototype="int CALLBACK_TIMESCANOK(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\scan.c:152:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\scan.c:152:1"
 
 [CALLBACK_DDSSCANOK]
 Class="Function"
 Prototype="int CALLBACK_DDSSCANOK(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\scan.c:169:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\scan.c:169:1"
 
 [CALLBACK_DDSFLOORSCANOK]
 Class="Function"
 Prototype="int CALLBACK_DDSFLOORSCANOK(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\scan.c:186:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\scan.c:186:1"
 
 [CALLBACK_LASSCANOK]
 Class="Function"
 Prototype="int CALLBACK_LASSCANOK(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\scan.c:201:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\scan.c:201:1"
 
 [CMD_GETSCANVALS_CALLBACK]
 Class="Function"
 Prototype="int CMD_GETSCANVALS_CALLBACK(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\scan.c:216:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\scan.c:216:1"
 
 [CHECK_USE_LIST_CALLBACK]
 Class="Function"
 Prototype="int CHECK_USE_LIST_CALLBACK(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\scan.c:279:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\scan.c:279:1"
 
 [CALLBACK_SRSSCANOK]
 Class="Function"
 Prototype="int CALLBACK_SRSSCANOK(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\scan.c:291:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\scan.c:291:1"
 
 [CHECK_2PARAM_CALLBACK]
 Class="Function"
 Prototype="int CHECK_2PARAM_CALLBACK(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\scan.c:305:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\scan.c:305:1"
 
 [CALLBACK_SCANOK2]
 Class="Function"
 Prototype="int CALLBACK_SCANOK2(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\scan.c:325:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\scan.c:325:1"
 
 [CALLBACK_TIMESCANOK2]
 Class="Function"
 Prototype="int CALLBACK_TIMESCANOK2(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\scan.c:339:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\scan.c:339:1"
 
 [CALLBACK_DDSSCANOK2]
 Class="Function"
 Prototype="int CALLBACK_DDSSCANOK2(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\scan.c:353:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\scan.c:353:1"
 
 [CALLBACK_LASSCANOK2]
 Class="Function"
 Prototype="int CALLBACK_LASSCANOK2(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\scan.c:367:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\scan.c:367:1"
 
 [CALLBACK_DDSFLOORSCANOK2]
 Class="Function"
 Prototype="int CALLBACK_DDSFLOORSCANOK2(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\scan.c:381:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\scan.c:381:1"
 
 [CALLBACK_SRSSCANOK2]
 Class="Function"
 Prototype="int CALLBACK_SRSSCANOK2(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\scan.c:395:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\scan.c:395:1"
 
 [CMD_GETSCANVALS_CALLBACK2]
 Class="Function"
 Prototype="int CMD_GETSCANVALS_CALLBACK2(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\scan.c:409:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\scan.c:409:1"
 
 [MULTISCAN_CHK]
 Class="Function"
 Prototype="int MULTISCAN_CHK(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\scan.c:476:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\scan.c:476:1"
 
 [CALLBACK_DONESCANSETUP]
 Class="Function"
 Prototype="int CALLBACK_DONESCANSETUP(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\scan.c:508:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\scan.c:508:1"
 

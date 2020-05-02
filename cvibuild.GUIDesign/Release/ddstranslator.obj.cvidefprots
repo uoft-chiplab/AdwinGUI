@@ -1,20 +1,20 @@
 [free_dds_cmd_sequence]
 Class="Function"
 Prototype="void free_dds_cmd_sequence(struct dds_cmd_sequence_struct *dead_cmds);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\ddstranslator.c:48:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\ddstranslator.c:48:1"
 
 [get_dds_cmd]
 Class="Function"
 Prototype="int get_dds_cmd(struct dds_cmd_sequence_struct *cmd_sequence, unsigned long event_index);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\ddstranslator.c:64:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\ddstranslator.c:64:1"
 
 [create_ad9852_cmd_sequence]
 Class="Function"
 Prototype="struct dds_cmd_sequence_struct *create_ad9852_cmd_sequence(struct ddsoptions_struct *dds_settings, unsigned long num_settings, unsigned int PLL_multiplier, double refclk, double adwin_event_period);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\ddstranslator.c:1188:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\ddstranslator.c:1188:1"
 
 [create_ad9858_cmd_sequence]
 Class="Function"
 Prototype="struct dds_cmd_sequence_struct *create_ad9858_cmd_sequence(struct ddsoptions_struct *dds_settings, unsigned long num_settings, double refclk, double adwin_event_period, double frequency_offset);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\ddstranslator.c:1271:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\ddstranslator.c:1271:1"
 

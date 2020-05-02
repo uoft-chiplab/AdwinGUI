@@ -1,25 +1,25 @@
 [SETFREQ_CALLBACK]
 Class="Function"
 Prototype="int SETFREQ_CALLBACK(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\DDSSettings.c:9:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\DDSSettings.c:9:1"
 
 [SETPLL_CALLBACK]
 Class="Function"
 Prototype="int SETPLL_CALLBACK(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\DDSSettings.c:23:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\DDSSettings.c:23:1"
 
 [DDSDONE_CALLBACK]
 Class="Function"
 Prototype="int DDSDONE_CALLBACK(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\DDSSettings.c:36:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\DDSSettings.c:36:1"
 
 [LoadDDSSettings]
 Class="Function"
 Prototype="void LoadDDSSettings();"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\DDSSettings.c:53:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\DDSSettings.c:53:1"
 
 [SaveDDSSettings]
 Class="Function"
 Prototype="void SaveDDSSettings();"
-SourceLocation="d:\LocalCode\ADwin_sequencers\AdwinGUI V16.4.7_beta\DDSSettings.c:66:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\DDSSettings.c:66:1"
 
