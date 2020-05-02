@@ -1,15 +1,20 @@
+/*
+The file that starts everything off.
+*/
+
+
+#define ALLOC_GLOBALS
+#define VAR_DECLS 1
 
 #include <formatio.h>
 
-#define ALLOC_GLOBALS  
 #include "main.h"
 #include "Adwin.h"
 #include <time.h>
-#define VAR_DECLS 1
 #include "vars.h"
 #include "LaserSettings2.h"
 #include "Processor.h"
-#include "GPIB_SRS_SETUP.h"  
+#include "GPIB_SRS_SETUP.h"
 //#include <userint.h>
 //#include <stdio.h>
 //#include  <Windows.h>
@@ -32,7 +37,7 @@ int main (int argc, char *argv[])
 	if ((panelHandle4 = LoadPanel (0, "AnalogControl.uir", PANEL)) < 0)
 		return -1;
 	if ((panelHandle5 = LoadPanel (0, "DDSSettings.uir", PANEL)) < 0)
-		return -1;	
+		return -1;
 	if ((panelHandle6 = LoadPanel (0, "DDSControl.uir", PANEL)) < 0)
 		return -1;
 	if ((panelHandle7 = LoadPanel (0, "Scan.uir", PANEL)) < 0)
@@ -61,8 +66,8 @@ int main (int argc, char *argv[])
 	ReadFile (file,procbuff, 1);
 	processorT1x = *procbuff-48;
 	SetCtrlVal (panelHandle12, PANEL_PROCESSORSWITCH, processorT1x);
-	GetCtrlVal (panelHandle12, PANEL_PROCESSORSWITCH, &processorT1x); 	
-	CloseFile (file); 	
+	GetCtrlVal (panelHandle12, PANEL_PROCESSORSWITCH, &processorT1x);
+	CloseFile (file);
 	
 		
 //	SetCtrlAttribute (panelHandle, PANEL_DEBUG, ATTR_VISIBLE, 0);
@@ -364,9 +369,6 @@ void Initialization()
 	}
 	
 
-
-//new in this version 1/21/2019
-
 	// Force number of GPIB devices to obey NUMBERGPIBDEV (the number of devices in vars.h)
 	SetCtrlAttribute(panelHandle13, SETUP_GPIB_DEVICENO, ATTR_MIN_VALUE, 1);
 	SetCtrlAttribute(panelHandle13, SETUP_GPIB_DEVICENO, ATTR_MAX_VALUE, NUMBERGPIBDEV);
@@ -376,8 +378,7 @@ void Initialization()
 	SetCtrlAttribute(panelHandle13, SETUP_GPIB_ADDRESS, ATTR_MIN_VALUE, 0);
 	SetCtrlAttribute(panelHandle13, SETUP_GPIB_ADDRESS, ATTR_MAX_VALUE, MAXVISAADDR);   //we are missing panel handle
 	
- //end of new stuff
-
+	
 	// A traffic light to indicate certain things for debugging
 	GetCtrlAttribute (panelHandle,PANEL_LED_RED,ATTR_LEFT,&ledleft);
 	GetCtrlAttribute (panelHandle,PANEL_LED_RED,ATTR_TOP,&ledtop);
@@ -424,80 +425,4 @@ void Initialization()
 	
 	return;
 	
-}
-//***************************************************************************************************
-void ConvertIntToStr(int int_val, char *int_str)
-{
-
-	int i,j;
-	
-	for (i=j=floor(log10(int_val));i>=0;i--)
-	{
-		int_str[i] = (char) (((int) '0') + floor(((int) floor((int_val/pow(10,(j-i))))%10)));
-	}
-	
-	int_str[j+1] = '\0';
-	
-	return;
-}
-
-//***************************************************************************************************
-int ToDigital(double analog)
-{
-	if (analog > 0)
-	{
-		return 1;
-	}
-	else
-	{
-		return 0;
-	}
-}
-
-//***************************************************************************************************
-void DrawCanvasArrows(void)
-{
- int loopx=0,loopx0=0;
-// draws an arrow in each of 2 canvas's on the GUI.  These canvas's are moved around to indicate the location
-// of a loop in the Adwin output.
-SetCtrlAttribute (panelHandle, PANEL_CANVAS_START, ATTR_PEN_WIDTH,1);
-SetCtrlAttribute (panelHandle, PANEL_CANVAS_START, ATTR_PEN_COLOR,VAL_DK_GREEN);
-SetCtrlAttribute (panelHandle, PANEL_CANVAS_START, ATTR_PICT_BGCOLOR,VAL_TRANSPARENT);
-
-CanvasDrawLine (panelHandle, PANEL_CANVAS_START, MakePoint(0,0), MakePoint(15,0));
-CanvasDrawLine (panelHandle, PANEL_CANVAS_START, MakePoint(15,0), MakePoint(8,12));
-CanvasDrawLine (panelHandle, PANEL_CANVAS_START, MakePoint(8,12), MakePoint(0,0));
-CanvasDrawLine (panelHandle, PANEL_CANVAS_START, MakePoint(8,11), MakePoint(1,1));
-CanvasDrawLine (panelHandle, PANEL_CANVAS_START, MakePoint(8,10), MakePoint(2,2));
-CanvasDrawLine (panelHandle, PANEL_CANVAS_START, MakePoint(0,0), MakePoint(8,4));
-SetCtrlAttribute (panelHandle, PANEL_CANVAS_START, ATTR_PEN_WIDTH,4);
-CanvasDrawLine (panelHandle, PANEL_CANVAS_START, MakePoint(4,2), MakePoint(11,2));
-CanvasDrawLine (panelHandle, PANEL_CANVAS_START, MakePoint(11,2), MakePoint(8,8));
-CanvasDrawLine (panelHandle, PANEL_CANVAS_START, MakePoint(8,8), MakePoint(4,2));
-
-SetCtrlAttribute (panelHandle, PANEL_CANVAS_END, ATTR_PEN_WIDTH,1);
-SetCtrlAttribute (panelHandle, PANEL_CANVAS_END, ATTR_PEN_COLOR,VAL_DK_RED);
-SetCtrlAttribute (panelHandle, PANEL_CANVAS_END, ATTR_PICT_BGCOLOR,VAL_TRANSPARENT);
-CanvasDrawLine (panelHandle, PANEL_CANVAS_END, MakePoint(0,0), MakePoint(8,4));
-
-CanvasDrawLine (panelHandle, PANEL_CANVAS_END, MakePoint(0,0), MakePoint(15,0));
-CanvasDrawLine (panelHandle, PANEL_CANVAS_END, MakePoint(15,0), MakePoint(8,12));
-CanvasDrawLine (panelHandle, PANEL_CANVAS_END, MakePoint(8,12), MakePoint(0,0));
-CanvasDrawLine (panelHandle, PANEL_CANVAS_END, MakePoint(8,11), MakePoint(1,1));
-CanvasDrawLine (panelHandle, PANEL_CANVAS_END, MakePoint(8,10), MakePoint(2,2));
-SetCtrlAttribute (panelHandle, PANEL_CANVAS_END, ATTR_PEN_WIDTH,4);
-CanvasDrawLine (panelHandle, PANEL_CANVAS_END, MakePoint(4,2), MakePoint(11,2));
-CanvasDrawLine (panelHandle, PANEL_CANVAS_END, MakePoint(11,2), MakePoint(8,8));
-CanvasDrawLine (panelHandle, PANEL_CANVAS_END, MakePoint(8,8), MakePoint(4,2));
-
-loopx0=170;		//horizontal offset
-loopx=8;		//x position...in horizontal table units
-SetCtrlAttribute(panelHandle,PANEL_CANVAS_START,ATTR_LEFT,loopx0+loopx*40);
-SetCtrlAttribute(panelHandle,PANEL_CANVAS_START,ATTR_TOP,141);
-SetCtrlAttribute(panelHandle,PANEL_CANVAS_END,ATTR_LEFT,loopx0+loopx*40+25);
-SetCtrlAttribute(panelHandle,PANEL_CANVAS_END,ATTR_TOP,141);
-
-SetCtrlAttribute(panelHandle,PANEL_CANVAS_LOOPLINE,ATTR_LEFT,168);
-SetCtrlAttribute(panelHandle,PANEL_CANVAS_LOOPLINE,ATTR_TOP,140);
-SetCtrlAttribute(panelHandle,PANEL_CANVAS_LOOPLINE,ATTR_WIDTH,685);
 }

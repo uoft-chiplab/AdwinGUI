@@ -7901,6 +7901,18 @@ void CVICALLBACK GPIB_SRS_CALLBACK (int menuBar, int menuItem, void *callbackDat
 		DisplayPanel (panelHandle13); 
 }
 /**************************************************************************************/
+int ToDigital(double analog)
+{
+	if (analog > 0)
+	{
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
+}
+/**************************************************************************************/
 
 
 

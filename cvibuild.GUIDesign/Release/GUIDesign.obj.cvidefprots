@@ -613,3 +613,8 @@ Class="Function"
 Prototype="void GPIB_SRS_CALLBACK(int menuBar, int menuItem, void *callbackData, int panel);"
 SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:7897:1"
 
+[ToDigital]
+Class="Function"
+Prototype="int ToDigital(double analog);"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\GUIDesign.c:7904:1"
+

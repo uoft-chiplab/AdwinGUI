@@ -1,25 +1,10 @@
 [main]
 Class="Function"
 Prototype="int main(int argc, char *argv[]);"
-SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\main.c:169:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\main.c:22:1"
 
 [Initialization]
 Class="Function"
 Prototype="void Initialization();"
-SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\main.c:334:1"
-
-[ConvertIntToStr]
-Class="Function"
-Prototype="void ConvertIntToStr(int int_val, char *int_str);"
-SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\main.c:581:1"
-
-[ToDigital]
-Class="Function"
-Prototype="int ToDigital(double analog);"
-SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\main.c:597:1"
-
-[DrawCanvasArrows]
-Class="Function"
-Prototype="void DrawCanvasArrows();"
-SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\main.c:610:1"
+SourceLocation="c:\Users\coldatoms\Documents\Lab\LocalCode\ADwin_sequencers\AdwinGUI_repo\main.c:187:1"
 
