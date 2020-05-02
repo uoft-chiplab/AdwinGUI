@@ -10,3 +10,9 @@ Add capability for another analog and digital card.
 
 Broadly, clean up (duplicate and misplaced) function definitions.
 
+
+
+Possible ideas:
+Add a killswitch...to interupt the ADwin hardware.  Dangerous because it will leave the outputs in 
+			whatever state they had at the time the system was 'killed.  Could be fixed by adding a
+			bit to the ADBasic code that recognizes the kill switch and sets channels low.
