@@ -234,7 +234,7 @@ struct GPIBDDeviceProperties{
 	char    devname[50]; // name of the device
 	char	cmdmask[1024]; 
 	char	command[1024];
-	char	lastsent[1024]; 
+	char	lastsent[1024];
 	double	value[20];
 	BOOL	active;
 } GPIBDev[NUMBERGPIBDEV];
