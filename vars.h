@@ -4,17 +4,48 @@
 #include <visatype.h>
 #include <userint.h>// For MAX_PATHNAME_LEN
 
+
+
+/***********************************************************************
+Typedef Declarations
+*************************************************************************/
+
+#define TRUE (1)
+#define FALSE (0)
+
+typedef int BOOL;
+
+
 /************************************************************************
-Macro Definitions
+ADwin Variables
 *************************************************************************/
 
 #define SEQUENCER_VERSION "ADwin Sequencer V16.4.7 - "
 
-#define TRUE 1
-#define FALSE 0
-
-
+// ADwin info
 #define DefaultEventPeriod (0.100)   // in milliseconds
+int processorT1x;
+double AdwinTick;
+
+
+// Interfacing with the ADwin
+double EventPeriod;  //The Update Period Defined by the pull down menu (in ms)
+int processnum;
+
+// Mark and Interval vars for Synchronous Scan and Repeat wait periods
+static double beginProcMark;
+static double CycleTime;			// Min time allocated for sequence calculations and execution
+
+
+/************************************************************************
+Analog and Digital Channels (and laser table and necessary parts of dds and anritsu)
+*************************************************************************/
+
+#define NUMBEROFCOLUMNS (17)		//
+#define NUMBEROFPAGES (11)			//currently hardwired up to 10
+									// to be quick & dirty about it, just change 
+									//numberofpages to 1 more than actual (WTF???)
+
 
 // Channel stuff
 #define NUMBERANALOGCHANNELS (40)   // Number of analog Channels available for control
@@ -30,7 +61,6 @@ Macro Definitions
 #define DDS3CLOCK (300.0)			// clock speed of DDS 2 in MHz  
 #define NUMBERLASERS (4)			// Number of Lasers
 #define NUMBEROFANRITSU (1) 	 	// Number of microwave generators (on the off chance we get more than one)
-#define NUMBEROFCOLUMNS (17)		//
 
 //Explicitly make extra space in analog and digital arrays
 #define MAXANALOG (50)				// Need 40 lines, leave room for 48
@@ -39,25 +69,61 @@ Macro Definitions
 //total number of different analog channels (Adwin and otherwise) that we care about
 #define NUMBERANALOGROWS NUMBERANALOGCHANNELS+NUMBERDDS+NUMBERLASERS+2*NUMBEROFANRITSU
 
-#define NUMBEROFPAGES (11)			//currently hardwired up to 10
-									// to be quick & dirty about it, just change 
-									//numberofpages to 1 more than actual (WTF???)
+
 // number of columns needed in the meta-tables (with some overhead)
 // reducing it to (NUMBEROFPAGES+1)*(NUMBEROFCOLUMNS+1) leads to a 
 // screwed-up update list.
 #define NUMBEROFMETACOLUMNS (500)
-									   
 
-#define NUMBERGPIBDEV (20)			// number of programmable GPIB devices
-#define NUMGPIBPROGVALS (20)		// max number of numerical values to be used in programming -- should match number of columns in settings table
-#define NUMGPIBCMDREPS (10)			// max number of "%f"'s that can be replaced in a single command (between ";"'s)
-#define MAXVISAADDR (199)			// max pseudo-address for VISA devices (GIPB addrs are <= 32)
+// The array with the time values
+double TimeArray[NUMBEROFCOLUMNS+1][NUMBEROFPAGES];
 
-#define RIGOL_DG1022Z_NAME ("Rigol_DG1022Z")// VISA resouce name or alias of the Rigol DG1022Z
-#define RIGOL_DG1022Z_ADDR (100)	// pseudo-address of the Rigol DG1022Z
 
-#define RIGOL_DG4162_NAME ("Rigol_DG4162")// VISA resouce name or alias of the Rigol DG4162
-#define RIGOL_DG4162_ADDR (101)	// pseudo-address of the Rigol DG4162
+
+
+
+
+// Table cell structs
+struct AnalogTableValues{
+	int		fcn;		//fcn is an integer refering to a function to use.
+						// 1-step, 2-linear, 3- exp, 4- 'S' curve 5-sine 6-"same as last cell"
+	double 	fval;		//the final value
+	double	tscale;		//the timescale to approach final value
+	};
+
+struct AnalogTableValues AnalogTable[NUMBEROFCOLUMNS+1][NUMBERANALOGROWS+1][NUMBEROFPAGES]; //+1 needed because all code done assumed base 1 arrays...
+	// the structure is the values/elements contained at each point in the 
+	// analog panel.  The array aval, is set up as [x][y][page]
+
+int DigTableValues[NUMBEROFCOLUMNS+1][MAXDIGITAL][NUMBEROFPAGES];
+
+int ChMap[MAXANALOG];	// The channel mapping (for analog). i.e. if we program line 1 as channel 
+				// 12, the ChMap[12]=1
+
+
+
+
+struct AnalogChannelProperties{
+	int		chnum;		// channel number 1-8 DAC1	9-16 DAC2
+	char    chname[50]; // name to appear on the panel
+	char	units[50];
+	double  tfcn;		// Transfer function.  i.e. 10V out = t G/cm etc...
+	double  tbias;
+	int		resettozero;
+	double  maxvolts;
+	double  minvolts;
+	}  AChName[MAXANALOG+NUMBERDDS];
+
+struct DigitalChannelProperties{
+	int		chnum;		// digital line to control
+	char 	chname[50];	// name of the channel on the panel
+	int 	resettolow;
+	}	DChName[MAXDIGITAL];
+
+
+
+
+
 
 
 
@@ -125,16 +191,19 @@ int PANEL_TB_SHOWPHASE[NUMBEROFPAGES]; 	// Toggle buttons for pages
 int PANEL_CHKBOX[NUMBEROFPAGES];		// Check boxes for pages
 int PANEL_OLD_LABEL[NUMBEROFPAGES];   	// Old column labels
 
-
-/***********************************************************************
-Typedef Declarations
-*************************************************************************/
-
-typedef int BOOL;
+// Various panels
+//panelHandles: 8: ScanTableLoader  9:NumSet  10:LaserSettings  11:LaserControl
+int panelHandle0;
+int panelHandle,panelHandle2,panelHandle3,panelHandle4,panelHandle5;
+int panelHandle6,panelHandle7,panelHandle8,panelHandle9,panelHandle10;
+int panelHandle11,panelHandle12,panelHandle13;
+int panelHandleANRITSU, panelHandleANRITSUSETTINGS; 
+int panelHandle_sub1,panelHandle_sub2;
+int menuHandle;
 
 
 /************************************************************************
-Global Variables
+DDS variables
 *************************************************************************/
 
 // DDS stuff
@@ -169,104 +238,9 @@ dds3options_struct dds3table[NUMBEROFCOLUMNS+1][NUMBEROFPAGES];
 int Active_DDS_Panel; // 1 for Rb evap dds, 2 for K40 evap dds, 3 for HFS dds   !!!!
 
 
-// Anritsu stuff
-typedef struct anritsuoptions_struct {
-	//float start_frequency; /* in GHz*/
-	float end_frequency;
-	//float start_power;  /*in dBm*/
-	float end_power;
-	int framptype;
-	int pramptype;
-	BOOL is_stop;
-} anritsuoptions_struct;
-
-anritsuoptions_struct anritsutable[NUMBEROFCOLUMNS+1][NUMBEROFPAGES];
-
-
-
-
-
-ViSession VIsess;
-ViSession rmSession;
-
-// ADwin info
-int processorT1x;
-double AdwinTick;
-
-// Various panels
-//panelHandles: 8: ScanTableLoader  9:NumSet  10:LaserSettings  11:LaserControl
-int panelHandle0;
-int panelHandle,panelHandle2,panelHandle3,panelHandle4,panelHandle5;
-int panelHandle6,panelHandle7,panelHandle8,panelHandle9,panelHandle10;
-int panelHandle11,panelHandle12,panelHandle13;
-int panelHandleANRITSU, panelHandleANRITSUSETTINGS; 
-int panelHandle_sub1,panelHandle_sub2;
-int  menuHandle;
-
-// Keep track of where in a table things are taking place
-int currentx,currenty,currentpage;
-
-// Pages enable/disable
-int ischecked[NUMBEROFPAGES],isdimmed;
-
-// Flow of control variables
-BOOL ChangedVals;
-BOOL UseSimpleTiming;
-BOOL TwoParam;
-BOOL ChangeScan1Param;
-
-// MultiScan
-int parameterscanmode; // 0: multi-scan, 1: one-parameter, 2: two-parameter
-
-// Error reporting
-static char* SeqErrorBuffer[MAXERRS];	   // Holds error messages
-static int SeqErrorCount;
-static char procbuff[1];
-
-// GPIB stuff
-int GPIB_device;
-int GPIB_address;
-int GPIB_ON;
-double SRS_amplitude, SRS_offset,SRS_frequency;
-
-struct GPIBDDeviceProperties{
-	int		address;	// GPIB address (1..32), 0 means: not initialized
-	char    devname[50]; // name of the device
-	char	cmdmask[1024]; 
-	char	command[1024];
-	char	lastsent[1024];
-	double	value[20];
-	BOOL	active;
-} GPIBDev[NUMBERGPIBDEV];
-
-// Table cell structs
-struct AnalogTableValues{
-	int		fcn;		//fcn is an integer refering to a function to use.
-						// 1-step, 2-linear, 3- exp, 4- 'S' curve 5-sine 6-"same as last cell"
-	double 	fval;		//the final value
-	double	tscale;		//the timescale to approach final value
-	};
-
-struct AnalogTableValues AnalogTable[NUMBEROFCOLUMNS+1][NUMBERANALOGROWS+1][NUMBEROFPAGES]; //+1 needed because all code done assumed base 1 arrays...
-	// the structure is the values/elements contained at each point in the 
-	// analog panel.  The array aval, is set up as [x][y][page]
-
-int ChMap[MAXANALOG];	// The channel mapping (for analog). i.e. if we program line 1 as channel 
-				// 12, the ChMap[12]=1
-
-int DigTableValues[NUMBEROFCOLUMNS+1][MAXDIGITAL][NUMBEROFPAGES];
-
-
-// The array with the time values
-double TimeArray[NUMBEROFCOLUMNS+1][NUMBEROFPAGES];
-
-// The array with the column descriptios (TO BE IMPLEMENTED!!!)
-struct InfoArrayValues{
-	int index;
-	double value;
-	char text[32];
-};
-struct InfoArrayValues InfoArray[NUMBEROFCOLUMNS+1][NUMBEROFPAGES];
+/************************************************************************
+Laser variables
+*************************************************************************/
 
 struct LaserTableValues{
 	int fcn;			   // 0 for hold,1 for step,2 for ramp
@@ -290,22 +264,44 @@ struct LaserProps{
 	unsigned int DDS_Type;		  // either 9854 or 9858. NewExtavour
 }LaserProperties[NUMBERLASERS];
 
-struct AnalogChannelProperties{
-	int		chnum;		// channel number 1-8 DAC1	9-16 DAC2
-	char    chname[50]; // name to appear on the panel
-	char	units[50];
-	double  tfcn;		// Transfer function.  i.e. 10V out = t G/cm etc...
-	double  tbias;
-	int		resettozero;
-	double  maxvolts;
-	double  minvolts;
-	}  AChName[MAXANALOG+NUMBERDDS];
 
-struct DigitalChannelProperties{
-	int		chnum;		// digital line to control
-	char 	chname[50];	// name of the channel on the panel
-	int 	resettolow;
-	}	DChName[MAXDIGITAL];
+// LaserTable Data and Settings Arrays
+
+//The digital channels which the Adwin triggers the rabbits for the respective lasers on
+//Colums array done in base 1  in accordance with the rest of this program
+//Note that NUMBEROFPAGES was set to 11 even though there is only 10 pages, hence NUMBEROFPAGES array is also base 1
+#define LASCHAN0 (117)
+#define LASCHAN1 (118)
+#define LASCHAN2 (119)
+#define LASCHAN3 (120)
+
+#define MINRAMP_LEADOUT (0.0)   //This much time in (ms) is given to the rabbit to begin preprocessing of events following a ramp.
+#define MAX_DDS_SCANRATE (100.0) //in MHz/ms (this is actually currently limited by the max laser scan response rate
+#define MIN_DDS_FREQ (0.001) //MHz - this is a result of the minimum freq which is accepted into Hittite prescalers 
+#define MAX_DDS_FREQ (450.0) //MHz
+#define MAX_PFD_INPUT (150.0) //MHz - limitation of AD9858 detector
+///#define ONBOARD_ROSA_DIV (1) //On board integer divders ratio cutting down rosa signal (16 on eval boad)
+
+
+
+
+/************************************************************************
+Anritsu variables
+*************************************************************************/
+
+// Anritsu stuff
+typedef struct anritsuoptions_struct {
+	//float start_frequency; /* in GHz*/
+	float end_frequency;
+	//float start_power;  /*in dBm*/
+	float end_power;
+	int framptype;
+	int pramptype;
+	BOOL is_stop;
+} anritsuoptions_struct;
+
+anritsuoptions_struct anritsutable[NUMBEROFCOLUMNS+1][NUMBEROFPAGES];
+
 
 struct AnritsuSetting{
 	char 	ip[50];	// ip address of Anritsu MG37022A
@@ -317,16 +313,56 @@ struct AnritsuSetting{
 struct AnritsuSetting	AnritsuSettingValues[NUMBEROFANRITSU];
 
 
-// Interfacing with the ADwin
-double EventPeriod;  //The Update Period Defined by the pull down menu (in ms)
-int processnum;
+/************************************************************************
+VISA and GPIB interface
+*************************************************************************/
+
+// VISA interface
+ViSession VIsess;
+ViSession rmSession;
+
+// GPIB stuff
+int GPIB_device;
+int GPIB_address;
+int GPIB_ON;
+double SRS_amplitude, SRS_offset,SRS_frequency;
+
+
+#define NUMBERGPIBDEV (20)			// number of programmable GPIB devices
+#define NUMGPIBPROGVALS (20)		// max number of numerical values to be used in programming -- should match number of columns in settings table
+#define NUMGPIBCMDREPS (10)			// max number of "%f"'s that can be replaced in a single command (between ";"'s)
+#define MAXVISAADDR (199)			// max pseudo-address for VISA devices (GIPB addrs are <= 32)
+
+#define RIGOL_DG1022Z_NAME ("Rigol_DG1022Z")// VISA resouce name or alias of the Rigol DG1022Z
+#define RIGOL_DG1022Z_ADDR (100)	// pseudo-address of the Rigol DG1022Z
+
+#define RIGOL_DG4162_NAME ("Rigol_DG4162")// VISA resouce name or alias of the Rigol DG4162
+#define RIGOL_DG4162_ADDR (101)	// pseudo-address of the Rigol DG4162
 
 
 
-// Mark and Interval vars for Synchronous Scan and Repeat wait periods
-static double beginProcMark;
-static double CycleTime;			// Min time allocated for sequence calculations and execution
+struct GPIBDDeviceProperties{
+	int		address;	// GPIB address (1..32), 0 means: not initialized
+	char    devname[50]; // name of the device
+	char	cmdmask[1024]; 
+	char	command[1024];
+	char	lastsent[1024];
+	double	value[20];
+	BOOL	active;
+} GPIBDev[NUMBERGPIBDEV];
 
+
+
+
+
+
+/************************************************************************
+MultiScan
+*************************************************************************/
+
+
+// MultiScan (shared with old 1 and 2 dim scans)
+int parameterscanmode; // 0: multi-scan, 1: one-parameter, 2: two-parameter
 
 
 // The length of ScanBuffer used to be ScanBuffer[1000] hard coded. I want to be able to change it.
@@ -399,6 +435,44 @@ struct MultiScanValues{
 #define STOP_REPLACE_ORIGINAL_SENTINEL	(-1000.0)
 #define STOP_REPLACE_LAST_SENTINEL		(-1001.0)
 
+
+
+
+
+/************************************************************************
+Misc
+*************************************************************************/
+
+// Keep track of where in a table things are taking place
+int currentx,currenty,currentpage;
+
+// Pages enable/disable
+int ischecked[NUMBEROFPAGES],isdimmed;
+
+// Flow of control variables
+BOOL ChangedVals;
+BOOL UseSimpleTiming;
+BOOL TwoParam;
+BOOL ChangeScan1Param;
+
+// Error reporting
+static char* SeqErrorBuffer[MAXERRS];	   // Holds error messages
+static int SeqErrorCount;
+static char procbuff[1];
+
+
+
+// The array with the column descriptios (TO BE IMPLEMENTED!!!)
+struct InfoArrayValues{
+	int index;
+	double value;
+	char text[32];
+};
+struct InfoArrayValues InfoArray[NUMBEROFCOLUMNS+1][NUMBEROFPAGES];
+
+
+
+
 // (UNFINISHED!!!) Comunication file settings structure and global variable
 // 2012-10-08 Stefan Trotzky - V16.0.1
 //struct ComFileLineSettings{
@@ -423,23 +497,6 @@ struct MultiScanValues{
 int DEBUG_NUMBER_IBWRT_CALLS;
 
 	
-
-/* LaserTable Data and Settings Arrays */
-
-//The digital channels which the Adwin triggers the rabbits for the respective lasers on
-//Colums array done in base 1  in accordance with the rest of this program
-//Note that NUMBEROFPAGES was set to 11 even though there is only 10 pages, hence NUMBEROFPAGES array is also base 1
-#define LASCHAN0 (117)
-#define LASCHAN1 (118)
-#define LASCHAN2 (119)
-#define LASCHAN3 (120)
-
-#define MINRAMP_LEADOUT (0.0)   //This much time in (ms) is given to the rabbit to begin preprocessing of events following a ramp.
-#define MAX_DDS_SCANRATE (100.0) //in MHz/ms (this is actually currently limited by the max laser scan response rate
-#define MIN_DDS_FREQ (0.001) //MHz - this is a result of the minimum freq which is accepted into Hittite prescalers 
-#define MAX_DDS_FREQ (450.0) //MHz
-#define MAX_PFD_INPUT (150.0) //MHz - limitation of AD9858 detector
-///#define ONBOARD_ROSA_DIV (1) //On board integer divders ratio cutting down rosa signal (16 on eval boad)
 
 
 

@@ -172,7 +172,7 @@ void SetDDSControlPanel(int Active_DDS)
 			SetCtrlVal (panelHandle6, PANEL_TXT_DDS_MODE, "DDS: K40 Hyper Fine Splitting");
 
 			break;
-		
-	}// end of switch statement	
-		
+
+	}// end of switch statement
+
 }

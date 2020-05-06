@@ -13,6 +13,11 @@ Broadly, clean up (duplicate and misplaced) function definitions.
 Refactor code into appropriate files.
 	Clean up #include statements in each file.
 
+Improve DDS user interface (both in analog table and in DDS settings)
+
+
+
+
 
 Possible ideas:
 Add a killswitch...to interupt the ADwin hardware.  Dangerous because it will leave the outputs in 
