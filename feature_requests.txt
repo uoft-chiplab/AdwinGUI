@@ -2,9 +2,12 @@ Feature Requests
 
 
 
-Move config files to a separate (sub)directory.
+Move all saving functions to their own c file.
 
 Decouple saving a sequence from the gui itself. Now, there are things saved in the .pan file that get lost if loading with a changed gui version.
+
+
+Move config files to a separate (sub)directory.
 
 Add capability for another analog and digital card.
 
@@ -15,13 +18,19 @@ Refactor code into appropriate files.
 
 Improve DDS user interface (both in analog table and in DDS settings)
 
+
+
 Change end of scan question about saving mscan list to have better default.
 Change default saving of panel (not scan) to make directory as well (as scan does).
 
 
+Stop the sequence based on condition
+	Writing to a communication file as interlock.
+	Check things are okay before starting a new cycle.
 
 
-Possible ideas:
-Add a killswitch...to interupt the ADwin hardware.  Dangerous because it will leave the outputs in 
-			whatever state they had at the time the system was 'killed.  Could be fixed by adding a
-			bit to the ADBasic code that recognizes the kill switch and sets channels low.
+
+
+
+
+
