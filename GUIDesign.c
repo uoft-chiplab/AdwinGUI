@@ -4397,72 +4397,6 @@ int GetPage(void)
 	//New function only returns global variable.
 }
 
-//*************************************************************************************
-void DrawLoopIndicators()
-{
-    int page,x0,dx,xendoffset,xstartoffset;
-    int xposstart,xposend;
-    int canvaswidth;
-   
-    GetCtrlAttribute(panelHandle,PANEL_CANVAS_LOOPLINE,ATTR_WIDTH,&canvaswidth);
-	page=GetPage();
-	CanvasClear(panelHandle,PANEL_CANVAS_LOOPLINE,VAL_ENTIRE_OBJECT);
-	
-	if(Switches.loop_active)
- 	{
- 		if(page==LoopPoints.startpage) 
- 		{	
- 			MoveCanvasStart(LoopPoints.startcol,TRUE);	
- 		}
- 		else
- 		{ 
- 			MoveCanvasStart(LoopPoints.startcol,FALSE);	
- 		}
- 		if(page==LoopPoints.endpage) 
- 		{  
- 			MoveCanvasEnd(LoopPoints.endcol,TRUE);   
- 		}
- 		else
- 		{
-			MoveCanvasEnd(LoopPoints.endcol,FALSE);
-		}
- 		
- 	}
- 	else
- 	{
- 	    MoveCanvasStart(LoopPoints.startcol,FALSE);	
-		MoveCanvasEnd(LoopPoints.endcol,FALSE);
- 	}
- 	
- 	// If good, then draw a connecting line
- 	dx=40;
- 	xstartoffset=10;
- 	xendoffset=10;
- 	
- 	if(Switches.loop_active)
- 	{
- 		SetCtrlAttribute (panelHandle, PANEL_CANVAS_LOOPLINE, ATTR_PEN_WIDTH,2);
-		SetCtrlAttribute (panelHandle, PANEL_CANVAS_LOOPLINE, ATTR_PEN_COLOR,0x00FF00L);
-		
-		xposstart=(LoopPoints.startcol-1)*dx+xstartoffset;
- 		xposend=(LoopPoints.endcol)*dx-xstartoffset;
-		
- 		if((page==LoopPoints.startpage)&&!(page==LoopPoints.endpage))  {xposend=canvaswidth;}
- 		if(!(page==LoopPoints.startpage)&&(page==LoopPoints.endpage))  {xposstart=0+xstartoffset;}
- 		if((page>LoopPoints.startpage)&&(page<LoopPoints.endpage))
- 		{
- 			xposstart=0+xstartoffset;
- 			xposend=canvaswidth;
- 		}
- 		CanvasDrawLine (panelHandle, PANEL_CANVAS_LOOPLINE, MakePoint(xposstart,8), MakePoint(xposend,8));     
-		if((page<LoopPoints.startpage)||(page>LoopPoints.endpage))
-		{
-		  	CanvasClear(panelHandle,PANEL_CANVAS_LOOPLINE,VAL_ENTIRE_OBJECT);
-		}
- 		
- 	}
-
-}
 
 //*************************************************************************************
 // 2012-10-08 Stefan Trotzky -- V16.0.1
@@ -6107,12 +6041,12 @@ void ReshapeAnalogTable( int top,int left,int height)
 	//SetCtrlAttribute (panelHandle, PANEL_NUM_DDS3_OFFSET,ATTR_LEFT,877);
 	
 	// move the SRS control (2013-01-30, ST: hidden)
-	// V16.1.3: Don't set the left hand side of the SRS freq here. Let GUIDesign.uir do it.  
+	// V16.1.3: Don't set the left hand side of the SRS freq here. Let GUIDesign.uir do it.
 	SetCtrlAttribute (panelHandle, PANEL_SRS_FREQ,ATTR_TOP,ddsrowtop+rowheight*5);
 	//SetCtrlAttribute (panelHandle, PANEL_SRS_FREQ,ATTR_LEFT,877);
 	
 	// move the ANRITSU offset
-	// V16.1.3: Don't set the left hand side of the ANRITSU offset here. Let GUIDesign.uir do it.  
+	// V16.1.3: Don't set the left hand side of the ANRITSU offset here. Let GUIDesign.uir do it.
 	SetCtrlAttribute (panelHandle, PANEL_ANRITSU_OFFSET,ATTR_TOP,ddsrowtop+rowheight*(NUMBERDDS+NUMBERLASERS));
 	//SetCtrlAttribute (panelHandle, PANEL_ANRITSU_OFFSET,ATTR_LEFT,877);
 	
@@ -6754,13 +6688,6 @@ void CVICALLBACK NOTECHECK_CALLBACK (int menuBar, int menuItem, void *callbackDa
 }
 
 //**************************************************************************************************************
-void CVICALLBACK COMFILE_CALLBACK (int menuBar, int menuItem, void *callbackData,
-		int panel)
-{
-	// Reserved for communication file option
-}
-
-//**************************************************************************************************************
 void CVICALLBACK STREAM_CALLBACK (int menuBar, int menuItem, void *callbackData,
 		int panel)
 {
@@ -7094,27 +7021,6 @@ void ExportMultiScanBuffer(void)
 }
 
 //**************************************************************************************************************
-void MoveCanvasStart(int XPos,int IsVisible)
-{
-int x0=170,dx=40,xwidth=25;
-
-SetCtrlAttribute(panelHandle,PANEL_CANVAS_START,ATTR_LEFT,x0+(XPos-1)*dx);
-SetCtrlAttribute(panelHandle,PANEL_CANVAS_START,ATTR_TOP,141);
-SetCtrlAttribute(panelHandle,PANEL_CANVAS_START,ATTR_VISIBLE,IsVisible);
-
-}
-//**************************************************************************************************************
-void MoveCanvasEnd(int XPos,int IsVisible)
-{
-int x0=170,dx=40,xwidth=25;
-
-SetCtrlAttribute(panelHandle,PANEL_CANVAS_END,ATTR_LEFT,x0+(XPos-1)*dx+xwidth);
-SetCtrlAttribute(panelHandle,PANEL_CANVAS_END,ATTR_TOP,141);
-SetCtrlAttribute(panelHandle,PANEL_CANVAS_END,ATTR_VISIBLE,IsVisible);
-
-}
-
-//**************************************************************************************************************
 // 06 October 2012 -- for multiparameter scans
 // Increase number of columns according to numeric ctrl value
 int CVICALLBACK MULTICSAN_NUM_CALLBACK (int panel, int control, int event,
@@ -7176,6 +7082,99 @@ int CVICALLBACK MULTISCAN_NUMROWS_CALLBACK (int panel, int control, int event,
 	return 0;
 }
 
+
+
+
+
+
+
+//**************************************************************************************************************
+void MoveCanvasStart(int XPos,int IsVisible)
+{
+int x0=170,dx=40,xwidth=25;
+
+SetCtrlAttribute(panelHandle,PANEL_CANVAS_START,ATTR_LEFT,x0+(XPos-1)*dx);
+SetCtrlAttribute(panelHandle,PANEL_CANVAS_START,ATTR_TOP,141);
+SetCtrlAttribute(panelHandle,PANEL_CANVAS_START,ATTR_VISIBLE,IsVisible);
+
+}
+//**************************************************************************************************************
+void MoveCanvasEnd(int XPos,int IsVisible)
+{
+int x0=170,dx=40,xwidth=25;
+
+SetCtrlAttribute(panelHandle,PANEL_CANVAS_END,ATTR_LEFT,x0+(XPos-1)*dx+xwidth);
+SetCtrlAttribute(panelHandle,PANEL_CANVAS_END,ATTR_TOP,141);
+SetCtrlAttribute(panelHandle,PANEL_CANVAS_END,ATTR_VISIBLE,IsVisible);
+
+}
+
+//*************************************************************************************
+void DrawLoopIndicators()
+{
+    int page,x0,dx,xendoffset,xstartoffset;
+    int xposstart,xposend;
+    int canvaswidth;
+   
+    GetCtrlAttribute(panelHandle,PANEL_CANVAS_LOOPLINE,ATTR_WIDTH,&canvaswidth);
+	page=GetPage();
+	CanvasClear(panelHandle,PANEL_CANVAS_LOOPLINE,VAL_ENTIRE_OBJECT);
+	
+	if(Switches.loop_active)
+ 	{
+ 		if(page==LoopPoints.startpage) 
+ 		{	
+ 			MoveCanvasStart(LoopPoints.startcol,TRUE);	
+ 		}
+ 		else
+ 		{ 
+ 			MoveCanvasStart(LoopPoints.startcol,FALSE);	
+ 		}
+ 		if(page==LoopPoints.endpage) 
+ 		{  
+ 			MoveCanvasEnd(LoopPoints.endcol,TRUE);   
+ 		}
+ 		else
+ 		{
+			MoveCanvasEnd(LoopPoints.endcol,FALSE);
+		}
+ 		
+ 	}
+ 	else
+ 	{
+ 	    MoveCanvasStart(LoopPoints.startcol,FALSE);	
+		MoveCanvasEnd(LoopPoints.endcol,FALSE);
+ 	}
+ 	
+ 	// If good, then draw a connecting line
+ 	dx=40;
+ 	xstartoffset=10;
+ 	xendoffset=10;
+ 	
+ 	if(Switches.loop_active)
+ 	{
+ 		SetCtrlAttribute (panelHandle, PANEL_CANVAS_LOOPLINE, ATTR_PEN_WIDTH,2);
+		SetCtrlAttribute (panelHandle, PANEL_CANVAS_LOOPLINE, ATTR_PEN_COLOR,0x00FF00L);
+		
+		xposstart=(LoopPoints.startcol-1)*dx+xstartoffset;
+ 		xposend=(LoopPoints.endcol)*dx-xstartoffset;
+		
+ 		if((page==LoopPoints.startpage)&&!(page==LoopPoints.endpage))  {xposend=canvaswidth;}
+ 		if(!(page==LoopPoints.startpage)&&(page==LoopPoints.endpage))  {xposstart=0+xstartoffset;}
+ 		if((page>LoopPoints.startpage)&&(page<LoopPoints.endpage))
+ 		{
+ 			xposstart=0+xstartoffset;
+ 			xposend=canvaswidth;
+ 		}
+ 		CanvasDrawLine (panelHandle, PANEL_CANVAS_LOOPLINE, MakePoint(xposstart,8), MakePoint(xposend,8));     
+		if((page<LoopPoints.startpage)||(page>LoopPoints.endpage))
+		{
+		  	CanvasClear(panelHandle,PANEL_CANVAS_LOOPLINE,VAL_ENTIRE_OBJECT);
+		}
+ 		
+ 	}
+
+}
 
 //**************************************************************************************************************
 //Jan24, 2006

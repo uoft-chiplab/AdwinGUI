@@ -15,6 +15,8 @@ Refactor code into appropriate files.
 
 Improve DDS user interface (both in analog table and in DDS settings)
 
+Change end of scan question about saving mscan list to have better default.
+Change default saving of panel (not scan) to make directory as well (as scan does).
 
 
 

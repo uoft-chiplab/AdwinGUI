@@ -11,6 +11,7 @@
 
 
 //***************************************************************************************************
+// from main.c
 void ConvertIntToStr(int int_val, char *int_str);
 void ConvertIntToStr(int int_val, char *int_str)
 {
@@ -28,6 +29,8 @@ void ConvertIntToStr(int int_val, char *int_str)
 }
 
 //***************************************************************************************************
+// From main.c
+	//DrawCanvasArrows();
 void DrawCanvasArrows(void);
 void DrawCanvasArrows(void)
 {

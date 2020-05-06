@@ -404,7 +404,6 @@ void Initialization()
 	// set to display both analog and digital channels also changes a bunch of their shape/position properties
 	// Note the Scan table is not fixed in the source code, to change its position move it in the GUIDesign.uir file
 	SetChannelDisplayed(1);
-	//DrawCanvasArrows();
 //	
 	//set to graphical display
 //	SetDisplayType(VAL_CELL_NUMERIC);

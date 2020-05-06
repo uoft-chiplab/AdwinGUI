@@ -17,7 +17,7 @@ typedef int BOOL;
 
 
 /************************************************************************
-ADwin Variables
+ADwin Variables and GUI things
 *************************************************************************/
 
 #define SEQUENCER_VERSION "ADwin Sequencer V16.4.7 - "
@@ -35,6 +35,18 @@ int processnum;
 // Mark and Interval vars for Synchronous Scan and Repeat wait periods
 static double beginProcMark;
 static double CycleTime;			// Min time allocated for sequence calculations and execution
+
+
+// User interface stuff
+#define LASTGUISAVELOCATION "c:\\LastGui.pan"
+#define MAXERRS (10)// Size of sequencer error list
+
+
+// Error reporting
+static char* SeqErrorBuffer[MAXERRS];	   // Holds error messages
+static int SeqErrorCount;
+static char procbuff[1];
+
 
 
 /************************************************************************
@@ -75,11 +87,17 @@ Analog and Digital Channels (and laser table and necessary parts of dds and anri
 // screwed-up update list.
 #define NUMBEROFMETACOLUMNS (500)
 
+
 // The array with the time values
 double TimeArray[NUMBEROFCOLUMNS+1][NUMBEROFPAGES];
 
-
-
+// The array with the column descriptions
+struct InfoArrayValues{
+	int index;
+	double value;
+	char text[32];
+};
+struct InfoArrayValues InfoArray[NUMBEROFCOLUMNS+1][NUMBEROFPAGES];
 
 
 
@@ -97,12 +115,7 @@ struct AnalogTableValues AnalogTable[NUMBEROFCOLUMNS+1][NUMBERANALOGROWS+1][NUMB
 
 int DigTableValues[NUMBEROFCOLUMNS+1][MAXDIGITAL][NUMBEROFPAGES];
 
-int ChMap[MAXANALOG];	// The channel mapping (for analog). i.e. if we program line 1 as channel 
-				// 12, the ChMap[12]=1
-
-
-
-
+// Channel properties structs
 struct AnalogChannelProperties{
 	int		chnum;		// channel number 1-8 DAC1	9-16 DAC2
 	char    chname[50]; // name to appear on the panel
@@ -121,27 +134,8 @@ struct DigitalChannelProperties{
 	}	DChName[MAXDIGITAL];
 
 
-
-
-
-
-
-
-// MultiScan
-#define NUMMAXSCANPARAMETERS (70)	// Number of allowed scan parameters
-#define NUMDIGITALSCANOFFSET (100)	// Offset for digital channels in row-addressing
-									// Should be larger than NUMBERANALOGROWS
-#define NUMGPIBSCANOFFSET	 (200)
-#define NUMANALOGTIMESCALEOFFSET (1000)	// Offset to create pseudo-rows corresponding to the timescale
-										// variable for each analog channel cell.
-										// Should be <panel> <regular column> <regular row + 1000>
-#define DDS_EOR_SCAN_COLUMN_VALUE	(1000)	// The column value (not offset) of the psuedo-column
-											// MultiScan uses for the EOR of the DDS's.
-
-
-// User interface stuff
-#define LASTGUISAVELOCATION "c:\\LastGui.pan"
-#define MAXERRS (10)// Size of sequencer error list
+int ChMap[MAXANALOG];	// The channel mapping (for analog). i.e. if we program line 1 as channel 
+				// 12, the ChMap[12]=1
 
 
 
@@ -236,6 +230,13 @@ ddsoptions_struct dds2table[NUMBEROFCOLUMNS+1][NUMBEROFPAGES]; //17 columns (act
 dds3options_struct dds3table[NUMBEROFCOLUMNS+1][NUMBEROFPAGES];
 
 int Active_DDS_Panel; // 1 for Rb evap dds, 2 for K40 evap dds, 3 for HFS dds   !!!!
+
+
+struct DDSClock{
+	double 	extclock;
+	int 	PLLmult;
+	double	clock;
+}	DDSFreq;
 
 
 /************************************************************************
@@ -361,6 +362,19 @@ MultiScan
 *************************************************************************/
 
 
+// MultiScan
+#define NUMMAXSCANPARAMETERS (70)	// Number of allowed scan parameters
+#define NUMDIGITALSCANOFFSET (100)	// Offset for digital channels in row-addressing
+									// Should be larger than NUMBERANALOGROWS
+#define NUMGPIBSCANOFFSET	 (200)
+#define NUMANALOGTIMESCALEOFFSET (1000)	// Offset to create pseudo-rows corresponding to the timescale
+										// variable for each analog channel cell.
+										// Should be <panel> <regular column> <regular row + 1000>
+#define DDS_EOR_SCAN_COLUMN_VALUE	(1000)	// The column value (not offset) of the psuedo-column
+											// MultiScan uses for the EOR of the DDS's.
+
+
+
 // MultiScan (shared with old 1 and 2 dim scans)
 int parameterscanmode; // 0: multi-scan, 1: one-parameter, 2: two-parameter
 
@@ -455,48 +469,8 @@ BOOL UseSimpleTiming;
 BOOL TwoParam;
 BOOL ChangeScan1Param;
 
-// Error reporting
-static char* SeqErrorBuffer[MAXERRS];	   // Holds error messages
-static int SeqErrorCount;
-static char procbuff[1];
-
-
-
-// The array with the column descriptios (TO BE IMPLEMENTED!!!)
-struct InfoArrayValues{
-	int index;
-	double value;
-	char text[32];
-};
-struct InfoArrayValues InfoArray[NUMBEROFCOLUMNS+1][NUMBEROFPAGES];
-
-
-
-
-// (UNFINISHED!!!) Comunication file settings structure and global variable
-// 2012-10-08 Stefan Trotzky - V16.0.1
-//struct ComFileLineSettings{
-//	int		Page;
-//	int		Column;
-//	int		Row;
-//	char	Format[128];
-//	BOOL	CellExists;
-//};
-//struct ComFileSettings{
-//	char    Name[256];
-//	char	Firstlines[256];
-//	char	Lastlines[256];
-//	int		NumPars;
-//	BOOL	Active;
-//	BOOL	Initialized;
-//	struct 	ComFileLineSettings Par[20];
-//} ComFile;
-
-
 // Try debugging the random sequencer errors that seem to be happening with excessive GPIB command use.
 int DEBUG_NUMBER_IBWRT_CALLS;
-
-	
 
 
 
@@ -571,7 +545,7 @@ struct ScanParameters{
 	struct TimeScanParameters	Time;
 	struct DDSScanParameters   	DDS;
 	struct DDSFloorScanParameters DDSFloor;
-	struct SRSScanParameters SRS; 
+	struct SRSScanParameters SRS;
 	struct LaserScanParameters Laser;
 }  PScan;
 
@@ -587,7 +561,7 @@ struct Scan2Parameters{
 	struct TimeScanParameters	Time;
 	struct DDSScanParameters   	DDS;
 	struct DDSFloorScanParameters DDSFloor;
-	struct SRSScanParameters SRS; 
+	struct SRSScanParameters SRS;
 	struct LaserScanParameters Laser;
 }  PScan2;
 
@@ -630,15 +604,8 @@ struct Scan2Buff{
 
 
 
-struct DDSClock{
-	double 	extclock;
-	int 	PLLmult;
-	double	clock;
-}	DDSFreq;
 
 
-
-int pic_off,pic_static,pic_change,pic_don;
 
 struct Switches{
 	BOOL loop_active;
