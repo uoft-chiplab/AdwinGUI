@@ -71,9 +71,9 @@ Window Z-Order = 3
 [File 0003]
 Path = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/vars.h"
 File Type = "Include"
-Disk Date = 3671635687
+Disk Date = 3671636281
 In Projects = "1,"
-Source Window State = "1,26,26,26,17,17,17,0,0,0,0,0,0,0,0,0,3,0,26,17,401,602,1,0,"
+Source Window State = "1,12,12,12,16,16,16,0,0,0,0,0,0,0,0,0,3,0,12,16,401,602,1,0,"
 Window Top = 64
 Window Left = 26
 Window Z-Order = 1
