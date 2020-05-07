@@ -7,7 +7,7 @@ void SaveSettings(int);
 void LoadSettings(int);
 
 void SaveLastGuiSettings(void);
-void LoadLastSettings(int check);
+void LoadLastSettings(int);
 
 void SaveArraysV16(char*,int);
 int LoadArraysV16(char*,int);
@@ -23,6 +23,7 @@ void LoadLaserData(char *,int);
 
 
 void ExportPanel(char*,int);
+void ExportConfig(char*,int);
 
 
 

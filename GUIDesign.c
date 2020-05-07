@@ -5442,7 +5442,8 @@ void CVICALLBACK EXPORT_PANEL_CALLBACK (int menuBar, int menuItem, void *callbac
 {
 	char fexportname[200];
 
-	FileSelectPopup ("", "*.export", "", "Export Panel?", VAL_SAVE_BUTTON, 0, 0, 1, 1,fexportname );
+	FileSelectPopup("", "*.export", "", "Export Panel?", VAL_SAVE_BUTTON, 0, 0, 1, 1,fexportname);
+
 	ExportPanel(fexportname,strlen(fexportname));
 }
 
@@ -5451,47 +5452,11 @@ void CVICALLBACK EXPORT_PANEL_CALLBACK (int menuBar, int menuItem, void *callbac
 void CVICALLBACK CONFIG_EXPORT_CALLBACK (int menuBar, int menuItem, void *callbackData,
 		int panel)
 {
+	char fconfigname[290];
 
-	FILE *fconfig;
-	int i=0,j=0,k=0;
-	int xval=16,yval=16,zval=10;
-	char buff[500],buff2[190],fconfigname[290],buff3[31];
+	FileSelectPopup("", "*.config", "", "Save Configuration", VAL_SAVE_BUTTON, 0, 0, 1, 1,fconfigname);
 
-
-	FileSelectPopup ("", "*.config", "", "Save Configuration", VAL_SAVE_BUTTON, 0, 0, 1, 1,fconfigname );
-
-
-	if((fconfig=fopen(fconfigname,"w"))==NULL)
-	{
-	//	InsertListItem(panelHandle,PANEL_DEBUG,-1,buff,1);
-		MessagePopup("Save Error","Failed to save configuration file");
-	}
-	// write out analog channel info
-	sprintf(buff,"Analog Channels\n");
-	fprintf(fconfig,buff);
-	sprintf(buff,"Row,Channel,Name,tbias,tfcn,MaxVolts,MinVolts,Units\n");
-	fprintf(fconfig,buff);
-	for(i=1;i<=NUMBERANALOGCHANNELS;i++)
-	{
-		strncpy(buff3,AChName[i].chname,30);
-		sprintf(buff,"%d,%d,%s,%f,%f,%f,%f,%s\n",i,AChName[i].chnum,buff3,AChName[i].tbias
-			,AChName[i].tfcn,AChName[i].maxvolts,AChName[i].minvolts,AChName[i].units);
-		fprintf(fconfig,buff);
-	}
-	// Write out digital Channel info
-	sprintf(buff,"Digital Channels\n");
-	fprintf(fconfig,buff);
-	sprintf(buff,"Row,Channel,Name\n");
-	fprintf(fconfig,buff);
-
-	for(i=1;i<=NUMBERDIGITALCHANNELS;i++)
-	{
-		sprintf(buff,"%d,%d,%s\n",i,DChName[i].chnum,DChName[i].chname);
-		fprintf(fconfig,buff);
-	}
-
-
-	fclose(fconfig);
+	ExportConfig(fconfigname,strlen(fconfigname));
 }
 
 //**************************************************************************************************************

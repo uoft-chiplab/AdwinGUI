@@ -1006,7 +1006,6 @@ Even older ExportPanel functions
 // Gets called by the callback EXPORT_PANEL_CALLBACK
 void ExportPanel(char fexportname[200],int fnamesize)
 {
-
 	FILE *fexport;
 	int i=0,j=0,k=0;
 	int xval=16,yval=16,zval=10;
@@ -1126,10 +1125,54 @@ void ExportPanel(char fexportname[200],int fnamesize)
 		strcat(bigbuff,"\n");
 		fprintf(fexport,bigbuff);
 	}
+
 	fclose(fexport);
 }
 
+// The code in this function used to be in CONFIG_EXPORT_CALLBACK but I
+// modified that function to call this one to better divide the
+// saving and loading code from GUIDesign.c. But not like this function
+// will ever be used since I'm pretty sure the menu item has only been
+// kept to not break backwards compatibility - Scott 2020-05-07
+void ExportConfig(char fconfigname[290],int fnamesize)
+{
+	FILE *fconfig;
+	int i=0,j=0,k=0;
+	int xval=16,yval=16,zval=10;
+	char buff[500],buff2[190],buff3[31];
 
+	if((fconfig=fopen(fconfigname,"w"))==NULL)
+	{
+		//InsertListItem(panelHandle,PANEL_DEBUG,-1,buff,1);
+		MessagePopup("Save Error","Failed to save configuration file");
+	}
+
+	// write out analog channel info
+	sprintf(buff,"Analog Channels\n");
+	fprintf(fconfig,buff);
+	sprintf(buff,"Row,Channel,Name,tbias,tfcn,MaxVolts,MinVolts,Units\n");
+	fprintf(fconfig,buff);
+	for(i=1;i<=NUMBERANALOGCHANNELS;i++)
+	{
+		strncpy(buff3,AChName[i].chname,30);
+		sprintf(buff,"%d,%d,%s,%f,%f,%f,%f,%s\n",i,AChName[i].chnum,buff3,AChName[i].tbias
+			,AChName[i].tfcn,AChName[i].maxvolts,AChName[i].minvolts,AChName[i].units);
+		fprintf(fconfig,buff);
+	}
+	// Write out digital Channel info
+	sprintf(buff,"Digital Channels\n");
+	fprintf(fconfig,buff);
+	sprintf(buff,"Row,Channel,Name\n");
+	fprintf(fconfig,buff);
+
+	for(i=1;i<=NUMBERDIGITALCHANNELS;i++)
+	{
+		sprintf(buff,"%d,%d,%s\n",i,DChName[i].chnum,DChName[i].chname);
+		fprintf(fconfig,buff);
+	}
+
+	fclose(fconfig);
+}
 
 
 

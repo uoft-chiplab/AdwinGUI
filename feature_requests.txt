@@ -1,15 +1,13 @@
 Feature Requests
 
-
+------
+Major:
+------
 
 Move all saving functions to their own c file.
 
 Decouple saving a sequence from the gui itself. Now, there are things saved in the .pan file that get lost if loading with a changed gui version.
 
-
-Move config files to a separate (sub)directory.
-
-Add capability for another analog and digital card.
 
 Broadly, clean up (duplicate and misplaced) function definitions.
 
@@ -18,17 +16,23 @@ Refactor code into appropriate files.
 
 Improve DDS user interface (both in analog table and in DDS settings)
 
-
-
-Change end of scan question about saving mscan list to have better default.
-Change default saving of panel (not scan) to make directory as well (as scan does).
-
+Add capability for another analog and digital card.
 
 Stop the sequence based on condition
 	Writing to a communication file as interlock.
 	Check things are okay before starting a new cycle.
 
 
+------
+Minor:
+------
+
+Change end of scan question about saving mscan list to have better default.
+Change default saving of panel (not scan) to make directory as well (as scan does).
+
+Move config files to a separate (sub)directory.
+
+Format the code consistently. (indentation, capitalization, spaces, et cetera)
 
 
 
