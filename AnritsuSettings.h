@@ -28,7 +28,7 @@
           /* (no menu bars in the resource file) */
 
 
-     /* Callback Prototypes: */ 
+     /* Callback Prototypes: */
 
 int  CVICALLBACK ANRITSU_SET_DONE_CALLBACK(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);
 

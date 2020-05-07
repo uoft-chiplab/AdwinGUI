@@ -26,7 +26,7 @@
           /* (no menu bars in the resource file) */
 
 
-     /* Callback Prototypes: */ 
+     /* Callback Prototypes: */
 
 int  CVICALLBACK ExitLaserSettings(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);
 int  CVICALLBACK LASER_TOGGLE_CALLBACK(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);

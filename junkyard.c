@@ -17,14 +17,14 @@ void ConvertIntToStr(int int_val, char *int_str)
 {
 
 	int i,j;
-	
+
 	for (i=j=floor(log10(int_val));i>=0;i--)
 	{
 		int_str[i] = (char) (((int) '0') + floor(((int) floor((int_val/pow(10,(j-i))))%10)));
 	}
-	
+
 	int_str[j+1] = '\0';
-	
+
 	return;
 }
 

@@ -2,16 +2,16 @@
 #include "windows.h"
 
 #include <visa.h>
-#include <visatype.h>    
+#include <visatype.h>
 #include <gpib.h>
 #include "toolbox.h"
 #include "ScanTableLoader.h"
-#include "Adwin.h" 
+#include "Adwin.h"
 
 //To DO:  add more DDS 'clips' for copy/paste routines
 
 //2006
-//March 9:  Reorder the routines to more closely match the order in which they are executed.  
+//March 9:  Reorder the routines to more closely match the order in which they are executed.
 //          Applies to the 'engine' but not the cosmetic/table handling routnes
 
 
@@ -31,7 +31,7 @@
 #include "AnritsuSettings2.h"
 #include "LaserTuning.h"
 #include "Processor.h"
-#include "GPIB_SRS_SETUP.h"  
+#include "GPIB_SRS_SETUP.h"
 #include "GPIB_SRS_SETUP2.h"
 #include "vars.h"
 #include "formatio.h"
@@ -71,7 +71,7 @@ int CVICALLBACK CMD_RUN_CALLBACK (int panel, int control, int event,
 		void *callbackData, int eventData1, int eventData2)
 {
 	int repeat=0;
-	
+
 	switch (event)
 		{
 		case EVENT_COMMIT:
@@ -82,7 +82,7 @@ int CVICALLBACK CMD_RUN_CALLBACK (int panel, int control, int event,
 			ChangedVals = TRUE;	  // Forces the BuildUpdateList() routine to generate new data for the ADwin
 			scancount=0;
 			GetCtrlVal(panelHandle,PANEL_TOGGLEREPEAT,&repeat);  // reads the state of the "repeat" switch
-			if(repeat==TRUE)	  
+			if(repeat==TRUE)
 			{
 				SetCtrlAttribute (panelHandle, PANEL_TIMER, ATTR_ENABLED, 1);
 				//activate timer:  calls TIMER_CALLBACK to restart the RunOnce commands after a set time.
@@ -95,7 +95,7 @@ int CVICALLBACK CMD_RUN_CALLBACK (int panel, int control, int event,
 			RunOnce();		// starts the routine to build the ADwin data.
 			break;
 		}
-		
+
 	return 0;
 }
 
@@ -104,23 +104,23 @@ int CVICALLBACK CMD_RUN_CALLBACK (int panel, int control, int event,
 // could be integrated into the CMD_RUN routine.... but this works
 int CVICALLBACK CMD_SCAN_CALLBACK (int panel, int control, int event,
 		void *callbackData, int eventData1, int eventData2)
-{		
+{
 	int repeat=0,status;
 	switch (event)
 		{
 		case EVENT_COMMIT:
 			if (parameterscanmode == 0)
 			{	// Multi-parameter scan (leaving old code untouched in else statement - 2012-10-07)
-				
+
 				status = SetupScanFiles(16, MultiScan.CommandsFilePath);// 1 on success, -1 otherwise
 				if( status == 1 ){
 					MultiScan.NextCommandsFileNumber = 0;// For GetNewMultiScanCommands()
 					MultiScan.CurrentStep = 0;// For GetNewMultiScanCommands()
 					GetNewMultiScanCommands();
-				
+
 					UpdateMultiScanValues(TRUE);
 					SetCtrlVal (panelHandle, PANEL_MULTISCAN_LED1, MultiScan.Active);
-						
+
 					// Write the info file for the first time.
 					writeToScanInfoFile();
 				}
@@ -129,16 +129,16 @@ int CVICALLBACK CMD_SCAN_CALLBACK (int panel, int control, int event,
 			{   // Not touching for now ... if everything works fine, then all this can be changed into a
 				// switch question ... I guess that will never happen ...
  				if (TwoParam)
-				status = ConfirmPopup ("Confirm Scan", "Confirm: Begin Experiment using 2 Parameter Scan?");			
+				status = ConfirmPopup ("Confirm Scan", "Confirm: Begin Experiment using 2 Parameter Scan?");
 				else
-				status = ConfirmPopup ("Confirm Scan", "Confirm: Begin Experiment using 1 Parameter Scan?");			
+				status = ConfirmPopup ("Confirm Scan", "Confirm: Begin Experiment using 1 Parameter Scan?");
 				if (status==1)
 				{
 					UpdateScanValue(TRUE); // sending value of 1 resets the scan counter.
 					PScan.Scan_Active=TRUE;
 				}
 			}
-			
+
 			// In case the start of the  scan was confirmed (common to either scanmode)
 			if (status == 1)
 			{
@@ -152,7 +152,7 @@ int CVICALLBACK CMD_SCAN_CALLBACK (int panel, int control, int event,
 			}
 			break;
 		}
-		
+
 	return 0;
 }
 
@@ -165,8 +165,8 @@ int CVICALLBACK CMD_SCAN_CALLBACK (int panel, int control, int event,
 // Returns -1 otherwise.
 //*********************************************************************
 int SetupScanFiles(int version, char *outputCmdsDirPath){
-	
-	
+
+
 	FILE *fpini;
 	char c;
 	int inisize = 0;
@@ -174,13 +174,13 @@ int SetupScanFiles(int version, char *outputCmdsDirPath){
 	int returnStatus;
 	int loadonboot;
 	int confirmStatus;
-	
+
 	int panStatus;
 	int panFilePathLength;
 	char panFilePath[MAX_PATHNAME_LEN];
 	char panFileDir[MAX_PATHNAME_LEN];
 	char panFileName[MAX_PATHNAME_LEN];
-	
+
 	int runDirStatus;
 	char runDirPath[MAX_PATHNAME_LEN];
 	int commandsDirStatus;
@@ -189,24 +189,24 @@ int SetupScanFiles(int version, char *outputCmdsDirPath){
 	char plotsDirPath[MAX_PATHNAME_LEN];
 	int imgsDirStatus;
 	char imgsDirPath[MAX_PATHNAME_LEN];
-	
+
 	char mscanFileDirPath[MAX_PATHNAME_LEN];
 	char *buffPtr;
-	
+
 	char buff[MAX_PATHNAME_LEN];
-	
+
 	//Check if .ini file exists.  Load it if it does.
 	// Scott Note: The behaviour of always opening the latest folder should already be present in
 	// 	labwindows/cvi. Except for the very first time, this likely isn't doing anything. Pfft, I
 	//	suppose I will keep it for now.
-	if(!(fpini=fopen("gui.ini","r"))==NULL)		// if "gui.ini" exists, then read it  Just contains a filename.  
+	if(!(fpini=fopen("gui.ini","r"))==NULL)		// if "gui.ini" exists, then read it  Just contains a filename.
 	{												//If not, do nothing
 		while (fscanf(fpini,"%c",&c) != -1) iniFilename[inisize++] = c;  //Read the contained name
 	}
  	fclose(fpini);
- 	
+
  	printf("iniFilename:\n>%s<\n", iniFilename);
- 	
+
 	// Select file name for the .pan, .gpib, and .arr files
 	panStatus = FileSelectPopup ("", "*.pan", "", "Save Settings", VAL_SAVE_BUTTON, 0, 0, 1, 1, panFilePath);
 	// Return value of FileSelectPopup is
@@ -225,15 +225,15 @@ int SetupScanFiles(int version, char *outputCmdsDirPath){
 	}
 	else if( panStatus == 1 || panStatus == 2 ){
 		// Now we should have a valid filename in. So write the save files.
-		
+
 		printf("panFilePath:\n>%s<\n", panFilePath);
-		
+
 		// First write the panel gui file (.pan)
 		// This one can be problematic when elements have been removed from the GUI!!!
 		// The third argument to SavePanelState is a unique state index so that you can save multiple
 		// panel states in the same file. Here it is arbitrarily set to 1.
 		SavePanelState(PANEL, panFilePath, 1);
-		
+
 		// Next write the .ini file in the GUI progam directory
 		GetMenuBarAttribute (menuHandle, MENU_FILE_BOOTLOAD, ATTR_CHECKED, &loadonboot);
 		if(!(fpini=fopen("gui.ini","w"))==NULL)
@@ -242,53 +242,53 @@ int SetupScanFiles(int version, char *outputCmdsDirPath){
 			fprintf(fpini, "\n%d", loadonboot);
 		}
 		fclose(fpini);
-		
+
 		// Save the arrays and the laser data together ie. V16 not V15.
 		panFilePathLength = strlen(panFilePath);
 		SaveArraysV16(panFilePath, panFilePathLength);
-		
+
 		// Add the name of the .pan file to the program header
 		SplitPath(panFilePath, NULL, panFileDir, panFileName);
 		strcpy(buff, SEQUENCER_VERSION);
 		strcat(buff, panFileName);
 		SetPanelAttribute(panelHandle, ATTR_TITLE, buff);
-		
+
 		// Now we have saved everything that used to be saved.
 		// Now want to create folder with same name as .pan file (minus .pan)
 		//	and to create the commands folder inside it.
-		
+
 		// Try creating the run folder
 		strcpy(buff, panFileName);
 		buff[strlen(buff)-4] = '\0';// Assume the last 4 characters of panFileName are the ".pan"
 		MakePathname(panFileDir, buff, runDirPath);
-		
+
 		printf("runDirPath:\n>%s<\n", runDirPath);
-		
-		
+
+
 		runDirStatus = MakeDir(runDirPath);
-		
+
 		if( runDirStatus == 0 ){// Successfully created directory
-			
+
 			// Form the commands subdirectory path and print it.
 			strcpy(buff, "commands");
 			MakePathname(runDirPath, buff, commandsDirPath);
 			printf("commandsDirPath:\n>%s<\n", commandsDirPath);
-			
+
 			// Form the plots subdirectory path and print it.
 			strcpy(buff, "plots");
 			MakePathname(runDirPath, buff, plotsDirPath);
 			printf("plotsDirPath:\n>%s<\n", plotsDirPath);
-			
+
 			// Form the imgs subdirectory path and print it.
 			strcpy(buff, "imgs");
 			MakePathname(runDirPath, buff, imgsDirPath);
 			printf("imgsDirPath:\n>%s<\n", imgsDirPath);
-			
+
 			// Attempt to create the subdirectories
 			commandsDirStatus = MakeDir(commandsDirPath);
 			plotsDirStatus = MakeDir(plotsDirPath);
 			imgsDirStatus = MakeDir(imgsDirPath);
-			
+
 			// Check status of subdirectories and ask user to start scan if okay
 			if( commandsDirStatus < 0 ){// Error
 				printf("Error when creating commands directory. Error code: %d\n", commandsDirStatus);
@@ -338,10 +338,10 @@ int SetupScanFiles(int version, char *outputCmdsDirPath){
 				MessagePopup ("Directory Error", "Unknown status code from MakeDir");
 				returnStatus = -1;
 			}
-		
+
 		}
 		else if( runDirStatus == -9 ){// The directory (or file) already exists
-			
+
 			// Ask for confimation to use existing directory.
 			confirmStatus = ConfirmPopup ("Confirm use of existing directory",
 							"Warning! Use existing scan directory?");
@@ -351,27 +351,27 @@ int SetupScanFiles(int version, char *outputCmdsDirPath){
 			else if( confirmStatus == 1 ){// User selected yes
 				// Since the scan directory already exists the subdirectories probably also
 				// already exist so we should accept those that exist as is.
-			
+
 				// Form the commands subdirectory path and print it.
 				strcpy(buff, "commands");
 				MakePathname(runDirPath, buff, commandsDirPath);
 				printf("commandsDirPath:\n>%s<\n", commandsDirPath);
-			
+
 				// Form the plots subdirectory path and print it.
 				strcpy(buff, "plots");
 				MakePathname(runDirPath, buff, plotsDirPath);
 				printf("plotsDirPath:\n>%s<\n", plotsDirPath);
-			
+
 				// Form the imgs subdirectory path and print it.
 				strcpy(buff, "imgs");
 				MakePathname(runDirPath, buff, imgsDirPath);
 				printf("imgsDirPath:\n>%s<\n", imgsDirPath);
-			
+
 				// Attempt to create the subdirectories
 				commandsDirStatus = MakeDir(commandsDirPath);
 				plotsDirStatus = MakeDir(plotsDirPath);
 				imgsDirStatus = MakeDir(imgsDirPath);
-				
+
 				// Check status of subdirectories and ask user to start scan if okay
 				if( commandsDirStatus < 0 && commandsDirStatus != -9 ){// Error (but not error if dir already exists)
 					printf("Error when creating commands directory. Error code: %d\n", commandsDirStatus);
@@ -421,8 +421,8 @@ int SetupScanFiles(int version, char *outputCmdsDirPath){
 					MessagePopup ("Directory Error", "Unknown status code from MakeDir");
 					returnStatus = -1;
 				}
-			
-			
+
+
 			}
 			else {// Error
 				printf("Error in confirm overwrite scan directory popup. Error code: %d\n", confirmStatus);
@@ -444,7 +444,7 @@ int SetupScanFiles(int version, char *outputCmdsDirPath){
 		MessagePopup ("File Error", "Unknown status code from FileSelectPopup");
 		returnStatus = -1;
 	}
-	
+
 	return returnStatus;
 }
 
@@ -466,7 +466,7 @@ int CVICALLBACK TIMER_CALLBACK (int panel, int control, int event,
 			SetCtrlAttribute (panelHandle, PANEL_TIMER, ATTR_ENABLED, FALSE);
 			//disable timer and re-enable in the update list loop, if the repeat butn is pressed.
 			//reset the timer too and set a timer time of 50ms?
-			
+
 			if (parameterscanmode == 0)
 			{	// Multi-parameter scan (leaving old code untouched in else statement - 2012-10-07)
 				if (MultiScan.Active)
@@ -497,7 +497,7 @@ int CVICALLBACK TIMER_CALLBACK (int panel, int control, int event,
 							MultiScan.Done = FALSE;
 							AutoExportMultiScanBuffer(); // save to file
 							EnableScanControls();
-							SetCtrlVal (panelHandle, PANEL_MULTISCAN_LED1, MultiScan.Active); 
+							SetCtrlVal (panelHandle, PANEL_MULTISCAN_LED1, MultiScan.Active);
 							SetCtrlVal (panelHandle, PANEL_MULTISCAN_LED2, MultiScan.Done);
 							SetCtrlAttribute(panelHandle,PANEL_MULTISCAN_DECORATION,
 									ATTR_FRAME_COLOR,VAL_TRANSPARENT);
@@ -511,7 +511,7 @@ int CVICALLBACK TIMER_CALLBACK (int panel, int control, int event,
 					}
 					else
 					{   // Keep going with the scan if not done.
-						RunOnce(); 
+						RunOnce();
 					}
 				}
 				else
@@ -525,14 +525,14 @@ int CVICALLBACK TIMER_CALLBACK (int panel, int control, int event,
 				// switch question ... I guess that will never happen ...
 				if(PScan.Scan_Active==TRUE)
 				{
-					UpdateScanValue(FALSE);  
+					UpdateScanValue(FALSE);
 				}
 				if(PScan.ScanDone==FALSE||PScan.Scan_Active==FALSE)
-				{	
+				{
 					RunOnce();
 				}
 			}
-			
+
 			break;
 		}
 	return 0;
@@ -541,7 +541,7 @@ int CVICALLBACK TIMER_CALLBACK (int panel, int control, int event,
 //*********************************************************************************************************
 //By: Stefan Myrskog
 //Turns off the TIMER object, and turns off the "repeat" button
-//Lets the ADwin finish its current program.  Interrupting the program partway can be bad for the 
+//Lets the ADwin finish its current program.  Interrupting the program partway can be bad for the
 //equipment as the variables are not cleared in memory and updates get out of sync.
 //Edited: Aug8, 2005
 //Change:  Force all panel controls related to scanning to hide.
@@ -549,7 +549,7 @@ int CVICALLBACK CMDSTOP_CALLBACK (int panel, int control, int event,
 		void *callbackData, int eventData1, int eventData2)
 {
 	int j;
-	
+
 	SetCtrlAttribute (panelHandle_sub2,SUBPANEL2,ATTR_VISIBLE,0);	 // hide the SCAN display panel
 	switch (event)
 		{
@@ -557,11 +557,11 @@ int CVICALLBACK CMDSTOP_CALLBACK (int panel, int control, int event,
 			// Stop timer and switch repeat off.
 			SetCtrlAttribute (panelHandle, PANEL_TIMER, ATTR_ENABLED, 0);
 			SetCtrlVal(panelHandle,PANEL_TOGGLEREPEAT,0);
-			
+
 			SetCtrlVal(panelHandle, PANEL_LED_RED, 0); // Build-indicator LEDs
 			SetCtrlVal(panelHandle, PANEL_LED_YEL, 0);
 			SetCtrlVal(panelHandle, PANEL_LED_GRE, 0);
-			
+
 			//check to see if we need to export a Scan history
 			if (parameterscanmode == 0)
 			{	// Multi-parameter scan (leaving old code untouched in else statement - 2012-10-07)
@@ -574,14 +574,14 @@ int CVICALLBACK CMDSTOP_CALLBACK (int panel, int control, int event,
 							MakePoint(1,ScanVal.Current_Step+1), ATTR_TEXT_BGCOLOR,VAL_WHITE);
 					}
 					AutoExportMultiScanBuffer();
-					
+
 					// Spoof the Scan actually have finished and call update to put values back.
 					MultiScan.Done = TRUE;
 					UpdateMultiScanValues(FALSE);
-					
+
 					MultiScan.Active = FALSE;
 					MultiScan.Done = FALSE;
-					SetCtrlVal (panelHandle, PANEL_MULTISCAN_LED1, MultiScan.Active); 
+					SetCtrlVal (panelHandle, PANEL_MULTISCAN_LED1, MultiScan.Active);
 					SetCtrlVal (panelHandle, PANEL_MULTISCAN_LED2, MultiScan.Done);
 					SetCtrlAttribute(panelHandle,PANEL_MULTISCAN_DECORATION,
 							ATTR_FRAME_COLOR,VAL_TRANSPARENT);
@@ -596,16 +596,16 @@ int CVICALLBACK CMDSTOP_CALLBACK (int panel, int control, int event,
 				{
 					SetTableCellAttribute (panelHandle, PANEL_SCAN_TABLE,MakePoint(1,ScanVal.Current_Step+1), ATTR_TEXT_BGCOLOR,
 							   VAL_WHITE);
-  
+
 			    	if(TwoParam)
 			    	{
 			    		SetTableCellAttribute (panelHandle, PANEL_SCAN_TABLE_2,MakePoint(1,Scan2Val.Current_Step+1), ATTR_TEXT_BGCOLOR,
 							   VAL_WHITE);
-			    		ExportScan2Buffer(); 
+			    		ExportScan2Buffer();
 			    	}
 			    	else
 			    		ExportScanBuffer();
-				
+
 				}
 			}
 			DrawNewTable(TRUE);
@@ -619,7 +619,7 @@ int CVICALLBACK CMDSTOP_CALLBACK (int panel, int control, int event,
 
 int CVICALLBACK VALS_CHANGED_CALLBACK (int panel, int control, int event,
 		void *callbackData, int eventData1, int eventData2){
-	
+
 	int test;
 	switch( event ){
 		case EVENT_COMMIT:
@@ -648,58 +648,58 @@ void RunOnce (void)
 	static struct LaserTableValues	MetaLaserArray[NUMBERLASERS][NUMBEROFMETACOLUMNS];
 	static unsigned int MetaTriggerArray[NUMBERLASERS][NUMBEROFMETACOLUMNS];
 	static char errorBuff[200],write_buffer[200];
-	
+
 	static int tsize;// Number of columns or alternatively the number of time steps.
-	
+
 	int i,j,k,mindex;
 	int insertpage,insertcolumn,x,y,lastpagenum,FinalPageToUse;
 	int device;
 	BOOL nozerofound,nozerofound_2;
-	
+
 	static int forceBuild = 0;
-	
+
 	double timeStart, timeEnd;
 	double timeStartBLU, timeEndBLU;
 	double timeStartDraw, timeEndDraw;
-	
+
 	timeStart = Timer();
-	
-	
-	GetCtrlVal(panelHandle, PANEL_FORCE_BUILD_CHK, &forceBuild); 
-	
+
+
+	GetCtrlVal(panelHandle, PANEL_FORCE_BUILD_CHK, &forceBuild);
+
 	// Reset the colour of the "Changed" button.
 	SetCtrlAttribute(panelHandle,
 						PANEL_VALS_CHANGED,
 						ATTR_CMD_BUTTON_COLOR,
 						CLR_CHANGED_BUTTON_DEFAULT);
-	
+
 
 	// SetCtrlVal(panelHandle, PANEL_LED_RED, 1); // Build-indicator LEDs
 	// SetCtrlVal(panelHandle, PANEL_LED_YEL, 0);
 	// SetCtrlVal(panelHandle, PANEL_LED_GRE, 0);
 
-	
+
 	SeqErrorCount=0;  // For each run reset error count to zero
-	
-	
+
+
 	isdimmed=TRUE;
 	lastpagenum=10;
-	
-	
+
+
 	// V16.1.6: If nothing needs to be changed then bypass building MetaTimeArray and friends.
 	if( ChangedVals == TRUE || forceBuild == TRUE ){// ending bracket not indented
-	
+
 	// Find the position of the imaging panel (last panel on the GUI), this panel can be positioned inside other panels
 	GetCtrlVal (panelHandle, PANEL_NUM_INSERTIONPAGE, &insertpage);
 	GetCtrlVal (panelHandle, PANEL_NUM_INSERTIONCOL, &insertcolumn);
-	
+
 	//Lets build the times list first...so we know how long it will be.
 	//check each page...find columns in use and dim out unused....(with 0 or negative time values)
-	SetCtrlAttribute(panelHandle,PANEL_ANALOGTABLE,ATTR_TABLE_MODE,VAL_COLUMN); 
+	SetCtrlAttribute(panelHandle,PANEL_ANALOGTABLE,ATTR_TABLE_MODE,VAL_COLUMN);
 	mindex=0;
-	FinalPageToUse=NUMBEROFPAGES-2;//issues with '0 or 1 indexing'.  If there are 10 pages, we end at 9.  
+	FinalPageToUse=NUMBEROFPAGES-2;//issues with '0 or 1 indexing'.  If there are 10 pages, we end at 9.
 	//Page 10(imaging) handled separately.
-	
+
 	if(insertpage==NUMBEROFPAGES-1) //if the imaging page is set for 10, then set the final page as 10.
 	{
 		FinalPageToUse++;
@@ -732,16 +732,16 @@ void RunOnce (void)
 										MetaAnalogArray[y][mindex].fcn=1; ///Use code on right to mirror prev fncn MetaAnalogArray[y][mindex].fcn=MetaAnalogArray[y][mindex-1].fcn;
 										MetaAnalogArray[y][mindex].fval=MetaAnalogArray[y][mindex-1].fval;
 										MetaAnalogArray[y][mindex].tscale=MetaAnalogArray[y][mindex-1].tscale;
-									
+
 									}
 									else if(AnalogTable[x][y][lastpagenum].fcn!=6)
 									{
-										MetaAnalogArray[y][mindex].fcn=AnalogTable[x][y][lastpagenum].fcn;				
+										MetaAnalogArray[y][mindex].fcn=AnalogTable[x][y][lastpagenum].fcn;
 										MetaAnalogArray[y][mindex].fval=AnalogTable[x][y][lastpagenum].fval;
 										MetaAnalogArray[y][mindex].tscale=AnalogTable[x][y][lastpagenum].tscale;
 									}
 								}
-								
+
 								for(y=0;y<NUMBERLASERS;y++)
 								{
 									if(LaserTable[y][x][lastpagenum].fcn!=0)
@@ -749,10 +749,10 @@ void RunOnce (void)
 									else
 										MetaLaserArray[y][mindex]=MetaLaserArray[y][mindex-1];
 								}
-								
+
 								for(y=1;y<=NUMBERDIGITALCHANNELS;y++)
 								{
-									MetaDigitalArray[y][mindex]=DigTableValues[x][y][lastpagenum];   
+									MetaDigitalArray[y][mindex]=DigTableValues[x][y][lastpagenum];
 								}
 								MetaDDSArray[mindex] = ddstable[x][lastpagenum];
 								MetaDDS2Array[mindex] = dds2table[x][lastpagenum];
@@ -764,16 +764,16 @@ void RunOnce (void)
 							}
 						}
 					}
-					
+
 /*end A */		}
-				
-				if((nozerofound==1)&&(TimeArray[i][k]>0)) 
+
+				if((nozerofound==1)&&(TimeArray[i][k]>0))
 				//ignore all columns after the first
 				// time 0 (for that page)
 				{
 					mindex++; //increase the number of columns counter
 					MetaTimeArray[mindex]=TimeArray[i][k];
-					
+
 					//go through for each analog channel
 					for(j=1;j<=NUMBERANALOGCHANNELS;j++)
 					{
@@ -791,7 +791,7 @@ void RunOnce (void)
 							MetaAnalogArray[j][mindex].tscale=AnalogTable[i][j][k].tscale;
 						}
 					}
-					
+
 					for(j=0;j<NUMBERLASERS;j++)
 					{
 						if(LaserTable[j][i][k].fcn!=0)
@@ -799,9 +799,9 @@ void RunOnce (void)
 						else
 							MetaLaserArray[j][mindex]=MetaLaserArray[j][mindex-1];
 					}
-					
-					
-					for(j=1;j<=NUMBERDIGITALCHANNELS;j++)  
+
+
+					for(j=1;j<=NUMBERDIGITALCHANNELS;j++)
 					{
 						MetaDigitalArray[j][mindex]=DigTableValues[i][j][k];
 					}
@@ -815,7 +815,7 @@ void RunOnce (void)
 					// Don't know why the preceding line is necessary...
 					// But the time information wasn't always copied in... or it was erased elsewhere
 				}
-				else if (TimeArray[i][k]==0) 
+				else if (TimeArray[i][k]==0)
 				{
 					nozerofound = FALSE;
 				}
@@ -826,22 +826,22 @@ void RunOnce (void)
 
 
 	}// end if( ChangedVals == TRUE || forceBuild == TRUE )
-	
-	
+
+
 	isdimmed=TRUE;
-	
-	
+
+
 	timeStartDraw = Timer();
 	DrawNewTable(TRUE);
 	timeEndDraw = Timer();
-	
+
 	// Programs Rabbit
 	timeStartBLU = Timer();
 	BuildLaserUpdates(MetaLaserArray, MetaTimeArray, MetaTriggerArray, tsize, forceBuild);
 	timeEndBLU = Timer();
-	
-    
-    // Send the new arrays to BuildUpdateList()	
+
+
+    // Send the new arrays to BuildUpdateList()
     if (SeqErrorCount>0)
     {
 			sprintf(errorBuff,"Bad Setting in Sequence.\nView %d Error[s]?",SeqErrorCount);
@@ -852,7 +852,7 @@ void RunOnce (void)
 					sprintf(errorBuff,"Error %d",j);
 					MessagePopup (errorBuff, SeqErrorBuffer[j]);
 				}
-			
+
 			}
 			if (ConfirmPopup("Error Directive","Execute Sequence Anyways?\n(not recommened)"))
 			{
@@ -863,14 +863,14 @@ void RunOnce (void)
 	{
 		BuildUpdateList(MetaTimeArray,MetaAnalogArray,MetaDigitalArray,MetaDDSArray,MetaDDS2Array,MetaDDS3Array,MetaTriggerArray,tsize,forceBuild);
 	}
-	
+
 	//And communicate with the microwave source
     // if the ON button is flicked
     if (AnritsuSettingValues[0].com_on == 1)
     {
-    	AnritsuCOMMUNICATE ();	
+    	AnritsuCOMMUNICATE ();
     }
-    
+
     // Program GPIB devices if communication set to active and news are to be told.
     for (j=0;j<=NUMBERGPIBDEV;j++)
     {   // check whether communication is set to active
@@ -883,8 +883,8 @@ void RunOnce (void)
     		}
     	}
     }
-	
-	
+
+
 	timeEnd = Timer();
 	//printf("RunOnce: EndDraw-StartDraw: %f seconds.\n", timeEndDraw-timeStartDraw);
 	//printf("RunOnce: EndBLU-StartBLU: %f seconds.\n", timeEndBLU-timeStartBLU);
@@ -902,50 +902,50 @@ void BuildUpdateList(double TMatrix[],
 					 int numtimes,
 					 int forceBuild){
 	/*
-		
+
 	TMatrix[update period#] -- stores the interval time of each column
 	AMat[channel#][update period#] -- stores info located in the analog table
-	DMat[channel#][update period#] -- 
+	DMat[channel#][update period#] --
 	DDS -- note is_stop=1 means DDS OFF
-	
+
 	all the above have 500 update period elements note that valid elements are base1
-	
+
 	numtimes = the actual number of valid update period elements.
 
-	
+
 	Generate the data that is sent to the ADwin and sends the data.
-	From the meta-lists, we generate 3 arrays.  
-	UpdateNum - each entry is the number of channel updates that we perform during the ADwin EVENT, where an 
-				ADwin event is an update cycle, i.e. 10 microseconds, 100 microseconds... etc.  We advance  through this 
+	From the meta-lists, we generate 3 arrays.
+	UpdateNum - each entry is the number of channel updates that we perform during the ADwin EVENT, where an
+				ADwin event is an update cycle, i.e. 10 microseconds, 100 microseconds... etc.  We advance  through this
 				array once per ADwin Event.  UpdateNum controls how fast we scan through ChNum and ChVal
 	ChNum - 	An array that contains the channel number to be updated. Synchronous with ChVal.  	   Channels listed below
-	ChVal -		An array that contains the value to be written to a channel. Synchronous with ChVal.  	
-		
-	ChNum -     Value 1-32:  Analog lines, 4 cards with 8 lines each.  ChVal is -10V to 10V   
+	ChVal -		An array that contains the value to be written to a channel. Synchronous with ChVal.
+
+	ChNum -     Value 1-32:  Analog lines, 4 cards with 8 lines each.  ChVal is -10V to 10V
 				Value 51:	 DDS1 line.   ChVal is either a 2-bit value (0-3) to write, or (4-7) a reset signal
-				Value 52:	 DDS2 line.   ChVal is either a 2-bit value (0-3) to write, or (4-7) a reset signal				
+				Value 52:	 DDS2 line.   ChVal is either a 2-bit value (0-3) to write, or (4-7) a reset signal
 				Value 101, 102  First 16 and last 16 lines on the first DIO card.  ChVal is a 16 bit integer
 				Value 103, 104	First 16 and last 16 lines on the second DIO card. ChVal is a 16 bit integer
-				
+
     Mar 09_2006:Added ChNum 201,202   These  are codes to enable/disable looping.
-                Corresponding ChVal is the number of loops. 
+                Corresponding ChVal is the number of loops.
 	dds_cmd_seq List of dds commands, parsed into 2-bit sections, or reset lines to be written
-				Commands are listed along with the time they should occur at.	
+				Commands are listed along with the time they should occur at.
 	*/
-	
-	
-	
-	
-	
-	
-	BOOL UseCompression,ArraysToDebug,StreamSettings; 
-	
+
+
+
+
+
+
+	BOOL UseCompression,ArraysToDebug,StreamSettings;
+
 	FILE *fp;
 	int NewTimeMat[500];
 	int i=0,j=0,k=0,m=0,n=0,tau=0,p=0,imax;
 	int nupcurrent=0,nuptotal=0,checkresettozero=0;
 	int usefcn=0,digchannel;  //Bool
-	unsigned int digval,digval2,digval3,digval4,LastDVal=0,LastDVal2=0,LastDVal3=0,LastDVal4=0,lasTrigVal=0;  
+	unsigned int digval,digval2,digval3,digval4,LastDVal=0,LastDVal2=0,LastDVal3=0,LastDVal4=0,lasTrigVal=0;
 	int UsingFcns[NUMBERANALOGCHANNELS+1]={0},count=0,ucounter=0,counter,channel;
 	double LastAval[NUMBERANALOGCHANNELS+1]={0},NewAval,TempChVal,TempChVal2;
 	int ResetToZeroAtEnd[110]; //1-24 for analog, ...but for now, if [1]=1 then all zero, else no change
@@ -972,10 +972,10 @@ void BuildUpdateList(double TMatrix[],
 	int ii=0,jj=0,kk=0,tt=0; // variables for loops
 	int start_offset=0;
 	time_t tstart,tstop;
-	double timestamp, timestamp1,timestamp2,timestamp3;						
+	double timestamp, timestamp1,timestamp2,timestamp3;
 	int size1, size2;
 	int runafterscan;
-	
+
 	// V16.1.6: Make UpdateNum, ChNum, and ChVal static pointers.
 	//			UpdateNumInitialized is 0 if UpdateNum etc. do not point to memory locations.
 	static int UpdateNumInitialized = 0;
@@ -983,27 +983,27 @@ void BuildUpdateList(double TMatrix[],
 	static int *ChNum = NULL;
 	static float *ChVal = NULL;
 	static int timesum = 0;
-	
-	
-	
-	
+
+
+
+
 	double timeStart, timeEnd;
 	double timeStartProcess, timeEndProcess;
-	
+
 	timeStart = Timer();
-	
-	
-	
-	//Change run button appearance while operating	
+
+
+
+	//Change run button appearance while operating
 	SetCtrlAttribute (panelHandle, PANEL_CMD_RUN,ATTR_CMD_BUTTON_COLOR, VAL_GREEN);
-	
+
 	// SetCtrlVal(panelHandle, PANEL_LED_RED, 0); // Build-indicator LEDs
 	// SetCtrlVal(panelHandle, PANEL_LED_YEL, 1);
 	// SetCtrlVal(panelHandle, PANEL_LED_GRE, 0);
-	
+
    	tstart=clock();				   // Timing information for debugging purposes
 	timemult=(int)(1/EventPeriod); //number of adwin upates per ms
-	
+
 	if(processorT1x==0)
 	{
 		AdwinTick = 0.000025;
@@ -1012,59 +1012,59 @@ void BuildUpdateList(double TMatrix[],
 	{
 		AdwinTick = 0.00001/3;
 	}
-	
+
 	GlobalDelay=EventPeriod/AdwinTick; // AdwintTick=0.000025ms=AW clock cycle (Gives #of clock cycles/update)
-	
-		 
-		 
-		 
+
+
+
+
 	// V16.1.6: Check each time if UpdateNum, ChNum, and ChVal need to be extended.
-	
+
 	//make a new time list...converting the TimeTable from milliseconds to number of events (numtimes=total #of columns)
 	temp_timesum = 0;
-	for (i=1;i<=numtimes;i++) 
+	for (i=1;i<=numtimes;i++)
 	{
 		NewTimeMat[i]=(int)(TMatrix[i]*timemult); //number of Adwin events in column i
 		temp_timesum += NewTimeMat[i];            //total number of Adwin events
 	}
 	if( temp_timesum > timesum ){
-		
+
 		ChangedVals = TRUE;// Redundant since timesum has changed;
 		//						but we MUST build UpdateNum again since we free it here.
-		
+
 		free(UpdateNum);
 		UpdateNum = calloc((int)((double)temp_timesum*1.2),sizeof(int));
 		if( UpdateNum == NULL ){ exit(1); }
-		
+
 		free(ChNum);
 		ChNum = calloc((int)((double)temp_timesum*4),sizeof(int));
 		if( ChNum == NULL ){ exit(1); }
-		
+
 		free(ChVal);
 		ChVal = calloc((int)((double)temp_timesum*4),sizeof(double));
 		if( ChVal == NULL ){ exit(1); }
-		
+
 		UpdateNumInitialized = 1;
 	}
 	if( !UpdateNumInitialized ){// Just in case.
-	
+
 		UpdateNum = calloc((int)((double)temp_timesum*1.2),sizeof(int));
 		if( UpdateNum == NULL ){ exit(1); }
-		
+
 		ChNum=calloc((int)((double)temp_timesum*4),sizeof(int));
 		if( ChNum == NULL ){ exit(1); }
-		
+
 		ChVal=calloc((int)((double)temp_timesum*4),sizeof(double));
 		if( ChVal == NULL ){ exit(1); }
-		
+
 		UpdateNumInitialized = 1;
 	}
 	timesum = temp_timesum;
-	
-	
-	
-	
-	
+
+
+
+
+
 	cycletime=(double)timesum/(double)timemult/1000;	// Total duration of the cycle, in seconds
 
 	sprintf(buff,"timesum %d",timesum);					// Print more debug info
@@ -1073,8 +1073,8 @@ void BuildUpdateList(double TMatrix[],
 	// Update the ADWIN array if the user values have changed or we are requiring a rebuild.
 	if( ChangedVals == TRUE || forceBuild == TRUE){
 
-    	timestamp1 = Timer(); 
-    	
+    	timestamp1 = Timer();
+
     	/* Update the array of DDS commands
 		EventPeriod is in ms, create_command_array in s, so convert units */
 		GetMenuBarAttribute (menuHandle, MENU_PREFS_SIMPLETIMING, ATTR_CHECKED, &UseSimpleTiming);
@@ -1092,24 +1092,24 @@ void BuildUpdateList(double TMatrix[],
 			DDS2Array[m].end_frequency=DDS2Array[m].end_frequency+DDS2offset;
 		///	DDS3Array[m].start_frequency=DDS3Array[m].start_frequency+DDS3offset;
 		///	DDS3Array[m].end_frequency=DDS3Array[m].end_frequency+DDS3offset;
-			
+
 		}
-		
-		
-		dds_cmd_seq = create_ad9852_cmd_sequence(DDSArray, numtimes,DDSFreq.PLLmult, 
+
+
+		dds_cmd_seq = create_ad9852_cmd_sequence(DDSArray, numtimes,DDSFreq.PLLmult,
 		DDSFreq.extclock,EventPeriod/1000);
 		// again, uncomment as needed
-   	      dds_cmd_seq_AD9858 = create_ad9858_cmd_sequence(DDS2Array, numtimes,DDS2_CLOCK, 
+   	      dds_cmd_seq_AD9858 = create_ad9858_cmd_sequence(DDS2Array, numtimes,DDS2_CLOCK,
 		EventPeriod/1000,0);	   // assume frequency offset of 0 MHz
-	    	
-    	/*dds_cmd_seq = create_ad9852_cmd_sequence(DDS3Array, numtimes,DDSFreq.PLLmult, 
+
+    	/*dds_cmd_seq = create_ad9852_cmd_sequence(DDS3Array, numtimes,DDSFreq.PLLmult,
 		DDSFreq.extclock,EventPeriod/1000);
    	    */
-   	    
 
-		
+
+
 		//Go through for each column that needs to be updated
-		
+
 		//Important Variables:
 		//count: Number of Adwin events until the current position
 		//nupcurrent: number of updates for the current Adwin event
@@ -1120,9 +1120,9 @@ void BuildUpdateList(double TMatrix[],
 			// if it's a non-step fcn, then keep a list of UsingFcns, and change it now
 			nupcurrent=0;
 			usefcn=0;
-			
+
 			// scan over the analog channel..find updated values by comparing to old values.
-			for (j=1;j<=NUMBERANALOGCHANNELS;j++)	
+			for (j=1;j<=NUMBERANALOGCHANNELS;j++)
 			{
 				LastAval[j]=-99;
 				if(AMat[j][i].fval!=AMat[j][i-1].fval)
@@ -1130,16 +1130,16 @@ void BuildUpdateList(double TMatrix[],
 					nupcurrent++;
 					nuptotal++;
 					ChNum[nuptotal]=AChName[j].chnum;
-					
+
 					NewAval=CalcFcnValue(AMat[j][i].fcn,AMat[j][i-1].fval,AMat[j][i].fval,AMat[j][i].tscale,0.0,TMatrix[i]);
 
  					TempChVal=AChName[j].tbias+NewAval*AChName[j].tfcn;
  					ChVal[nuptotal]=CheckIfWithinLimits(TempChVal,j);
- 					
+
 					if(AMat[j][i].fcn!=1)
 					{
 						usefcn++;
-						UsingFcns[usefcn]=j;	// mark these lines for special attention..more complex	
+						UsingFcns[usefcn]=j;	// mark these lines for special attention..more complex
 					}
 				}
 			}//done scanning the analog values.
@@ -1151,28 +1151,28 @@ void BuildUpdateList(double TMatrix[],
 			for(k=1;k<=NUMBERDIGITALCHANNELS;k++)
 			{
 				digchannel=DChName[k].chnum;
-			
+
 				if(digchannel<=32)
 				{
 					digval=digval+DMat[k][i]*int_power(2,DChName[k].chnum-1);
 				}
-			
+
 				if((digchannel>=101)&&(digchannel<=132))
 				{
 					digval2=digval2+DMat[k][i]*int_power(2,(DChName[k].chnum-100)-1);
 				}
 
 			}// finished computing current digital data
-		
+
 			if(digval!=LastDVal)
 			{
 				nupcurrent++;
 				nuptotal++;
-				ChNum[nuptotal]=101;		   
-				ChVal[nuptotal]=digval;		
+				ChNum[nuptotal]=101;
+				ChVal[nuptotal]=digval;
 			}
 			LastDVal=digval;
-			
+
 			/*** Check if any Lasers need triggering */
 			lasTrigVal=0;
 			for(k=0;k<NUMBERLASERS;k++)
@@ -1182,58 +1182,58 @@ void BuildUpdateList(double TMatrix[],
 					lasTrigVal+=int_power(2,(LaserProperties[k].DigitalChannel-100)-1);
 				}
 			}
-			
+
 			if(digval2!=LastDVal2||lasTrigVal>0)
 			{
 				nupcurrent++;
 				nuptotal++;
-				ChNum[nuptotal]=102;		   
-				ChVal[nuptotal]=digval2+lasTrigVal;		
+				ChNum[nuptotal]=102;
+				ChVal[nuptotal]=digval2+lasTrigVal;
 				LastDVal2=digval2;
 			}
-			
-		
+
+
 /*			if(!(digval3==LastDVal3))
 			{
 				nupcurrent++;
 				nuptotal++;
-				ChNum[nuptotal]=103;		   
-				ChVal[nuptotal]=digval3;		
+				ChNum[nuptotal]=103;
+				ChVal[nuptotal]=digval3;
 			}
 			LastDVal3=digval3;
 			if(!(digval4==LastDVal4))
 			{
 				nupcurrent++;
 				nuptotal++;
-				ChNum[nuptotal]=104;		   
-				ChVal[nuptotal]=digval4;		
+				ChNum[nuptotal]=104;
+				ChVal[nuptotal]=digval4;
 			}
 			LastDVal4=digval4;
-*/			
+*/
 
 			count++;
 			UpdateNum[count]=nupcurrent;
-			
-			//end of first scan  
+
+			//end of first scan
 			//now do the remainder of the loop...but just the complicated fcns, i.e. ramps, sine wave
-			
+
 			t=0;
 			while(t<NewTimeMat[i]-1)	   //-1 because the first event is dedicated to steps+digital chans
 			{
 				t++;
 				k=0;
 				nupcurrent=0;
-			
-				// If there were laser triggers we must set them low 
+
+				// If there were laser triggers we must set them low
 				if(lasTrigVal>0)
 				{
 					nupcurrent++;
 					nuptotal++;
-					ChNum[nuptotal]=102;		   
-					ChVal[nuptotal]=LastDVal2;		
+					ChNum[nuptotal]=102;
+					ChVal[nuptotal]=LastDVal2;
 					lasTrigVal=0;
 				}
-					
+
 				//look for a new DDS command, start_offset=0
 				tmp_dds = get_dds_cmd(dds_cmd_seq, count-1-start_offset);  //dds translator(zero base) runs 1 behind this counter
 				if (tmp_dds>=0)
@@ -1242,10 +1242,10 @@ void BuildUpdateList(double TMatrix[],
 					nuptotal++;
 					ChNum[nuptotal] = 51; //DDS1 dummy channel
 					ChVal[nuptotal] = tmp_dds;
-					
-				
-				} 
-				
+
+
+				}
+
 		/*		tmp_dds = get_dds_cmd(dds_cmd_seq_AD9858, count-1-start_offset);  //dds translator(zero base) runs 1 behind this counter
 				if (tmp_dds>=0)
 				{
@@ -1253,10 +1253,10 @@ void BuildUpdateList(double TMatrix[],
 					nuptotal++;
 					ChNum[nuptotal] = 52; //dummy channel
 					ChVal[nuptotal] = tmp_dds;
-				
-				} //done the DDS2				
-		*/		
-				
+
+				} //done the DDS2
+		*/
+
 				while(k<usefcn)
 				{
 					k++;
@@ -1274,38 +1274,38 @@ void BuildUpdateList(double TMatrix[],
 						LastAval[k]=TempChVal2;
 					}
 				}
-				
+
 				count++;
 				UpdateNum[count]=nupcurrent;
-				
+
 			}//Done this element of the TMatrix
-			
+
 		}//done scanning over times array
-		
+
 		//Find the largest of the arrays
 //		bigger=count;
 //		if(nuptotal>bigger) {bigger=nuptotal;}
-		
+
 		// read some menu options
-		GetMenuBarAttribute (menuHandle, MENU_PREFS_COMPRESSION, ATTR_CHECKED, &UseCompression);     
-		GetMenuBarAttribute (menuHandle, MENU_PREFS_SHOWARRAY, ATTR_CHECKED, &ArraysToDebug);     		
+		GetMenuBarAttribute (menuHandle, MENU_PREFS_COMPRESSION, ATTR_CHECKED, &UseCompression);
+		GetMenuBarAttribute (menuHandle, MENU_PREFS_SHOWARRAY, ATTR_CHECKED, &ArraysToDebug);
 		newcount=0;
-		
+
 		if(UseCompression)
 		{
 			OptimizeTimeLoop(UpdateNum,count,&newcount);
 		}
-		
+
 		if(ArraysToDebug)	  // only used if we suspect the ADwin code of being really faulty.
 		{					  // ArraysToDebug is a declare in vars.h
-			//imax=newcount;	  
+			//imax=newcount;
 			//if(newcount==0) {imax=count;}
 			//if(imax>1000){imax=1000;}
 			//for(i=1;i<imax+1;i++)
-			
-			
+
+
 			// this loop just writes out the first 1000 updates to the stdio window in the format
-			// i  UpdateNum    ChNum   Chval 
+			// i  UpdateNum    ChNum   Chval
 			k=1;
 			for(i=1;i<1000;i++)
 			{
@@ -1324,13 +1324,13 @@ void BuildUpdateList(double TMatrix[],
 				{
 					printf("\n");
 				}
-				
+
 			}
 		}
-		
-		
+
+
 		tstop=clock();
-		
+
 	/*	#ifdef PRINT_TO_DEBUG
 			sprintf(buff,"count %d",count);
 			InsertListItem(panelHandle,PANEL_DEBUG,-1,buff,1);
@@ -1340,15 +1340,15 @@ void BuildUpdateList(double TMatrix[],
 			InsertListItem(panelHandle,PANEL_DEBUG,-1,buff,1);
 			sprintf(buff,"time to generate arrays:   %d",tstop-tstart);
 			InsertListItem(panelHandle,PANEL_DEBUG,-1,buff,1);
-			
+
 		#endif		   */
-		
-	
+
+
 		if(processorT1x==0)
 		{
 			if(didboot==FALSE) // is the ADwin booted?  if not, then boot
 			{
-				Boot("C:\\ADWIN\\ADWIN10.BTL",0);           
+				Boot("C:\\ADWIN\\ADWIN10.BTL",0);
 				didboot=1;
 			}
 			if (didprocess==FALSE) // is the ADwin process already loaded?
@@ -1361,7 +1361,7 @@ void BuildUpdateList(double TMatrix[],
 		{
 		 	if(didboot==FALSE) // is the ADwin booted?  if not, then boot
 			{
-				Boot("C:\\ADWIN\\ADWIN11.BTL",0);           
+				Boot("C:\\ADWIN\\ADWIN11.BTL",0);
 				didboot=1;
 			}
 			if (didprocess==FALSE) // is the ADwin process already loaded?
@@ -1370,15 +1370,15 @@ void BuildUpdateList(double TMatrix[],
 				didprocess=1;
 			}
 		 }
-		 
+
 		 //printf("Processor type = %hi\n",Processor_Type());
-		
+
 		//Commented out by Dave June 6, 2006. Reason: repeated few lines down? (access of -1 index?)
-		//for(p-1;p<=NUMBERANALOGCHANNELS;p++) {ResetToZeroAtEnd[p]=AChName[p].resettozero;} 
-	
-		if(UseCompression) 
+		//for(p-1;p<=NUMBERANALOGCHANNELS;p++) {ResetToZeroAtEnd[p]=AChName[p].resettozero;}
+
+		if(UseCompression)
 		{
-			SetPar(1,newcount);  	//Let ADwin know how many counts (read as Events) we will be using.		
+			SetPar(1,newcount);  	//Let ADwin know how many counts (read as Events) we will be using.
 			SetData_Long(1,UpdateNum,1,newcount+1);
 		}
 		else
@@ -1386,7 +1386,7 @@ void BuildUpdateList(double TMatrix[],
 		  	SetPar(1,count);  	//Let ADwin know how many counts (read as Events) we will be using.
 			SetData_Long(1,UpdateNum,1,count+1);
 		}
-		
+
 
 	//	printf("\nbegin at: %s \n", TimeStr());
 	//	timestamp = Timer();
@@ -1397,9 +1397,9 @@ void BuildUpdateList(double TMatrix[],
 	// Send the Array to the AdWin Sequencer
 // ------------------------------------------------------------------------------------------------------------------
 		SetPar(2,GlobalDelay);
-	//	timestamp2 = Timer(); 
+	//	timestamp2 = Timer();
 		SetData_Long(2,ChNum,1,nuptotal+1);
-	//	timestamp3 = Timer(); 
+	//	timestamp3 = Timer();
 		SetData_Float(3,ChVal,1,nuptotal+1);
 // ------------------------------------------------------------------------------------------------------------------
 
@@ -1410,93 +1410,93 @@ void BuildUpdateList(double TMatrix[],
 	//	 printf("elapsed time (sending ChNum):  %0.3f s, size = %d\n", timestamp3-timestamp2,size1);
 	//	 printf("elapsed time (sending ChVal):  %0.3f s, size = %d\n", Timer()-timestamp3,size2);
 	//	 printf("elapsed time (total):  %0.3f s\n", Timer()-timestamp1);
-		 
+
 
 		// determine if we should reset values to zero after a cycle
 		GetMenuBarAttribute (menuHandle, MENU_SETTINGS_RESETZERO, ATTR_CHECKED,&checkresettozero);
-		
+
      	for(i=1;i<=NUMBERANALOGCHANNELS;i++)
 		{	ResetToZeroAtEnd[i-1]=1; } // Reset Array to ones
 
 		for(i=1;i<=NUMBERANALOGCHANNELS;i++) // Writing resetToZero array in order of channels (fixed 2012-11-29 / was written in order of _lines_ before!)
-		{	
+		{
 			if ((AChName[i].chnum>0) && (AChName[i].chnum<=NUMBERANALOGCHANNELS))
 			{
 				ResetToZeroAtEnd[AChName[i].chnum-1]=AChName[i].resettozero;
 			}
-			//printf("Line = %d, Channel = %d, Reset-to-zero = %d \n", i, AChName[i].chnum, ResetToZeroAtEnd[i-1]); 
-		
+			//printf("Line = %d, Channel = %d, Reset-to-zero = %d \n", i, AChName[i].chnum, ResetToZeroAtEnd[i-1]);
+
 		}
-		
+
 		digval=0;
 		digval2=0;
-		
+
 		for(k=1;k<=NUMBERDIGITALCHANNELS;k++)
 			{
 				digchannel=DChName[k].chnum;
-			
+
 				if(digchannel<=32)
 				{
 					digval=digval+DChName[k].resettolow*int_power(2,DChName[k].chnum-1);
 				}
-			
+
 				if((digchannel>=101)&&(digchannel<=132))
 				{
 					digval2=digval2+DChName[k].resettolow*int_power(2,(DChName[k].chnum-100)-1);
 				}
 	//			printf("DChName[%d].chnum %d,DChName[k].resettolow %d, digval %x, digval2 %x \n",k,DChName[k].chnum,DChName[k].resettolow,digval,digval2);
 			}// finished computing current digital data
-			
-			
-		//	printf("digval %x, digval %x \n",digval,digval2); 	
-			
-			
-		//ResetToZeroAtEndDig[1]=digval;// 1-32    	
-		
-		//ResetToZeroAtEndDig[2]=digval2;// 101-132		 
-	
-		//ResetToZeroAtEnd[25]=0;// lower 16 digital channels    
+
+
+		//	printf("digval %x, digval %x \n",digval,digval2);
+
+
+		//ResetToZeroAtEndDig[1]=digval;// 1-32
+
+		//ResetToZeroAtEndDig[2]=digval2;// 101-132
+
+		//ResetToZeroAtEnd[25]=0;// lower 16 digital channels
 		//ResetToZeroAtEnd[26]=0;// digital channels 17-24
 //		ResetToZeroAtEnd[27]=0;// master override....if ==1 then reset none
 //		if(checkresettozero==0) { ResetToZeroAtEnd[27]=1;}
 
 		SetData_Long(4,ResetToZeroAtEnd,1,NUMBERANALOGCHANNELS);
 		SetPar(5,digval);
-		SetPar(6,digval2); 
-	
+		SetPar(6,digval2);
+
 		// done evaluating channels that are reset to  zero (low)
 		ChangedVals = FALSE;
 
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
+
+
+
 	// more debug info
-	//tstop=clock();         
+	//tstop=clock();
 	//timeused=tstop-tstart;
-	
+
 	timeStartProcess = Timer();
 	t = Start_Process(processnum);
 	timeEndProcess = Timer();
-	
-	//tstop=clock();         	
+
+	//tstop=clock();
 	//sprintf(buff,"Time to transfer and start ADwin:   %d",timeused);
-	
-	
+
+
 	GetMenuBarAttribute (menuHandle, MENU_PREFS_STREAM_SETTINGS, ATTR_CHECKED,&StreamSettings);
 	if(StreamSettings==TRUE)
 	{
 		//Fill IN
-	
+
 	}
-	
+
 	// even more debug info
 /*	InsertListItem(panelHandle,PANEL_DEBUG,-1,buff,1);
 	memused=(count+2*nuptotal)*4;//in bytes
@@ -1505,9 +1505,9 @@ void BuildUpdateList(double TMatrix[],
 	sprintf(buff,"Transfer Rate:   %f   MB/s",(double)memused/(double)timeused/1000);
 	InsertListItem(panelHandle,PANEL_DEBUG,-1,buff,1);
  */
-	
+
 	SetCtrlAttribute (panelHandle, PANEL_CMD_RUN,ATTR_CMD_BUTTON_COLOR, 0x00B0B0B0);
-	
+
 	// NOTE: This should better be part of the Timer Callback routine!
 	//re-enable the timer if necessary
 	GetCtrlVal(panelHandle,PANEL_TOGGLEREPEAT,&repeat);
@@ -1524,16 +1524,16 @@ void BuildUpdateList(double TMatrix[],
 		SetCtrlAttribute (panelHandle, PANEL_TIMER, ATTR_INTERVAL, cycletime);
 		ResetTimer(panelHandle,PANEL_TIMER);
 	}
-	
+
 //	SetCtrlVal(panelHandle, PANEL_LED_RED, 0); // Build-indicator LEDs
 //	SetCtrlVal(panelHandle, PANEL_LED_YEL, 0);
 //	SetCtrlVal(panelHandle, PANEL_LED_GRE, 1);
-	
-	
+
+
 	timeEnd = Timer();
 	//printf("BuildUpdateTable: EndProcess-StartProcess: %f seconds.\n", timeEndProcess-timeStartProcess);
 	//printf("BuildUpdateTable: End-Start: %f seconds.\n", timeEnd-timeStart);
-	
+
 }
 
 //*****************************************************************************************
@@ -1550,8 +1550,8 @@ double CalcFcnValue(int fcn,double Vinit,double Vfinal, double timescale,double 
 		timescale=1;
 	}
 	tms=telapsed*EventPeriod;
-	
-	
+
+
 	//if( fcn==3 && tms<2.0 ){
 	//	printf("fcn: %d\n", fcn);
 	//	printf("Vinit: %f\n", Vinit);
@@ -1561,8 +1561,8 @@ double CalcFcnValue(int fcn,double Vinit,double Vfinal, double timescale,double 
 	//	printf("tms: %f\n", tms);
 	//	printf("cell time: %f\n", celltime);
 	//}
-	
-	
+
+
 	switch(fcn)
 	{
 		case 1 ://step function
@@ -1578,7 +1578,7 @@ double CalcFcnValue(int fcn,double Vinit,double Vfinal, double timescale,double 
 			amplitude=Vfinal-Vinit;
 			newtime =timescale;
 			if(UseSimpleTiming==TRUE)
-			{  
+			{
 				newtime=timescale/fabs(log(fabs(amplitude))-log(0.001));
 			}
 			value=Vfinal-amplitude*exp(-tms/newtime);
@@ -1587,7 +1587,7 @@ double CalcFcnValue(int fcn,double Vinit,double Vfinal, double timescale,double 
 			amplitude=Vfinal-Vinit;
 			aconst=3*amplitude/pow(timescale,2);
 			bconst=-2*amplitude/pow(timescale,3);
-			if(tms>timescale) 
+			if(tms>timescale)
 			{
 				value=Vfinal;
 			}
@@ -1598,7 +1598,7 @@ double CalcFcnValue(int fcn,double Vinit,double Vfinal, double timescale,double 
 			break;
 		case 5 : // generate a sinewave.  Use Vfinal as the amplitude and timescale as the frequency
 			// ignore the 'Simple Timing' option...use the user entered value.
-			
+
 			amplitude=Vfinal;
 		//	frequency=timescale; //consider it to be Hertz (tms is time in milliseconds)
 			value=amplitude * sin(2*3.14159*frequency*tms/1000);
@@ -1614,7 +1614,7 @@ void OptimizeTimeLoop(int *UpdateNum,int count, int *newcount)
 // i.e.  if we see 2000 zero's in a row, just write -2000 instead.
 
 	int i=0,k=0; // i is the counter through the original UpdateNum list
-	int j=0; // t is the counter through the NewUpdateNum list 
+	int j=0; // t is the counter through the NewUpdateNum list
 	int t=0;
 	int LowZeroThreshold,HighZeroThreshold;
 	int LastFound=0;
@@ -1622,31 +1622,31 @@ void OptimizeTimeLoop(int *UpdateNum,int count, int *newcount)
 	i=1;
 	t=1;
 	LowZeroThreshold=0;	  // minimum number of consecutive zero's to encounter before optimizing
-	HighZeroThreshold=100000;  // maximum number of consecutive zero's to optimize 
+	HighZeroThreshold=100000;  // maximum number of consecutive zero's to optimize
 							//  We do not want to exceed the counter on the ADwin
 							//  ADwin uses a 40MHz clock, 1 ms implies counter set to 40,000
 	while( i<count+1)
 	{
-		if(UpdateNum[i]!=0)	
+		if(UpdateNum[i]!=0)
 		{
-			UpdateNum[t]=UpdateNum[i];			
+			UpdateNum[t]=UpdateNum[i];
 			i++;
 			t++;
 		}
-		else   							// found a 0  
+		else   							// found a 0
 		{     							// now we need to scan to find the # of zeros
 			j=1;
-			while(((i+j)<(count+1))&&(UpdateNum[i+j]==0))	
+			while(((i+j)<(count+1))&&(UpdateNum[i+j]==0))
 			{
 				j++;
 			} 						//if this fails, then AA[i+j]!=0
 			if((i+j)<(count+1))
-			{		
+			{
 				numberofzeros=j;
 				if(numberofzeros<=LowZeroThreshold)
 				{
 					for(k=1;k<=numberofzeros;k++) { UpdateNum[t]=0;t++;i++;}
-					
+
 				}
 				else
 				{
@@ -1657,18 +1657,18 @@ void OptimizeTimeLoop(int *UpdateNum,int count, int *newcount)
 						t++;
 					}
 					UpdateNum[t]=-numberofzeros;
-					t++;	
+					t++;
 					UpdateNum[t]=UpdateNum[i+j];
 					t++;
 					i=i+j+1;
-				}		
+				}
 			}
 			else
 			{
 				UpdateNum[t]=-(count+1-i-j);
 				i=i+j+1;
 			}
-		
+
 		}
 	}
 	*newcount=t;
@@ -1678,11 +1678,11 @@ void OptimizeTimeLoop(int *UpdateNum,int count, int *newcount)
 //June 7, 2005 :  Completed Scan capability, added on-screen display of scan progress.
 // May 11, 2005:  added capability to change time and DDS settings too.  Redesigned Scan structure
 // May 03, 2005
-// existing problem: if the final value isn't exactly reached by the steps, then the last stage is skipped and the 
+// existing problem: if the final value isn't exactly reached by the steps, then the last stage is skipped and the
 // cycle doesn't end
 // has to do with numsteps.  Should be programmed with ceiling(), not abs
 void UpdateScanValue(int Reset)
-{	
+{
 	if(TwoParam)
 	{
 	UpdateScan2Value(Reset);
@@ -1691,17 +1691,17 @@ void UpdateScanValue(int Reset)
 	else
 	{
 	UpdateScan1Value(Reset);
-	
+
 	}
-	
-	
+
+
 }
 
 //*****************************************************************************************
 //June 7, 2005 :  Completed Scan capability, added on-screen display of scan progress.
 // May 11, 2005:  added capability to change time and DDS settings too.  Redesigned Scan structure
 // May 03, 2005
-// existing problem: if the final value isn't exactly reached by the steps, then the last stage is skipped and the 
+// existing problem: if the final value isn't exactly reached by the steps, then the last stage is skipped and the
 // cycle doesn't end
 // has to do with numsteps.  Should be programmed with ceiling(), not abs
 void UpdateScan1Value(int Reset)
@@ -1714,20 +1714,20 @@ void UpdateScan1Value(int Reset)
   	static BOOL ScanUp;
   	static int timesdid,counter;
   	char buff[400];
-  	
+
   	cx = PScan.Column;
   	cy = PScan.Row;
   	cz = PScan.Page;
-								  
+
 	// SetCtrlAttribute (panelHandle_sub2,SUBPANEL2,ATTR_VISIBLE,1);
-	
+
 	//if Use_List is checked, then read values off of the SCAN_TABLE on the main panel.
 	GetCtrlVal(panelHandle7,SCANPANEL_CHECK_USE_LIST,&UseList); // Sets UseList
-	
+
 	// Initialization on first iteration
-	if(Reset==TRUE) 
-	{   
-		PScan.ScanDone = FALSE; 
+	if(Reset==TRUE)
+	{
+		PScan.ScanDone = FALSE;
 		counter = 0;
 		for(i=0;i<1000;i++)
 		{   // Reset scan buffer
@@ -1735,7 +1735,7 @@ void UpdateScan1Value(int Reset)
 		 	ScanBuffer[i].Iteration=0;
 		 	ScanBuffer[i].Value=0;
 		}
-		
+
 		//Copy information from the appropriate scan mode to the variables.
   		switch(PScan.ScanMode)
  	 	{
@@ -1763,18 +1763,18 @@ void UpdateScan1Value(int Reset)
 				ScanVal.Step=		PScan.DDSFloor.Floor_Step;
 				ScanVal.Iterations=	PScan.DDSFloor.Iterations_Per_Step;
 			case 4: //Laser Scan
-  				ScanVal.End=		PScan.Laser.End_Of_Scan;						 
+  				ScanVal.End=		PScan.Laser.End_Of_Scan;
   				ScanVal.Start=		PScan.Laser.Start_Of_Scan;
 				ScanVal.Step=		PScan.Laser.Scan_Step_Size;
 				ScanVal.Iterations=	PScan.Laser.Iterations_Per_Step;
 			case 5: //SRS
-  				ScanVal.End=		PScan.SRS.SRS_End;						 
+  				ScanVal.End=		PScan.SRS.SRS_End;
   				ScanVal.Start=		PScan.SRS.SRS_Start;
 				ScanVal.Step=		PScan.SRS.SRS_Step;
 				ScanVal.Iterations=	PScan.SRS.Iterations_Per_Step;
 			break;
-				
-				
+
+
   		}
 
   	    if(UseList)// if we are set to use the scan list instead of a linear scan, then read first value
@@ -1787,22 +1787,22 @@ void UpdateScan1Value(int Reset)
  	 	ScanVal.Current_Step=0;
   		ScanVal.Current_Iteration=-1;
  	 	ScanVal.Current_Value=ScanVal.Start;
- 	
- 	 
+
+
   		// determine the sign of the step and correct if necessary
-  		if(ScanVal.End>=ScanVal.Start) 
-  		{ 
+  		if(ScanVal.End>=ScanVal.Start)
+  		{
   			ScanUp=TRUE;
-  			if(ScanVal.Step<0) {ScanVal.Step=-ScanVal.Step;} 
+  			if(ScanVal.Step<0) {ScanVal.Step=-ScanVal.Step;}
   		}
-  		else 
+  		else
   		{
   			ScanUp=FALSE;	  // ie. we scan downwards
-  			if(ScanVal.Step>0) {ScanVal.Step=-ScanVal.Step;} 
+  			if(ScanVal.Step>0) {ScanVal.Step=-ScanVal.Step;}
   		}
   	}//Done setting/resetting values
-  	
-  	
+
+
   	// numsteps to depend on mode
   	if(UseList)// UseList=TRUE .... therefore using table of Scan Values
 	{
@@ -1818,10 +1818,10 @@ void UpdateScan1Value(int Reset)
 							   VAL_LT_GRAY); // This value grey
 			SetTableCellAttribute (panelHandle, PANEL_SCAN_TABLE,MakePoint(1,ScanVal.Current_Step), ATTR_TEXT_BGCOLOR,
 							   VAL_WHITE); // last value white again
-			ScanVal.Current_Value=cellval;	
+			ScanVal.Current_Value=cellval;
 			ChangedVals = TRUE;
-			
- 	 
+
+
 			//check for end condition
  			// Scanning ends if we program any value <= -999 into a cell of the Scan List
 			if (ScanVal.Current_Value<=-999.0)
@@ -1829,21 +1829,21 @@ void UpdateScan1Value(int Reset)
 				PScan.ScanDone=TRUE;
 				SetTableCellAttribute (panelHandle, PANEL_SCAN_TABLE,MakePoint(1,ScanVal.Current_Step), ATTR_TEXT_BGCOLOR,
 							   VAL_WHITE);
-				
+
 			}
 		}
 	}
-	
-	
+
+
 
 	else // UseList=FALSE.... therefor assume linear scanning
 	{
 		// calculate number of steps in the ramp
-		numsteps=(int)ceil(abs(((double)ScanVal.Start-(double)ScanVal.End)/(double)ScanVal.Step));	
+		numsteps=(int)ceil(abs(((double)ScanVal.Start-(double)ScanVal.End)/(double)ScanVal.Step));
   		PScan.ScanDone=FALSE;
 		timesdid++;
   		ScanVal.Current_Iteration++;
-  	
+
 		if((ScanVal.Current_Iteration>=ScanVal.Iterations)&&(ScanVal.Current_Step<numsteps)) // update the step at correct time
 		{
 			ScanVal.Current_Iteration=0;
@@ -1860,10 +1860,10 @@ void UpdateScan1Value(int Reset)
 		}
 		if((ScanVal.Current_Step>numsteps)&&(ScanVal.Current_Iteration>=ScanVal.Iterations))
 			PScan.ScanDone=TRUE;
-				
-		
-	}	
-	
+
+
+	}
+
 	//insert current scan values into the tables , so they are included in the next BuildUpdateList
 	switch(PScan.ScanMode)
 	{
@@ -1872,7 +1872,7 @@ void UpdateScan1Value(int Reset)
 			AnalogTable[cx][cy][cz].fcn = PScan.Analog.Analog_Mode;
 			break;
 		case 1:// Time duration
-			TimeArray[cx][cz] = ScanVal.Current_Value;		
+			TimeArray[cx][cz] = ScanVal.Current_Value;
 			break;
 		case 2:// DDS frequency
 			ddstable[cx][cz].amplitude=PScan.DDS.Current;
@@ -1883,14 +1883,14 @@ void UpdateScan1Value(int Reset)
 			SetCtrlVal(panelHandle,PANEL_NUM_DDS_OFFSET,ScanVal.Current_Value);
 			break;
 		case 4: //LaserFreq
-			LaserTable[cy-NUMBERANALOGCHANNELS-NUMBERDDS-1][cx][cz].fval=ScanVal.Current_Value; 
+			LaserTable[cy-NUMBERANALOGCHANNELS-NUMBERDDS-1][cx][cz].fval=ScanVal.Current_Value;
 			break;
 		case 5: // SRS Frequency
 			SetCtrlVal(panelHandle,PANEL_SRS_FREQ,ScanVal.Current_Value);
 			break;
-			
+
 	}
-	
+
 	// Record current scan information into a string buffer, so we can write it to disk later.
 	GetSystemTime(&hour,&minute,&second);
 	ScanBuffer[counter].Step=ScanVal.Current_Step;
@@ -1899,12 +1899,12 @@ void UpdateScan1Value(int Reset)
 	ScanBuffer[0].BufferSize=counter;
 	sprintf(ScanBuffer[counter].Time,"%d:%d:%d",hour,minute,second);
 	counter++;
-	
+
 	// display current scan parameters on screen
 	SetCtrlVal (panelHandle_sub2, SUBPANEL2_NUM_SCANVAL, ScanVal.Current_Value);
 	SetCtrlVal (panelHandle_sub2, SUBPANEL2_NUM_SCANSTEP, ScanVal.Current_Step);
 	SetCtrlVal (panelHandle_sub2, SUBPANEL2_NUM_SCANITER, ScanVal.Current_Iteration);
-					  
+
     // if the scan is done, then cleanup and write the starting values back into the tables
 	if(PScan.ScanDone==TRUE)
 	{   // reset initial values in the tables
@@ -1914,7 +1914,7 @@ void UpdateScan1Value(int Reset)
 				AnalogTable[cx][cy][cz].fval=PScan.Analog.Start_Of_Scan;
 				break;
 			case 1:// Time duration
-				TimeArray[cx][cz]=PScan.Time.Start_Of_Scan;		
+				TimeArray[cx][cz]=PScan.Time.Start_Of_Scan;
 				break;
 			case 2:// DDS frequency
 				ddstable[cx][cz].end_frequency=PScan.DDS.Start_Of_Scan;
@@ -1923,14 +1923,14 @@ void UpdateScan1Value(int Reset)
 				SetCtrlVal(panelHandle,PANEL_NUM_DDS_OFFSET,PScan.DDSFloor.Floor_Start);
 				break;
 			case 4:
-				LaserTable[cy-NUMBERANALOGCHANNELS-NUMBERDDS-1][cx][cz].fval=PScan.Laser.Start_Of_Scan; 
+				LaserTable[cy-NUMBERANALOGCHANNELS-NUMBERDDS-1][cx][cz].fval=PScan.Laser.Start_Of_Scan;
 				break;
 			case 5:
 				SetCtrlVal(panelHandle,PANEL_SRS_FREQ,PScan.SRS.SRS_Start);
 				break;
-				
+
 		}
-		
+
 		//hide the information panel
 		// SetCtrlAttribute (panelHandle_sub2,SUBPANEL2,ATTR_VISIBLE,0);
 		ExportScanBuffer();// prompt to write out information
@@ -1939,9 +1939,9 @@ void UpdateScan1Value(int Reset)
 	if( ChangedVals ){
 		DrawNewTable(1);
 	}
-	
+
 }
- 
+
 
 
 
@@ -1949,7 +1949,7 @@ void UpdateScan1Value(int Reset)
 //June 7, 2005 :  Completed Scan capability, added on-screen display of scan progress.
 // May 11, 2005:  added capability to change time and DDS settings too.  Redesigned Scan structure
 // May 03, 2005
-// existing problem: if the final value isn't exactly reached by the steps, then the last stage is skipped and the 
+// existing problem: if the final value isn't exactly reached by the steps, then the last stage is skipped and the
 // cycle doesn't end
 // has to do with numsteps.  Should be programmed with ceiling(), not abs
 void UpdateScan2Value(int Reset)
@@ -1962,23 +1962,23 @@ void UpdateScan2Value(int Reset)
   	static BOOL ScanUp,Scan2Up;
   	static int timesdid,counter;
   	char buff[400];
-  	
+
   	cx=PScan.Column;
   	cy=PScan.Row;
   	cz=PScan.Page;
-  	
+
   	cx2=PScan2.Column;
   	cy2=PScan2.Row;
   	cz2=PScan2.Page;
 
 	SetCtrlAttribute (panelHandle_sub2,SUBPANEL2,ATTR_VISIBLE,1);
-	
+
 	// Initialization on first iteration
-	if(Reset==TRUE) 
-	{   
+	if(Reset==TRUE)
+	{
 		PScan.ScanDone=FALSE;
 		ChangeScan1Param=FALSE;
-		
+
 		counter=0;
 		for(i=0;i<1000;i++)
 		{
@@ -1986,7 +1986,7 @@ void UpdateScan2Value(int Reset)
 		 	ScanBuffer[i].Iteration=0;
 		 	ScanBuffer[i].Value=0;
 		}
-		
+
 		//Copy information from the appropriate scan mode to the variables.
   		switch(PScan.ScanMode)
  	 	{
@@ -2014,18 +2014,18 @@ void UpdateScan2Value(int Reset)
 				ScanVal.Step=		PScan.DDSFloor.Floor_Step;
 				ScanVal.Iterations=	PScan.DDSFloor.Iterations_Per_Step;
 			case 4: //Laser Scan
-  				ScanVal.End=		PScan.Laser.End_Of_Scan;						 
+  				ScanVal.End=		PScan.Laser.End_Of_Scan;
   				ScanVal.Start=		PScan.Laser.Start_Of_Scan;
 				ScanVal.Step=		PScan.Laser.Scan_Step_Size;
 				ScanVal.Iterations=	PScan.Laser.Iterations_Per_Step;
 			case 5: //SRS
-  				ScanVal.End=		PScan.SRS.SRS_End;						 
+  				ScanVal.End=		PScan.SRS.SRS_End;
   				ScanVal.Start=		PScan.SRS.SRS_Start;
 				ScanVal.Step=		PScan.SRS.SRS_Step;
 				ScanVal.Iterations=	PScan.SRS.Iterations_Per_Step;
 			break;
-				
-				
+
+
   		}
 
   		switch(PScan2.ScanMode)
@@ -2054,42 +2054,42 @@ void UpdateScan2Value(int Reset)
 				Scan2Val.Step=		PScan2.DDSFloor.Floor_Step;
 				Scan2Val.Iterations=	PScan2.DDSFloor.Iterations_Per_Step;
 			case 4: //Laser Scan
-  				Scan2Val.End=		PScan2.Laser.End_Of_Scan;						 
+  				Scan2Val.End=		PScan2.Laser.End_Of_Scan;
   				Scan2Val.Start=		PScan2.Laser.Start_Of_Scan;
 				Scan2Val.Step=		PScan2.Laser.Scan_Step_Size;
 				Scan2Val.Iterations=	PScan2.Laser.Iterations_Per_Step;
 			case 5: //SRS
-  				Scan2Val.End=		PScan2.SRS.SRS_End;						 
+  				Scan2Val.End=		PScan2.SRS.SRS_End;
   				Scan2Val.Start=		PScan2.SRS.SRS_Start;
 				Scan2Val.Step=		PScan2.SRS.SRS_Step;
 				Scan2Val.Iterations=	PScan2.SRS.Iterations_Per_Step;
 			break;
-				
-				
+
+
   		}
 
-		
+
   	   	GetTableCellVal(panelHandle, PANEL_SCAN_TABLE, MakePoint(1,1), &cellval);
   	   	ScanVal.Start=cellval;
   	   	ScanVal.Current_Step=-1;
   		ScanVal.Current_Iteration=-1;
  	 	ScanVal.Current_Value=ScanVal.Start;
- 	 
- 	 	
+
+
   	   	GetTableCellVal(panelHandle, PANEL_SCAN_TABLE_2, MakePoint(1,1), &cellval);
   	   	Scan2Val.Start=cellval;
   	   	Scan2Val.Current_Step=-1;
   		Scan2Val.Current_Iteration=-1;
  	 	Scan2Val.Current_Value=Scan2Val.Start;
- 	 
- 	 	  
-  	 
-  	 
+
+
+
+
 	}//Done setting/resetting values
-  	
+
 	Scan2Val.Current_Iteration++;
 	Scan2Val.Current_Step++;
-	
+
 	// read next element of scan list
 	GetTableCellVal(panelHandle, PANEL_SCAN_TABLE_2, MakePoint(1,Scan2Val.Current_Step+1), &cellval);
 
@@ -2098,12 +2098,12 @@ void UpdateScan2Value(int Reset)
 					   VAL_LT_GRAY);
 	SetTableCellAttribute (panelHandle, PANEL_SCAN_TABLE_2,MakePoint(1,Scan2Val.Current_Step), ATTR_TEXT_BGCOLOR,
 					   VAL_WHITE);
-	Scan2Val.Current_Value=cellval;	
+	Scan2Val.Current_Value=cellval;
 	ChangedVals = TRUE;
-	
+
 	if(Scan2Val.Current_Value<=-999.0)
 	{
-	
+
 		Scan2Val.Current_Step=0;
 		ChangeScan1Param=TRUE;
 
@@ -2115,15 +2115,15 @@ void UpdateScan2Value(int Reset)
 						   VAL_LT_GRAY);
 		SetTableCellAttribute (panelHandle, PANEL_SCAN_TABLE_2,MakePoint(1,Scan2Val.Current_Step), ATTR_TEXT_BGCOLOR,
 						   VAL_WHITE);
-		Scan2Val.Current_Value=cellval;	
+		Scan2Val.Current_Value=cellval;
 		ChangedVals = TRUE;
 
 	}
- 
+
 	if((ChangeScan1Param)||(ScanVal.Current_Step<0))
-	{  //CHANGE TO NEXT SCAN ONE PARAMETER  
+	{  //CHANGE TO NEXT SCAN ONE PARAMETER
 		ChangeScan1Param=FALSE;
-	
+
 		ScanVal.Current_Iteration++;
 		ScanVal.Current_Step++;
 		// read next element of scan list
@@ -2134,7 +2134,7 @@ void UpdateScan2Value(int Reset)
 						   VAL_LT_GRAY);
 		SetTableCellAttribute (panelHandle, PANEL_SCAN_TABLE,MakePoint(1,ScanVal.Current_Step), ATTR_TEXT_BGCOLOR,
 						   VAL_WHITE);
-		ScanVal.Current_Value=cellval;	
+		ScanVal.Current_Value=cellval;
 		ChangedVals = TRUE;
 
 		//check for end condition
@@ -2146,7 +2146,7 @@ void UpdateScan2Value(int Reset)
 						   VAL_WHITE);
 			SetTableCellAttribute (panelHandle, PANEL_SCAN_TABLE_2,MakePoint(1,Scan2Val.Current_Step), ATTR_TEXT_BGCOLOR,
 						   VAL_WHITE);
-		
+
 			}
 	}
 
@@ -2160,7 +2160,7 @@ void UpdateScan2Value(int Reset)
 			AnalogTable[cx][cy][cz].fcn=PScan.Analog.Analog_Mode;
 			break;
 		case 1:// Time duration
-			TimeArray[cx][cz]=ScanVal.Current_Value;		
+			TimeArray[cx][cz]=ScanVal.Current_Value;
 			break;
 		case 2:// DDS frequency
 			ddstable[cx][cz].amplitude=PScan.DDS.Current;
@@ -2171,14 +2171,14 @@ void UpdateScan2Value(int Reset)
 			SetCtrlVal(panelHandle,PANEL_NUM_DDS_OFFSET,ScanVal.Current_Value);
 			break;
 		case 4: //LaserFreq
-			LaserTable[cy-NUMBERANALOGCHANNELS-NUMBERDDS-1][cx][cz].fval=ScanVal.Current_Value; 
+			LaserTable[cy-NUMBERANALOGCHANNELS-NUMBERDDS-1][cx][cz].fval=ScanVal.Current_Value;
 			break;
 		case 5: // SRS Frequency
 			SetCtrlVal(panelHandle,PANEL_SRS_FREQ,ScanVal.Current_Value);
 			break;
-			
+
 	}
-	
+
 	switch(PScan2.ScanMode)
 	{
 		case 0:// Analog value
@@ -2186,7 +2186,7 @@ void UpdateScan2Value(int Reset)
 			AnalogTable[cx2][cy2][cz2].fcn=PScan2.Analog.Analog_Mode;
 			break;
 		case 1:// Time duration
-			TimeArray[cx2][cz2]=Scan2Val.Current_Value;		
+			TimeArray[cx2][cz2]=Scan2Val.Current_Value;
 			break;
 		case 2:// DDS frequency
 			ddstable[cx2][cz2].amplitude=PScan2.DDS.Current;
@@ -2197,15 +2197,15 @@ void UpdateScan2Value(int Reset)
 			SetCtrlVal(panelHandle,PANEL_NUM_DDS_OFFSET,Scan2Val.Current_Value);
 			break;
 		case 4: //LaserFreq
-			LaserTable[cy2-NUMBERANALOGCHANNELS-NUMBERDDS-1][cx2][cz2].fval=Scan2Val.Current_Value; 
+			LaserTable[cy2-NUMBERANALOGCHANNELS-NUMBERDDS-1][cx2][cz2].fval=Scan2Val.Current_Value;
 			break;
 		case 5: // SRS Frequency
 			SetCtrlVal(panelHandle,PANEL_SRS_FREQ,Scan2Val.Current_Value);
 			break;
-			
+
 	}
 
-	
+
 	// Record current scan information into a string buffer, so we can write it to disk later.
 	GetSystemTime(&hour,&minute,&second);
 	Scan2Buffer[counter].Step1=ScanVal.Current_Step;
@@ -2217,13 +2217,13 @@ void UpdateScan2Value(int Reset)
 	Scan2Buffer[0].BufferSize=counter;
 	sprintf(ScanBuffer[counter].Time,"%d:%d:%d",hour,minute,second);
 	counter++;
-	
+
 	// display current scan parameters on screen
 	SetCtrlVal (panelHandle_sub2, SUBPANEL2_NUM_SCANVAL, ScanVal.Current_Value);
 	SetCtrlVal (panelHandle_sub2, SUBPANEL2_NUM_SCANSTEP, ScanVal.Current_Step);
 	SetCtrlVal (panelHandle_sub2, SUBPANEL2_NUM_SCANITER, ScanVal.Current_Iteration);
-	
-	
+
+
 
     // if the scan is done, then cleanup and write the starting values back into the tables
 	if(PScan.ScanDone==TRUE)
@@ -2234,7 +2234,7 @@ void UpdateScan2Value(int Reset)
 				AnalogTable[cx][cy][cz].fval=PScan.Analog.Start_Of_Scan;
 				break;
 			case 1:// Time duration
-				TimeArray[cx][cz]=PScan.Time.Start_Of_Scan;		
+				TimeArray[cx][cz]=PScan.Time.Start_Of_Scan;
 				break;
 			case 2:// DDS frequency
 				ddstable[cx][cz].end_frequency=PScan.DDS.Start_Of_Scan;
@@ -2243,21 +2243,21 @@ void UpdateScan2Value(int Reset)
 				SetCtrlVal(panelHandle,PANEL_NUM_DDS_OFFSET,PScan.DDSFloor.Floor_Start);
 				break;
 			case 4:
-				LaserTable[cy-NUMBERANALOGCHANNELS-NUMBERDDS-1][cx][cz].fval=PScan.Laser.Start_Of_Scan; 
+				LaserTable[cy-NUMBERANALOGCHANNELS-NUMBERDDS-1][cx][cz].fval=PScan.Laser.Start_Of_Scan;
 				break;
 			case 5:
 				SetCtrlVal(panelHandle,PANEL_SRS_FREQ,PScan.SRS.SRS_Start);
 				break;
-				
+
 		}
-		
+
 				switch(PScan2.ScanMode)
 		{
 			case 0:// Analog value
 				AnalogTable[cx2][cy2][cz2].fval=PScan2.Analog.Start_Of_Scan;
 				break;
 			case 1:// Time duration
-				TimeArray[cx2][cz2]=PScan2.Time.Start_Of_Scan;		
+				TimeArray[cx2][cz2]=PScan2.Time.Start_Of_Scan;
 				break;
 			case 2:// DDS frequency
 				ddstable[cx2][cz2].end_frequency=PScan2.DDS.Start_Of_Scan;
@@ -2266,81 +2266,81 @@ void UpdateScan2Value(int Reset)
 				SetCtrlVal(panelHandle,PANEL_NUM_DDS_OFFSET,PScan2.DDSFloor.Floor_Start);
 				break;
 			case 4:
-				LaserTable[cy2-NUMBERANALOGCHANNELS-NUMBERDDS-1][cx2][cz2].fval=PScan2.Laser.Start_Of_Scan; 
+				LaserTable[cy2-NUMBERANALOGCHANNELS-NUMBERDDS-1][cx2][cz2].fval=PScan2.Laser.Start_Of_Scan;
 				break;
 			case 5:
 				SetCtrlVal(panelHandle,PANEL_SRS_FREQ,PScan2.SRS.SRS_Start);
 				break;
-				
+
 		}
-		
+
 		//hide the information panel
 		SetCtrlAttribute (panelHandle_sub2,SUBPANEL2,ATTR_VISIBLE,0);
 		ExportScan2Buffer();// prompt to write out information
-		
+
 		//Redraw Table
 		ChangedVals = TRUE;
 		DrawNewTable(1);
 	}
-	
+
 }
 
 //*****************************************************************************************
 // 2012-10-06 --- Stefan Trotzky --- Started:V16.0.0
-// Including the Capability to scan multiple parameters from a list. 
+// Including the Capability to scan multiple parameters from a list.
 // Feeds on the previous implementation of one- and two-parameter scans.
 // Extended by the capability to scan digital channels as well.
 //*****************************************************************************************
 void UpdateMultiScanValues(int Reset)
 {
   	int i, j, d;
-  	
+
   	int page, col, row, drow;
   	double value;
   	int numPars;
-  	
+
   	int hour, minute, second;
-  	
+
     char outputBuffer[512];
 	char paramsBuffer[512];
-	
+
 	char outputFileNameWithPath[MAX_PATHNAME_LEN];
 	int incrOutputFileHandle;
-	
-  	
+
+
 	// Info panel for scan progress (not used for multiscan for now ...)
 	// SetCtrlAttribute (panelHandle_sub2,SUBPANEL2,ATTR_VISIBLE,1);
-	
-	// This line should be void, since there shouldn't be a way to get here with 
+
+	// This line should be void, since there shouldn't be a way to get here with
 	// another setting of this value (have it in for button-based testing)
 	parameterscanmode = 0;
-	
+
 	printf("Starting UpdateMultiScanValues function\n");
-	
+
 	sprintf(outputBuffer, "incremental.txt");
 	MakePathname(MultiScan.CommandsFilePath, outputBuffer, outputFileNameWithPath);
 	printf("Incremental file name with path:\n");
 	printf("-%s-\n", outputFileNameWithPath);
-	
+
 	printf("Finished creating incremental file name\n");
-	
+
 	// Initialization on first iteration
-	if(Reset==TRUE) 
+	if(Reset==TRUE)
 	{
 		//printf("UMSV inside reset==TRUE\n");
-	
+
 		// Reset scan structure
-		MultiScan.Done = FALSE; 
+		MultiScan.Done = FALSE;
 		MultiScan.Counter = 0;				// is stepped up upon each update (below)
  		MultiScan.CurrentStep = 0;			// is stepped up upon each update (below)
  		MultiScan.CurrentIteration = -1; 	// is stepped up upon each update (below)
  											// CurrentIteration = 0 means "first"
- 		
+
  		// Set the default holding pattern to none or stop instead of repeat.
  		MultiScan.HoldingPattern = 0;
- 		
+
  		MultiScan.SentinelFoundValue = 0.0;
- 											
+
 		// Read in number of iterations from numeric control.
 		GetCtrlVal(panelHandle, PANEL_MULTISCAN_ITS_NUMERIC, &numPars);
 		MultiScan.Iterations = numPars;
@@ -2348,7 +2348,7 @@ void UpdateMultiScanValues(int Reset)
 		// Read in number of parameters to scan from numeric control.
 		GetNumTableColumns(panelHandle, PANEL_MULTISCAN_POS_TABLE, &numPars);
 		MultiScan.NumPars = numPars;
-		
+
 		// Go through parameters and read in positions and first value, check existance,
 		// evaluate types and save starting conditions
 		for(j=0;j<numPars;j++)
@@ -2357,27 +2357,27 @@ void UpdateMultiScanValues(int Reset)
 			GetTableCellVal(panelHandle, PANEL_MULTISCAN_POS_TABLE, MakePoint(j+1,2), &col);
 			GetTableCellVal(panelHandle, PANEL_MULTISCAN_POS_TABLE, MakePoint(j+1,3), &row);
 			GetTableCellVal(panelHandle, PANEL_MULTISCAN_VAL_TABLE, MakePoint(j+1,1), &value);
-			
+
 			// Initialization of MultiScan structure. Should be done upon pressing  "scan"
-			// Saving the information saved in the tables. Update table with first value 
+			// Saving the information saved in the tables. Update table with first value
 			// RFI:: 	Might consider rewriting things like e.g. ramp types upon every update to
 			//			secure panel against user input.
 			MultiScan.Par[j].Page = page;
 			MultiScan.Par[j].Column = col;
 			MultiScan.Par[j].Row = row;
 			MultiScan.Par[j].CurrentScanValue = value;
-			
+
 			//printf("UMSV inside reset, par: %i\n", j);
 			//printf("UMSV page: %i\n", page);
   			//printf("UMSV col: %i\n", col);
   			//printf("UMSV row: %i\n", row);
   			//printf("UMSV value: %f\n", value);
-  						
-  						
-			
-			
+
+
+
+
 			if (value<=-999.0)// Pathological, yet not impossible.
-			{   
+			{
 				if( abs(value - REPEAT_LAST_SENTINEL) < 0.001 )
 				{	// If the sentinel is -1111.0, then we should repeat the
 					// last scan line before the sentinel again.
@@ -2396,7 +2396,7 @@ void UpdateMultiScanValues(int Reset)
 				}
 				MultiScan.SentinelFoundValue = value;
 			}
-	
+
 			// Check for existance of cell in the analog rows or digital rows and read in the
 			// values if existing. Note that analog rows contains analog channels,
 			// DDS channels, laser channels, and Anritsu channels.
@@ -2404,7 +2404,7 @@ void UpdateMultiScanValues(int Reset)
 				(col>0)
 				&&
 				(col<=NUMBEROFCOLUMNS)
-				&& 
+				&&
 				(
 					(
 						(row>=0)// row = 0 is time row which can't have a timescale
@@ -2413,8 +2413,8 @@ void UpdateMultiScanValues(int Reset)
 					)
 					||
 				 	(
-				 		(row>NUMDIGITALSCANOFFSET)// offset row numbers for digital channels 
-				 		&& 	       
+				 		(row>NUMDIGITALSCANOFFSET)// offset row numbers for digital channels
+				 		&&
 				  		(row<=NUMDIGITALSCANOFFSET+NUMBERDIGITALCHANNELS)
 				  	)
 				)
@@ -2424,30 +2424,30 @@ void UpdateMultiScanValues(int Reset)
 				(page<=NUMBEROFPAGES)
 			   )
 			{
-			
+
 				//printf("UMSV inside reset, inside valid cell\n");
-				
+
 				MultiScan.Par[j].CellExists = TRUE;
-				
+
 				//printf("UMSV inside reset, inside valid cell, cellexists: %i\n", MultiScan.Par[j].CellExists);
-				
-				
+
+
 				// Evaluate scan type. RFI:: Use switch instead of if
-				if (row==0)  
-				{   // time scan 
+				if (row==0)
+				{   // time scan
 					MultiScan.Par[j].Type = 0;
 					MultiScan.Par[j].Time = TimeArray[col][page];
 					//TimeArray[col][page] = value;
 				}
-				if ((row>=1) && (row<=NUMBERANALOGCHANNELS)) 
+				if ((row>=1) && (row<=NUMBERANALOGCHANNELS))
 				{   // analog ch scan
 					MultiScan.Par[j].Type = 1;
 					MultiScan.Par[j].Analog.fcn = AnalogTable[col][row][page].fcn;
 					MultiScan.Par[j].Analog.fval = AnalogTable[col][row][page].fval;
 					MultiScan.Par[j].Analog.tscale = AnalogTable[col][row][page].tscale;
 					//AnalogTable[col][row][page].fval = value;
-				}   
-				if ((row>NUMBERANALOGCHANNELS) && (row<=NUMBERANALOGCHANNELS+NUMBERDDS)) 
+				}
+				if ((row>NUMBERANALOGCHANNELS) && (row<=NUMBERANALOGCHANNELS+NUMBERDDS))
 				{   // DDS scan
 					MultiScan.Par[j].Type = 2;
 					MultiScan.Par[j].DDS.fcn = AnalogTable[col][row][page].fcn;
@@ -2455,19 +2455,19 @@ void UpdateMultiScanValues(int Reset)
 					switch (row-NUMBERANALOGCHANNELS){ // ugly because of the way the ddstables are built
 						case 1:
 							MultiScan.Par[j].DDS.fval = ddstable[col][page].end_frequency;
-							//ddstable[col][page].end_frequency = value; 
+							//ddstable[col][page].end_frequency = value;
 							break;
 						case 2:
 							MultiScan.Par[j].DDS.fval = dds2table[col][page].end_frequency;
-							//dds2table[col][page].end_frequency = value; 
+							//dds2table[col][page].end_frequency = value;
 							break;
 						case 3:
 							MultiScan.Par[j].DDS.fval = dds3table[col][page].end_frequency;
-							//dds3table[col][page].end_frequency = value; 
+							//dds3table[col][page].end_frequency = value;
 							break;
 					}
 				}
-				if ((row>NUMBERANALOGCHANNELS+NUMBERDDS) && (row<=NUMBERANALOGCHANNELS+NUMBERDDS+NUMBERLASERS)) 
+				if ((row>NUMBERANALOGCHANNELS+NUMBERDDS) && (row<=NUMBERANALOGCHANNELS+NUMBERDDS+NUMBERLASERS))
 				{   // Laser scan
 					MultiScan.Par[j].Type = 3;
 					MultiScan.Par[j].Laser.fcn = LaserTable[row-NUMBERANALOGCHANNELS-NUMBERDDS-1][col][page].fcn;
@@ -2482,7 +2482,7 @@ void UpdateMultiScanValues(int Reset)
 					MultiScan.Par[j].Anritsu.tscale = AnalogTable[col][row][page].tscale;
 					//AnalogTable[col][row][page].fval = value;
 				}
-				if ((row>NUMDIGITALSCANOFFSET)) 
+				if ((row>NUMDIGITALSCANOFFSET))
 				{   // Digital channel scan -- interprets positive values as high
 					MultiScan.Par[j].Type = 9;
 					drow = row-NUMDIGITALSCANOFFSET;
@@ -2490,11 +2490,11 @@ void UpdateMultiScanValues(int Reset)
 					MultiScan.Par[j].CurrentScanValue = (double)(ToDigital(value)*1.0);
 					//DigTableValues[col][drow][page] = ToDigital(value);
 				}
-				
+
 				// Highlight first scan value.
-				SetTableCellAttribute (panelHandle, PANEL_MULTISCAN_VAL_TABLE, MakePoint(j+1,MultiScan.CurrentStep+1), 
+				SetTableCellAttribute (panelHandle, PANEL_MULTISCAN_VAL_TABLE, MakePoint(j+1,MultiScan.CurrentStep+1),
 					ATTR_TEXT_BGCOLOR, VAL_LT_GRAY);
-					
+
 				ChangedVals = TRUE;
 			}
 			// Check for possible analog cell timescale scans
@@ -2514,16 +2514,16 @@ void UpdateMultiScanValues(int Reset)
 			{
 				// We have a valid cell
 				MultiScan.Par[j].CellExists = TRUE;
-				
+
 				// Set the scan type for this scan parameter.
 				// Create new type 11 for analog cell timescale.
 				MultiScan.Par[j].Type = 11;
-				
+
 				// Save the before scan values in the MultiScan struct.
 				MultiScan.Par[j].Analog.fcn = AnalogTable[col][row][page].fcn;
 				MultiScan.Par[j].Analog.fval = AnalogTable[col][row][page].fval;
 				MultiScan.Par[j].Analog.tscale = AnalogTable[col][row][page].tscale;
-				
+
 			}
 			// Check for possible DDS EOR offset scans
 			else if (
@@ -2538,11 +2538,11 @@ void UpdateMultiScanValues(int Reset)
 			{
 				// We have a valid cell
 				MultiScan.Par[j].CellExists = TRUE;
-				
+
 				// Set the scan type for this scan parameter.
 				// Create new type 22 for DDS EOR offset scan.
 				MultiScan.Par[j].Type = 22;
-				
+
 				// Save the before scan values in the MultiScan struct.
 				MultiScan.Par[j].DDS.fcn = AnalogTable[col][row][page].fcn;
 				MultiScan.Par[j].DDS.tscale = AnalogTable[col][row][page].tscale;
@@ -2569,10 +2569,10 @@ void UpdateMultiScanValues(int Reset)
 				}
 			}
 			// Check for possible GPIB value scans
-			else if (row>NUMGPIBSCANOFFSET && row<=NUMGPIBSCANOFFSET+NUMBERGPIBDEV 
+			else if (row>NUMGPIBSCANOFFSET && row<=NUMGPIBSCANOFFSET+NUMBERGPIBDEV
 				&& col>=1 && col<=NUMGPIBPROGVALS)
 			{
-				SetTableCellAttribute (panelHandle, PANEL_MULTISCAN_VAL_TABLE, MakePoint(j+1,MultiScan.CurrentStep+1), 
+				SetTableCellAttribute (panelHandle, PANEL_MULTISCAN_VAL_TABLE, MakePoint(j+1,MultiScan.CurrentStep+1),
 					ATTR_TEXT_BGCOLOR, VAL_LT_GRAY);
 
 				MultiScan.Par[j].CellExists = TRUE;
@@ -2580,21 +2580,21 @@ void UpdateMultiScanValues(int Reset)
 				MultiScan.Par[j].GPIBvalue = GPIBDev[row-NUMGPIBSCANOFFSET-1].value[col-1];
 				//GPIBDev[row-NUMGPIBSCANOFFSET-1].value[col-1] = value;
 				strcpy(GPIBDev[row-NUMGPIBSCANOFFSET-1].lastsent,"VOID/0"); // ensure reprogramming
-				
+
 				ChangedVals = TRUE;
 			}
 			else
 			{
 				MultiScan.Par[j].CellExists = FALSE; // If the cell specified does not exist, it will be skipped
 			}
-			
+
 			//printf("UMSV inside reset, after checking exist, par: %i, exist: %i\n", j, MultiScan.Par[j].CellExists);
-		
+
 		} // Done reading individual parameter settings
-		
-		
+
+
 		//printf("UMSV done reading individual param settings\n");
-		
+
 		// Check if we should set the next scan or not.
 		// If the first value was >-999.0 ie. a valid value then we should set each scan
 		// table column the normal way.
@@ -2606,9 +2606,9 @@ void UpdateMultiScanValues(int Reset)
 		if( MultiScan.Done == FALSE )
 		{	// This should only be true if the first scan line does not have any full stop
 			// sentinel values. Full stop as opposed to holding pattern senntinel values.
-			
+
 			//printf("UMSV if reset FALSE, if MultiScan.Done FALSE\n");
-			
+
 			// Now check for holding pattern sentinel values.
 			// The only possible holding pattern with a holding sentinel in the first scan line
 			// is to repeat the initial values.
@@ -2619,49 +2619,49 @@ void UpdateMultiScanValues(int Reset)
 			if( MultiScan.HoldingPattern > 0 )
 			{
 				//printf("UMSV if reset FALSE, if MultiScan.Done FALSE, if holding pattern TRUE\n");
-			
+
 				updateScannedCellsWithOriginalValues();
 				ChangedVals = TRUE;
-				
+
 				for(j=0;j<MultiScan.NumPars;j++)
 				{
 					if (MultiScan.Par[j].CellExists)
 					{
 					// Highlight current first scan line cell.
-					SetTableCellAttribute (panelHandle, PANEL_MULTISCAN_VAL_TABLE, 
+					SetTableCellAttribute (panelHandle, PANEL_MULTISCAN_VAL_TABLE,
 						MakePoint(j+1,MultiScan.CurrentStep+1), ATTR_TEXT_BGCOLOR, VAL_LT_GRAY);
 					}
 				}
-				
+
 				// Decrement MultiScan.CurrentStep so the next time we reach the max iteractions
 				// we will increment to the holding sentinel value again.
 				MultiScan.CurrentStep--;
-				
+
 			}
 			else // There is no holding sentinel value, and so we should update normally.
 			{
-			
+
 				//printf("UMSV if reset FALSE, if MultiScan.Done FALSE, if holding pattern FALSE\n");
-			
+
 				updateScannedCellsWithScanTableLine(MultiScan.CurrentStep+1);
 				ChangedVals = TRUE;
-				
+
 				for(j=0;j<MultiScan.NumPars;j++)
 				{
 					if (MultiScan.Par[j].CellExists)
 					{
 						// Highlight current cell, no previous cell to remove highlighting from.
-						SetTableCellAttribute (panelHandle, PANEL_MULTISCAN_VAL_TABLE, 
+						SetTableCellAttribute (panelHandle, PANEL_MULTISCAN_VAL_TABLE,
 							MakePoint(j+1,MultiScan.CurrentStep+1), ATTR_TEXT_BGCOLOR, VAL_LT_GRAY);
 					}
 				}
 			}
-		
+
 		}
-		
+
 		//printf("UMSV if reset FALSE, done initial setting\n");
-			
-		
+
+
 		// Reset ScanBuffer to zero
 		// The ScanBuffer is needed, since the scanlist can be edited during the scan
 		for( i=0; i<SCANBUFFER_LENGTH; i++)
@@ -2673,52 +2673,52 @@ void UpdateMultiScanValues(int Reset)
 		 		ScanBuffer[i].MultiScanValue[j] = 0.0;
 		 	}
 		}
-		
-		
- 		// Set to 'Initialized' and activate scan (functions check for 
+
+
+ 		// Set to 'Initialized' and activate scan (functions check for
  		//'MultiScan.Activated' to do MultiScan stuff).
  		MultiScan.Initialized = TRUE;
  		MultiScan.Active = TRUE;
- 		
+
  		// Disable editing number of parameters, number of iterations and
  		// parameter positions by dimming out the respective controls
  		SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_NUM_NUMERIC, ATTR_DIMMED, 1);
   		SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_ITS_NUMERIC, ATTR_DIMMED, 1);
   		SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_POS_TABLE, ATTR_DIMMED, 1);
   		SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_NAMES_TABLE, ATTR_DIMMED, 1);
- 	
+
  		//printf("UMSV done reset\n");
-	
+
   	}
   	//Done initializing/resetting the MultiScan structure.
-  	
+
   	//printf("UMSV after reset\n");
-			
-  	
+
+
   	// Update next scan value. First thing: step up iteration counter
   	// and only read a new value once the iterations are completed
-  	
+
   	//printf("UMSV update\n");
   	//printf("UMSV CurrentIteration: %i\n", MultiScan.CurrentIteration);
   	MultiScan.CurrentIteration++;
   	//printf("UMSV CurrentIteration incremented: %i\n", MultiScan.CurrentIteration);
-  	
-  	
+
+
   	if( MultiScan.CurrentIteration >= MultiScan.Iterations )
   	{	// Go to next scan value.
   		//printf("UMSV if current iter >= iterations\n");
   		//printf("UMSV currentStep: %i\n", MultiScan.CurrentStep);
-  		
+
   		MultiScan.CurrentStep++;
   		MultiScan.CurrentIteration = 0;
-  		
+
   		//printf("UMSV currentStep: %i\n", MultiScan.CurrentStep);
-  		
+
   		// Iterate through the scan table line to see if there is a sentinel.
   		MultiScan.HoldingPattern = 0;
   		for(j=0;j<MultiScan.NumPars;j++)
   		{
-  			GetTableCellVal(panelHandle, PANEL_MULTISCAN_VAL_TABLE, 
+  			GetTableCellVal(panelHandle, PANEL_MULTISCAN_VAL_TABLE,
 					MakePoint(j+1,MultiScan.CurrentStep+1), &value);
 			if( value <= -999.0 ){
 				if( abs(value - REPEAT_LAST_SENTINEL) < 0.001 ){
@@ -2734,93 +2734,93 @@ void UpdateMultiScanValues(int Reset)
 				MultiScan.SentinelFoundValue = value;
 			}
   		}
-  		
+
   		//printf("UMSV after iterating scan table line for sentinel\n");
   		//printf("UMSV holdpatt: %i\n", MultiScan.HoldingPattern);
   		//printf("UMSV scandone: %i\n", MultiScan.Done);
   		//printf("UMSV currentStep: %i\n", MultiScan.CurrentStep);
-  		
+
   		// If MultiScan.Done == TRUE then we don't need to write anything since the values will
   		// be overwritten at the end of this function.
   		if( MultiScan.Done == FALSE ){
-  			
+
   			//printf("UMSV iter passed, done FALSE\n", MultiScan.Done);
-  		
-  			
+
+
   			// Now if there was a holding pattern sentinel value in this line then we should
   			// write the appropriate values.
   			if( MultiScan.HoldingPattern == 1 ){// Repeat the previous line in the scan table.
-				
+
 				//printf("UMSV iter passed, done FALSE, holding patt 1\n", MultiScan.Done);
-  		
+
 				for( j=0; j<MultiScan.NumPars; j++ )
 				{
 					if (MultiScan.Par[j].CellExists)
 					{
 						// Highlight current cell, remove highlighting on previous one.
-						SetTableCellAttribute (panelHandle, PANEL_MULTISCAN_VAL_TABLE, 
+						SetTableCellAttribute (panelHandle, PANEL_MULTISCAN_VAL_TABLE,
 							MakePoint(j+1,MultiScan.CurrentStep+1), ATTR_TEXT_BGCOLOR, VAL_LT_GRAY);
-						SetTableCellAttribute (panelHandle, PANEL_MULTISCAN_VAL_TABLE, 
+						SetTableCellAttribute (panelHandle, PANEL_MULTISCAN_VAL_TABLE,
 							MakePoint(j+1,MultiScan.CurrentStep), ATTR_TEXT_BGCOLOR, VAL_WHITE);
 					}
 				}
-				
+
 				// Decrement MultiScan.CurrentStep and this time let's try just keeping the same
 				// cell values in the sequence. It should work.
 				MultiScan.CurrentStep--;
-				
+
 				ChangedVals = TRUE;// For consistency. Shouldn't actually matter other than timing.
 			}
 			else if( MultiScan.HoldingPattern == 2 ){// Repeat the original values.
-				
+
 				//printf("UMSV iter passed, done FALSE, holding patt 2\n", MultiScan.Done);
-  		
+
 				updateScannedCellsWithOriginalValues();
 				ChangedVals = TRUE;
-				
+
 				for(j=0;j<MultiScan.NumPars;j++)
 				{
 					if (MultiScan.Par[j].CellExists)
 					{
 						// Highlight current cell, remove highlighting on previous one.
-						SetTableCellAttribute (panelHandle, PANEL_MULTISCAN_VAL_TABLE, 
+						SetTableCellAttribute (panelHandle, PANEL_MULTISCAN_VAL_TABLE,
 							MakePoint(j+1,MultiScan.CurrentStep+1), ATTR_TEXT_BGCOLOR, VAL_LT_GRAY);
-						SetTableCellAttribute (panelHandle, PANEL_MULTISCAN_VAL_TABLE, 
+						SetTableCellAttribute (panelHandle, PANEL_MULTISCAN_VAL_TABLE,
 							MakePoint(j+1,MultiScan.CurrentStep), ATTR_TEXT_BGCOLOR, VAL_WHITE);
 					}
 				}
-				
+
 				// Decrement MultiScan.CurrentStep so the next time we reach the max iteractions
 				// we will increment to the holding sentinel value again.
 				MultiScan.CurrentStep--;
-				
+
 			}
 			else {// Else there is no holding pattern sentinel and we should update normally.
-				
+
 				//printf("UMSV iter passed, done FALSE, holding patt else\n", MultiScan.Done);
   				//printf("UMSV currentStep(+1 to row index): %i\n", MultiScan.CurrentStep);
   				//printf("UMSV iterate NumPars: %i\n", MultiScan.NumPars);
-  		
-  		
+
+
   				updateScannedCellsWithScanTableLine(MultiScan.CurrentStep+1);
   				ChangedVals = TRUE;
-				
+
 				for(j=0;j<MultiScan.NumPars;j++)
 				{
 					if (MultiScan.Par[j].CellExists)
 					{
 						// Highlight current cell, remove highlighting on previous one.
-						SetTableCellAttribute (panelHandle, PANEL_MULTISCAN_VAL_TABLE, 
+						SetTableCellAttribute (panelHandle, PANEL_MULTISCAN_VAL_TABLE,
 							MakePoint(j+1,MultiScan.CurrentStep+1), ATTR_TEXT_BGCOLOR, VAL_LT_GRAY);
-						SetTableCellAttribute (panelHandle, PANEL_MULTISCAN_VAL_TABLE, 
+						SetTableCellAttribute (panelHandle, PANEL_MULTISCAN_VAL_TABLE,
 							MakePoint(j+1,MultiScan.CurrentStep), ATTR_TEXT_BGCOLOR, VAL_WHITE);
-					
+
 						//printf("UMSV set highlighting of cell %i %i\n", j+1, MultiScan.CurrentStep+1);
 					}
 				}
-				
+
 			}// End choosing which kind of update to do, holdings or normal.
-			
+
   		}// End MultiScan.Done == FALSE if statement.
   		else {
   			// If we are done the scan, then don't write to any of the actual arrays but we
@@ -2831,23 +2831,23 @@ void UpdateMultiScanValues(int Reset)
 				if (MultiScan.Par[j].CellExists)
 				{
 					// Read next parameter value from table control.
-					GetTableCellVal(panelHandle, PANEL_MULTISCAN_VAL_TABLE, 
+					GetTableCellVal(panelHandle, PANEL_MULTISCAN_VAL_TABLE,
 						MakePoint(j+1,MultiScan.CurrentStep+1), &value);
 					MultiScan.Par[j].CurrentScanValue = value;
 				}
-			}	
+			}
   		}
 	}
 	else
 	{
 		// No updates to be done.
-	} 
+	}
 	// Done updating table values according to scan list.
-	
+
 
 	//printf("UMSV Before writing to ScanBuffer\n");
-	
-	// Record current scan information into a string buffer, 
+
+	// Record current scan information into a string buffer,
 	// so we can write it to disk later. Includes writing out the sentinel.
 	GetSystemTime(&hour,&minute,&second);
 	if( MultiScan.Counter < SCANBUFFER_LENGTH ){
@@ -2864,10 +2864,10 @@ void UpdateMultiScanValues(int Reset)
 	else {
 		printf("Number of scan buffer lines exceeded. The mscan file will be missing entries.\n");
 	}
-	
+
 	//printf("UMSV After writing to ScanBuffer\n");
 	//printf("UMSV Before writing to incremental file\n");
-	
+
 	// Always write to incremental file.
 	incrOutputFileHandle = OpenFile(outputFileNameWithPath,VAL_READ_WRITE,VAL_APPEND,VAL_ASCII);
 	// If we can't open the incremental file, continue, but print an error.
@@ -2888,13 +2888,13 @@ void UpdateMultiScanValues(int Reset)
 		WriteLine(incrOutputFileHandle, outputBuffer, -1);
 		CloseFile(incrOutputFileHandle);
 	}
-	
+
 	//printf("UMSV After writing to incremental file\n");
-	
+
 	MultiScan.Counter++;
 	// Done updating the ScanBuffer.
-	
-	
+
+
     // Check if the scan is done. If yes, then cleanup.
     // MultiScan.CurrentStep+1 should point to the line with the sentinel at this point.
 	if (MultiScan.Done==TRUE)
@@ -2919,15 +2919,15 @@ void UpdateMultiScanValues(int Reset)
 			//printf("UMSV Replace scanned cells with original values\n");
 			updateScannedCellsWithOriginalValues();
 		}
-		
+
 		ChangedVals = TRUE;
-		
+
 		for(j=0;j<MultiScan.NumPars;j++)
 		{
 			// remove highlighting from scan list value.
-			SetTableCellAttribute (panelHandle, PANEL_MULTISCAN_VAL_TABLE, 
+			SetTableCellAttribute (panelHandle, PANEL_MULTISCAN_VAL_TABLE,
 				MakePoint(j+1,MultiScan.CurrentStep), ATTR_TEXT_BGCOLOR, VAL_WHITE);
-			SetTableCellAttribute (panelHandle, PANEL_MULTISCAN_VAL_TABLE, 
+			SetTableCellAttribute (panelHandle, PANEL_MULTISCAN_VAL_TABLE,
 				MakePoint(j+1,MultiScan.CurrentStep+1), ATTR_TEXT_BGCOLOR, VAL_WHITE);
 		}
 	}
@@ -2946,18 +2946,18 @@ void GetNewMultiScanCommands(void)
 	double sentinelValue;
 	int sentinelFound;
 	int n;
-	
+
 	int fileExists = 0;
 	char inputFileNameWithPath[MAX_PATHNAME_LEN];
 	int commandsInputFileHandle;
 	char outputFileNameWithPath[MAX_PATHNAME_LEN];
 	int changesOutputFileHandle;
-	
+
 	char inputBuffer[500];
 	char outputBuffer[500];
 	char paramsBuffer[500];
-	
-	
+
+
 	// A bit of nomenclature: There needs to be a distinction between the number of lines in the
 	// scan table that correspond to valid scan points and the number of lines/rows in the scan
 	// table object itself. I propose to use "entries" or "lines" to refer to rows of the scan
@@ -2969,21 +2969,21 @@ void GetNewMultiScanCommands(void)
 	int commandNum;// The line in the commands_00000.txt file of the current command.
 	int commandScanTableLine;// The line that the command should affect.
 	double parValues[NUMMAXSCANPARAMETERS];
-	
+
 	//printf("GN Starting GetNewMultiScanCommands function\n");
-	
+
 	// Create the appropriate commands file name to open including the directory path.
 	sprintf(inputBuffer, "commands_%05d.txt", MultiScan.NextCommandsFileNumber);
 	MakePathname(MultiScan.CommandsFilePath, inputBuffer, inputFileNameWithPath);
 	//printf("GN Commands file name with path:\n");
 	//printf("-%s-\n", inputFileNameWithPath);
-	
+
 	// Create the file name of the changes file.
 	sprintf(outputBuffer, "changes_%05d.txt", MultiScan.NextCommandsFileNumber);
 	MakePathname(MultiScan.CommandsFilePath, outputBuffer, outputFileNameWithPath);
 	//printf("GN Changes file name with path:\n");
 	//printf("-%s-\n", outputFileNameWithPath);
-	
+
 	//printf("GN Checking if commands file %i exists\n", MultiScan.NextCommandsFileNumber);
 	fileExists = FileExists(inputFileNameWithPath, 0);// Returns 1 if file exists, 0 if file not found. Negative on errors.
 	//printf("GN Done checking if commands file exists\n");
@@ -2995,7 +2995,7 @@ void GetNewMultiScanCommands(void)
 			CloseFile(commandsInputFileHandle);
 			return;// If the file exists but we can't open it, try again next time.
 		}
-		
+
 		// Open changes_00000.txt file for writing.
 		changesOutputFileHandle = OpenFile(outputFileNameWithPath,VAL_READ_WRITE,VAL_TRUNCATE,VAL_ASCII);
 		if( changesOutputFileHandle < 0){
@@ -3008,25 +3008,25 @@ void GetNewMultiScanCommands(void)
 		//printf("GN No commands file, returning from function\n");
 		return;// Return without incrementing MultiScan.NextCommandsFileNumber.
 	}
-	
+
 	//printf("GN Commands and changes files have been opened\n");
-	
+
 	// At this point we know that there is a commands_00000.txt file to read commands from and
 	// that we have a file changes_00000.txt to write to for the log.
-	
+
 	// Read the header line of the commands file.
 	// At the moment should only include the number of lines in the scan table.
 	ReadLine(commandsInputFileHandle, inputBuffer, 500);
-	
+
 	//printf("GN after readline\n");
-	
+
 	Scan(inputBuffer, "%s>%i", &matlabNumLines);
 	//Scan(inputBuffer, "%s>Scan Table Lines: %i", &matlabNumLines);
 	//ScanFile(commandsInputFileHandle, "%s>%i", &matlabNumlines);
-	
+
 	//printf("GN after scan header\n");
-	
-			
+
+
 	// Block the user from changing values in the scan table.
 	SetCtrlAttribute( panelHandle, PANEL_MULTISCAN_VAL_TABLE, ATTR_DIMMED, 1);
 	// And also block the user from changing the number of rows in the scan table.
@@ -3034,10 +3034,10 @@ void GetNewMultiScanCommands(void)
 	// decreased while MultiScan.Active == FALSE so it should be safe to dim even if the
 	// interruped value is tried to be taken as the new value.
 	SetCtrlAttribute( panelHandle, PANEL_MULTISCAN_NUM_ROWS, ATTR_DIMMED, 1);
-	
+
 	//printf("GN after dimming panels\n");
-			
-	
+
+
 	// Find the sentinel in the scan table.
 	// Note: if the user was making changes and overwrote the sentinel before finishing
 	// her changes, then we will call the sentinel the end of the table and it will
@@ -3045,9 +3045,9 @@ void GetNewMultiScanCommands(void)
 	// commands and allow the user to finish the changes they were doing.
 	GetNumTableRows( panelHandle, PANEL_MULTISCAN_VAL_TABLE, &numRows);
 	GetNumTableColumns( panelHandle, PANEL_MULTISCAN_VAL_TABLE, &numCols);
-	
+
 	//printf("GN before search sentinel, numRows: %i, numCols: %i\n", numRows, numCols);
-	
+
 	for( i=1; i<=numRows; i++ ){
 		for( j=1; j<=numCols; j++ ){
 			GetTableCellVal( panelHandle, PANEL_MULTISCAN_VAL_TABLE, MakePoint(j,i), &cellValue);
@@ -3068,52 +3068,52 @@ void GetNewMultiScanCommands(void)
 		sentinelFound = 0;
 		numLinesInScanTable = numRows;// Technically true, but we won't be doing anything.
 	}
-	
+
 	//printf("GN after search sentinel, found: %i, value: %f\n", sentinelFound, sentinelValue);
-	
+
 	//printf("GN matlabNumLines: %i\n", matlabNumLines);
 	//printf("GN numLinesInScanTable: %i\n", numLinesInScanTable);
-			
+
 	// If matlab has the wrong count, then it was probably due to user interference.
 	// In this case, disregard the matlab commands. Also require prescence of a sentinel value
 	// somewhere in the scan table rows, otherwise ignore the matlab commands.
 	if( matlabNumLines == numLinesInScanTable && sentinelFound){
-		
+
 		//printf("GN num lines okay\n");
-	
-		
+
+
 		// Since the count is the same, write to the output file that we will try each command.
 		sprintf(outputBuffer, "%i %s",
 				numLinesInScanTable, "Matlab number of lines correct.");
 		WriteLine(changesOutputFileHandle, outputBuffer, -1);
-		
+
 		//printf("GN wrote changes file num lines okay\n");
-	
-		
+
+
 		// Start reading the rest of the lines from the command file.
 		// At the moment we will make changes as we go.
-	
+
 		// ReadLine will return -2 if already at EOF, -1 for IO error, 0 for an empty
 		// line, and the number of bytes read otherwise.
 		// ReadLine appends a trailing '\0' to the end of the bytes read.
 		// The newline symbol is not included in the buffer.
-		
+
 		//printf("GN start read lines\n");
-		
+
 		while( ReadLine(commandsInputFileHandle, inputBuffer, 500-1) >= 0 ){
-			
+
 			//printf("GN rl top while loop\n");
 			//printf("GN inputbuffer:\n");
 			//printf(">%s<\n", inputBuffer);
-			
+
 			if( inputBuffer[0] == '\0' ){
 				// If a blank line, try reading another.
 				// Don't worry about writing to the changes file for an empty line.
 				continue;
 			}
-			
+
 			//printf("GN not an empty line\n");
-					
+
 			// Now we have a line with parameters in it.
 			// What kind of commands can matlab ask?
 			// Append the line to the end of the scan table lines.
@@ -3129,13 +3129,13 @@ void GetNewMultiScanCommands(void)
 			// meaningless for the append. (Could probably get away without characters
 			// with just -1 for appending and assume >0 is a replacement but let's allow
 			// for future needs including inserting a line.)
-			
-			
-			// First parse the line and extract the command number, command type, the line, 
+
+
+			// First parse the line and extract the command number, command type, the line,
 			// and the rest of the values.
 			// Notes about this Scan call:
 			// wn writes at most n bytes to the char array excluding NULL termination.
-			//		n here is one minus buffer size eg 10-1=9  
+			//		n here is one minus buffer size eg 10-1=9
 			// numCols is set earlier and is an argument that replaces the * in %*f
 			// Scan treats the array %*f as a single target. It is satisfied if at least one
 			// element of the array is filled in.
@@ -3147,9 +3147,9 @@ void GetNewMultiScanCommands(void)
 						&commandScanTableLine,
 						numCols, parValues);
 			// Check that we have parsed the expected number of things.
-			
+
 			//printf("GN scanned line\n");
-			
+
 			if( n != 1+1+1+1 ){
 				// If we do not have the correct number of things, write a message to the
 				// changes file and read the next line.
@@ -3161,17 +3161,17 @@ void GetNewMultiScanCommands(void)
 				WriteLine(changesOutputFileHandle, outputBuffer, -1);
 				continue;
 			}
-			
+
 			//printf("GN line has correct num params\n");
-			
+
 			// Now that we have parsed the string, check which command we are to execute.
 			if( strncmp(commandTypeBuffer, "A", 1) == 0 ){
-				
+
 				//printf("GN command A\n");
-				
+
 				// We append (which includes overwriting the sentinel value and rewriting
 				// the sentinel in the next line).
-	
+
 				// Since an outer if statement checks for sentinelFound, if numLinesInScanTable
 				// is equal to numRows then there is no next row to move the sentinel value
 				// to and so we will write a message to the changes file and read the next line.
@@ -3181,26 +3181,26 @@ void GetNewMultiScanCommands(void)
 					WriteLine(changesOutputFileHandle, outputBuffer, -1);
 					continue;// So read a new line.
 				}
-				
+
 				//printf("GN A, parValues[0]: %f\n", parValues[0]);
 				//printf("GN A, row index: %i\n", numLinesInScanTable);
-				
+
 				// For each of the parameters, replace the corresponding column in the row.
 				for( i=1; i<=numCols; i++ ){
 					SetTableCellVal( panelHandle, PANEL_MULTISCAN_VAL_TABLE,
 									MakePoint(i,numLinesInScanTable), parValues[i-1]);
 				}
-					
+
 				// Increment the number of lines in the scan table.
 				numLinesInScanTable++;
-				
+
 				// Now numLinesInScanTable corresponds to the row that was after the
 				// sentinel line so write a new sentinel to this row, making it a line.
 				// Write the sentinel in the first column regardless of which column it was
 				// in before.
 				SetTableCellVal( panelHandle, PANEL_MULTISCAN_VAL_TABLE,
 									MakePoint(1,numLinesInScanTable), sentinelValue);
-									
+
 				// Write to the changes_00000.txt files that we have appended the values.
 				sprintf(outputBuffer, "%i %s %i ",
 						commandNum, "A", commandScanTableLine);
@@ -3211,14 +3211,14 @@ void GetNewMultiScanCommands(void)
 				sprintf(paramsBuffer, "%f", parValues[numCols-1]);
 				strcat(outputBuffer, paramsBuffer);
 				WriteLine(changesOutputFileHandle, outputBuffer, -1);
-			
+
 			}
 			else if( strncmp(commandTypeBuffer, "R", 1) == 0 ){
-				
+
 				//printf("GN command R\n");
-				
+
 				// We replace.
-				
+
 				// A replacement can be any line between the next line that is about to be
 				// executed inclusive to the sentinel value inclusive. If the sentinel value is
 				// to be replaced we will move it to the next row (becomes a line) as long as we
@@ -3226,7 +3226,7 @@ void GetNewMultiScanCommands(void)
 				// The function UpdateMultiScanValues should be called immediately after this
 				// one and so assuming the number of iterations is one, we can query
 				// MultiScan.CurrentStep to find the next line to be exectued in the scan table.
-				
+
 				// All of the indexes into the scan table in UpdateMultiScanValues function are
 				// MultiScan.CurrentStep+1 since CurrentStep is zero-based.
 				// The line number (aka row index one-based) of the scan table that is about to
@@ -3239,14 +3239,14 @@ void GetNewMultiScanCommands(void)
 						// Finally check that we will have room to move the sentinel down a row.
 						if( commandScanTableLine < numRows ){
 							// Okay, now we have a replacement line that is valid.
-							
+
 							// For each of the parameters in the command file line, replace
 							// the corresponding column in the scan table.
 							for( i=1; i<=numCols; i++ ){
 								SetTableCellVal( panelHandle, PANEL_MULTISCAN_VAL_TABLE,
 											MakePoint(i,commandScanTableLine), parValues[i-1]);
 							}
-							
+
 							// Check if we need to shift the sentinel value because we just
 							// overwrote it.
 							// Write the sentinel in the first column regardless of which column it was
@@ -3256,7 +3256,7 @@ void GetNewMultiScanCommands(void)
 								SetTableCellVal( panelHandle, PANEL_MULTISCAN_VAL_TABLE,
 											MakePoint(1,numLinesInScanTable), sentinelValue);
 							}
-							
+
 							// Write to the changes_00000.txt files that we have done a replacement.
 							sprintf(outputBuffer, "%i %s %i ",
 								commandNum, "R", commandScanTableLine);
@@ -3303,29 +3303,29 @@ void GetNewMultiScanCommands(void)
 				}
 			}
 			else if( strncmp(commandTypeBuffer, "I", 1) == 0 ){
-				
+
 				//printf("GN command I\n");
-				
+
 				// We insert.
-				
+
 				// Try doing the insert by inserting rows (lines) in the table?
 				// This would extend the scan table which might run out of room.
 				printf("Insert not implemented yet (probably never)\n");
 				continue;
 			}
 			else {
-				
+
 				//printf("GN invalid command\n");
-				
+
 				// Invalid command type. Write a message to the log file and read the next line.
 				sprintf(outputBuffer, "%i %s",
 						commandNum, "Invalid command type.");
 				WriteLine(changesOutputFileHandle, outputBuffer, -1);
 				continue;
 			}
-			
+
 			//printf("GN bottom while loop\n");
-			
+
 		// We have read the command from the file and either it was parsed correctly and applied,
 		// or it wasn't either way there is nothing more to do so read the next line by closing
 		// the while loop brace.
@@ -3335,8 +3335,8 @@ void GetNewMultiScanCommands(void)
 	}
 	else {
 		//printf("GN num lines bad\n");
-	
-		
+
+
 		// Write to changes file that matlab's count was incorrect.
 		sprintf(outputBuffer, "%i %s%i%s",
 				numLinesInScanTable,
@@ -3344,29 +3344,29 @@ void GetNewMultiScanCommands(void)
 				"\nNot evaluating this commands file.");
 		WriteLine(changesOutputFileHandle, outputBuffer, -1);
 	}
-	
+
 	//printf("GN after num lines if stmt\n");
-	
-	
+
+
 	// Procedure should be for matlab to write a new commands file with incremented number
 	// regardless of success or failure. Increment the number of the commands_00000.txt
 	// file that we will look for.
 	MultiScan.NextCommandsFileNumber++;
-	
+
 	// Close the input and output files.
 	CloseFile(commandsInputFileHandle);
 	CloseFile(changesOutputFileHandle);
-	
-	
+
+
 	// As the last thing, allow the user to change the scan table. Note that the update multi
 	// scan function should always happen next and then the RunOnce function should be called
 	// which should mean that the user can't change values until the next scan line cycle has
 	// been started. This is a good thing.
 	SetCtrlAttribute( panelHandle, PANEL_MULTISCAN_VAL_TABLE, ATTR_DIMMED, 0);
 	SetCtrlAttribute( panelHandle, PANEL_MULTISCAN_NUM_ROWS, ATTR_DIMMED, 0);
-	
+
 	//printf("GN end GNMSC function\n");
-	
+
 }
 
 
@@ -3377,38 +3377,38 @@ void GetNewMultiScanCommands(void)
 //*********************************************************************
 void updateScannedCellsWithScanTableLine(int scanTableLine){
 	// scanTableLine normally is MultiScan.CurrentStep+1
-	
+
 	int j;
 	int page, col, row, drow;
 	double value;
 
 	for(j=0;j<MultiScan.NumPars;j++)
 	{   // Read in values from scan list and update tables.
-					
+
 		//printf("USCWSTL next par: %i\n", j);
 		//printf("USCWSTL cell exists: %i\n", MultiScan.Par[j].CellExists);
-  					
+
 		if (MultiScan.Par[j].CellExists)
 		{
 			//printf("USCWSTL par %i cell exists\n", j);
-			
+
 			// Just for easier code reading.
-			page = MultiScan.Par[j].Page; 
+			page = MultiScan.Par[j].Page;
 			col = MultiScan.Par[j].Column;
 			row = MultiScan.Par[j].Row;
-		
+
 			// Read next parameter value from table control.
-			GetTableCellVal(panelHandle, PANEL_MULTISCAN_VAL_TABLE, 
+			GetTableCellVal(panelHandle, PANEL_MULTISCAN_VAL_TABLE,
 				MakePoint(j+1,scanTableLine), &value);
 			MultiScan.Par[j].CurrentScanValue = value;
-	
+
 			//printf("USCWSTL page: %i\n", page);
 			//printf("USCWSTL col: %i\n", col);
 			//printf("USCWSTL row: %i\n", row);
 			//printf("USCWSTL value: %f\n", value);
-					
+
 			//printf("USCWSTL type: %i\n", MultiScan.Par[j].Type);
-					
+
 			switch (MultiScan.Par[j].Type)
 			{
 			case 0: // time scan
@@ -3427,7 +3427,7 @@ void updateScannedCellsWithScanTableLine(int scanTableLine){
 				case 1: ddstable[col][page].end_frequency = value; break;
 				case 2: dds2table[col][page].end_frequency = value; break;
 				case 3: dds3table[col][page].end_frequency = value; break;
-				}					
+				}
 				break;
 			case 22: // DDS EOR offset scan
 				switch (row-NUMBERANALOGCHANNELS)
@@ -3435,7 +3435,7 @@ void updateScannedCellsWithScanTableLine(int scanTableLine){
 				case 1: SetCtrlVal(panelHandle,PANEL_NUM_DDS_OFFSET,value); break;
 				case 2: SetCtrlVal(panelHandle,PANEL_NUM_DDS2_OFFSET,value); break;
 				case 3: SetCtrlVal(panelHandle,PANEL_NUM_DDS3_OFFSET,value); break;
-				}					
+				}
 				break;
 			case 3:	// Laser scan
 				LaserTable[row-NUMBERANALOGCHANNELS-NUMBERDDS-1][col][page].fval = value;
@@ -3466,10 +3466,10 @@ void updateScannedCellsWithOriginalValues(){
 		if (MultiScan.Par[j].CellExists)
 		{
 			// Just for easier code reading.
-			page = MultiScan.Par[j].Page; 
+			page = MultiScan.Par[j].Page;
 			col = MultiScan.Par[j].Column;
 			row = MultiScan.Par[j].Row;
-				
+
 			switch (MultiScan.Par[j].Type)
 			{
 			case 0: // time scan
@@ -3477,7 +3477,7 @@ void updateScannedCellsWithOriginalValues(){
 				MultiScan.Par[j].CurrentScanValue = MultiScan.Par[j].Time;
 				break;
 			case 1: // analog channel end value scan
-				AnalogTable[col][row][page].fval = MultiScan.Par[j].Analog.fval;  
+				AnalogTable[col][row][page].fval = MultiScan.Par[j].Analog.fval;
 				MultiScan.Par[j].CurrentScanValue = MultiScan.Par[j].Analog.fval;
 				break;
 			case 11: // analog channel timescale scan
@@ -3541,21 +3541,21 @@ void writeToScanInfoFile(void){
 	double cellValue;
 	int sentinelFound, sentinelLine;
 	double sentinelValue;
-	
+
 	int page, col, row;
 
 	char infoFileNameWithPath[MAX_PATHNAME_LEN];
 	int infoFileHandle;
-	
+
 	char outputBuffer[500];
-	
-	
+
+
 	// Create the file name of the info file. (using outputBuffer temporarily)
 	sprintf(outputBuffer, "info.txt");
 	MakePathname(MultiScan.CommandsFilePath, outputBuffer, infoFileNameWithPath);
 	printf("Info file name with path:\n");
 	printf("-%s-\n", infoFileNameWithPath);
-	
+
 	// Open the file.
 	infoFileHandle = OpenFile(infoFileNameWithPath,VAL_WRITE_ONLY,VAL_TRUNCATE,VAL_ASCII);
 	if( infoFileHandle < 0){
@@ -3563,7 +3563,7 @@ void writeToScanInfoFile(void){
 		CloseFile(infoFileHandle);
 		return;// If the file exists but we can't open it, try again next time.
 	}
-	
+
 	// Find the sentinel (could cache the value from GetNewMultiScanCommands but that may be very stale)
 	GetNumTableRows( panelHandle, PANEL_MULTISCAN_VAL_TABLE, &numRows);
 	GetNumTableColumns( panelHandle, PANEL_MULTISCAN_VAL_TABLE, &numCols);
@@ -3587,42 +3587,42 @@ void writeToScanInfoFile(void){
 		sentinelFound = 0;
 		sentinelLine = numRows;
 	}
-	
+
 	// Info file should have the list of params (row, col, page), total number of scan table lines,
 	// the shot/cycle number of the next cycle, and the scan line we are on in the scan table.
-	
+
 	// First write the shot number. The count here assumes that this function is called after
 	// function GetNewMultiScanCommands() but before the start of the cycle.
 	sprintf(outputBuffer, "%i", MultiScan.Counter);
 	WriteLine(infoFileHandle, outputBuffer, -1);
-	
+
 	// Then the line in the scan table that is next.
 	sprintf(outputBuffer, "%i", MultiScan.CurrentStep+1);
 	WriteLine(infoFileHandle, outputBuffer, -1);
-	
+
 	// Then the total number of lines in the scan table followed by whether it has meaning or not.
 	sprintf(outputBuffer, "%i %i", sentinelLine, sentinelFound);
 	WriteLine(infoFileHandle, outputBuffer, -1);
-	
+
 	// Then iterate through all of the cells that we are scanning. (page, column, row).
 	for( j=0; j<numCols; j++ ){
-		
+
 		GetTableCellVal(panelHandle, PANEL_MULTISCAN_POS_TABLE, MakePoint(j+1,1), &page);
 		GetTableCellVal(panelHandle, PANEL_MULTISCAN_POS_TABLE, MakePoint(j+1,2), &col);
 		GetTableCellVal(panelHandle, PANEL_MULTISCAN_POS_TABLE, MakePoint(j+1,3), &row);
-		
+
 		if( MultiScan.Par[j].CellExists ){
 			sprintf(outputBuffer, "%i %i %i valid", page, col, row);
 		}
 		else {
 			sprintf(outputBuffer, "%i %i %i invalid", page, col, row);
 		}
-		
+
 		WriteLine(infoFileHandle, outputBuffer, -1);
-		
+
 	}
 	CloseFile(infoFileHandle);
-	
+
 }
 
 
@@ -3638,94 +3638,94 @@ void writeToScanInfoFile(void){
 void LoadSettings(int version)
 {
 	int status;
-	//If .ini exists, then open the file dialog.  Else just open the file dialog.  Add a method to load 
+	//If .ini exists, then open the file dialog.  Else just open the file dialog.  Add a method to load
 	//last used settings on program startup.
 	FILE *fpini;
 	char fname[100]="",c,fsavename[500]="",buff[600];
-	static char defaultdir[200]="C:\\UserDate\\Data"; 
+	static char defaultdir[200]="C:\\UserDate\\Data";
 	int i=0,j=0,k=0,inisize=0,success;
-	
+
 	//Check if .ini file exists.  Load it if it does.
-	if(!(fpini=fopen("gui_V16.ini","r"))==NULL)		
-	{											
+	if(!(fpini=fopen("gui_V16.ini","r"))==NULL)
+	{
 		while (fscanf(fpini,"%c",&c) != -1) fname[inisize++] = c;  //Read the contained name
 	}
 	fclose(fpini);
-	
+
 	// prompt for a file, if selected then load the Panel and Arrays
 	status=FileSelectPopup (defaultdir, "*.pan", "", "Load Settings", VAL_LOAD_BUTTON, 0, 0, 1, 1,fsavename );
 	if(!(status==0))
 	{
 		RecallPanelState(PANEL, fsavename, 1); // This one can be problematic when elements have been removed from the GUI!!!
-		
+
 		// Stefan Trotzky - Oct 2012: added switch for file version
 		switch (version)
 		{
-			case 13: 
+			case 13:
 				LoadArraysV13(fsavename,strlen(fsavename));
 				LoadLaserData(fsavename,strlen(fsavename));
 				success = 1; // no success evaluation before V16
 				break;
-			case 15: 
+			case 15:
 				LoadArraysV15(fsavename,strlen(fsavename));
 				LoadLaserData(fsavename,strlen(fsavename));
 				success = 1; // no success evaluation before V16
 				break;
 			case 16: // V16 saves laser data together with arrays
-				success = LoadArraysV16(fsavename,strlen(fsavename)); 
+				success = LoadArraysV16(fsavename,strlen(fsavename));
 				break;
 		}
-		
+
 		if (success)
 		{
 			LaserSettingsInit();
-		
+
 			//edit panel title
 			i=499;
 			while(i>=0&&fsavename[i]!='\\')
 				i--;
-		
+
 			strcpy(buff,SEQUENCER_VERSION);
 			strcat(buff,&fsavename[i+1]);
 			SetPanelAttribute (panelHandle, ATTR_TITLE, buff);
 		}
-		
+
 	}
 	else
 	{
 		MessagePopup ("File Error", "No file was selected");
 	}
-	
+
 	DrawNewTable(0);
 	strcpy(defaultdir,"");
 
 }
 //*****************************************************************************************
 void LoadLastSettings(int check)
-{   
-	//If .ini exists, then open the file dialog.  Else just open the file dialog.  Add a method to load 
+{
+	//If .ini exists, then open the file dialog.  Else just open the file dialog.  Add a method to load
 	//last used settings on program startup.
 	FILE *fpini;
 	char fname[100]="",c,fsavename[500]="",loadname[100]="",buff[600];
 	int i=0,j=0,k=0,inisize=0, success;
 	//Check if .ini file exists.  Load it if it does.
-	if(!(fpini=fopen("gui.ini","r"))==NULL)		
-	{											
+	if(!(fpini=fopen("gui.ini","r"))==NULL)
+	{
 		while (fscanf(fpini,"%c",&c) != -1) fname[inisize++] = c;  //Read the contained name
 	}
 	fclose(fpini);
-	
+
 	c=fname[inisize-1];
 	strncpy(loadname,fname,inisize-2);
 	if((check==0)||(c==49))			  // 49 is the ascii code for "1"
 	{
 		RecallPanelState(PANEL, loadname, 1); // This one can be problematic when elements have been removed from the GUI!!!
 		success = LoadArraysV16(fname,strlen( loadname));
-		
+
 		if (success)
 		{
-			LaserSettingsInit();		
-		
+			LaserSettingsInit();
+
 			i=500;
 			while(i>=0&&fsavename[i]!='\\')
 				i--;
@@ -3733,14 +3733,14 @@ void LoadLastSettings(int check)
 			strcat(buff,&fsavename[i+1]);
 			SetPanelAttribute (panelHandle, ATTR_TITLE, buff);
 		}
-		
+
 	}
 	DrawNewTable(0);
 }
 //*****************************************************************************************
 
 void SaveSettings(int version)
-/* Modified:  
+/* Modified:
 Feb 09, 2006   Clear the Debug box before saving. (was causing insanely large save files, and slowed down loading of old panels.)
 */
 {
@@ -3751,12 +3751,12 @@ Feb 09, 2006   Clear the Debug box before saving. (was causing insanely large sa
 	static char defaultdir[200]="C:\\UserDate\\Data";
 	int i=0,j=0,k=0,inisize=0,status,loadonboot=0;
 	//Check if .ini file exists.  Load it if it does.
-	if(!(fpini=fopen("gui.ini","r"))==NULL)		// if "gui.ini" exists, then read it  Just contains a filename.  
+	if(!(fpini=fopen("gui.ini","r"))==NULL)		// if "gui.ini" exists, then read it  Just contains a filename.
 	{												//If not, do nothing
 		while (fscanf(fpini,"%c",&c) != -1) fname[inisize++] = c;  //Read the contained name
 	}
  	fclose(fpini);
- 	
+
 	status=FileSelectPopup (defaultdir, "*.pan", "", "Save Settings", VAL_SAVE_BUTTON, 0, 0, 1, 1,fsavename);
 	GetMenuBarAttribute (menuHandle, MENU_FILE_BOOTLOAD, ATTR_CHECKED, &loadonboot);
 	if(!(status==0))
@@ -3769,28 +3769,28 @@ Feb 09, 2006   Clear the Debug box before saving. (was causing insanely large sa
 			fprintf(fpini,"\n%d",loadonboot);
 		}
 		fclose(fpini);
-		
+
 		// Stefan Trotzky - Oct 2012: added switch for file version
 		switch (version)
 		{
-			case 15: 
-				SaveArraysV15(fsavename, strlen(fsavename)); 
-				SaveLaserData(fsavename,strlen(fsavename)); 
+			case 15:
+				SaveArraysV15(fsavename, strlen(fsavename));
+				SaveLaserData(fsavename,strlen(fsavename));
 				break;
 			case 16: // V16 saves laser data together with arrays
-				SaveArraysV16(fsavename, strlen(fsavename)); 
+				SaveArraysV16(fsavename, strlen(fsavename));
 				break;
-			default: 
-				SaveArraysV15(fsavename, strlen(fsavename)); 
-				SaveLaserData(fsavename,strlen(fsavename)); 
+			default:
+				SaveArraysV15(fsavename, strlen(fsavename));
+				SaveLaserData(fsavename,strlen(fsavename));
 				break;
 		}
-			
-		
+
+
 		i=499;
 		while(i>=0&&fsavename[i]!='\\')
 			i--;
-		
+
 		strcpy(buff,SEQUENCER_VERSION);
 		strcat(buff,&fsavename[i+1]);
 		SetPanelAttribute (panelHandle, ATTR_TITLE, buff);
@@ -3800,7 +3800,7 @@ Feb 09, 2006   Clear the Debug box before saving. (was causing insanely large sa
 		MessagePopup ("File Error", "No file was selected");
 	}
 	strcpy(defaultdir,"");
-	
+
 }
 
 
@@ -3810,9 +3810,9 @@ Feb 09, 2006   Clear the Debug box before saving. (was causing insanely large sa
  void DrawNewTable(int isdimmed)
 // if isdimmed=0/FALSE  Draw everything, editing mode
 // if isdimmed=1/TRUE   Dim out appropriate columns....
-// Make isdimmed a global I guess...		
+// Make isdimmed a global I guess...
 // Jan 24,2006:   Now dim/invisible appropriate 'arrows' that indicate loop points.
-// May 12, 2005:  Updated to change color of cell that is active by a parameter scan.  This cell (ANalog, Time or DDS) now 
+// May 12, 2005:  Updated to change color of cell that is active by a parameter scan.  This cell (ANalog, Time or DDS) now
 //                turns dark yellow. might pick a better color.
 // Oct 07,2012:	  Stefan Trotzky -- As noticed above: dark yellow is a bad choice. Going to orange. Also including
 //				  update for MultiScan. Cleaned up the code a bit. Removed redundant assignments of
@@ -3825,13 +3825,13 @@ Feb 09, 2006   Clear the Debug box before saving. (was causing insanely large sa
  	int dimset=0,nozerofound,val;
  	int DDSChannel1,DDSChannel2,DDSChannel3;
 
- 	int ispicture=1,celltype=0; //celtype has 3 values.  0=Numeric, 1=String, 2=Picture  
+ 	int ispicture=1,celltype=0; //celtype has 3 values.  0=Numeric, 1=String, 2=Picture
 
  	// list of colours used for different rows, alternate after every 3 rows
  	// ColourTable is a bit larger than it has to be.
  	int ColourTable [127];
  	ColourTable[0] = VAL_BLACK;
- 	for (i=0;i<20;i++) 
+ 	for (i=0;i<20;i++)
  	{
  	   ColourTable[6*i+1] = CLR_DIGITAL_LO;
  	   ColourTable[6*i+2] = CLR_DIGITAL_LO;
@@ -3840,28 +3840,28 @@ Feb 09, 2006   Clear the Debug box before saving. (was causing insanely large sa
  	   ColourTable[6*i+5] = CLR_DIGITAL_LO_ALT;
  	   ColourTable[6*i+6] = CLR_DIGITAL_LO_ALT;
  	}
- 	
+
  	// Get visibilities and page number (and then hide tables)
  	GetCtrlAttribute (panelHandle, PANEL_ANALOGTABLE, ATTR_VISIBLE, &analogtable_visible);
 	GetCtrlAttribute (panelHandle, PANEL_DIGTABLE, ATTR_VISIBLE, &digtable_visible);
  	SetCtrlAttribute (panelHandle, PANEL_ANALOGTABLE, ATTR_VISIBLE, 0);
-	SetCtrlAttribute (panelHandle, PANEL_DIGTABLE, ATTR_VISIBLE, 0);	
+	SetCtrlAttribute (panelHandle, PANEL_DIGTABLE, ATTR_VISIBLE, 0);
  	SetCtrlAttribute (panelHandle, PANEL_TIMETABLE, ATTR_VISIBLE, 0);
  	SetCtrlAttribute (panelHandle, PANEL_INFOTABLE, ATTR_VISIBLE, 0);
 	page=GetPage();
-	
+
 	GetCtrlVal(panelHandle, PANEL_TGL_NUMERICTABLE,&celltype);
-	if(celltype==2) {ispicture=TRUE;} 
-	else { ispicture=FALSE;}    
-	
- 	
+	if(celltype==2) {ispicture=TRUE;}
+	else { ispicture=FALSE;}
+
+
  	// Dimm out complete page if not checked (THIS APPEARS TO BE OBSOLETE HERE!)
  	CheckActivePages();
  	if(ischecked[page]==FALSE)
  	{   // dim the tables
  		SetCtrlAttribute (panelHandle, PANEL_ANALOGTABLE, ATTR_DIMMED, 1);
  		SetCtrlAttribute (panelHandle, PANEL_DIGTABLE, ATTR_DIMMED, 1);
-		SetCtrlAttribute (panelHandle, PANEL_TIMETABLE, ATTR_DIMMED, 1); 		
+		SetCtrlAttribute (panelHandle, PANEL_TIMETABLE, ATTR_DIMMED, 1);
  	}
 	else
 	{   //undim the tables
@@ -3869,19 +3869,19 @@ Feb 09, 2006   Clear the Debug box before saving. (was causing insanely large sa
 		SetCtrlAttribute (panelHandle, PANEL_DIGTABLE, ATTR_DIMMED, 0);
 		SetCtrlAttribute (panelHandle, PANEL_TIMETABLE, ATTR_DIMMED, 0);
 	}
-	
+
  	picmode=0;
- 	
+
  	// Coloring the tables columnwise
 	for(i=1;i<=NUMBEROFCOLUMNS;i++)  // scan over the columns
 	{
-	
+
 	// Update time values and un-dimm cells, reset background to white
 		SetTableCellAttribute (panelHandle, PANEL_TIMETABLE, MakePoint(i,1),
 				ATTR_CELL_DIMMED, 0);
 		SetTableCellVal(panelHandle,PANEL_TIMETABLE,MakePoint(i,1),TimeArray[i][page]);
 		SetTableCellAttribute(panelHandle,PANEL_TIMETABLE,MakePoint(i,1),
-				ATTR_TEXT_BGCOLOR, VAL_WHITE);		
+				ATTR_TEXT_BGCOLOR, VAL_WHITE);
 	// Update info panel
 		SetTableCellVal(panelHandle,PANEL_INFOTABLE,MakePoint(i,1),InfoArray[i][page].text);
 
@@ -3892,12 +3892,12 @@ Feb 09, 2006   Clear the Debug box before saving. (was causing insanely large sa
 			// Reading in this  cell's parameters.
 			cmode=AnalogTable[i][j][page].fcn;
 			vlast=AnalogTable[i-1][j][page].fval;
-			vnow=AnalogTable[i][j][page].fval;	
-			
+			vnow=AnalogTable[i][j][page].fval;
+
 			// Set cell type to numeric.
 			SetTableCellAttribute (panelHandle, PANEL_ANALOGTABLE, MakePoint(i,j),
 				   ATTR_CELL_TYPE, VAL_CELL_NUMERIC);
-			
+
 			// Write end-of-ramp value (fval) to cell
 			if(cmode!=6)
 				// Write fval into the cell
@@ -3919,16 +3919,16 @@ Feb 09, 2006   Clear the Debug box before saving. (was causing insanely large sa
 				SetTableCellAttribute (panelHandle, PANEL_ANALOGTABLE, MakePoint(i,j),
 						ATTR_CTRL_VAL, findLastVal(j,i,page));
 			}
-			
+
 			// Un-dimm cells (analog channels)
 			SetTableCellAttribute (panelHandle, PANEL_ANALOGTABLE, MakePoint(i,j),
 				ATTR_CELL_DIMMED, 0);
-			
+
 			// Select the cell color depending on the function type
 			switch (cmode)
 			{
 			case 1: // stepped value (steps to zero in grey)
-				if (vnow==0) 
+				if (vnow==0)
 				{ 	thiscolor = ColourTable[j]; }
 				else
 				{ 	thiscolor = CLR_ANALOG_STEP; }
@@ -3938,54 +3938,54 @@ Feb 09, 2006   Clear the Debug box before saving. (was causing insanely large sa
 			case 3: // exponential ramp
 				thiscolor = CLR_ANALOG_EXP; break;
 			case 4: // minjerk ramp
-				thiscolor = CLR_ANALOG_MINJERK; break;			
+				thiscolor = CLR_ANALOG_MINJERK; break;
 			case 5: // sine wave
-				thiscolor = CLR_ANALOG_SINEWAVE; break;			
+				thiscolor = CLR_ANALOG_SINEWAVE; break;
 			case 6: // copy previous
-				thiscolor = CLR_ANALOG_COPYPREV; break;			
+				thiscolor = CLR_ANALOG_COPYPREV; break;
 			default:
 				thiscolor = ColourTable[j];
 			}
 			// Change the cell color
-			SetTableCellAttribute (panelHandle, PANEL_ANALOGTABLE, MakePoint(i,j), 
+			SetTableCellAttribute (panelHandle, PANEL_ANALOGTABLE, MakePoint(i,j),
 						ATTR_TEXT_BGCOLOR, thiscolor);
 		} // Done drawing analog chanels
-		
-		
+
+
 	// Draw digital channels according to DigTableValues[][][]
 		for(j=1;j<=NUMBERDIGITALCHANNELS;j++) // scan over digital channels
-		{   
+		{
 			SetTableCellAttribute (panelHandle, PANEL_DIGTABLE, MakePoint(i,j),
 				ATTR_CELL_DIMMED, 0);
 			// if a digital value is high, colour the cell red
 			if(DigTableValues[i][j][page]==1)
 			{   // cell is hi
 				SetTableCellVal (panelHandle, PANEL_DIGTABLE, MakePoint(i,j), 1);
-				SetTableCellAttribute (panelHandle, PANEL_DIGTABLE,MakePoint(i,j), 
+				SetTableCellAttribute (panelHandle, PANEL_DIGTABLE,MakePoint(i,j),
 						ATTR_TEXT_BGCOLOR, CLR_DIGITAL_HI);
 			}
 			else
 			{   // cell is lo
 				SetTableCellVal (panelHandle, PANEL_DIGTABLE, MakePoint(i,j), 0);
-				SetTableCellAttribute (panelHandle, PANEL_DIGTABLE,MakePoint(i,j), 
+				SetTableCellAttribute (panelHandle, PANEL_DIGTABLE,MakePoint(i,j),
 						ATTR_TEXT_BGCOLOR, ColourTable[j]);
 			}
 		} // Done drawing digital channels
-		
-		
+
+
 	// Draw DDS rows according to ddstable[][], dds2table[][] and dds3table[][]
 		// Where to find the DDS rows.
 		DDSChannel1=NUMBERANALOGCHANNELS+1;
-		DDSChannel2=NUMBERANALOGCHANNELS+2; 
-		DDSChannel3=NUMBERANALOGCHANNELS+3; 
-		
+		DDSChannel2=NUMBERANALOGCHANNELS+2;
+		DDSChannel3=NUMBERANALOGCHANNELS+3;
+
 	// DDS1
 		// Writing end-frequency to cell and un-dimming it.
-		SetTableCellVal(panelHandle, PANEL_ANALOGTABLE, MakePoint(i,DDSChannel1), 
+		SetTableCellVal(panelHandle, PANEL_ANALOGTABLE, MakePoint(i,DDSChannel1),
 				ddstable[i][page].end_frequency);
 		SetTableCellAttribute (panelHandle, PANEL_ANALOGTABLE, MakePoint(i,DDSChannel1),
 				ATTR_CELL_DIMMED, 0);
-		
+
 		// Select the cell color depending on what's going on in that cell
 		if (ddstable[i][page].amplitude == 0.0 || ddstable[i][page].is_stop)
 		{   thiscolor = ColourTable[DDSChannel1]; }
@@ -3993,23 +3993,23 @@ Feb 09, 2006   Clear the Debug box before saving. (was causing insanely large sa
 		{   // actual colors
 			if (ddstable[i][page].start_frequency>ddstable[i][page].end_frequency)
 			{   thiscolor = CLR_DDS_RAMPDOWN; } // ramping down
-			else if  (ddstable[i][page].start_frequency<ddstable[i][page].end_frequency) 
+			else if  (ddstable[i][page].start_frequency<ddstable[i][page].end_frequency)
 			{   thiscolor = CLR_DDS_RAMPUP; } // ramping up
 			else
 			{   thiscolor = CLR_DDS_HOLD; } // holding
 
 		}
 		// Change the cell color.
-		SetTableCellAttribute (panelHandle, PANEL_ANALOGTABLE,MakePoint(i,DDSChannel1), 
+		SetTableCellAttribute (panelHandle, PANEL_ANALOGTABLE,MakePoint(i,DDSChannel1),
 				ATTR_TEXT_BGCOLOR,thiscolor);
-				
+
 	// DDS2
 		// Writing end-frequency to cell and un-dimming it.
-		SetTableCellVal(panelHandle, PANEL_ANALOGTABLE, MakePoint(i,DDSChannel2), 
+		SetTableCellVal(panelHandle, PANEL_ANALOGTABLE, MakePoint(i,DDSChannel2),
 				dds2table[i][page].end_frequency);
 		SetTableCellAttribute (panelHandle, PANEL_ANALOGTABLE, MakePoint(i,DDSChannel2),
 				ATTR_CELL_DIMMED, 0);
-		
+
 		// Select the cell color depending on what's going on in that cell
 		if (dds2table[i][page].amplitude == 0.0 || dds2table[i][page].is_stop)
 		{   thiscolor = ColourTable[DDSChannel2]; }
@@ -4017,23 +4017,23 @@ Feb 09, 2006   Clear the Debug box before saving. (was causing insanely large sa
 		{   // actual colors
 			if (dds2table[i][page].start_frequency>dds2table[i][page].end_frequency)
 			{   thiscolor = CLR_DDS_RAMPDOWN; } // ramping down
-			else if  (dds2table[i][page].start_frequency<dds2table[i][page].end_frequency) 
+			else if  (dds2table[i][page].start_frequency<dds2table[i][page].end_frequency)
 			{   thiscolor = CLR_DDS_RAMPUP; } // ramping up
 			else
 			{   thiscolor = CLR_DDS_HOLD; } // holding
 
 		}
 		// Change the cell color.
-		SetTableCellAttribute (panelHandle, PANEL_ANALOGTABLE,MakePoint(i,DDSChannel2), 
+		SetTableCellAttribute (panelHandle, PANEL_ANALOGTABLE,MakePoint(i,DDSChannel2),
 				ATTR_TEXT_BGCOLOR,thiscolor);
-				
+
 	// DDS3
 		// Writing end-frequency to cell and un-dimming it.
-		SetTableCellVal(panelHandle, PANEL_ANALOGTABLE, MakePoint(i,DDSChannel3), 
+		SetTableCellVal(panelHandle, PANEL_ANALOGTABLE, MakePoint(i,DDSChannel3),
 				dds3table[i][page].end_frequency);
 		SetTableCellAttribute (panelHandle, PANEL_ANALOGTABLE, MakePoint(i,DDSChannel3),
 				ATTR_CELL_DIMMED, 0);
-		
+
 		// Select the cell color depending on what's going on in that cell
 		if (dds3table[i][page].amplitude == 0.0 || dds3table[i][page].is_stop)
 		{   thiscolor = ColourTable[DDSChannel3]; }
@@ -4041,28 +4041,28 @@ Feb 09, 2006   Clear the Debug box before saving. (was causing insanely large sa
 		{   // actual colors
 			if (dds3table[i][page].start_frequency>dds3table[i][page].end_frequency)
 			{   thiscolor = CLR_DDS_RAMPDOWN; } // ramping down
-			else if  (dds3table[i][page].start_frequency<dds3table[i][page].end_frequency) 
+			else if  (dds3table[i][page].start_frequency<dds3table[i][page].end_frequency)
 			{   thiscolor = CLR_DDS_RAMPUP; } // ramping up
 			else
 			{   thiscolor = CLR_DDS_HOLD; } // holding
 
 		}
 		// Change the cell color.
-		SetTableCellAttribute (panelHandle, PANEL_ANALOGTABLE,MakePoint(i,DDSChannel3), 
+		SetTableCellAttribute (panelHandle, PANEL_ANALOGTABLE,MakePoint(i,DDSChannel3),
 				ATTR_TEXT_BGCOLOR,thiscolor);
 		// Done drawing the DDS rows
 
 
-	// Draw "laser" channels according to LaserTable[][][]		
+	// Draw "laser" channels according to LaserTable[][][]
 		for(j=NUMBERANALOGCHANNELS+NUMBERDDS+1;j<=NUMBERANALOGCHANNELS+NUMBERDDS+NUMBERLASERS;j++)
 		{   // scan through the laser rows
 			// Read in values from LaserTable
 			cmode = LaserTable[j-(NUMBERANALOGCHANNELS+NUMBERDDS+1)][i][page].fcn;
 			vnow = LaserTable[j-(NUMBERANALOGCHANNELS+NUMBERDDS+1)][i][page].fval;
 			vshadow = findLastVal(j,i,page);
-			
+
 			// Write the value into the cell
-			if(cmode!=0) 
+			if(cmode!=0)
 				// write the ending value into the cell
 				SetTableCellAttribute (panelHandle, PANEL_ANALOGTABLE, MakePoint(i,j),
 						ATTR_CTRL_VAL, vnow);
@@ -4080,7 +4080,7 @@ Feb 09, 2006   Clear the Debug box before saving. (was causing insanely large sa
 				SetTableCellAttribute (panelHandle, PANEL_ANALOGTABLE, MakePoint(i,j),
 						ATTR_CTRL_VAL, vshadow);
 			}
-			
+
 			// Select the cell color depending on what's going on in the cell
 			switch(cmode)
 			{
@@ -4092,21 +4092,21 @@ Feb 09, 2006   Clear the Debug box before saving. (was causing insanely large sa
 				else if (vshadow<vnow)
 				{   thiscolor = CLR_LASER_RAMPUP; } // ramping up
 				else
-				{   thiscolor = CLR_LASER_HOLD; } // holding 
+				{   thiscolor = CLR_LASER_HOLD; } // holding
 				break;
 			case 0:		// hold previous
 				thiscolor = CLR_LASER_HOLD; break;
 			}
 			if(vnow==0.0 && (cmode!=2))
 			{	thiscolor = ColourTable[j]; }
-			
+
 			// Change the cell color
-			SetTableCellAttribute (panelHandle, PANEL_ANALOGTABLE,MakePoint(i,j), 
+			SetTableCellAttribute (panelHandle, PANEL_ANALOGTABLE,MakePoint(i,j),
 					ATTR_TEXT_BGCOLOR, thiscolor);
-			
-		} // Done drawing laser rows	 
+
+		} // Done drawing laser rows
 	}
-	
+
 	// So far, all columns are undimmed. Now check if we need to dim out any columns
 	if(isdimmed==TRUE)
 	{
@@ -4156,21 +4156,21 @@ Feb 09, 2006   Clear the Debug box before saving. (was causing insanely large sa
 					if ((MultiScan.Par[j].Row > 0) &&
 						(MultiScan.Par[j].Row <= NUMDIGITALSCANOFFSET))
 					{   // Analog channel, DDS, Laser or Anritsu scan
-						SetTableCellAttribute (panelHandle, PANEL_ANALOGTABLE, 
+						SetTableCellAttribute (panelHandle, PANEL_ANALOGTABLE,
 							MakePoint(MultiScan.Par[j].Column,MultiScan.Par[j].Row),
-							ATTR_TEXT_BGCOLOR, CLR_SCAN_ANALOG);	
+							ATTR_TEXT_BGCOLOR, CLR_SCAN_ANALOG);
 					}
 					if (MultiScan.Par[j].Row > NUMDIGITALSCANOFFSET)
 					{   // Digital channel scan
 						if (MultiScan.Par[j].CurrentScanValue > 0.0)
 						{
-							SetTableCellAttribute (panelHandle, PANEL_DIGTABLE, 
+							SetTableCellAttribute (panelHandle, PANEL_DIGTABLE,
 								MakePoint(MultiScan.Par[j].Column,MultiScan.Par[j].Row-NUMDIGITALSCANOFFSET),
 								ATTR_TEXT_BGCOLOR, CLR_SCAN_DIGITAL_HI);
 						}
 						else
 						{
-							SetTableCellAttribute (panelHandle, PANEL_DIGTABLE, 
+							SetTableCellAttribute (panelHandle, PANEL_DIGTABLE,
 								MakePoint(MultiScan.Par[j].Column,MultiScan.Par[j].Row-NUMDIGITALSCANOFFSET),
 								ATTR_TEXT_BGCOLOR, CLR_SCAN_DIGITAL_LO);
 						}
@@ -4186,20 +4186,20 @@ Feb 09, 2006   Clear the Debug box before saving. (was causing insanely large sa
 	 		switch(PScan.ScanMode)
 	 		{
 	 			case 0:
-	 				SetTableCellAttribute (panelHandle, PANEL_ANALOGTABLE, MakePoint(PScan.Column,PScan.Row),ATTR_TEXT_BGCOLOR, CLR_SCAN_ANALOG);	
+	 				SetTableCellAttribute (panelHandle, PANEL_ANALOGTABLE, MakePoint(PScan.Column,PScan.Row),ATTR_TEXT_BGCOLOR, CLR_SCAN_ANALOG);
 					break;
 				case 1:
 					SetTableCellAttribute(panelHandle,PANEL_TIMETABLE,MakePoint(PScan.Column,1),ATTR_TEXT_BGCOLOR,CLR_SCAN_TIME);
 					break;
 				case 2:
-					SetTableCellAttribute (panelHandle, PANEL_ANALOGTABLE, MakePoint(PScan.Column,25),ATTR_TEXT_BGCOLOR, CLR_SCAN_ANALOG);	
+					SetTableCellAttribute (panelHandle, PANEL_ANALOGTABLE, MakePoint(PScan.Column,25),ATTR_TEXT_BGCOLOR, CLR_SCAN_ANALOG);
 					break;
 				case 4:
-					SetTableCellAttribute(panelHandle, PANEL_ANALOGTABLE, MakePoint(PScan.Column,PScan.Row),ATTR_TEXT_BGCOLOR, CLR_SCAN_ANALOG);	
+					SetTableCellAttribute(panelHandle, PANEL_ANALOGTABLE, MakePoint(PScan.Column,PScan.Row),ATTR_TEXT_BGCOLOR, CLR_SCAN_ANALOG);
 					break;
 			}
 		}
-	
+
 		if(TwoParam)
 		{
 			if((currentpage==PScan2.Page)&&(PScan.Scan_Active==TRUE))
@@ -4207,16 +4207,16 @@ Feb 09, 2006   Clear the Debug box before saving. (was causing insanely large sa
 			 	switch(PScan2.ScanMode)
 		 		{
 			 		case 0:
-		 				SetTableCellAttribute (panelHandle, PANEL_ANALOGTABLE, MakePoint(PScan2.Column,PScan2.Row),ATTR_TEXT_BGCOLOR, CLR_SCAN_ANALOG);	
+		 				SetTableCellAttribute (panelHandle, PANEL_ANALOGTABLE, MakePoint(PScan2.Column,PScan2.Row),ATTR_TEXT_BGCOLOR, CLR_SCAN_ANALOG);
 						break;
 					case 1:
 						SetTableCellAttribute(panelHandle,PANEL_TIMETABLE,MakePoint(PScan2.Column,1),ATTR_TEXT_BGCOLOR,CLR_SCAN_TIME);
 						break;
 					case 2:
-						SetTableCellAttribute (panelHandle, PANEL_ANALOGTABLE, MakePoint(PScan2.Column,25),ATTR_TEXT_BGCOLOR, CLR_SCAN_ANALOG);	
+						SetTableCellAttribute (panelHandle, PANEL_ANALOGTABLE, MakePoint(PScan2.Column,25),ATTR_TEXT_BGCOLOR, CLR_SCAN_ANALOG);
 						break;
 					case 4:
-						SetTableCellAttribute(panelHandle, PANEL_ANALOGTABLE, MakePoint(PScan2.Column,PScan2.Row),ATTR_TEXT_BGCOLOR, CLR_SCAN_ANALOG);	
+						SetTableCellAttribute(panelHandle, PANEL_ANALOGTABLE, MakePoint(PScan2.Column,PScan2.Row),ATTR_TEXT_BGCOLOR, CLR_SCAN_ANALOG);
 						break;
 				}
 			}
@@ -4234,47 +4234,47 @@ Feb 09, 2006   Clear the Debug box before saving. (was causing insanely large sa
 		SetCtrlAttribute (panelHandle, PANEL_NUM_INSERTIONPAGE, ATTR_DIMMED, 1);
 		SetCtrlAttribute (panelHandle, PANEL_NUM_INSERTIONCOL, ATTR_DIMMED, 1);
 	}
-	
+
 	// Draw the arrows indicating loop position
-	// DrawLoopIndicators(); 
-	
+	// DrawLoopIndicators();
+
 	// Make tables visible again
 	SetCtrlAttribute (panelHandle, PANEL_ANALOGTABLE, ATTR_VISIBLE, analogtable_visible);
 	SetCtrlAttribute (panelHandle, PANEL_DIGTABLE, ATTR_VISIBLE, digtable_visible);
 	SetCtrlAttribute (panelHandle, PANEL_TIMETABLE, ATTR_VISIBLE, 1);
 	SetCtrlAttribute (panelHandle, PANEL_INFOTABLE, ATTR_VISIBLE, 1);
-	
+
 	// Reset all toggle buttons
 	for (i=1;i<NUMBEROFPAGES;i++)
 	{
 		SetCtrlVal(panelHandle, PANEL_TB_SHOWPHASE[i], 0);
 	}
-	
+
 	// Press active page's toggle button
 	SetCtrlVal (panelHandle, PANEL_TB_SHOWPHASE[currentpage], 1);
 }
 
 //*****************************************************************************************
 // MENU:Analog Settings  option chosen
-// 
+//
 void CVICALLBACK ANALOGSET_CALLBACK (int menuBar, int menuItem, void *callbackData,
 		int panel)
 {
-	// It is possible to not click "set changes" and then click done after changing say the 
-	//		proportionality. This would not cause the values in the analog arrays that the 
-	//		sequencer looks at when building the sequence to be changed. However, opening 
+	// It is possible to not click "set changes" and then click done after changing say the
+	//		proportionality. This would not cause the values in the analog arrays that the
+	//		sequencer looks at when building the sequence to be changed. However, opening
 	//		the analogSettings panel again to check what the values were would show the values
 	//		that had been entered and not the values the sequencer sees! This is because the
 	//		analogSettings panel is persistent and the number boxes do not lose their values
 	//		when the analogSettings panel is hidden. Changing the line number to a different
-	//		line and back again would reload the indicators from the analog arrays that the 
+	//		line and back again would reload the indicators from the analog arrays that the
 	//		sequencer sees, but that requires the user to know to do that.
 	// So, lets explicitly reload the values from the analog arrays that the sequencer sees
 	//		each time the panel is made visible.
-	
+
 	int line = 0;
 	GetCtrlVal( panelHandle2, ANLGPANEL_NUM_ACH_LINE, &line );
-	
+
 	SetCtrlVal( panelHandle2, ANLGPANEL_NUM_ACHANNEL, AChName[line].chnum );
 	SetCtrlVal( panelHandle2, ANLGPANEL_NUM_CHANNELPROP,AChName[line].tfcn );
 	SetCtrlVal( panelHandle2, ANLGPANEL_NUM_CHANNELBIAS,AChName[line].tbias );
@@ -4283,16 +4283,16 @@ void CVICALLBACK ANALOGSET_CALLBACK (int menuBar, int menuItem, void *callbackDa
 	SetCtrlVal( panelHandle2, ANLGPANEL_CHKBOX_RESET, AChName[line].resettozero );
 	SetCtrlVal( panelHandle2, ANLGPANEL_NUM_MINV, AChName[line].minvolts );
 	SetCtrlVal( panelHandle2, ANLGPANEL_NUM_MAXV, AChName[line].maxvolts );
-	
+
 	DisplayPanel(panelHandle2);
 }
 //*****************************************************************************************
 // MENU:Anritsu MG37022A Settings  option chosen
-// 
+//
 void CVICALLBACK ANRITSUSET_CALLBACK (int menuBar, int menuItem, void *callbackData,
 		int panel)
 {
-	ChangedVals = TRUE; 
+	ChangedVals = TRUE;
 	DisplayPanel(panelHandleANRITSUSETTINGS);
 }
 
@@ -4301,15 +4301,15 @@ void CVICALLBACK ANRITSUSET_CALLBACK (int menuBar, int menuItem, void *callbackD
 void CVICALLBACK DIGITALSET_CALLBACK (int menuBar, int menuItem, void *callbackData,
 		int panel)
 {
-	ChangedVals = TRUE; 
+	ChangedVals = TRUE;
 	DisplayPanel(panelHandle3);
 }
 
-//***********************************************************************************   
+//***********************************************************************************
 void CVICALLBACK PROCESSOR_CALLBACK (int menuBar, int menuItem, void *callbackData,
 		int panel)
 {
-	ChangedVals = TRUE; 
+	ChangedVals = TRUE;
 	DisplayPanel(panelHandle12);
 }
 //***********************************************************************************
@@ -4323,7 +4323,7 @@ void CVICALLBACK MENU_CALLBACK (int menuBar, int menuItem, void *callbackData,
 		case MENU_FILE_LOADSET_V16: LoadSettings(16); break;
 		case MENU_FILE_LOADSET_V15: LoadSettings(15); break;
 		case MENU_FILE_LOADSET_V13: LoadSettings(13); break;
-	}	
+	}
 }
 //*********************************************************************************************
 
@@ -4335,7 +4335,7 @@ int CVICALLBACK ANALOGTABLE_CALLBACK (int panel, int control, int event,
 	char buff[80]="";
 	int leftbuttondown,rightbuttondown,keymod;
 	int panel_to_display;
-	
+
 	//ChangedVals = TRUE;// V16.1.6: Commented out.
 	switch (event)
 		{
@@ -4346,35 +4346,35 @@ int CVICALLBACK ANALOGTABLE_CALLBACK (int panel, int control, int event,
 			currentx=cpoint.x;
 			currenty=cpoint.y;
 			currentpage=GetPage();
-			
-			if((currenty>NUMBERANALOGCHANNELS)&&(currenty<=NUMBERANALOGCHANNELS+NUMBERDDS)) 
+
+			if((currenty>NUMBERANALOGCHANNELS)&&(currenty<=NUMBERANALOGCHANNELS+NUMBERDDS))
 			{
 			    Active_DDS_Panel=currenty-NUMBERANALOGCHANNELS;
-			    
+
 				SetDDSControlPanel(Active_DDS_Panel);
 				panel_to_display = panelHandle6;	 // Program DDS
 			}
 			else if (currenty<=NUMBERANALOGCHANNELS){
-				
-				SetControlPanel();      
+
+				SetControlPanel();
 				panel_to_display = panelHandle4;	  // Program Analog Channel
-				
+
 			}
 			else if ((currenty>NUMBERANALOGCHANNELS+NUMBERDDS)&&(currenty<=NUMBERANALOGCHANNELS+NUMBERDDS+NUMBERLASERS))
 			{
-				SetLaserControlPanel(currenty-NUMBERANALOGCHANNELS-NUMBERDDS-1);	
+				SetLaserControlPanel(currenty-NUMBERANALOGCHANNELS-NUMBERDDS-1);
 				panel_to_display = panelHandle11;
-				printf("Fuck me\n"); 
+				printf("Fuck me\n");
 			}
 			else if ((currenty>NUMBERANALOGCHANNELS+NUMBERDDS+NUMBERLASERS)&&(currenty<=NUMBERANALOGROWS))
 			{
-				SetAnritsuControlPanel();	
+				SetAnritsuControlPanel();
 				panel_to_display = panelHandleANRITSU;
-				//SetControlPanel();      
+				//SetControlPanel();
 				//panel_to_display = panelHandle4;
-				
+
 			}
-			
+
 			sprintf(buff,"x:%d   y:%d    z:%d",currentx,currenty,currentpage);
 			SetPanelAttribute (panel_to_display, ATTR_TITLE, buff);
 			//Read the mouse position and open window there.
@@ -4382,9 +4382,9 @@ int CVICALLBACK ANALOGTABLE_CALLBACK (int panel, int control, int event,
 								 &rightbuttondown, &keymod);
 			SetPanelAttribute (panel_to_display, ATTR_LEFT, pixleft);
 			SetPanelAttribute (panel_to_display, ATTR_TOP, pixtop);
-			
-			DisplayPanel(panel_to_display);  
-			
+
+			DisplayPanel(panel_to_display);
+
 			break;
 		}
 	return 0;
@@ -4401,22 +4401,22 @@ int GetPage(void)
 //*************************************************************************************
 // 2012-10-08 Stefan Trotzky -- V16.0.1
 // Made a single callback function for the toggle buttons that switch between pages..
-// This makes adding pages (and hence buttons and labels) a bit easier. One might store 
+// This makes adding pages (and hence buttons and labels) a bit easier. One might store
 // all toggle button and label IDS in arrays to clean up this code even more.
 int CVICALLBACK TOGGLE_ALL_CALLBACK (int panel, int control, int event,
 		void *callbackData, int eventData1, int eventData2)
 {
 	int oldpage, newpage, i;
-	
+
 	oldpage = currentpage;
 
 	switch (event)
 	{
 	case EVENT_COMMIT:
-	
+
 		// Evaluate which toggle button was pressed
-		switch (control) 
-		// (all this would work so much better if the control ids were stored in 
+		switch (control)
+		// (all this would work so much better if the control ids were stored in
 		// a global array)
 		{
 		case PANEL_TB_SHOWPHASE1: newpage = 1; break;
@@ -4431,31 +4431,31 @@ int CVICALLBACK TOGGLE_ALL_CALLBACK (int panel, int control, int event,
 		case PANEL_TB_SHOWPHASE10: newpage = 10; break;
 		default: newpage = 0;
 		}
-		
+
 		for (i=1;i<NUMBEROFPAGES;i++)
 		{
 			SetCtrlVal(panelHandle, PANEL_TB_SHOWPHASE[i], 0);
 		}
 		SetCtrlVal(panelHandle, PANEL_TB_SHOWPHASE[newpage], 1);
-		
+
 		// Do nothing if the respective page is already shown.
 		if (newpage == oldpage) { return 0; }
-		
+
 		// Catch callbacks from other then included controls.
 		if (newpage == 0)
 		{
 			MessagePopup("Programmer Error","This control does not work with this callback routine!");
 			return 0;
 		}
-		
+
 		// Set and display current page
 		currentpage = newpage;
 		//ChangedVals = TRUE;// V16.1.6: Commented out.
 		DrawNewTable(isdimmed);
-		
+
 		break;
 	}
-	
+
 	return 0;
 }
 
@@ -4476,15 +4476,15 @@ void CheckActivePages(void)
   	GetCtrlVal (panelHandle, PANEL_CHECKBOX_6, &bool);
   	ischecked[6]=bool;
   	GetCtrlVal (panelHandle, PANEL_CHECKBOX_7, &bool);
-	ischecked[7]=bool;  
+	ischecked[7]=bool;
   	GetCtrlVal (panelHandle, PANEL_CHECKBOX_8, &bool);
 	ischecked[8]=bool;
   	GetCtrlVal (panelHandle, PANEL_CHECKBOX_9, &bool);
 	ischecked[9]=bool;
   	GetCtrlVal (panelHandle, PANEL_CHECKBOX_10, &bool);
 	ischecked[10]=bool;
-	
-	
+
+
 }
 
 //***************************************************************************************************
@@ -4493,14 +4493,14 @@ int CVICALLBACK DIGTABLE_CALLBACK (int panel, int control, int event,
 {
 	int status=0,i_pict=0,page,digval;
 	Point pval={0,0};
-	
+
 	//ChangedVals = TRUE;// V16.1.6: Commented out.
 	page=GetPage();
 	switch (event)
 		{
 		case EVENT_LEFT_DOUBLE_CLICK:
 			GetActiveTableCell(PANEL,PANEL_DIGTABLE,&pval);
-			digval=DigTableValues[pval.x][pval.y][page];			
+			digval=DigTableValues[pval.x][pval.y][page];
 			if(digval==0)
 			{
 				SetTableCellAttribute (panelHandle, PANEL_DIGTABLE,pval, ATTR_TEXT_BGCOLOR,0xFF3366L);
@@ -4530,37 +4530,37 @@ int CVICALLBACK TIMETABLE_CALLBACK (int panel, int control, int event,
 	switch (event)
 		{
 		case EVENT_COMMIT: //EVENT_VAL_CHANGED:
-		//EVENT_VAL_CHANGED only seems to pick up the last changed values, or values changed using the 
+		//EVENT_VAL_CHANGED only seems to pick up the last changed values, or values changed using the
 		// May 31,2006 -- TimeArray is updated just fine (Dave Burns)
 		//controls (i.e. increment arrows).  Similar problems with other events...reading all times(for the page)
 		// at a change event seems to work.
 			page=GetPage();
-			
+
 			for(i=1;i<=NUMBEROFCOLUMNS;i++)
 			{
 				oldtime=TimeArray[i][page];
 				GetTableCellVal(PANEL,PANEL_TIMETABLE,MakePoint(i,1),&dval);
-				
-				TimeArray[i][page]=dval;  //double TimeArray[NUMBEROFCOLUMNS][NUMBEROFPAGES]; 
+
+				TimeArray[i][page]=dval;  //double TimeArray[NUMBEROFCOLUMNS][NUMBEROFPAGES];
 				//now rescale the time scale for waveform fcn. Go over all 16 analog channels
 				ratio=dval/oldtime;
 				if(oldtime==0) {ratio=1;}
-				
+
 				for(j=1;j<=NUMBERANALOGCHANNELS;j++)
 				{
 					tscaleold=AnalogTable[i][j][page].tscale;	// use this  and next line to auto-scale the time
 					AnalogTable[i][j][page].tscale=tscaleold*ratio;
 			//		AnalogTable[i][j][page].tscale=dval;	  //use this line to force timescale to period
 				}
-				
-				//set the delta time value for the dds array 
+
+				//set the delta time value for the dds array
 				//	ddstable[i][page].delta_time = dval/1000;
 			}
-		
+
 			/* for testing prints TimeArray to STDIO
 			for(i=1;i<=NUMBEROFCOLUMNS;i++)
 				printf("%0.1f\t",TimeArray[i][page]);*/
-			
+
 			break;
 		case EVENT_LEFT_DOUBLE_CLICK:
 			isdimmed=0;
@@ -4576,10 +4576,10 @@ int CVICALLBACK INFOTABLE_CALLBACK (int panel, int control, int event,
 {
 
 	char buff[32];
-	
+
 	switch (event)
 		{ // Read value from INFOTABLE into InfoArray[][].text
-		case EVENT_COMMIT: 	// Value changed (note: GetActiveTableCell returns cell to right of 
+		case EVENT_COMMIT: 	// Value changed (note: GetActiveTableCell returns cell to right of
 							// changed one if return was pressed!)
 			GetTableCellVal(PANEL, PANEL_INFOTABLE, MakePoint(eventData2,eventData1), buff);
 			strcpy(InfoArray[eventData2][currentpage].text, buff);
@@ -4769,7 +4769,7 @@ void CVICALLBACK SETGD25_CALLBACK (int menuBar, int menuItem, void *callbackData
 	SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD10, ATTR_CHECKED, 0);
 	SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD15, ATTR_CHECKED, 0);
 	SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD25, ATTR_CHECKED, 1);
-	SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD50, ATTR_CHECKED, 0);	
+	SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD50, ATTR_CHECKED, 0);
 	SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD100, ATTR_CHECKED, 0);
 	SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD1000, ATTR_CHECKED, 0);
 	EventPeriod=0.025;
@@ -4782,7 +4782,7 @@ void CVICALLBACK SETGD50_CALLBACK (int menuBar, int menuItem, void *callbackData
 	SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD10, ATTR_CHECKED, 0);
 	SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD15, ATTR_CHECKED, 0);
 	SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD25, ATTR_CHECKED, 0);
-	SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD50, ATTR_CHECKED, 1);	
+	SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD50, ATTR_CHECKED, 1);
 	SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD100, ATTR_CHECKED, 0);
 	SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD1000, ATTR_CHECKED, 0);
 	EventPeriod=0.050;
@@ -4795,7 +4795,7 @@ void CVICALLBACK SETGD100_CALLBACK (int menuBar, int menuItem, void *callbackDat
 	SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD10, ATTR_CHECKED, 0);
 	SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD15, ATTR_CHECKED, 0);
 	SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD25, ATTR_CHECKED, 0);
-	SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD50, ATTR_CHECKED, 0);	
+	SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD50, ATTR_CHECKED, 0);
 	SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD100, ATTR_CHECKED, 1);
 	SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD1000, ATTR_CHECKED, 0);
 	EventPeriod=0.100;
@@ -4808,7 +4808,7 @@ void CVICALLBACK SETGD1000_CALLBACK (int menuBar, int menuItem, void *callbackDa
 	SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD10, ATTR_CHECKED, 0);
 	SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD15, ATTR_CHECKED, 0);
 	SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD25, ATTR_CHECKED, 0);
-	SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD50, ATTR_CHECKED, 0);	
+	SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD50, ATTR_CHECKED, 0);
 	SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD100, ATTR_CHECKED, 0);
 	SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD1000, ATTR_CHECKED, 1);
 	EventPeriod=1.00;
@@ -4819,7 +4819,7 @@ void CVICALLBACK SETGD1000_CALLBACK (int menuBar, int menuItem, void *callbackDa
 void CVICALLBACK BOOTADWIN_CALLBACK (int menuBar, int menuItem, void *callbackData,
 		int panel)
 {
-	
+
 	if(processorT1x==0)
 	{
 	Boot("C:\\ADWIN\\ADWIN10.BTL",0);
@@ -4829,13 +4829,13 @@ void CVICALLBACK BOOTADWIN_CALLBACK (int menuBar, int menuItem, void *callbackDa
 	{
 	Boot("C:\\ADWIN\\ADWIN11.BTL",0);
 	processnum=Load_Process("TransferData.TB1");
-	} 
+	}
 	else if(processorT1x==2)
 	{
 	Boot("C:\\ADWIN\\ADWIN9.BTL",0);
 	processnum=Load_Process("TransferData.T91");
-	} 
-	
+	}
+
 }
 
 //*********************************************************************************************************
@@ -4854,7 +4854,7 @@ void CVICALLBACK CLEARPANEL_CALLBACK (int menuBar, int menuItem, void *callbackD
 {
 	// add code to clear all the analog and digital information.....
 	int i=0,j=0,k=0,status=0;
-	
+
 	status=ConfirmPopup("Clear Panel","Do you really want to clear the panel?") ;
 	if(status==1)
 	{
@@ -4865,7 +4865,7 @@ void CVICALLBACK CLEARPANEL_CALLBACK (int menuBar, int menuItem, void *callbackD
 			{
 				for(k=0;k<NUMBEROFPAGES;k++)
 				{
-					AnalogTable[i][j][k].fcn=1;		
+					AnalogTable[i][j][k].fcn=1;
 					AnalogTable[i][j][k].fval=0;
 					AnalogTable[i][j][k].tscale=0;
 					DigTableValues[i][j][k]=0;
@@ -4897,7 +4897,7 @@ void CVICALLBACK INSERTCOLUMN_CALLBACK (int menuBar, int menuItem, void *callbac
 	int page,status,i=0,j=0;
 	Point cpoint={0,0};
 	page=GetPage();
-	
+
 	GetActiveTableCell (panelHandle, PANEL_TIMETABLE, &cpoint);
 	sprintf(buff,"%d",cpoint.x);
 	strcat(buff2,"Really insert column at ");
@@ -4923,81 +4923,81 @@ void CVICALLBACK DELETECOLUMN_CALLBACK (int menuBar, int menuItem, void *callbac
 	strcat(buff2,"Really delete column ");
 	strcat(buff2,buff);
 	status=ConfirmPopup("Delete Array",buff2);
-	
+
 	if(status==1)
 		ShiftColumn3(cpoint.x,page,1); //1 for shifting columns left
-	
+
 }
 
 //**********************************************************************************************
 void ShiftColumn3(int col, int page,int dir)
 //Takes all columns starting at col on page and shifts them to the left or right depending on the value of dir
 //dir==1 for a deletion: all the columns starting at col+1 are shifted one to the left, the page's last column is new
-//dir==-1 for an insertion: all the columns starting at col are shifted one to the right, the column at col is new and the 
+//dir==-1 for an insertion: all the columns starting at col are shifted one to the right, the column at col is new and the
 //		  last column is lost
 //The new column can be set with all values at 0 or with the attributes previously in place
 
 
 //Replaced Malfunctioning ShiftColumn and ShiftColumn2(see previous AdwinGUI releases)
 {
-	
+
 	int i,j,status,start,zerocol;
 	//printf("col %d",col);
-	
+
 	if (dir==-1)			//shifts cols right (insertion)
 		start=NUMBEROFCOLUMNS;
 	else if (dir==1)		//shifts cols left  (deletion)
 		start=col;
 
-	
-	
+
+
 	//shift columns left or right depending on dir
 	for(i=0;i<NUMBEROFCOLUMNS-col;i++)
 	{
-		TimeArray[start+dir*i][page]=TimeArray[start+dir*(i+1)][page];		
+		TimeArray[start+dir*i][page]=TimeArray[start+dir*(i+1)][page];
 		for(j=1;j<=NUMBERANALOGCHANNELS;j++)
 		{
 			AnalogTable[start+dir*i][j][page].fcn=AnalogTable[start+dir*(i+1)][j][page].fcn;
 			AnalogTable[start+dir*i][j][page].fval=AnalogTable[start+dir*(i+1)][j][page].fval;
 			AnalogTable[start+dir*i][j][page].tscale=AnalogTable[start+dir*(i+1)][j][page].tscale;
 		}
-		
+
 		AnalogTable[start+dir*i][NUMBERANALOGCHANNELS+NUMBERDDS+NUMBERLASERS + 1][page].fcn=AnalogTable[start+dir*(i+1)][NUMBERANALOGCHANNELS+NUMBERDDS+NUMBERLASERS + 1][page].fcn;
 		AnalogTable[start+dir*i][NUMBERANALOGCHANNELS+NUMBERDDS+NUMBERLASERS + 1][page].fval=AnalogTable[start+dir*(i+1)][NUMBERANALOGCHANNELS+NUMBERDDS+NUMBERLASERS + 1][page].fval;
 		//AnalogTable[start+dir*i][NUMBERANALOGCHANNELS+NUMBERDDS+NUMBERLASERS + 1][page].tscale=AnalogTable[start+dir*(i+1)][NUMBERANALOGCHANNELS+NUMBERDDS+NUMBERLASERS + 1][page].tscale;
-		
-		
-		
+
+
+
 		for(j=1;j<=NUMBERDIGITALCHANNELS;j++)
-			DigTableValues[start+dir*i][j][page]=DigTableValues[start+dir*(i+1)][j][page]; 
-			
+			DigTableValues[start+dir*i][j][page]=DigTableValues[start+dir*(i+1)][j][page];
+
 		for(j=0;j<NUMBERLASERS;j++)
 		{
 			LaserTable[j][start+dir*i][page].fcn=LaserTable[j][start+dir*(i+1)][page].fcn;
 			LaserTable[j][start+dir*i][page].fval=LaserTable[j][start+dir*(i+1)][page].fval;
 		}
-		
+
 		ddstable[start+dir*i][page].start_frequency=ddstable[start+dir*(i+1)][page].start_frequency;
 		ddstable[start+dir*i][page].end_frequency=ddstable[start+dir*(i+1)][page].end_frequency;
 		ddstable[start+dir*i][page].amplitude=ddstable[start+dir*(i+1)][page].amplitude;
 		ddstable[start+dir*i][page].is_stop=ddstable[start+dir*(i+1)][page].is_stop;
-	
+
 		dds2table[start+dir*i][page].start_frequency=dds2table[start+dir*(i+1)][page].start_frequency;
 		dds2table[start+dir*i][page].end_frequency=dds2table[start+dir*(i+1)][page].end_frequency;
 		dds2table[start+dir*i][page].amplitude=dds2table[start+dir*(i+1)][page].amplitude;
 		dds2table[start+dir*i][page].is_stop=dds2table[start+dir*(i+1)][page].is_stop;
-	
+
 		dds3table[start+dir*i][page].start_frequency=dds3table[start+dir*(i+1)][page].start_frequency;
 		dds3table[start+dir*i][page].end_frequency=dds3table[start+dir*(i+1)][page].end_frequency;
 		dds3table[start+dir*i][page].amplitude=dds3table[start+dir*(i+1)][page].amplitude;
 		dds3table[start+dir*i][page].is_stop=dds3table[start+dir*(i+1)][page].is_stop;
 	}
-	
-	//if we inserted a column, then set all values to zero 
+
+	//if we inserted a column, then set all values to zero
 	// prompt and ask if we want to duplicate the selected column
 
 
-	
+
 	if(dir==1)
 	{
 		zerocol=NUMBEROFCOLUMNS;
@@ -5008,13 +5008,13 @@ void ShiftColumn3(int col, int page,int dir)
 		zerocol=col;
 		status=ConfirmPopup("Duplicate","Do you want to duplicate the selected column?");
 	}
-	
+
 	//Sets all values to zero
 	if (status!=1)
 	{
 		if (dir==1)
 			TimeArray[zerocol][page]=0;
-			
+
 		for(j=1;j<=NUMBERANALOGCHANNELS;j++)
 		{
 			AnalogTable[zerocol][j][page].fcn=1;
@@ -5023,26 +5023,26 @@ void ShiftColumn3(int col, int page,int dir)
 		}
 			AnalogTable[zerocol][NUMBERANALOGCHANNELS+NUMBERDDS+NUMBERLASERS + 1][page].fcn=1;
 			AnalogTable[zerocol][NUMBERANALOGCHANNELS+NUMBERDDS+NUMBERLASERS + 1][page].fval=0;
-		
+
 		for(j=0;j<NUMBERLASERS;j++) //Lasers set to hold last value
 		{
 			LaserTable[j][zerocol][page].fcn=0;
 			LaserTable[j][zerocol][page].fval=0;
 		}
-		
+
 		for(j=1;j<=NUMBERDIGITALCHANNELS;j++)
-			DigTableValues[start+dir*i][j][page]=DigTableValues[start+dir*(i+1)][j][page]; 
-			
+			DigTableValues[start+dir*i][j][page]=DigTableValues[start+dir*(i+1)][j][page];
+
 		ddstable[zerocol][page].start_frequency=0;
 		ddstable[zerocol][page].end_frequency=0;
 		ddstable[zerocol][page].amplitude=0;
 		ddstable[zerocol][page].is_stop=FALSE;
-		
+
 		dds2table[zerocol][page].start_frequency=0;
 		dds2table[zerocol][page].end_frequency=0;
 		dds2table[zerocol][page].amplitude=0;
 		dds2table[zerocol][page].is_stop=FALSE;
-	
+
 		dds3table[zerocol][page].start_frequency=0;
 		dds3table[zerocol][page].end_frequency=0;
 		dds3table[zerocol][page].amplitude=0;
@@ -5050,7 +5050,7 @@ void ShiftColumn3(int col, int page,int dir)
 	}
 	ChangedVals = TRUE;
 	DrawNewTable(0);
-	
+
 }
 
 //***************************************************************************************************************
@@ -5058,58 +5058,58 @@ void CVICALLBACK COPYCOLUMN_CALLBACK (int menuBar, int menuItem, void *callbackD
 		int panel)
 {
 	//All attributes of active column are replaced with those of the global "clip" variables (from ClipColumn)
-	
+
 	char buff[20]="",buff2[100]="";
 	int page,status,i=0,j=0;
 	Point cpoint={0,0};
-	
+
 	page=GetPage();
 	GetActiveTableCell (panelHandle, PANEL_TIMETABLE, &cpoint);
-	
+
 	//User Confirmation of Selected Column
 	sprintf(buff,"%d",cpoint.x);
-	strcat(buff2,"Confirm Copy of column "); 
+	strcat(buff2,"Confirm Copy of column ");
 	strcat(buff2,buff);
 	status=ConfirmPopup("Array Manipulation:Copy",buff2);
-	
+
 	if(status==1)
 	{
 		ClipColumn=cpoint.x;
 		TimeClip=TimeArray[cpoint.x][page];
 		for(j=1;j<=NUMBERANALOGCHANNELS;j++)
 		{
-			AnalogClip[j].fcn=AnalogTable[cpoint.x][j][page].fcn;	
+			AnalogClip[j].fcn=AnalogTable[cpoint.x][j][page].fcn;
 			AnalogClip[j].fval=AnalogTable[cpoint.x][j][page].fval;
 			AnalogClip[j].tscale=AnalogTable[cpoint.x][j][page].tscale;
 		}
-	
+
 		for(j=1;j<=NUMBERDIGITALCHANNELS;j++)
-			DigClip[j]=DigTableValues[cpoint.x][j][page];      
-		
+			DigClip[j]=DigTableValues[cpoint.x][j][page];
+
 		for (j=1;j<=NUMBERLASERS;j++)
 		{
 			LaserClip[j].fcn=LaserTable[j-1][cpoint.x][page].fcn;
 			LaserClip[j].fval=LaserTable[j-1][cpoint.x][page].fval;
-			
+
 		}
-	
-	
+
+
 		ddsclip.start_frequency=ddstable[cpoint.x][page].start_frequency;
 		ddsclip.end_frequency=ddstable[cpoint.x][page].end_frequency;
 		ddsclip.amplitude=ddstable[cpoint.x][page].amplitude;
 		ddsclip.is_stop=ddstable[cpoint.x][page].is_stop;
-	
+
 		dds2clip.start_frequency=dds2table[cpoint.x][page].start_frequency;
 		dds2clip.end_frequency=dds2table[cpoint.x][page].end_frequency;
 		dds2clip.amplitude=dds2table[cpoint.x][page].amplitude;
 		dds2clip.is_stop=dds2table[cpoint.x][page].is_stop;
-	
+
 		dds3clip.start_frequency=dds3table[cpoint.x][page].start_frequency;
 		dds3clip.end_frequency=dds3table[cpoint.x][page].end_frequency;
 		dds3clip.amplitude=dds3table[cpoint.x][page].amplitude;
 		dds3clip.is_stop=dds3table[cpoint.x][page].is_stop;
-	
-		
+
+
 		DrawNewTable(0); //draws undimmed table if already dimmed
 	}
 
@@ -5127,7 +5127,7 @@ void CVICALLBACK PASTECOLUMN_CALLBACK (int menuBar, int menuItem, void *callback
 	Point cpoint={0,0};
 	//ChangedVals = TRUE;// V16.1.6: Commented out.
 	page=GetPage();
-	
+
 	//Ensures a column has been copied to the clipboard
 	if (ClipColumn>0)
 	{
@@ -5135,48 +5135,48 @@ void CVICALLBACK PASTECOLUMN_CALLBACK (int menuBar, int menuItem, void *callback
 		GetActiveTableCell (panelHandle, PANEL_TIMETABLE, &cpoint);
 		sprintf(buff,"Confirm Copy of Column %d to %d?\nContents of Column %d will be lost.",ClipColumn,cpoint.x,cpoint.x);
 		status=ConfirmPopup("Paste Column",buff);
-		
+
 		if(status==1)
 		{
 			TimeArray[cpoint.x][page]=TimeClip;
 			for(j=1;j<=NUMBERANALOGCHANNELS;j++)
 			{
-				AnalogTable[cpoint.x][j][page].fcn=AnalogClip[j].fcn;	
+				AnalogTable[cpoint.x][j][page].fcn=AnalogClip[j].fcn;
 				AnalogTable[cpoint.x][j][page].fval=AnalogClip[j].fval;
 				AnalogTable[cpoint.x][j][page].tscale=AnalogClip[j].tscale;
 			}
 			for(j=1;j<=NUMBERDIGITALCHANNELS;j++)
 			{
-				DigTableValues[cpoint.x][j][page]=DigClip[j];  
+				DigTableValues[cpoint.x][j][page]=DigClip[j];
 			}
-			
+
 			for (j=1;j<=NUMBERLASERS;j++)
 			{
 				LaserTable[j-1][cpoint.x][page].fcn=LaserClip[j].fcn;
 				LaserTable[j-1][cpoint.x][page].fval=LaserClip[j].fval;
 			}
-	
+
 
 			ddstable[cpoint.x][page].start_frequency=ddsclip.start_frequency;
 			ddstable[cpoint.x][page].end_frequency=ddsclip.end_frequency;
 			ddstable[cpoint.x][page].amplitude=ddsclip.amplitude;
 			ddstable[cpoint.x][page].is_stop=ddsclip.is_stop;
-		
+
 			dds2table[cpoint.x][page].start_frequency=dds2clip.start_frequency;
 			dds2table[cpoint.x][page].end_frequency=dds2clip.end_frequency;
 			dds2table[cpoint.x][page].amplitude=dds2clip.amplitude;
 			dds2table[cpoint.x][page].is_stop=dds2clip.is_stop;
-	
+
 			dds3table[cpoint.x][page].start_frequency=dds3clip.start_frequency;
 			dds3table[cpoint.x][page].end_frequency=dds3clip.end_frequency;
 			dds3table[cpoint.x][page].amplitude=dds3clip.amplitude;
 			dds3table[cpoint.x][page].is_stop=dds3clip.is_stop;
-	
+
 			DrawNewTable(0);
 		}
 	}
 	else
-		ConfirmPopup("Copy Column","No Column Selected");  
+		ConfirmPopup("Copy Column","No Column Selected");
 }
 
 //**********************************************************************************
@@ -5190,16 +5190,16 @@ int CVICALLBACK TGLNUMERIC_CALLBACK (int panel, int control, int event,
 			// find out if the button is pressed or not
 			// change buttons to appropriate mode and draw new table
 			GetCtrlVal(panelHandle, PANEL_TGL_NUMERICTABLE,&val);
-			if(val==0) 
-			{ 
+			if(val==0)
+			{
 				SetDisplayType(VAL_CELL_NUMERIC);
 			}
-			else 
+			else
 			{
 				SetDisplayType(VAL_CELL_PICTURE);
 			}
-			
-			
+
+
 			break;
 		}
 	return 0;
@@ -5228,14 +5228,14 @@ int LoadArraysV16(char savedname[500],int csize)
 	/* Loads all Panel attributes and values which are not saved automatically by the NI function SavePanelState.
 	   the values are stored in the .arr file by SaveArrays
 	   x,y, and zval give the 3D table dimensions but are not critical to the saving/loading operation
-	   
-	   Note that if the lengths of any of the data arrays are changed previous saves will not be able to be laoded. 
+
+	   Note that if the lengths of any of the data arrays are changed previous saves will not be able to be laoded.
 	   If necessary See AdwinGUI Panel Converter V11-V12 (created June 01, 2006)
 	*/
-	
+
 	FILE *fdata;
 	int i=0, j=0, k=0;
-	int xval=16, yval=16, zval=NUMBEROFPAGES-1, updatePer;	  
+	int xval=16, yval=16, zval=NUMBEROFPAGES-1, updatePer;
 	int status;
 	char buff[500]="", buff2[100]="", version[100]="", buff3[500]="";
 	strncat(buff, savedname, csize-4);
@@ -5245,9 +5245,9 @@ int LoadArraysV16(char savedname[500],int csize)
 		MessagePopup("Load Error","Failed to load data arrays (*.arr file)");
 		return(0);
 	}
-	
+
 	fread(&version,sizeof version, 1,fdata);
-	// Check whether first line contains a sequencer version number (since V16.0.2)	
+	// Check whether first line contains a sequencer version number (since V16.0.2)
 	status = strncmp(version,SEQUENCER_VERSION,17);
 	if (status == 0) // means that strings match
 	{
@@ -5266,21 +5266,21 @@ int LoadArraysV16(char savedname[500],int csize)
 		fread(&dds2table,(sizeof dds2table),1,fdata);
 		fread(&dds3table,(sizeof dds3table),1,fdata);
 		// "Laser" settings
-		fread(&LaserProperties,sizeof LaserProperties, 1,fdata);	
+		fread(&LaserProperties,sizeof LaserProperties, 1,fdata);
 		fread(&LaserTable,sizeof LaserTable,1,fdata);
-		// Load Anritsu settings 
+		// Load Anritsu settings
 		fread(&AnritsuSettingValues,sizeof AnritsuSettingValues,1,fdata);
 		//Load Column labels (new since V16.02)
 		fread(&InfoArray, sizeof InfoArray, 1, fdata);
-		
+
 		for (i=1;i<NUMBEROFPAGES;i++)
 		{	// NOT IDEAL -- should get the number of pages from the panel files ...
 			fread(&buff2,sizeof buff2,1,fdata);
 			SetCtrlAttribute (panelHandle, PANEL_TB_SHOWPHASE[i],ATTR_OFF_TEXT, buff2);
 			SetCtrlAttribute (panelHandle, PANEL_TB_SHOWPHASE[i],ATTR_ON_TEXT, buff2);
 		}
-	
-		
+
+
 		//Update Period Retrieved and Set
 		fread(&updatePer,sizeof updatePer,1,fdata);
 		if (updatePer==5)
@@ -5289,67 +5289,67 @@ int LoadArraysV16(char savedname[500],int csize)
 			EventPeriod=0.005;
 		}
 		else
-			SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD5, ATTR_CHECKED, 0);	
-		if (updatePer==10) 
+			SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD5, ATTR_CHECKED, 0);
+		if (updatePer==10)
 		{
 			SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD10, ATTR_CHECKED, 1);
 			EventPeriod=0.01;
 		}
 		else
 			SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD10, ATTR_CHECKED, 0);
-		if (updatePer==15) 
-		{	
+		if (updatePer==15)
+		{
 			SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD15, ATTR_CHECKED, 1);
 			EventPeriod=0.015;
 		}
 		else
-			SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD15, ATTR_CHECKED, 0);	
-		if (updatePer==25) 
+			SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD15, ATTR_CHECKED, 0);
+		if (updatePer==25)
 		{
 			SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD25, ATTR_CHECKED, 1);
 			EventPeriod=0.025;
 		}
 		else
-			SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD25, ATTR_CHECKED, 0);	
-		if (updatePer==50) 
+			SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD25, ATTR_CHECKED, 0);
+		if (updatePer==50)
 		{
 			SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD50, ATTR_CHECKED, 1);
 			EventPeriod=0.05;
-		}			
+		}
 		else
-			SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD50, ATTR_CHECKED, 0);	
+			SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD50, ATTR_CHECKED, 0);
 		if (updatePer==100)
 		{
 			SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD100, ATTR_CHECKED, 1);
 			EventPeriod=0.1;
 		}
 		else
-			SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD100, ATTR_CHECKED, 0);	
+			SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD100, ATTR_CHECKED, 0);
 		if (updatePer==1000)
 		{
 			SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD1000, ATTR_CHECKED, 1);
 			EventPeriod=1;
 		}
 		else
-			SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD1000, ATTR_CHECKED, 0);	
-		
+			SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD1000, ATTR_CHECKED, 0);
+
 		fread(&DDSFreq.extclock,sizeof DDSFreq.extclock,1,fdata);
 		fread(&DDSFreq.PLLmult,sizeof DDSFreq.PLLmult,1,fdata);
-		DDSFreq.clock = DDSFreq.extclock * DDSFreq.PLLmult;  
-		
+		DDSFreq.clock = DDSFreq.extclock * DDSFreq.PLLmult;
+
 		fread(&GPIB_address,sizeof GPIB_address,1,fdata);
 		fread(&SRS_amplitude,sizeof SRS_amplitude,1,fdata);
 		fread(&SRS_offset,sizeof SRS_offset,1,fdata);
 		fread(&SRS_frequency,sizeof SRS_frequency,1,fdata);
 		fread(&GPIB_ON,sizeof GPIB_ON,1,fdata);
-	
+
 		fclose(fdata);
-		
+
 		LoadDDSSettings();  //Enters the DDSsettings into the GUI Panel
-		LoadAnritsuSettings(); //Enters the Anritsu settings into the GUI Panel 
+		LoadAnritsuSettings(); //Enters the Anritsu settings into the GUI Panel
 		SetAnalogChannels();
 		SetDigitalChannels();
-		
+
 		// ST 2013-02-02 -- currently saving newly introduced GPIB settings in separate
 		// file to maintain downward compatibility ... should be included in arr file at
 		// some more convenient point (see comment in SaveArraysV16)
@@ -5366,7 +5366,7 @@ int LoadArraysV16(char savedname[500],int csize)
 			fclose(fdata);
 		}
 
-		
+
 		return(1);
 	}
 	else
@@ -5383,14 +5383,14 @@ void LoadArraysV15(char savedname[500],int csize)
 	/* Loads all Panel attributes and values which are not saved automatically by the NI function SavePanelState.
 	   the values are stored in the .arr file by SaveArrays
 	   x,y, and zval give the 3D table dimensions but are not critical to the saving/loading operation
-	   
-	   Note that if the lengths of any of the data arrays are changed previous saves will not be able to be laoded. 
+
+	   Note that if the lengths of any of the data arrays are changed previous saves will not be able to be laoded.
 	   If necessary See AdwinGUI Panel Converter V11-V12 (created June 01, 2006)
 	*/
-	
+
 	FILE *fdata;
 	int i=0, j=0, k=0;
-	int xval=16, yval=16, zval=10, updatePer;	  
+	int xval=16, yval=16, zval=10, updatePer;
 	char buff[500]="", buff2[100]="";
 	strncat(buff, savedname, csize-4);
 	strcat(buff,".arr");
@@ -5399,24 +5399,24 @@ void LoadArraysV15(char savedname[500],int csize)
 		MessagePopup("Load Error","Failed to load data arrays (*.arr file)");
 	//	exit(1);
 	}
-	
+
 	fread(&xval,sizeof xval, 1,fdata);
 	fread(&yval,sizeof yval, 1,fdata);
 	fread(&zval,sizeof zval, 1,fdata);
-	//now for the times.	
+	//now for the times.
 	fread(&TimeArray,(sizeof TimeArray),1,fdata);
-	//and the analog data				
+	//and the analog data
 	fread(&AnalogTable,(sizeof AnalogTable),1,fdata);
 	fread(&DigTableValues,(sizeof DigTableValues),1,fdata);
 	fread(&AChName,(sizeof AChName),1,fdata);
 	fread(&DChName,sizeof DChName,1,fdata);
 	fread(&ddstable,(sizeof ddstable),1,fdata);
 	fread(&buff2,sizeof buff2,1,fdata);
-	
+
 	SetCtrlAttribute (panelHandle, PANEL_TB_SHOWPHASE1,ATTR_OFF_TEXT, buff2);
 	SetCtrlAttribute (panelHandle, PANEL_TB_SHOWPHASE1,ATTR_ON_TEXT, buff2);
 	fread(&buff2,sizeof buff2,1,fdata);
-	
+
 	SetCtrlAttribute (panelHandle, PANEL_TB_SHOWPHASE2,ATTR_OFF_TEXT, buff2);
 	SetCtrlAttribute (panelHandle, PANEL_TB_SHOWPHASE2,ATTR_ON_TEXT, buff2);
 	fread(&buff2,sizeof buff2,1,fdata);
@@ -5436,7 +5436,7 @@ void LoadArraysV15(char savedname[500],int csize)
 	SetCtrlAttribute (panelHandle, PANEL_TB_SHOWPHASE7,ATTR_ON_TEXT, buff2);
 	fread(&dds2table,(sizeof dds2table),1,fdata);
 	fread(&dds3table,(sizeof dds3table),1,fdata);
-	
+
 	//Update Period Retrieved and Set
 	fread(&updatePer,sizeof updatePer,1,fdata);
 	if (updatePer==5)
@@ -5445,66 +5445,66 @@ void LoadArraysV15(char savedname[500],int csize)
 		EventPeriod=0.005;
 	}
 	else
-		SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD5, ATTR_CHECKED, 0);	
-	if (updatePer==10) 
+		SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD5, ATTR_CHECKED, 0);
+	if (updatePer==10)
 	{
 		SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD10, ATTR_CHECKED, 1);
 		EventPeriod=0.01;
 	}
 	else
 		SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD10, ATTR_CHECKED, 0);
-	if (updatePer==15) 
+	if (updatePer==15)
 	{
 		SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD15, ATTR_CHECKED, 1);
 		EventPeriod=0.015;
 	}
 	else
-		SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD15, ATTR_CHECKED, 0);	
-	if (updatePer==25) 
+		SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD15, ATTR_CHECKED, 0);
+	if (updatePer==25)
 	{
 		SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD25, ATTR_CHECKED, 1);
 		EventPeriod=0.025;
 	}
 	else
-		SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD25, ATTR_CHECKED, 0);	
-	if (updatePer==50) 
+		SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD25, ATTR_CHECKED, 0);
+	if (updatePer==50)
 	{
 		SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD50, ATTR_CHECKED, 1);
 		EventPeriod=0.05;
 	}
 	else
-		SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD50, ATTR_CHECKED, 0);	
+		SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD50, ATTR_CHECKED, 0);
 	if (updatePer==100)
 	{
 		SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD100, ATTR_CHECKED, 1);
 		EventPeriod=0.1;
 	}
 	else
-		SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD100, ATTR_CHECKED, 0);	
+		SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD100, ATTR_CHECKED, 0);
 	if (updatePer==1000)
 	{
 		SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD1000, ATTR_CHECKED, 1);
 		EventPeriod=1;
 	}
 	else
-		SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD1000, ATTR_CHECKED, 0);	
-	
+		SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD1000, ATTR_CHECKED, 0);
+
 	fread(&DDSFreq.extclock,sizeof DDSFreq.extclock,1,fdata);
 	fread(&DDSFreq.PLLmult,sizeof DDSFreq.PLLmult,1,fdata);
-	DDSFreq.clock = DDSFreq.extclock * DDSFreq.PLLmult;  
-	
+	DDSFreq.clock = DDSFreq.extclock * DDSFreq.PLLmult;
+
 	fread(&GPIB_address,sizeof GPIB_address,1,fdata);
 	fread(&SRS_amplitude,sizeof SRS_amplitude,1,fdata);
 	fread(&SRS_offset,sizeof SRS_offset,1,fdata);
 	fread(&SRS_frequency,sizeof SRS_frequency,1,fdata);
 	fread(&GPIB_ON,sizeof GPIB_ON,1,fdata);
-	
-	//Load Anritsu settings 
+
+	//Load Anritsu settings
 	fread(&AnritsuSettingValues,sizeof AnritsuSettingValues,1,fdata);
-	
+
 	// Reset InfoArray (not seved in these files) ... read from panel content below
-	for(i=0;i<=NUMBEROFCOLUMNS;i++)// ramp over # of cells per page 
-	{		
+	for(i=0;i<=NUMBEROFCOLUMNS;i++)// ramp over # of cells per page
+	{
 		for(k=0;k<NUMBEROFPAGES;k++)// ramp over pages
 		{
 			InfoArray[i][k].index = 0;
@@ -5514,12 +5514,12 @@ void LoadArraysV15(char savedname[500],int csize)
 	}
 
 	fclose(fdata);
-	
+
 	LoadDDSSettings();  //Enters the DDSsettings into the GUI Panel
-	LoadAnritsuSettings(); //Enters the Anritsu settings into the GUI Panel 
+	LoadAnritsuSettings(); //Enters the Anritsu settings into the GUI Panel
 	SetAnalogChannels();
 	SetDigitalChannels();
-	
+
 	// The column labels are saved with the panel. Here, we read their values into the InforArray.
 	// This way old panels are imported into the new structure (V16.0.2).
 	for (k=1;k<NUMBEROFPAGES;k++)
@@ -5527,7 +5527,7 @@ void LoadArraysV15(char savedname[500],int csize)
 		for(i=1;i<=NUMBEROFCOLUMNS;i++)
 		{
 			GetTableCellVal(panelHandle, PANEL_OLD_LABEL[k], MakePoint(i,1), &buff);
-			strcpy(InfoArray[i][k].text, buff); 
+			strcpy(InfoArray[i][k].text, buff);
 		}
 	}
 }
@@ -5537,10 +5537,10 @@ void LoadArraysV13(char savedname[500],int csize)
 {
 	/* Loads version 13 panel files (when the analog table had fewer rows)
 	*/
-	
+
 	FILE *fdata;
 	int i=0, j=0, k=0;
-	int xval=16, yval=16, zval=10, updatePer;	  
+	int xval=16, yval=16, zval=10, updatePer;
 	char buff[500]="", buff2[100]="";
 	struct AnalogTableValues OldAnalogTable[NUMBEROFCOLUMNS+1][NUMBERANALOGCHANNELS+NUMBERDDS][NUMBEROFPAGES];
 	strncat(buff, savedname, csize-4);
@@ -5550,16 +5550,16 @@ void LoadArraysV13(char savedname[500],int csize)
 		MessagePopup("Load Error","Failed to load data arrays (*.arr file)");
 	//	exit(1);
 	}
-	
+
 	fread(&xval,sizeof xval, 1,fdata);
 	fread(&yval,sizeof yval, 1,fdata);
 	fread(&zval,sizeof zval, 1,fdata);
-	//now for the times.	
+	//now for the times.
 	fread(&TimeArray,(sizeof TimeArray),1,fdata);
 	//and the analog data
-	
+
 	fread(&OldAnalogTable,(sizeof OldAnalogTable),1,fdata);
-	
+
 	for (i=0;i<NUMBEROFCOLUMNS+1;i++)
 	{
 		for (j=0;j<NUMBERANALOGCHANNELS+NUMBERDDS;j++)
@@ -5569,19 +5569,19 @@ void LoadArraysV13(char savedname[500],int csize)
 				 AnalogTable[i][j][k] = OldAnalogTable[i][j][k];
 			}
 		}
-				
+
 	}
-	
+
 	fread(&DigTableValues,(sizeof DigTableValues),1,fdata);
 	fread(&AChName,(sizeof AChName),1,fdata);
 	fread(&DChName,sizeof DChName,1,fdata);
 	fread(&ddstable,(sizeof ddstable),1,fdata);
 	fread(&buff2,sizeof buff2,1,fdata);
-	
+
 	SetCtrlAttribute (panelHandle, PANEL_TB_SHOWPHASE1,ATTR_OFF_TEXT, buff2);
 	SetCtrlAttribute (panelHandle, PANEL_TB_SHOWPHASE1,ATTR_ON_TEXT, buff2);
 	fread(&buff2,sizeof buff2,1,fdata);
-	
+
 	SetCtrlAttribute (panelHandle, PANEL_TB_SHOWPHASE2,ATTR_OFF_TEXT, buff2);
 	SetCtrlAttribute (panelHandle, PANEL_TB_SHOWPHASE2,ATTR_ON_TEXT, buff2);
 	fread(&buff2,sizeof buff2,1,fdata);
@@ -5601,7 +5601,7 @@ void LoadArraysV13(char savedname[500],int csize)
 	SetCtrlAttribute (panelHandle, PANEL_TB_SHOWPHASE7,ATTR_ON_TEXT, buff2);
 	fread(&dds2table,(sizeof dds2table),1,fdata);
 	fread(&dds3table,(sizeof dds3table),1,fdata);
-	
+
 	//Update Period Retrieved and Set
 	fread(&updatePer,sizeof updatePer,1,fdata);
 	if (updatePer==5)
@@ -5610,76 +5610,76 @@ void LoadArraysV13(char savedname[500],int csize)
 		EventPeriod=0.005;
 	}
 	else
-		SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD5, ATTR_CHECKED, 0);	
-	if (updatePer==10) 
+		SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD5, ATTR_CHECKED, 0);
+	if (updatePer==10)
 	{
 		SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD10, ATTR_CHECKED, 1);
 		EventPeriod=0.01;
 	}
 	else
 		SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD10, ATTR_CHECKED, 0);
-	if (updatePer==15) 
+	if (updatePer==15)
 	{
 		SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD15, ATTR_CHECKED, 1);
 		EventPeriod=0.015;
 	}
 	else
-		SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD15, ATTR_CHECKED, 0);	
-	if (updatePer==25) 
+		SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD15, ATTR_CHECKED, 0);
+	if (updatePer==25)
 	{
 		SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD25, ATTR_CHECKED, 1);
 		EventPeriod=0.025;
 	}
 	else
-		SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD25, ATTR_CHECKED, 0);	
-	if (updatePer==50) 
+		SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD25, ATTR_CHECKED, 0);
+	if (updatePer==50)
 	{
 		SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD50, ATTR_CHECKED, 1);
 		EventPeriod=0.05;
 	}
 	else
-		SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD50, ATTR_CHECKED, 0);	
+		SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD50, ATTR_CHECKED, 0);
 	if (updatePer==100)
 		{
 		SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD100, ATTR_CHECKED, 1);
 		EventPeriod=0.1;
 	}
 	else
-		SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD100, ATTR_CHECKED, 0);	
+		SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD100, ATTR_CHECKED, 0);
 	if (updatePer==1000)
 	{
 		SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD1000, ATTR_CHECKED, 1);
 		EventPeriod=1;
 	}
 	else
-		SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD1000, ATTR_CHECKED, 0);	
-	
+		SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD1000, ATTR_CHECKED, 0);
+
 	fread(&DDSFreq.extclock,sizeof DDSFreq.extclock,1,fdata);
 	fread(&DDSFreq.PLLmult,sizeof DDSFreq.PLLmult,1,fdata);
-	DDSFreq.clock = DDSFreq.extclock * DDSFreq.PLLmult;  
-	
+	DDSFreq.clock = DDSFreq.extclock * DDSFreq.PLLmult;
+
 	fread(&GPIB_address,sizeof GPIB_address,1,fdata);
 	fread(&SRS_amplitude,sizeof SRS_amplitude,1,fdata);
 	fread(&SRS_offset,sizeof SRS_offset,1,fdata);
 	fread(&SRS_frequency,sizeof SRS_frequency,1,fdata);
 	fread(&GPIB_ON,sizeof GPIB_ON,1,fdata);
-	
+
 	fclose(fdata);
-	
-	for(i=0;i<=NUMBEROFCOLUMNS;i++)// ramp over # of cells per page 
-	{		
-		for(k=0;k<NUMBEROFPAGES;k++)// ramp over pages 
+
+	for(i=0;i<=NUMBEROFCOLUMNS;i++)// ramp over # of cells per page
+	{
+		for(k=0;k<NUMBEROFPAGES;k++)// ramp over pages
 		{
 			InfoArray[i][k].index = 0;
 			InfoArray[i][k].value = 0.0;
 			strcpy(InfoArray[i][k].text, "");
 		}
 	}
-	
+
 	LoadDDSSettings();  //Enters the DDSsettings into the GUI Panel
 	SetAnalogChannels();
 	SetDigitalChannels();
-	
+
 	// The column labels are saved with the panel. Here, we read their values into the InforArray.
 	// This way old panels are imported into the new structure (V16.0.2).
 	for (k=1;k<NUMBEROFPAGES;k++)
@@ -5687,7 +5687,7 @@ void LoadArraysV13(char savedname[500],int csize)
 		for(i=1;i<=NUMBEROFCOLUMNS;i++)
 		{
 			GetTableCellVal(panelHandle, PANEL_OLD_LABEL[k], MakePoint(i,1), &buff);
-			strcpy(InfoArray[i][k].text, buff); 
+			strcpy(InfoArray[i][k].text, buff);
 		}
 	}
 }
@@ -5696,20 +5696,20 @@ void LoadArraysV13(char savedname[500],int csize)
 //*****************************************************************************************
 void SaveArraysV16(char savedname[500],int csize)
 {
-	/* 
+	/*
 		Stefan Trotzky -- V16.0.2 (2012-10-20)
 		Added _all_ Toggle button names to the panel files.
 	    Added the column labels to the panel files.
 	    Added the sequencer version as first entry.
 	    At the same time: reordered the arrays in the files to be more logical (e.g. grouped DDSs)
-	    
+
 	    Stefan Trotzky -- V16.1.1 (2013-02-02)
 	    Saving the newly added GPIB structure in a separate file for now. This should
-	    be included in the existing file at a convenient time in the future. Also: 
+	    be included in the existing file at a convenient time in the future. Also:
 	    consider a more flexible file structure where adding variables does not spoil
 	    downward compatibility.
 	*/
-	
+
 	FILE *fdata;
 	int i=0,j=0,k=0;
 	int xval=NUMBEROFCOLUMNS,yval=NUMBERANALOGROWS,zval=NUMBEROFPAGES-1;
@@ -5729,7 +5729,7 @@ void SaveArraysV16(char savedname[500],int csize)
 		fwrite(&xval,sizeof xval, 1,fdata);
 		fwrite(&yval,sizeof yval, 1,fdata);
 		fwrite(&zval,sizeof zval, 1,fdata);
-		// Times	
+		// Times
 		fwrite(&TimeArray,sizeof TimeArray,1,fdata);
 		// Analog and Digital Channels
 		fwrite(&AnalogTable,sizeof AnalogTable,1,fdata);
@@ -5743,12 +5743,12 @@ void SaveArraysV16(char savedname[500],int csize)
 		// 'Laser" settings (used to be in .laser files)
 		fwrite(&LaserProperties,sizeof LaserProperties, 1,fdata);
 		fwrite(&LaserTable,sizeof LaserTable,1,fdata);
-		// Anritsu settings 
+		// Anritsu settings
 		fwrite(&AnritsuSettingValues,sizeof AnritsuSettingValues,1,fdata);
 		// Column labels (new since V16.02)
 		fwrite(&InfoArray, sizeof InfoArray,1,fdata);
 		for (i=1;i<=zval;i++)
-		{	
+		{
 			GetCtrlAttribute (panelHandle, PANEL_TB_SHOWPHASE[i],ATTR_OFF_TEXT, buff2);
 			fwrite(&buff2,sizeof buff2,1,fdata);
 		}
@@ -5758,9 +5758,9 @@ void SaveArraysV16(char savedname[500],int csize)
 		GetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD15, ATTR_CHECKED, &usupd15);
 		GetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD25, ATTR_CHECKED, &usupd25);
 		GetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD50, ATTR_CHECKED, &usupd50);
-		GetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD100, ATTR_CHECKED, &usupd100); 
+		GetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD100, ATTR_CHECKED, &usupd100);
 		GetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD1000, ATTR_CHECKED, &usupd1000);
-		
+
 		if (usupd5==1)
 			updatePer=5;
 		else if (usupd10==1)
@@ -5771,26 +5771,26 @@ void SaveArraysV16(char savedname[500],int csize)
 			updatePer=25;
 		else if (usupd50==1)
 			updatePer=50;
-		else if(usupd100==1) 
+		else if(usupd100==1)
 			updatePer=100;
-		else if(usupd1000==1) 
+		else if(usupd1000==1)
 			updatePer=1000;
 		fwrite(&updatePer,sizeof updatePer,1,fdata);
-		
+
 		// global DDS settings
 		fwrite(&DDSFreq.extclock,sizeof DDSFreq.extclock,1,fdata);
 		fwrite(&DDSFreq.PLLmult,sizeof DDSFreq.PLLmult,1,fdata);
-		
-		// Save SRS settings (obsolete with new GPIB feature -- 2013-01 -- to 
+
+		// Save SRS settings (obsolete with new GPIB feature -- 2013-01 -- to
 		// be removed at a convenient point in time)
 		fwrite(&GPIB_address,sizeof GPIB_address,1,fdata);
 		fwrite(&SRS_amplitude,sizeof SRS_amplitude,1,fdata);
 		fwrite(&SRS_offset,sizeof SRS_offset,1,fdata);
 		fwrite(&SRS_frequency,sizeof SRS_frequency,1,fdata);
 		fwrite(&GPIB_ON,sizeof GPIB_ON,1,fdata);
-		
+
 		fclose(fdata);
-		
+
 		strncat(buff3, savedname, csize-4);
 		strcat(buff3,".gpib");
 		if((fdata=fopen(buff3,"w"))==NULL)
@@ -5801,7 +5801,7 @@ void SaveArraysV16(char savedname[500],int csize)
 		{
 			fwrite(&GPIBDev,(sizeof GPIBDev),1,fdata);
 			fclose(fdata);
-		}	
+		}
 
 	}
 }
@@ -5814,19 +5814,19 @@ void SaveArraysV15(char savedname[500],int csize)
 	/* Saves all Panel attributes and values which are not saved automatically by the NI function SavePanelState
 	   The values are stored in the .arr file
 	   x,y, and zval give the 3D table dimensions but are not critical to the saving/loading operation
-	   
-	   Note that if the lengths of any of the data arrays are changed previous saves will not be able to be laoded. 
+
+	   Note that if the lengths of any of the data arrays are changed previous saves will not be able to be laoded.
 	   If necessary See AdwinGUI Panel Converter V11-V12 (created June 01, 2006)
 	*/
-	
+
 	FILE *fdata;
 	int i=0,j=0,k=0;
 	int xval=NUMBEROFCOLUMNS,yval=NUMBERANALOGROWS,zval=NUMBEROFPAGES-1;
 	int usupd5,usupd10,usupd15,usupd25,usupd50,usupd100,usupd1000,updatePer; //Update Period Check
 	char buff[500]="",buff2[100];
-	
+
 	MessagePopup("Save Warning","Note that panels should only be saved in V15\nformat for testing. Use save option without\nversion number to save panels!");
-	
+
 	strncpy(buff,savedname,csize-4);
 	strcat(buff,".arr");
 	if((fdata=fopen(buff,"w"))==NULL)
@@ -5838,12 +5838,12 @@ void SaveArraysV15(char savedname[500],int csize)
 	fwrite(&xval,sizeof xval, 1,fdata);
 	fwrite(&yval,sizeof yval, 1,fdata);
 	fwrite(&zval,sizeof zval, 1,fdata);
-	//now for the times.	
+	//now for the times.
 	fwrite(&TimeArray,sizeof TimeArray,1,fdata);
 	//and the analog data
 	fwrite(&AnalogTable,sizeof AnalogTable,1,fdata);
 	fwrite(&DigTableValues,sizeof DigTableValues,1,fdata);
-																	   
+
 	fwrite(&AChName,sizeof AChName,1,fdata);
 	fwrite(&DChName,sizeof DChName,1,fdata);
 	fwrite(&ddstable,sizeof ddstable,1,fdata);
@@ -5863,15 +5863,15 @@ void SaveArraysV15(char savedname[500],int csize)
 	fwrite(&buff2,sizeof buff2,1,fdata);
 	fwrite(&dds2table,sizeof dds2table,1,fdata);
 	fwrite(&dds3table,sizeof dds3table,1,fdata);
-	
+
 	GetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD5, ATTR_CHECKED, &usupd5);
 	GetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD10, ATTR_CHECKED, &usupd10);
 	GetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD15, ATTR_CHECKED, &usupd15);
 	GetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD25, ATTR_CHECKED, &usupd25);
 	GetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD50, ATTR_CHECKED, &usupd50);
-	GetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD100, ATTR_CHECKED, &usupd100); 
+	GetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD100, ATTR_CHECKED, &usupd100);
 	GetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD1000, ATTR_CHECKED, &usupd1000);
-	
+
 	if (usupd5==1)
 		updatePer=5;
 	else if (usupd10==1)
@@ -5882,22 +5882,22 @@ void SaveArraysV15(char savedname[500],int csize)
 		updatePer=25;
 	else if (usupd50==1)
 		updatePer=50;
-	else if(usupd100==1) 
+	else if(usupd100==1)
 		updatePer=100;
-	else if(usupd1000==1) 
+	else if(usupd1000==1)
 		updatePer=1000;
 	fwrite(&updatePer,sizeof updatePer,1,fdata);
 	fwrite(&DDSFreq.extclock,sizeof DDSFreq.extclock,1,fdata);
 	fwrite(&DDSFreq.PLLmult,sizeof DDSFreq.PLLmult,1,fdata);
-	
+
 	//Save SRS settings
 	fwrite(&GPIB_address,sizeof GPIB_address,1,fdata);
 	fwrite(&SRS_amplitude,sizeof SRS_amplitude,1,fdata);
 	fwrite(&SRS_offset,sizeof SRS_offset,1,fdata);
 	fwrite(&SRS_frequency,sizeof SRS_frequency,1,fdata);
 	fwrite(&GPIB_ON,sizeof GPIB_ON,1,fdata);
-	
-	//Save Anritsu settings 
+
+	//Save Anritsu settings
 	fwrite(&AnritsuSettingValues,sizeof AnritsuSettingValues,1,fdata);
 
 	fclose(fdata);
@@ -5907,13 +5907,13 @@ void SaveArraysV15(char savedname[500],int csize)
 
 //********************************************************************************************
 void SaveLaserData(char savedname[500],int nameSize)
-/*  Saves all of the relevant laser settings from the GUI panel to a file under the same name with 
+/*  Saves all of the relevant laser settings from the GUI panel to a file under the same name with
 	.laser file extension
-	Parameters: savedname: the full name of the panel save file including the .pan extension 
+	Parameters: savedname: the full name of the panel save file including the .pan extension
 				nameSize: the number of characters in savedname */
 {
 	FILE *ldata;
-	
+
 	char buff[502]="",buff2[600];
 	strncpy(buff,savedname,nameSize-4);
 	strcat(buff,".laser");
@@ -5922,14 +5922,14 @@ void SaveLaserData(char savedname[500],int nameSize)
 		strcpy(buff2,"Failed to save laser data arrays. \n Filename: \n");
 		strcat(buff2,buff);
 		MessagePopup("Save Error",buff2);
-		
+
 	}
 	else
 	{
 		fwrite(LaserProperties,sizeof LaserProperties, 1,ldata);
 		fwrite(LaserTable,sizeof LaserTable,1,ldata);
 	}
-	
+
 	fclose(ldata);
 }
 
@@ -5938,11 +5938,11 @@ void LoadLaserData(char savedname[500],int nameSize)
 {
 /*  Loads all Panel attributes and values relevant to the laser control which was saved in a
 	.laser file by SaveLaserData
-	   
-    Note that if the lengths of any of the data arrays are changed previous saves will not be able to be loaded. 
+
+    Note that if the lengths of any of the data arrays are changed previous saves will not be able to be loaded.
     If necessary See AdwinGUI Panel Converter V11-V12 (created June 01, 2006) */
 
-	
+
 	FILE *ldata;
 	char buff[502]="",buff2[600]="";
 	char buff3[502];
@@ -5956,10 +5956,10 @@ void LoadLaserData(char savedname[500],int nameSize)
 	}
 	else
 	{
-		fread(LaserProperties,sizeof LaserProperties, 1,ldata);	
+		fread(LaserProperties,sizeof LaserProperties, 1,ldata);
 		fread(LaserTable,sizeof LaserTable,1,ldata);
 	}
-	
+
 	fclose(ldata);
 }
 
@@ -5973,7 +5973,7 @@ int CVICALLBACK DISPLAYDIAL_CALLBACK (int panel, int control, int event,
 		case EVENT_COMMIT:
 			GetCtrlVal (panelHandle, PANEL_DISPLAYDIAL, &dialval);
 			// Now change the size of the tables depending on the dial value.
-			
+
 
 			SetChannelDisplayed(dialval);
 
@@ -5986,7 +5986,7 @@ Author: Stefan
 -------
 Date Created: August 2004
 -------
-Date Modified: October 06, 2012 (S. Trotzky, V16.0.0)  
+Date Modified: October 06, 2012 (S. Trotzky, V16.0.0)
 -------
 Description: Resizes the analog table on the gui
 -------
@@ -5998,9 +5998,9 @@ void ReshapeAnalogTable( int top,int left,int height)
 {
 	int j,istext=0,celltype=0,ddsrowtop,rowheight;
 	int modheight;
-	
+
 	rowheight = (height)/(NUMBERANALOGCHANNELS+NUMBERDDS);
-	
+
 	for (j=1;j<=NUMBERANALOGROWS;j++)
 	{
 		SetTableRowAttribute (panelHandle, PANEL_ANALOGTABLE, j,ATTR_SIZE_MODE, VAL_USE_EXPLICIT_SIZE);
@@ -6010,25 +6010,25 @@ void ReshapeAnalogTable( int top,int left,int height)
 	}
 	for (j=1;j<=NUMBERANALOGCHANNELS;j++)
 	{
-	
+
 		SetTableRowAttribute (panelHandle, PANEL_TBL_ANALOGUNITS, j,ATTR_SIZE_MODE, VAL_USE_EXPLICIT_SIZE);
 		SetTableRowAttribute (panelHandle, PANEL_TBL_ANALOGUNITS, j, ATTR_ROW_HEIGHT, rowheight);
 	}
-	
+
 	modheight=(NUMBERANALOGROWS)*(int)((height)/(NUMBERANALOGCHANNELS+NUMBERDDS))+3;
 
 	//resize the analog table and all it's related list boxes
   	SetCtrlAttribute (panelHandle, PANEL_ANALOGTABLE, ATTR_HEIGHT, modheight);
   	SetCtrlAttribute (panelHandle, PANEL_ANALOGTABLE, ATTR_LEFT, left);
 	SetCtrlAttribute (panelHandle, PANEL_ANALOGTABLE, ATTR_TOP, top);
-	
+
 	SetCtrlAttribute (panelHandle, PANEL_TBL_ANAMES, ATTR_LEFT, left-165);
-	SetCtrlAttribute (panelHandle, PANEL_TBL_ANAMES, ATTR_TOP, top);   
+	SetCtrlAttribute (panelHandle, PANEL_TBL_ANAMES, ATTR_TOP, top);
 	SetCtrlAttribute (panelHandle, PANEL_TBL_ANAMES, ATTR_HEIGHT, modheight);
-	
-	SetCtrlAttribute (panelHandle, PANEL_TBL_ANALOGUNITS, ATTR_HEIGHT,modheight);  
+
+	SetCtrlAttribute (panelHandle, PANEL_TBL_ANALOGUNITS, ATTR_HEIGHT,modheight);
 	SetCtrlAttribute (panelHandle, PANEL_TBL_ANALOGUNITS, ATTR_TOP, top);
-	SetCtrlAttribute (panelHandle, PANEL_TBL_ANALOGUNITS, ATTR_LEFT, left+705);  
+	SetCtrlAttribute (panelHandle, PANEL_TBL_ANALOGUNITS, ATTR_LEFT, left+705);
 
    	// move the DDS offsets
    	// V16.1.3: Don't set the left hand side of the DDS offsets here. Let GUIDesign.uir do it.
@@ -6039,28 +6039,28 @@ void ReshapeAnalogTable( int top,int left,int height)
 	//SetCtrlAttribute (panelHandle, PANEL_NUM_DDS2_OFFSET,ATTR_LEFT,877);
 	SetCtrlAttribute (panelHandle, PANEL_NUM_DDS3_OFFSET,ATTR_TOP,ddsrowtop+rowheight*2);
 	//SetCtrlAttribute (panelHandle, PANEL_NUM_DDS3_OFFSET,ATTR_LEFT,877);
-	
+
 	// move the SRS control (2013-01-30, ST: hidden)
 	// V16.1.3: Don't set the left hand side of the SRS freq here. Let GUIDesign.uir do it.
 	SetCtrlAttribute (panelHandle, PANEL_SRS_FREQ,ATTR_TOP,ddsrowtop+rowheight*5);
 	//SetCtrlAttribute (panelHandle, PANEL_SRS_FREQ,ATTR_LEFT,877);
-	
+
 	// move the ANRITSU offset
 	// V16.1.3: Don't set the left hand side of the ANRITSU offset here. Let GUIDesign.uir do it.
 	SetCtrlAttribute (panelHandle, PANEL_ANRITSU_OFFSET,ATTR_TOP,ddsrowtop+rowheight*(NUMBERDDS+NUMBERLASERS));
 	//SetCtrlAttribute (panelHandle, PANEL_ANRITSU_OFFSET,ATTR_LEFT,877);
-	
+
 }
 
 
-//****************************************************************************   
+//****************************************************************************
 // 2012-10-07 Stefan Trotzky -- Enable/disable controls according to scanmode
 // Comes with the multi scan option in V16.0.0
 //****************************************************************************
 void EnableScanControls(void)
 {
-	int dimmed; 
-	
+	int dimmed;
+
   	if ( parameterscanmode == 0) // dimm out parts depending on current parameterscanmode
   	{   // MultiScan
   		dimmed = 0;
@@ -6071,10 +6071,10 @@ void EnableScanControls(void)
    		SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_LED1, ATTR_DIMMED, 0);
   		SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_LED2, ATTR_DIMMED, 0);
   		SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_DECORATION, ATTR_DIMMED, 0);
-  		SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_NUM_ROWS, ATTR_DIMMED, 0);     
-  		SetCtrlAttribute (panelHandle, PANEL_LBL_DIGIOFFSET, ATTR_DIMMED, 0);     
-  		SetCtrlAttribute (panelHandle, PANEL_LBL_GPIBOFFSET, ATTR_DIMMED, 0);     
-  												
+  		SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_NUM_ROWS, ATTR_DIMMED, 0);
+  		SetCtrlAttribute (panelHandle, PANEL_LBL_DIGIOFFSET, ATTR_DIMMED, 0);
+  		SetCtrlAttribute (panelHandle, PANEL_LBL_GPIBOFFSET, ATTR_DIMMED, 0);
+
   		if (MultiScan.Active == TRUE) { dimmed = 1;}
   		SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_NUM_NUMERIC, ATTR_DIMMED, dimmed);
   		SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_ITS_NUMERIC, ATTR_DIMMED, dimmed);
@@ -6096,16 +6096,16 @@ void EnableScanControls(void)
   		SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_LED1, ATTR_DIMMED, 1);
   		SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_LED2, ATTR_DIMMED, 1);
   		SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_DECORATION, ATTR_DIMMED, 1);
-  		SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_NUM_ROWS, ATTR_DIMMED, 1);     
+  		SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_NUM_ROWS, ATTR_DIMMED, 1);
   		SetCtrlAttribute (panelHandle, PANEL_SCAN_KEEPRUNNING_CHK, ATTR_DIMMED, 1);
-  		SetCtrlAttribute (panelHandle, PANEL_LBL_DIGIOFFSET, ATTR_DIMMED, 1);     
-  		SetCtrlAttribute (panelHandle, PANEL_LBL_GPIBOFFSET, ATTR_DIMMED, 1);     
+  		SetCtrlAttribute (panelHandle, PANEL_LBL_DIGIOFFSET, ATTR_DIMMED, 1);
+  		SetCtrlAttribute (panelHandle, PANEL_LBL_GPIBOFFSET, ATTR_DIMMED, 1);
   		SetCtrlMenuAttribute (panelHandle, PANEL_DIGTABLE, MNU_DIGTABLE_SCANCELL, ATTR_DIMMED, 1);
   		SetCtrlMenuAttribute (panelHandle, PANEL_ANALOGTABLE, MNU_ANALOGTABLE_SCANCELL, ATTR_DIMMED, 1);
   		SetCtrlMenuAttribute (panelHandle, PANEL_ANALOGTABLE, MNU_ANALOGTABLE_SCANCELL_TIMESCALE, ATTR_DIMMED, 1);
   		SetCtrlMenuAttribute (panelHandle, PANEL_TIMETABLE, MNU_TIMETABLE_SCANCELL, ATTR_DIMMED, 1);
 
-  		
+
   		SetCtrlAttribute (panelHandle, PANEL_SCAN_TABLE, ATTR_DIMMED, 0);
   		if (parameterscanmode == 2)
   		{
@@ -6116,59 +6116,59 @@ void EnableScanControls(void)
 }
 
 
-//****************************************************************************   
+//****************************************************************************
 // 2012-10-07 Stefan Trotzky -- Organize MultiScan controls in window
 // Comes with the multi scan option in V16.0.0
 //****************************************************************************
 void ReshapeMultiScanTable( int top,int left,int height)
 {
 	int j,istext=0,celltype=0,width;
-	
+
 	// Get width of analogchannel table to match
-	GetCtrlAttribute (panelHandle, PANEL_ANALOGTABLE, ATTR_WIDTH, &width); 
+	GetCtrlAttribute (panelHandle, PANEL_ANALOGTABLE, ATTR_WIDTH, &width);
 
 	//resize and move the multiscan table table and all it's related list boxes
 	SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_POS_TABLE, ATTR_TOP, top);
   	SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_POS_TABLE, ATTR_LEFT, left);
   	SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_POS_TABLE, ATTR_WIDTH, width);
-  	
+
   	SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_VAL_TABLE, ATTR_TOP, top+80);
   	SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_VAL_TABLE, ATTR_LEFT, left);
   	SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_VAL_TABLE, ATTR_WIDTH, width);
-  	
+
   	SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_NAMES_TABLE, ATTR_TOP, top);
   	SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_NAMES_TABLE, ATTR_LEFT, left-165);
-  	
+
   	SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_NUM_NUMERIC, ATTR_TOP, top+100);
   	SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_NUM_NUMERIC, ATTR_LEFT, left-135);
-  	
+
   	SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_ITS_NUMERIC, ATTR_TOP, top+150);
   	SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_ITS_NUMERIC, ATTR_LEFT, left-135);
-  	
+
   	SetCtrlAttribute (panelHandle, PANEL_SCAN_KEEPRUNNING_CHK, ATTR_TOP, top+190);
   	SetCtrlAttribute (panelHandle, PANEL_SCAN_KEEPRUNNING_CHK, ATTR_LEFT, left-150);
-  	
+
   	SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_LED1, ATTR_TOP, top+100);
   	SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_LED1, ATTR_LEFT, left+width+20);
-  	
+
   	SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_LED2, ATTR_TOP, top+125);
   	SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_LED2, ATTR_LEFT, left+width+20);
-  	
+
   	SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_NUM_ROWS, ATTR_TOP, top+185);
   	SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_NUM_ROWS, ATTR_LEFT, left+width+30);
-  	
+
   	SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_DECORATION, ATTR_TOP, top+90);
   	SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_DECORATION, ATTR_LEFT, left+width+10);
   	SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_DECORATION, ATTR_WIDTH, 130);
   	SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_DECORATION, ATTR_HEIGHT, 63);
-  	
+
   	SetCtrlAttribute (panelHandle, PANEL_LBL_DIGIOFFSET, ATTR_TOP, top+10);
   	SetCtrlAttribute (panelHandle, PANEL_LBL_DIGIOFFSET, ATTR_LEFT, left+width+20);
   	SetCtrlAttribute (panelHandle, PANEL_LBL_GPIBOFFSET, ATTR_TOP, top+30);
   	SetCtrlAttribute (panelHandle, PANEL_LBL_GPIBOFFSET, ATTR_LEFT, left+width+20);
-  	
+
   	EnableScanControls();
- 	
+
 }
 
 
@@ -6186,19 +6186,19 @@ Parameters: new top, left and height values for the list box
 void ReshapeDigitalTable( int top,int left,int height)
 {
  int j;
-  	
+
   	SetCtrlAttribute (panelHandle, PANEL_DIGTABLE, ATTR_HEIGHT, height);
   	SetCtrlAttribute (panelHandle, PANEL_DIGTABLE, ATTR_LEFT, left);
 	SetCtrlAttribute (panelHandle, PANEL_DIGTABLE, ATTR_TOP, top);
-	SetCtrlAttribute (panelHandle, PANEL_TBL_DIGNAMES, ATTR_TOP, top); 
+	SetCtrlAttribute (panelHandle, PANEL_TBL_DIGNAMES, ATTR_TOP, top);
 	SetCtrlAttribute (panelHandle, PANEL_TBL_DIGNAMES, ATTR_LEFT, left-165);
 	SetCtrlAttribute (panelHandle, PANEL_TBL_DIGNAMES, ATTR_HEIGHT, height);
-	
+
 	for (j=1;j<=NUMBERDIGITALCHANNELS;j++)
 	{
-		SetTableRowAttribute (panelHandle, PANEL_DIGTABLE, j, ATTR_SIZE_MODE, VAL_USE_EXPLICIT_SIZE);  
+		SetTableRowAttribute (panelHandle, PANEL_DIGTABLE, j, ATTR_SIZE_MODE, VAL_USE_EXPLICIT_SIZE);
 		SetTableRowAttribute (panelHandle, PANEL_DIGTABLE, j, ATTR_ROW_HEIGHT, (height)/(NUMBERDIGITALCHANNELS));
-		SetTableRowAttribute (panelHandle, PANEL_TBL_DIGNAMES, j, ATTR_SIZE_MODE, VAL_USE_EXPLICIT_SIZE);  
+		SetTableRowAttribute (panelHandle, PANEL_TBL_DIGNAMES, j, ATTR_SIZE_MODE, VAL_USE_EXPLICIT_SIZE);
 
 		SetTableRowAttribute (panelHandle, PANEL_TBL_DIGNAMES, j, ATTR_ROW_HEIGHT, (height)/(NUMBERDIGITALCHANNELS));
 	}
@@ -6215,7 +6215,7 @@ Description: Sets how to display the data, graphically or numerically
 -------
 Return Value: void
 -------
-Parameter1: 
+Parameter1:
 int display_setting: type of display
 VAL_CELL_NUMERIC : graphic
 VAL_CELL_PICTURE : numeric
@@ -6224,7 +6224,7 @@ void SetDisplayType(int display_setting)
 {
 
 	int i,j;
-	
+
 	//set button status
 	if (display_setting == VAL_CELL_NUMERIC)
 	{
@@ -6233,7 +6233,7 @@ void SetDisplayType(int display_setting)
 	else if (display_setting == VAL_CELL_PICTURE)
 	{
 		SetCtrlVal(panelHandle, PANEL_TGL_NUMERICTABLE, 1);
-	}	
+	}
 
 //	printf("called Display Type with value:   %d \n",display_setting);
 	for(i=1;i<=NUMBEROFCOLUMNS;i++)
@@ -6257,7 +6257,7 @@ Description: Sets which channel to display: analog, digital or both
 -------
 Return Value: void
 -------
-Parameter1: 
+Parameter1:
 int display_setting: channel to display
 1: both
 2: analog
@@ -6269,67 +6269,67 @@ void SetChannelDisplayed(int display_setting)
 	//hide everything
 	SetCtrlAttribute (panelHandle, PANEL_DIGTABLE, ATTR_VISIBLE, 0);
 	SetCtrlAttribute (panelHandle, PANEL_ANALOGTABLE, ATTR_VISIBLE, 0);
-	SetCtrlAttribute (panelHandle, PANEL_TBL_ANAMES, ATTR_VISIBLE, 0);    
-	SetCtrlAttribute (panelHandle, PANEL_TBL_ANALOGUNITS, ATTR_VISIBLE, 0);    
-	SetCtrlAttribute (panelHandle, PANEL_TBL_DIGNAMES, ATTR_VISIBLE, 0);    	   
-	//ATTR_LABEL_VISIBLE 
-	
-	heightpos1=695; 
-	heightpos2=582; 
+	SetCtrlAttribute (panelHandle, PANEL_TBL_ANAMES, ATTR_VISIBLE, 0);
+	SetCtrlAttribute (panelHandle, PANEL_TBL_ANALOGUNITS, ATTR_VISIBLE, 0);
+	SetCtrlAttribute (panelHandle, PANEL_TBL_DIGNAMES, ATTR_VISIBLE, 0);
+	//ATTR_LABEL_VISIBLE
+
+	heightpos1=695;
+	heightpos2=582;
 	heightpos3=240;
-	toppos1=140;  
+	toppos1=140;
 	leftpos=170;
 	toppos2=toppos1+heightpos1;
 	toppos3=toppos2+heightpos2+15;
-	
+
 	// Reshape Timetable
 	GetCtrlAttribute (panelHandle, PANEL_ANALOGTABLE, ATTR_WIDTH, &width);
 	SetCtrlAttribute (panelHandle, PANEL_TIMETABLE, ATTR_LEFT, leftpos);
 	SetCtrlAttribute (panelHandle, PANEL_TIMETABLE, ATTR_TOP, toppos1-25);
 	SetCtrlAttribute (panelHandle, PANEL_TIMETABLE, ATTR_WIDTH, width);
-	
+
 	// Reshape Infotable (TO BE IMPLEMENTED!!!)
 	SetCtrlAttribute (panelHandle, PANEL_INFOTABLE, ATTR_LEFT, leftpos);
 	SetCtrlAttribute (panelHandle, PANEL_INFOTABLE, ATTR_TOP, toppos1-50);
 	SetCtrlAttribute (panelHandle, PANEL_INFOTABLE, ATTR_WIDTH, width);
 	SetCtrlAttribute (panelHandle, PANEL_INFOTABLE, ATTR_VISIBLE, FALSE); // hide for now
-	
-															  
-	switch (display_setting)   
+
+
+	switch (display_setting)
 		{
 		case 1:		// both
 			ReshapeAnalogTable(toppos1,leftpos,heightpos1);   //passed top, left and height
 			ReshapeDigitalTable(toppos2+100,leftpos,heightpos2);
 			ReshapeMultiScanTable(toppos3+100,leftpos,heightpos3);
-								
+
 			SetCtrlAttribute (panelHandle, PANEL_DIGTABLE, ATTR_VISIBLE, 1);
 			SetCtrlAttribute (panelHandle, PANEL_ANALOGTABLE, ATTR_VISIBLE, 1);
-			SetCtrlAttribute (panelHandle, PANEL_TBL_ANAMES, ATTR_VISIBLE, 1);    
-			SetCtrlAttribute (panelHandle, PANEL_TBL_ANALOGUNITS, ATTR_VISIBLE, 1); 
+			SetCtrlAttribute (panelHandle, PANEL_TBL_ANAMES, ATTR_VISIBLE, 1);
+			SetCtrlAttribute (panelHandle, PANEL_TBL_ANALOGUNITS, ATTR_VISIBLE, 1);
 			SetCtrlAttribute (panelHandle, PANEL_TBL_DIGNAMES, ATTR_VISIBLE, 1);
-			
+
 			break;
-		
+
 		case 2:		// analog tableonly
-			
+
 			ReshapeAnalogTable(toppos1,170,heightpos1);   //passed top, left and height
-			ReshapeMultiScanTable(toppos2+105,leftpos,heightpos3); 
-			
+			ReshapeMultiScanTable(toppos2+105,leftpos,heightpos3);
+
 			SetCtrlAttribute (panelHandle, PANEL_ANALOGTABLE, ATTR_VISIBLE, 1);
-			SetCtrlAttribute (panelHandle, PANEL_TBL_ANAMES, ATTR_VISIBLE, 1);    
+			SetCtrlAttribute (panelHandle, PANEL_TBL_ANAMES, ATTR_VISIBLE, 1);
 			SetCtrlAttribute (panelHandle, PANEL_TBL_ANALOGUNITS, ATTR_VISIBLE, 1);
 			break;
-		
+
 		case 3:		 // digital table only
 			ReshapeDigitalTable(toppos1,170,heightpos2);
-			ReshapeMultiScanTable(toppos1+heightpos2+25,leftpos,heightpos3); 
-				
+			ReshapeMultiScanTable(toppos1+heightpos2+25,leftpos,heightpos3);
+
 			SetCtrlAttribute (panelHandle, PANEL_DIGTABLE, ATTR_VISIBLE, 1);
-			SetCtrlAttribute (panelHandle, PANEL_TBL_DIGNAMES, ATTR_VISIBLE, 1);		 
+			SetCtrlAttribute (panelHandle, PANEL_TBL_DIGNAMES, ATTR_VISIBLE, 1);
 			break;
-		
+
 		}
-		
+
 		SetCtrlVal(panelHandle, PANEL_DISPLAYDIAL, display_setting);
 	DrawNewTable(0);
 	return;
@@ -6346,7 +6346,7 @@ double CheckIfWithinLimits(double OutputVoltage, int linenumber)
 }
 
 //***********************************************************************************************
-void CVICALLBACK RESETZERO_CALLBACK (int 
+void CVICALLBACK RESETZERO_CALLBACK (int
 menuBar, int menuItem, void *callbackData,
 		int panel)
 {
@@ -6363,10 +6363,10 @@ void SaveLastGuiSettings(void)
 	char fname[100] = LASTGUISAVELOCATION;
 	char buff[600];
 	int i;
-	
+
 	SavePanelState(PANEL, fname, 1);
 	SaveArraysV16(fname, strlen(fname));
-	
+
 }
 
 //********************************************************************************************************************
@@ -6374,7 +6374,7 @@ void CVICALLBACK EXPORT_PANEL_CALLBACK (int menuBar, int menuItem, void *callbac
 		int panel)
 {
 	char fexportname[200];
-	
+
 	FileSelectPopup ("", "*.export", "", "Export Panel?", VAL_SAVE_BUTTON, 0, 0, 1, 1,fexportname );
 	ExportPanel(fexportname,strlen(fexportname));
 }
@@ -6382,7 +6382,7 @@ void CVICALLBACK EXPORT_PANEL_CALLBACK (int menuBar, int menuItem, void *callbac
 //******************************************************************************************************
 void ExportPanel(char fexportname[200],int fnamesize)
 {
-	
+
 	FILE *fexport;
 	int i=0,j=0,k=0;
 	int xval=16,yval=16,zval=10;
@@ -6395,17 +6395,17 @@ void ExportPanel(char fexportname[200],int fnamesize)
 	int mindex,nozerofound,tsize;
 	fcnmode[0]=' ';fcnmode[1]='L';fcnmode[2]='E';fcnmode[3]='J';
 	isdimmed=1;
-	
+
 	if((fexport=fopen(fexportname,"w"))==NULL)
 	{
 		MessagePopup("Save Error","Failed to save configuration file");
 	}
-	
+
 	//Lets build the times list first...so we know how long it will be.
 	//check each page...find used columns and dim out unused....(with 0 or negative values)
-	SetCtrlAttribute(panelHandle,PANEL_ANALOGTABLE,ATTR_TABLE_MODE,VAL_COLUMN); 
+	SetCtrlAttribute(panelHandle,PANEL_ANALOGTABLE,ATTR_TABLE_MODE,VAL_COLUMN);
 	mindex=0;
-	for(k=1;k<=NUMBEROFPAGES;k++)				//go through for each page       
+	for(k=1;k<=NUMBEROFPAGES;k++)				//go through for each page
 	{
 		nozerofound=1;
 		if(ischecked[k]==1) //if the page is selected
@@ -6413,12 +6413,12 @@ void ExportPanel(char fexportname[200],int fnamesize)
 		//go through for each time column
 			for(i=1;i<NUMBEROFCOLUMNS;i++)
 			{
-				if((nozerofound==1)&&(TimeArray[i][k]>0)) 
+				if((nozerofound==1)&&(TimeArray[i][k]>0))
 				//ignore all columns after the first time=0
 				{
 					mindex++; //increase the number of columns counter
 					MetaTimeArray[mindex]=TimeArray[i][k];
-						
+
 					//go through for each analog channel
 					for(j=1;j<=NUMBERANALOGCHANNELS;j++)
 					{
@@ -6428,11 +6428,11 @@ void ExportPanel(char fexportname[200],int fnamesize)
 						MetaDigitalArray[j][mindex]=DigTableValues[i][j][k];
 						DDScurrent[mindex]=ddstable[i][k].amplitude;
 						DDSfreq1[mindex]=ddstable[i][k].start_frequency;
-						DDSfreq2[mindex]=ddstable[i][k].end_frequency;						
+						DDSfreq2[mindex]=ddstable[i][k].end_frequency;
 						DDSstop[mindex]=ddstable[i][k].is_stop;
 					}
 				}
-				else if (TimeArray[i][k]==0) 
+				else if (TimeArray[i][k]==0)
 				{
 					nozerofound=0;
 				}
@@ -6444,7 +6444,7 @@ void ExportPanel(char fexportname[200],int fnamesize)
 	// write header
 	sprintf(bigbuff,"Time(ms)");
 	for(i=1;i<=tsize;i++)
-	{  
+	{
 		strcat(bigbuff,",");
 		sprintf(buff,"%f",MetaTimeArray[i]);
 		strcat(bigbuff,buff);
@@ -6456,10 +6456,10 @@ void ExportPanel(char fexportname[200],int fnamesize)
 	{
 		sprintf(bigbuff,AChName[j].chname);
 		for(i=1;i<=tsize;i++)
-		{  
+		{
 			strcat(bigbuff,",");
 			strncat(bigbuff,fcnmode+MetaAnalogArray[j][i].fcn-1,1);
-			sprintf(buff,"%3.2f",MetaAnalogArray[j][i].fval);  
+			sprintf(buff,"%3.2f",MetaAnalogArray[j][i].fval);
 			strcat(bigbuff,buff);
 		}
 		strcat(bigbuff,"\n");
@@ -6470,7 +6470,7 @@ void ExportPanel(char fexportname[200],int fnamesize)
 	for(i=1;i<=tsize;i++)
 	{
 		strcat(bigbuff,",");
-		if(DDSstop[i]==TRUE) 
+		if(DDSstop[i]==TRUE)
 		{
 			strcat(bigbuff,"OFF");
 		}
@@ -6485,18 +6485,18 @@ void ExportPanel(char fexportname[200],int fnamesize)
 			strcat(bigbuff,"_FB");
 			sprintf(buff,"%4.2f",DDSfreq2[i]);
 			strcat(bigbuff,buff);
-		}	
+		}
 	}
-	fprintf(fexport,bigbuff);     
+	fprintf(fexport,bigbuff);
 	//done DDS, now do digital
 	for(j=1;j<=NUMBERDIGITALCHANNELS;j++)
 	{
 		sprintf(bigbuff,DChName[j].chname);
 		for(i=1;i<=tsize;i++)
-		{  
+		{
 			strcat(bigbuff,",");
-			sprintf(buff,"%d",MetaDigitalArray[j][i]);  
-		
+			sprintf(buff,"%d",MetaDigitalArray[j][i]);
+
 			strcat(bigbuff,buff);
 		}
 		strcat(bigbuff,"\n");
@@ -6515,11 +6515,11 @@ void CVICALLBACK CONFIG_EXPORT_CALLBACK (int menuBar, int menuItem, void *callba
 	int xval=16,yval=16,zval=10;
 	char buff[500],buff2[190],fconfigname[290],buff3[31];
 
-	
+
 
 	FileSelectPopup ("", "*.config", "", "Save Configuration", VAL_SAVE_BUTTON, 0, 0, 1, 1,fconfigname );
-	
-	
+
+
 	if((fconfig=fopen(fconfigname,"w"))==NULL)
 	{
 	//	InsertListItem(panelHandle,PANEL_DEBUG,-1,buff,1);
@@ -6542,14 +6542,14 @@ void CVICALLBACK CONFIG_EXPORT_CALLBACK (int menuBar, int menuItem, void *callba
 	fprintf(fconfig,buff);
 	sprintf(buff,"Row,Channel,Name\n");
 	fprintf(fconfig,buff);
-	
+
 	for(i=1;i<=NUMBERDIGITALCHANNELS;i++)
 	{
 		sprintf(buff,"%d,%d,%s\n",i,DChName[i].chnum,DChName[i].chname);
 		fprintf(fconfig,buff);
 	}
-	
-	
+
+
 	fclose(fconfig);
 }
 
@@ -6640,7 +6640,7 @@ void CVICALLBACK DDS_OFF_CALLBACK (int menuBar, int menuItem, void *callbackData
 			ddstable[i][j].is_stop=TRUE;
 		}
 	}
-	
+
 }
 
 //**************************************************************************************************************
@@ -6663,7 +6663,7 @@ void CVICALLBACK SIMPLETIMING_CALLBACK (int menuBar, int menuItem, void *callbac
 void CVICALLBACK SCANSETTING_CALLBACK (int menuBar, int menuItem, void *callbackData,
 		int panel)
 {
-	SetCtrlVal(panelHandle7,SCANPANEL_TXT_LASIDENT,"Lasername"); 
+	SetCtrlVal(panelHandle7,SCANPANEL_TXT_LASIDENT,"Lasername");
 	InitializeScanPanel();
 }
 
@@ -6674,17 +6674,17 @@ void CVICALLBACK NOTECHECK_CALLBACK (int menuBar, int menuItem, void *callbackDa
 {
 	BOOL status;
 	GetMenuBarAttribute (menuHandle, MENU_SETTINGS_NOTECHECK, ATTR_CHECKED,&status);
-	SetMenuBarAttribute (menuHandle, MENU_SETTINGS_NOTECHECK, ATTR_CHECKED,!status);	
+	SetMenuBarAttribute (menuHandle, MENU_SETTINGS_NOTECHECK, ATTR_CHECKED,!status);
 
 	if(status=1)
-	{ 
+	{
 		DisplayPanel(panelHandle_sub1);
-	}	
+	}
 	else
-	{	
+	{
 		HidePanel(panelHandle_sub1);
 	}
-	
+
 }
 
 //**************************************************************************************************************
@@ -6709,13 +6709,13 @@ void ExportScanBuffer(void)
     int  step,iter,mode;
     double val;
     char date[SCANBUFFER_TIMEBUFFER_LENGTH];
-    
+
 	status=FileSelectPopup("", "*.scan", "", "Save Scan Buffer", VAL_SAVE_BUTTON, 0, 0, 1, 1,fbuffername );
 	if(status>0)
 	{
 		if((fbuffer=fopen(fbuffername,"w"))==NULL)
 		{
-			MessagePopup("Save Error","Failed to save configuration file");	
+			MessagePopup("Save Error","Failed to save configuration file");
 		}
 		switch(PScan.ScanMode)
 		{
@@ -6734,7 +6734,7 @@ void ExportScanBuffer(void)
 		fprintf(fbuffer,buff);
 		for(i=0;i<=ScanBuffer[0].BufferSize;i++)
 		{
-			
+
 			val=ScanBuffer[i].Value;
 			step=ScanBuffer[i].Step;
 			iter=ScanBuffer[i].Iteration;
@@ -6754,20 +6754,20 @@ void ExportScan2Buffer(void)
     int  step1,iter1,step2,iter2,mode;
     double val1,val2;
     char date[100];
-    
+
 	status=FileSelectPopup("", "*.scan2", "", "Save Scan2 Buffer", VAL_SAVE_BUTTON, 0, 0, 1, 1,fbuffername );
 	if(status>0)
 	{
 		if((fbuffer=fopen(fbuffername,"w"))==NULL)
 		{
-			MessagePopup("Save Error","Failed to save configuration file");	
+			MessagePopup("Save Error","Failed to save configuration file");
 		}
 
 		sprintf(buff,"Cycle,Value 1, Value 2, Step 1,Iteration 1,Step 2,Iteration 2,Time\n");
 		fprintf(fbuffer,buff);
 		for(i=0;i<=Scan2Buffer[0].BufferSize;i++)
 		{
-			
+
 			val1=Scan2Buffer[i].Value1;
 			step1=Scan2Buffer[i].Step1;
 			iter1=Scan2Buffer[i].Iteration1;
@@ -6784,7 +6784,7 @@ void ExportScan2Buffer(void)
 
 //*****************************************************************************************
 // 2017-08-04 --- Scott Smale --- Started:V16.4.0
-// Writing buffer to file for multi-parameter scans. Resorting to a simple file-structure: 
+// Writing buffer to file for multi-parameter scans. Resorting to a simple file-structure:
 // A three-line character header:
 // 		LINE 1: Version of the GUI and the filename of the current panel
 // 		LINE 2: The type of the scan (here: Multi-parameter scan) and the number of scanned parameters
@@ -6803,8 +6803,8 @@ void AutoExportMultiScanBuffer(void)
 	char mscanFileNameWithPath[MAX_PATHNAME_LEN];
 	int manualSaveStatus;
 	int fileSelectStatus;
-    
-    
+
+
     manualSaveStatus = ConfirmPopup ( "Scan Finished",
     						"Save .mscan file to non-standard location?");
     if( manualSaveStatus == 0 ){// User selected no
@@ -6845,75 +6845,75 @@ void AutoExportMultiScanBuffer(void)
 		// If the code can continue, try to save to the standard location.
 		strcpy(mscanFileNameWithPath,MultiScan.ScanDirPath);
 	}
-    
+
     // We should now have a valid filename.
     // Try to open file.
-    
+
     printf("mscan file name with path:\n");
     printf("~%s~\n", mscanFileNameWithPath);
-    
-    
+
+
     if( (fbuffer=fopen(mscanFileNameWithPath,"w")) == NULL )
 	{
-		MessagePopup("Save Error","Failed to open mscan file for writing.");	
+		MessagePopup("Save Error","Failed to open mscan file for writing.");
 	}
-    
+
     // First line: Sequencer version and filename.
 	GetPanelAttribute (panelHandle, ATTR_TITLE, &linebuff);
 	strcat(linebuff, "\n");
 	fprintf(fbuffer,linebuff);
-		
+
     // Second line: scan type and number of scanned parameters.
 	sprintf(linebuff,"Multi-parameter scan, NumPars = %d\n",MultiScan.NumPars);
 	fprintf(fbuffer,linebuff);
-	
+
 	// Third line: Column headers.
 	strcpy(linebuff,"cycle,");
 	for (j=0;j<MultiScan.NumPars;j++)
-	{	
+	{
 		sprintf(buff,"p%d,",j+1);
 		strcat(linebuff,buff);
 	}
 	strcat(linebuff,"step,iteration,time\n");
 	fprintf(fbuffer,linebuff);
-	
+
 	// Write parameter positions to file: Page.
 	strcpy(linebuff,"-1,");
 	for (j=0;j<MultiScan.NumPars;j++)
-	{	
+	{
 		sprintf(buff,"%d,",MultiScan.Par[j].Page);
 		strcat(linebuff,buff);
 	}
 	strcat(linebuff,"0,0,00:00:00\n");
 	fprintf(fbuffer,linebuff);
-	
+
 	// Write parameter positions to file: Column.
 	strcpy(linebuff,"-1,");
 	for (j=0;j<MultiScan.NumPars;j++)
-	{	
+	{
 		sprintf(buff,"%d,",MultiScan.Par[j].Column);
 		strcat(linebuff,buff);
 	}
 	strcat(linebuff,"0,0,00:00:00\n");
 	fprintf(fbuffer,linebuff);
-	
+
 	// Write parameter positions to file: Row.
 	strcpy(linebuff,"-1,");
 	for (j=0;j<MultiScan.NumPars;j++)
-	{	
+	{
 		sprintf(buff,"%d,",MultiScan.Par[j].Row);
 		strcat(linebuff,buff);
 	}
 	strcat(linebuff,"0,0,00:00:00\n");
 	fprintf(fbuffer,linebuff);
-	
-	
+
+
 	// Go through buffered values and write them to file
 	for(i=0;i<=ScanBuffer[0].BufferSize;i++)
 	{
 		sprintf(linebuff,"%d,",i);
 		for (j=0;j<MultiScan.NumPars;j++)
-		{	
+		{
 			sprintf(buff,"%f,",ScanBuffer[i].MultiScanValue[j]);
 			strcat(linebuff,buff);
 		}
@@ -6921,14 +6921,14 @@ void AutoExportMultiScanBuffer(void)
 	 	strcat(linebuff,buff);
 		fprintf(fbuffer,linebuff);
  	}
- 	
+
 	fclose(fbuffer);
 }
 
 
 //*****************************************************************************************
 // 2012-10-06 --- Stefan Trotzky --- Started:V16.0.0
-// Writing buffer to file for multi-parameter scans. Resorting to a simple file-structure: 
+// Writing buffer to file for multi-parameter scans. Resorting to a simple file-structure:
 // A three-line character header:
 // 		LINE 1: Version of the GUI and the filename of the current panel
 // 		LINE 2: The type of the scan (here: Multi-parameter scan) and the number of scanned parameters
@@ -6944,71 +6944,71 @@ void ExportMultiScanBuffer(void)
 	FILE *fbuffer;
 	char fbuffername[255], linebuff[1023], buff[256];
     char date[100];
-    
+
 	status=FileSelectPopup("", "*.mscan", "", "Save MultiScan Buffer", VAL_SAVE_BUTTON, 0, 0, 1, 1,fbuffername );
 	if(status>0)
 	{
 		if((fbuffer=fopen(fbuffername,"w"))==NULL)
 		{
-			MessagePopup("Save Error","Failed to open file for writing.");	
+			MessagePopup("Save Error","Failed to open file for writing.");
 		}
-		
+
 		// First line: Sequencer version and filename.
 		GetPanelAttribute (panelHandle, ATTR_TITLE, &linebuff);
 		strcat(linebuff, "\n");
 		fprintf(fbuffer,linebuff);
-		
+
 		// Second line: scan type and number of scanned parameters.
 		sprintf(linebuff,"Multi-parameter scan, NumPars = %d\n",MultiScan.NumPars);
 		fprintf(fbuffer,linebuff);
-		
+
 		// Third line: Column headers.
 		strcpy(linebuff,"cycle,");
 		for (j=0;j<MultiScan.NumPars;j++)
-		{	
+		{
 			sprintf(buff,"p%d,",j+1);
 			strcat(linebuff,buff);
 		}
 		strcat(linebuff,"step,iteration,time\n");
 		fprintf(fbuffer,linebuff);
-		
+
 		// Write parameter positions to file: Page.
 		strcpy(linebuff,"-1,");
 		for (j=0;j<MultiScan.NumPars;j++)
-		{	
+		{
 			sprintf(buff,"%d,",MultiScan.Par[j].Page);
 			strcat(linebuff,buff);
 		}
 		strcat(linebuff,"0,0,00:00:00\n");
 		fprintf(fbuffer,linebuff);
-		
+
 		// Write parameter positions to file: Column.
 		strcpy(linebuff,"-1,");
 		for (j=0;j<MultiScan.NumPars;j++)
-		{	
+		{
 			sprintf(buff,"%d,",MultiScan.Par[j].Column);
 			strcat(linebuff,buff);
 		}
 		strcat(linebuff,"0,0,00:00:00\n");
 		fprintf(fbuffer,linebuff);
-		
+
 		// Write parameter positions to file: Row.
 		strcpy(linebuff,"-1,");
 		for (j=0;j<MultiScan.NumPars;j++)
-		{	
+		{
 			sprintf(buff,"%d,",MultiScan.Par[j].Row);
 			strcat(linebuff,buff);
 		}
 		strcat(linebuff,"0,0,00:00:00\n");
 		fprintf(fbuffer,linebuff);
-		
-		
+
+
 		// Go through buffered values and write them to file
 		for(i=0;i<=ScanBuffer[0].BufferSize;i++)
 		{
 			sprintf(linebuff,"%d,",i);
 			for (j=0;j<MultiScan.NumPars;j++)
-			{	
+			{
 				sprintf(buff,"%f,",ScanBuffer[i].MultiScanValue[j]);
 				strcat(linebuff,buff);
 			}
@@ -7027,26 +7027,26 @@ int CVICALLBACK MULTICSAN_NUM_CALLBACK (int panel, int control, int event,
 		void *callbackData, int eventData1, int eventData2)
 {
 	int iscols, becols;
-	
+
 	GetNumTableColumns(panelHandle, PANEL_MULTISCAN_POS_TABLE, &iscols); // assumes same number of cols in position and value tables
 	GetCtrlVal(panelHandle, PANEL_MULTISCAN_NUM_NUMERIC, &becols);
-	
+
 	// In case the number of requested parameters exceeds the allowed number
 	if (becols>NUMMAXSCANPARAMETERS)
 	{
 		becols = NUMMAXSCANPARAMETERS;
-		SetCtrlVal(panelHandle, PANEL_MULTISCAN_NUM_NUMERIC, becols);  
+		SetCtrlVal(panelHandle, PANEL_MULTISCAN_NUM_NUMERIC, becols);
 	}
-	
+
 	// Add or remove columns
 	if ((becols>iscols) && (becols<=NUMMAXSCANPARAMETERS)) // add column(s) behind last
 	{
-		InsertTableColumns(panelHandle, PANEL_MULTISCAN_POS_TABLE, -1, becols-iscols, 0);	
+		InsertTableColumns(panelHandle, PANEL_MULTISCAN_POS_TABLE, -1, becols-iscols, 0);
 		InsertTableColumns(panelHandle, PANEL_MULTISCAN_VAL_TABLE, -1, becols-iscols, 0);
 	}
     else if ((becols<iscols)  && (becols>=1)) // remove last column(s)
 	{
-		DeleteTableColumns(panelHandle, PANEL_MULTISCAN_POS_TABLE, becols+1, -1);	
+		DeleteTableColumns(panelHandle, PANEL_MULTISCAN_POS_TABLE, becols+1, -1);
 		DeleteTableColumns(panelHandle, PANEL_MULTISCAN_VAL_TABLE, becols+1, -1);
 	}
 	return 0;
@@ -7059,10 +7059,10 @@ int CVICALLBACK MULTISCAN_NUMROWS_CALLBACK (int panel, int control, int event,
 		void *callbackData, int eventData1, int eventData2)
 {
 	int isrows, berows;
-	
+
 	GetNumTableRows(panelHandle, PANEL_MULTISCAN_VAL_TABLE, &isrows);
 	GetCtrlVal(panelHandle, PANEL_MULTISCAN_NUM_ROWS, &berows);
-	
+
 	// Add or remove rows
 	if ((berows>isrows)) // add rows(s) behind last
 	{
@@ -7076,7 +7076,7 @@ int CVICALLBACK MULTISCAN_NUMROWS_CALLBACK (int panel, int control, int event,
 		}
 		else
 		{
-			SetCtrlVal(panelHandle, PANEL_MULTISCAN_NUM_ROWS, isrows);  
+			SetCtrlVal(panelHandle, PANEL_MULTISCAN_NUM_ROWS, isrows);
 		}
 	}
 	return 0;
@@ -7115,50 +7115,50 @@ void DrawLoopIndicators()
     int page,x0,dx,xendoffset,xstartoffset;
     int xposstart,xposend;
     int canvaswidth;
-   
+
     GetCtrlAttribute(panelHandle,PANEL_CANVAS_LOOPLINE,ATTR_WIDTH,&canvaswidth);
 	page=GetPage();
 	CanvasClear(panelHandle,PANEL_CANVAS_LOOPLINE,VAL_ENTIRE_OBJECT);
-	
+
 	if(Switches.loop_active)
  	{
- 		if(page==LoopPoints.startpage) 
- 		{	
- 			MoveCanvasStart(LoopPoints.startcol,TRUE);	
+ 		if(page==LoopPoints.startpage)
+ 		{
+ 			MoveCanvasStart(LoopPoints.startcol,TRUE);
  		}
  		else
- 		{ 
- 			MoveCanvasStart(LoopPoints.startcol,FALSE);	
+ 		{
+ 			MoveCanvasStart(LoopPoints.startcol,FALSE);
  		}
- 		if(page==LoopPoints.endpage) 
- 		{  
- 			MoveCanvasEnd(LoopPoints.endcol,TRUE);   
+ 		if(page==LoopPoints.endpage)
+ 		{
+ 			MoveCanvasEnd(LoopPoints.endcol,TRUE);
  		}
  		else
  		{
 			MoveCanvasEnd(LoopPoints.endcol,FALSE);
 		}
- 		
+
  	}
  	else
  	{
- 	    MoveCanvasStart(LoopPoints.startcol,FALSE);	
+ 	    MoveCanvasStart(LoopPoints.startcol,FALSE);
 		MoveCanvasEnd(LoopPoints.endcol,FALSE);
  	}
- 	
+
  	// If good, then draw a connecting line
  	dx=40;
  	xstartoffset=10;
  	xendoffset=10;
- 	
+
  	if(Switches.loop_active)
  	{
  		SetCtrlAttribute (panelHandle, PANEL_CANVAS_LOOPLINE, ATTR_PEN_WIDTH,2);
 		SetCtrlAttribute (panelHandle, PANEL_CANVAS_LOOPLINE, ATTR_PEN_COLOR,0x00FF00L);
-		
+
 		xposstart=(LoopPoints.startcol-1)*dx+xstartoffset;
  		xposend=(LoopPoints.endcol)*dx-xstartoffset;
-		
+
  		if((page==LoopPoints.startpage)&&!(page==LoopPoints.endpage))  {xposend=canvaswidth;}
  		if(!(page==LoopPoints.startpage)&&(page==LoopPoints.endpage))  {xposstart=0+xstartoffset;}
  		if((page>LoopPoints.startpage)&&(page<LoopPoints.endpage))
@@ -7166,12 +7166,12 @@ void DrawLoopIndicators()
  			xposstart=0+xstartoffset;
  			xposend=canvaswidth;
  		}
- 		CanvasDrawLine (panelHandle, PANEL_CANVAS_LOOPLINE, MakePoint(xposstart,8), MakePoint(xposend,8));     
+ 		CanvasDrawLine (panelHandle, PANEL_CANVAS_LOOPLINE, MakePoint(xposstart,8), MakePoint(xposend,8));
 		if((page<LoopPoints.startpage)||(page>LoopPoints.endpage))
 		{
 		  	CanvasClear(panelHandle,PANEL_CANVAS_LOOPLINE,VAL_ENTIRE_OBJECT);
 		}
- 		
+
  	}
 
 }
@@ -7184,7 +7184,7 @@ int CVICALLBACK SWITCH_LOOP_CALLBACK (int panel, int control, int event,
 		void *callbackData, int eventData1, int eventData2)
 {
 	int pagestart,pageend,colstart,colend;
-	int temppage,tempcol;	
+	int temppage,tempcol;
 	BOOL ValuesGood,LoopSwitchOn;
 	switch (event)
 		{
@@ -7192,15 +7192,15 @@ int CVICALLBACK SWITCH_LOOP_CALLBACK (int panel, int control, int event,
 			ValuesGood=FALSE;
 			LoopSwitchOn=FALSE;
 			Switches.loop_active=FALSE;    // set default loop condition to false
-			
+
 			GetCtrlVal (panelHandle, PANEL_SWITCH_LOOP, &LoopSwitchOn);
-			
+
 			GetCtrlVal (panelHandle, PANEL_NUM_LOOPPAGE1, &pagestart);
 			GetCtrlVal (panelHandle, PANEL_NUM_LOOPPAGE2, &pageend);
 			GetCtrlVal (panelHandle, PANEL_NUM_LOOPCOL1, &colstart);
 			GetCtrlVal (panelHandle, PANEL_NUM_LOOPCOL2, &colend);
-			
-			
+
+
 			if((pagestart>pageend)||((pagestart==pageend)&&(colstart>colend)))
 			{
 				ValuesGood=FALSE;
@@ -7218,8 +7218,8 @@ int CVICALLBACK SWITCH_LOOP_CALLBACK (int panel, int control, int event,
 				LoopPoints.startcol=colstart;
 				LoopPoints.endcol=colend;
 			}
-			
-			
+
+
 			if(ValuesGood&&LoopSwitchOn)
 			{
 				Switches.loop_active=TRUE;
@@ -7244,27 +7244,27 @@ int CVICALLBACK SWITCH_LOOP_CALLBACK (int panel, int control, int event,
 void CVICALLBACK Dig_Cell_Copy(int panelHandle, int controlID, int MenuItemID, void *callbackData)
 {
 	//Copies the value of the active DigitalTabel value into the clipboard
-	
+
 	int page;
 	Point pval={0,0};
-	
+
 	page=GetPage();
 	GetActiveTableCell(PANEL,PANEL_DIGTABLE,&pval);
-	DigClip[0]=DigTableValues[pval.x][pval.y][page]; 
-	
+	DigClip[0]=DigTableValues[pval.x][pval.y][page];
+
 }
 //**************************************************************************************************************
 void CVICALLBACK Dig_Cell_Paste(int panelHandle, int controlID, int MenuItemID, void *callbackData)
 {
 	//Pastes the value store in DigClip[0] by Dig_Cell_Copy into the selected Digital Table Cells
-	
+
 	int page;
 	Rect selection;
-	Point pval={0,0}; 
-	
+	Point pval={0,0};
+
 	page=GetPage();
 	GetTableSelection (panelHandle, PANEL_DIGTABLE, &selection);  //note: returns a 0 to all values if only 1 cell selected
-	
+
 	//Pasting into multiple cells
 	if(selection.top>0)
 	{
@@ -7272,7 +7272,7 @@ void CVICALLBACK Dig_Cell_Paste(int panelHandle, int controlID, int MenuItemID, 
 		{
 			for(pval.x=selection.left;pval.x<=selection.left+(selection.width-1);pval.x++)
 			{
-				
+
 				DigTableValues[pval.x][pval.y][page]=DigClip[0];
 				if(DigClip[0]==1)
 					SetTableCellAttribute(panelHandle, PANEL_DIGTABLE,pval, ATTR_TEXT_BGCOLOR,0xFF3366L);
@@ -7296,15 +7296,15 @@ void CVICALLBACK Dig_Cell_Paste(int panelHandle, int controlID, int MenuItemID, 
 void CVICALLBACK Analog_Cell_Copy(int panelHandle, int controlID, int MenuItemID, void *callbackData)
 {
 	//This function copies the contents of the active AnalogTable Cell to the Clipboard Globals
-	//Handles Analog Channels DDS1,DDS2,DDS3,Lasers. It is called by right clicking on the Analog 
+	//Handles Analog Channels DDS1,DDS2,DDS3,Lasers. It is called by right clicking on the Analog
 	//Table and Selecing "Copy"
-	
+
 	int page,laserNum;
-	Point pval={0,0};  
+	Point pval={0,0};
 
 	page=GetPage();
 	GetActiveTableCell(PANEL,PANEL_ANALOGTABLE,&pval);
-	
+
 	if(pval.y<=NUMBERANALOGCHANNELS)
 	{
 		AnalogClip[0].fcn = AnalogTable[pval.x][pval.y][page].fcn;
@@ -7323,9 +7323,9 @@ void CVICALLBACK Analog_Cell_Copy(int panelHandle, int controlID, int MenuItemID
 		laserNum=pval.y-(NUMBERANALOGCHANNELS+NUMBERDDS+1);
 		LaserClip[0].fcn=LaserTable[laserNum][pval.x][page].fcn;
 		LaserClip[0].fval=LaserTable[laserNum][pval.x][page].fval;
-	
+
 	}
-	
+
 }
 //**************************************************************************************************************
 void CVICALLBACK Analog_Cell_Paste(int panelHandle, int controlID, int MenuItemID, void *callbackData)
@@ -7336,16 +7336,16 @@ void CVICALLBACK Analog_Cell_Paste(int panelHandle, int controlID, int MenuItemI
 	int page,col,row,laserNum;
 	Rect selection;
 	Point pval={0,0};
-	
+
 	page=GetPage();
 	GetTableSelection (panelHandle, PANEL_ANALOGTABLE, &selection);  //returns a 0 to all values if only 1 cell selected
-	
+
 	//Paste made into multiple cells of analog channels
 	if(selection.top<=NUMBERANALOGCHANNELS&&selection.top>0)
 	{
 		row=selection.top;
 		while ((row<=selection.top+(selection.height-1))&&(row<=NUMBERANALOGCHANNELS))
-		{	
+		{
 			for(col=selection.left;col<=selection.left+(selection.width-1);col++)
 			{
 				AnalogTable[col][row][page].fcn=AnalogClip[0].fcn;
@@ -7355,13 +7355,13 @@ void CVICALLBACK Analog_Cell_Paste(int panelHandle, int controlID, int MenuItemI
 			row++;
 		}
 	}
-		
-	//Paste made into multiple cells of DDS channels 
+
+	//Paste made into multiple cells of DDS channels
 	else if(selection.top<=NUMBERANALOGCHANNELS+NUMBERDDS&&selection.top>0)
 	{
 		for(row=selection.top;row<=selection.top+(selection.height-1);row++)
 		{
-		
+
 			for(col=selection.left;col<=selection.left+(selection.width-1);col++)
 			{
 				if(row==NUMBERANALOGCHANNELS+1)
@@ -7378,7 +7378,7 @@ void CVICALLBACK Analog_Cell_Paste(int panelHandle, int controlID, int MenuItemI
 					dds2table[col][page].amplitude=ddsclip.amplitude;
 					dds2table[col][page].is_stop=ddsclip.is_stop;
 				}
-				else if(row==NUMBERANALOGCHANNELS+3)   
+				else if(row==NUMBERANALOGCHANNELS+3)
 				{
 					dds3table[col][page].start_frequency=ddsclip.start_frequency;
 					dds3table[col][page].end_frequency=ddsclip.end_frequency;
@@ -7387,14 +7387,14 @@ void CVICALLBACK Analog_Cell_Paste(int panelHandle, int controlID, int MenuItemI
 				}
 			}
 		}
-	
+
 	}
-	//Paste made into multiple Laser cells 
-	else if(selection.top<=NUMBERANALOGROWS&&selection.top>0) 
+	//Paste made into multiple Laser cells
+	else if(selection.top<=NUMBERANALOGROWS&&selection.top>0)
 	{
 		row=selection.top;
 		while ((row<=selection.top+(selection.height-1))&&(row<=NUMBERANALOGROWS))
-		{	
+		{
 			laserNum=row-(NUMBERANALOGCHANNELS+NUMBERDDS+1);
 			for(col=selection.left;col<=selection.left+(selection.width-1);col++)
 			{
@@ -7404,8 +7404,8 @@ void CVICALLBACK Analog_Cell_Paste(int panelHandle, int controlID, int MenuItemI
 			row++;
 		}
 	}
-	
-	//Paste Made into single Cell 
+
+	//Paste Made into single Cell
 	else if(selection.top==0);
 	{
 		GetActiveTableCell (panelHandle, PANEL_ANALOGTABLE, &pval);
@@ -7438,7 +7438,7 @@ void CVICALLBACK Analog_Cell_Paste(int panelHandle, int controlID, int MenuItemI
 		}
 		else if(pval.y<=NUMBERANALOGROWS)
 		{
-			laserNum=pval.y-(NUMBERANALOGCHANNELS+NUMBERDDS+1); 
+			laserNum=pval.y-(NUMBERANALOGCHANNELS+NUMBERDDS+1);
 			LaserTable[laserNum][pval.x][page].fcn=LaserClip[0].fcn;
 			LaserTable[laserNum][pval.x][page].fval=LaserClip[0].fval;
 		}
@@ -7462,13 +7462,13 @@ void CVICALLBACK MultiScan_AddCellToScan(int panelHandle, int controlID, int Men
 			InsertTableColumns(panelHandle, PANEL_MULTISCAN_POS_TABLE, -1, 1, 0);
 			InsertTableColumns(panelHandle, PANEL_MULTISCAN_VAL_TABLE, -1, 1, 0);
 			SetCtrlVal(panelHandle, PANEL_MULTISCAN_NUM_NUMERIC, numCols+1);
-			
-			
+
+
 			// Get coordinates of active cell
 			GetActiveTableCell (panelHandle, controlID, &currentCell);
 			ccol = currentCell.x;
 			cpage = currentpage;
-			
+
 			// Set effective row number according to generating control
 			switch (controlID)
 			{
@@ -7476,7 +7476,7 @@ void CVICALLBACK MultiScan_AddCellToScan(int panelHandle, int controlID, int Men
 			case PANEL_ANALOGTABLE: crow = currentCell.y; break;
 			case PANEL_DIGTABLE : crow = currentCell.y + NUMDIGITALSCANOFFSET; break;
 			}
-			
+
 			// Write cell position to scan table
 			SetTableCellVal(panelHandle, PANEL_MULTISCAN_POS_TABLE, MakePoint(numCols+1,1), cpage);
 			SetTableCellVal(panelHandle, PANEL_MULTISCAN_POS_TABLE, MakePoint(numCols+1,2), ccol);
@@ -7504,13 +7504,13 @@ void CVICALLBACK MultiScan_AddAnalogCellTimeScaleToScan(int panelHandle, int con
 			InsertTableColumns(panelHandle0, PANEL_MULTISCAN_POS_TABLE, -1, 1, 0);
 			InsertTableColumns(panelHandle0, PANEL_MULTISCAN_VAL_TABLE, -1, 1, 0);
 			SetCtrlVal(panelHandle0, PANEL_MULTISCAN_NUM_NUMERIC, numCols+1);
-			
+
 			// Get coordinates of active cell (pseudorow since timescale is not actually a row)
 			GetActiveTableCell(panelHandle0, controlID, &currentCell);
 			ccol = currentCell.x;
 			crow = currentCell.y + NUMANALOGTIMESCALEOFFSET;
 			cpage = currentpage;
-			
+
 			// Write cell position to scan table
 			SetTableCellVal(panelHandle, PANEL_MULTISCAN_POS_TABLE, MakePoint(numCols+1,1), cpage);
 			SetTableCellVal(panelHandle, PANEL_MULTISCAN_POS_TABLE, MakePoint(numCols+1,2), ccol);
@@ -7528,7 +7528,7 @@ int CVICALLBACK DDS_OFFSET_CALLBACK (int panel, int control, int event,
 		void *callbackData, int eventData1, int eventData2)
 {
 	int numCols, ccol, crow, cpage;
-	
+
 	switch (event)
 	{
 	case EVENT_RIGHT_CLICK:
@@ -7540,7 +7540,7 @@ int CVICALLBACK DDS_OFFSET_CALLBACK (int panel, int control, int event,
 				InsertTableColumns(panelHandle0, PANEL_MULTISCAN_POS_TABLE, -1, 1, 0);
 				InsertTableColumns(panelHandle0, PANEL_MULTISCAN_VAL_TABLE, -1, 1, 0);
 				SetCtrlVal(panelHandle0, PANEL_MULTISCAN_NUM_NUMERIC, numCols+1);
-				
+
 				// Get pseudo page,col,row for the DDS
 				// Same row as DDS in analog channel table
 				// Page doesn't make sense so set to 1 arbitrarily.
@@ -7553,16 +7553,16 @@ int CVICALLBACK DDS_OFFSET_CALLBACK (int panel, int control, int event,
 				case PANEL_NUM_DDS2_OFFSET: crow = NUMBERANALOGCHANNELS+2; break;
 				case PANEL_NUM_DDS3_OFFSET : crow = NUMBERANALOGCHANNELS+3; break;
 				}
-				
+
 				// Write page, col, row to scan table
 				SetTableCellVal(panelHandle, PANEL_MULTISCAN_POS_TABLE, MakePoint(numCols+1,1), cpage);
 				SetTableCellVal(panelHandle, PANEL_MULTISCAN_POS_TABLE, MakePoint(numCols+1,2), ccol);
-				SetTableCellVal(panelHandle, PANEL_MULTISCAN_POS_TABLE, MakePoint(numCols+1,3), crow);		
+				SetTableCellVal(panelHandle, PANEL_MULTISCAN_POS_TABLE, MakePoint(numCols+1,3), crow);
 			}
 			else
 			{
 				MessagePopup("Multi scan error","Cannot add parameter to scanlist. Maximum number\nof parameters reached. Need to increase NUMMAXSCANPARAMETERS.");
-			}	
+			}
 		}
 		break;
 	}
@@ -7573,9 +7573,9 @@ int CVICALLBACK DDS_OFFSET_CALLBACK (int panel, int control, int event,
 
 //**************************************************************************************************************
 void CVICALLBACK MultiScan_Table_SetVals(int panelHandle, int controlID, int MenuItemID, void *callbackData)
-{		
+{
 		Point cellPoint;
-		
+
 		GetActiveTableCell (panelHandle, PANEL_MULTISCAN_VAL_TABLE, &cellPoint);
 		DisplayPanel (panelHandle8);
 		SetCtrlVal (panelHandle8,SL_PANEL_NUM_TARGET_TABLE, PANEL_MULTISCAN_VAL_TABLE);
@@ -7585,12 +7585,12 @@ void CVICALLBACK MultiScan_Table_SetVals(int panelHandle, int controlID, int Men
 
 //**************************************************************************************************************
 void CVICALLBACK MultiScan_Table_DeleteColumn(int panelHandle, int controlID, int MenuItemID, void *callbackData)
-{		
+{
 		Point cellPoint = {0,0};
 		int ppage, pcol, prow, numCols;
 		int status;
 		char message[500];
-		
+
 		// Any columns left?
 		GetNumTableColumns(panelHandle, PANEL_MULTISCAN_VAL_TABLE, &numCols);
 		if (numCols > 1)
@@ -7600,11 +7600,11 @@ void CVICALLBACK MultiScan_Table_DeleteColumn(int panelHandle, int controlID, in
 			GetTableCellVal(panelHandle, PANEL_MULTISCAN_POS_TABLE, MakePoint(cellPoint.x,1), &ppage);
 			GetTableCellVal(panelHandle, PANEL_MULTISCAN_POS_TABLE, MakePoint(cellPoint.x,2), &pcol);
 			GetTableCellVal(panelHandle, PANEL_MULTISCAN_POS_TABLE, MakePoint(cellPoint.x,3), &prow);
-		
+
 			// Ask for confirmation
 			sprintf(message, "Remove parameter from scan (pg: %d, col: %d, row: %d)?", ppage, pcol, prow);
 			status = ConfirmPopup("Remove parameter from scan",message);
-		
+
 			// Remove column
 			if (status == 1)
 			{
@@ -7628,11 +7628,11 @@ void CVICALLBACK MultiScan_Table_Shuffle(int panelHandle, int controlID, int Men
 	double *order,*tempSL;
 	int *idx;
 	double maxVal, value;
-	
+
 	found = 0; i = 0;
-	GetNumTableRows (panelHandle,PANEL_MULTISCAN_VAL_TABLE,&numRows); 	
+	GetNumTableRows (panelHandle,PANEL_MULTISCAN_VAL_TABLE,&numRows);
 	GetNumTableColumns (panelHandle,PANEL_MULTISCAN_VAL_TABLE,&numCols);
-	
+
 	// search for first sentinel in scanlist
 	while( (!found) && (i<=numRows) )
 	{
@@ -7648,18 +7648,18 @@ void CVICALLBACK MultiScan_Table_Shuffle(int panelHandle, int controlID, int Men
 		}
 	}
 	numEntries = i;  // use 1 - numEntries-1
-	
+
 	// allocate memory for sorting arrays
 	order = (double *)malloc(sizeof(double)*numEntries);
 	idx = (int *)malloc(sizeof(int)*numEntries);
 	tempSL = (double *)malloc(sizeof(double)*numRows);
-	
+
 	//randomize order values
 	for(i=1;i<numEntries;i++)
 	{
 		order[i] = Random (0, 100);
 	}
-		
+
 	//sort using order vals (a sucky selection sort)
 	for(i=1;i<numEntries;i++)
 	{
@@ -7675,7 +7675,7 @@ void CVICALLBACK MultiScan_Table_Shuffle(int panelHandle, int controlID, int Men
 		idx[i] = maxInd;
 		order[maxInd]=-1;
 	}
-	
+
 	for (j=1;j<=numCols;j++)
 	{
 		for(i=1;i<numEntries;i++) // get this column
@@ -7687,25 +7687,25 @@ void CVICALLBACK MultiScan_Table_Shuffle(int panelHandle, int controlID, int Men
 			SetTableCellVal(panelHandle, PANEL_MULTISCAN_VAL_TABLE, MakePoint(j, i), tempSL[idx[i]]);
 		}
 	}
-	
+
 	free(order);
 	free(tempSL);
 	free(idx);
 }
-//**************************************************************************************************************			
+//**************************************************************************************************************
 void CVICALLBACK EXIT (int menuBar, int menuItem, void *callbackData,int panel)
 {
 	int status;
 	status=ConfirmPopup("Exit","Are you sure you want to quit?\nUnsaved data will be lost.");
 	if (status==1)
 		QuitUserInterface(1);		// kills the GUI and ends program
-	
+
 }
 
 //**************************************************************************************************************
 //Open Scan Table Loader Panel
 void CVICALLBACK Scan_Table_Load(int panelHandle, int controlID, int MenuItemID, void *callbackData)
-{		
+{
 		DisplayPanel (panelHandle8);
 		SetCtrlVal (panelHandle8,SL_PANEL_NUM_TARGET_TABLE, controlID);
 		SetCtrlVal (panelHandle8,SL_PANEL_NUM_TARGET_COLUMN, 1);
@@ -7713,7 +7713,7 @@ void CVICALLBACK Scan_Table_Load(int panelHandle, int controlID, int MenuItemID,
 
 //**************************************************************************************************************
 void CVICALLBACK Scan_Table_NumSet_Load(int panelHandle, int controlID, int MenuItemID, void *callbackData)
-{		
+{
 		DisplayPanel (panelHandle9);
 }
 
@@ -7723,26 +7723,26 @@ void CVICALLBACK Scan_Table_Shuffle(int panelHandle, int controlID, int MenuItem
 	int numRows,numEntries,i,j,maxInd;
 	double *order,*tempSL;
 	double maxVal;
-	
+
 	i=1;
-	GetNumTableRows (panelHandle,controlID,&numRows); 	
+	GetNumTableRows (panelHandle,controlID,&numRows);
 	tempSL=(double *)malloc(sizeof(double)*numRows);
-	
-	GetTableCellVal(panelHandle, controlID, MakePoint(1, i),&tempSL[i]);    
+
+	GetTableCellVal(panelHandle, controlID, MakePoint(1, i),&tempSL[i]);
 	while(tempSL[i]>-999.0&&i<=numRows)
 	{
 		i++;
-		GetTableCellVal(panelHandle, controlID, MakePoint(1, i),&tempSL[i]); 
+		GetTableCellVal(panelHandle, controlID, MakePoint(1, i),&tempSL[i]);
 	}
-	
+
 	numEntries=i;  // use 1 - numEntries-1
 	order=(double *)malloc(sizeof(double)*numEntries);
-	
-	
+
+
 	//randomize order values
 	for(i=1;i<numEntries;i++)
 		order[i]=Random (0, 100);
-		
+
 	//sort using order vals (a sucky selection sort)
 	for(i=1;i<numEntries;i++)
 	{
@@ -7758,31 +7758,31 @@ void CVICALLBACK Scan_Table_Shuffle(int panelHandle, int controlID, int MenuItem
 		SetTableCellVal(panelHandle, controlID, MakePoint(1, i),tempSL[maxInd]);
 		order[maxInd]=-1;
 	}
-	
+
 	free(order);
 	free(tempSL);
 }
 
 //**************************************************************************************************************
 double findLastVal(int row, int column, int page)
-/*  This column finds the (final) value in the cell occuring before (in time) the one given by the parameters 
- 	accounting for the insert page and skipping same as cells. Works for Analog Rows, DDS Rows, and Laser Rows 
-	
+/*  This column finds the (final) value in the cell occuring before (in time) the one given by the parameters
+ 	accounting for the insert page and skipping same as cells. Works for Analog Rows, DDS Rows, and Laser Rows
+
 	Caveat: If the imaging page in being "inserted" into a page which is not checked this altgorithm wont work,
 	Be my guest if you would like to fix it */
 {
 	// find the last value
 	int CellFound,cx,cz,insertpage,insertcolumn,i;
 	double lastVal;
-	
+
 	cx=column; //col index
 	cz=page; //page index
 	CellFound=0;
-	
+
 	GetCtrlVal (panelHandle, PANEL_NUM_INSERTIONPAGE, &insertpage);
 	GetCtrlVal (panelHandle, PANEL_NUM_INSERTIONCOL, &insertcolumn);
-	
-	
+
+
 	while(CellFound<1)
 	{
 		//go back one step
@@ -7805,15 +7805,15 @@ double findLastVal(int row, int column, int page)
 			if(cz<1)
 				CellFound=2;   //Means we hit column1 page1 with nothing found
 		}
-		
-		
+
+
 		//Check if cell is insert page
 		if((cz==insertpage)&&(cx==insertcolumn-1)&&(ischecked[NUMBEROFPAGES-1]))
 		{
 			cz=NUMBEROFPAGES-1;
 			cx=NUMBEROFCOLUMNS;
 		}
-		
+
 		//Check to see a valid value has been found
 		if (TimeArray[cx][cz]>0.0)
 		{
@@ -7826,15 +7826,15 @@ double findLastVal(int row, int column, int page)
 					CellFound=1;
 				else
 					cx=i;
-				
+
 			}
 			else
 				CellFound=1;
 		}
-		
+
 	}//done search
-	
-	
+
+
 	if(CellFound==1)
 	{
 		if(row<=NUMBERANALOGCHANNELS&&row>=1)
@@ -7843,7 +7843,7 @@ double findLastVal(int row, int column, int page)
 				lastVal=AnalogTable[cx][row][cz].fval;
 			else
 				lastVal=findLastVal(row,cx,cz);
-		}		
+		}
 		else if (row==NUMBERANALOGCHANNELS+1)
 			lastVal=ddstable[cx][cz].end_frequency;
 		else if (row==NUMBERANALOGCHANNELS+2)
@@ -7859,7 +7859,7 @@ double findLastVal(int row, int column, int page)
 			}
 			else
 				lastVal=lastVal=findLastVal(row,cx,cz);
-				
+
 		}
 		//And for the anritsu rows
 		else if (row > NUMBERANALOGCHANNELS+NUMBERDDS+NUMBERLASERS && row<= NUMBERANALOGROWS)
@@ -7869,10 +7869,10 @@ double findLastVal(int row, int column, int page)
 	}
 	else
 		lastVal=0.0;
-	
+
 	return lastVal;
-	
-	
+
+
 }
 //**************************************************************************************************************
 void SeqError(char * msg)
@@ -7897,7 +7897,7 @@ void CVICALLBACK GPIB_SRS_CALLBACK (int menuBar, int menuItem, void *callbackDat
 		int panel)
 {
 		SetGPIBPanel();
-		DisplayPanel (panelHandle13); 
+		DisplayPanel (panelHandle13);
 }
 /**************************************************************************************/
 int ToDigital(double analog)

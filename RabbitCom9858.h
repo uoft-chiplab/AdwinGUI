@@ -15,7 +15,7 @@
 #define POWER_DDS_SIZE 2       // 2nd byte is control 1=on, 0=off
 
 #define DDSRESET 0xA1		   // Hardware Reset of all DDS rgisters
-#define DDSRESET_SIZE 1		   
+#define DDSRESET_SIZE 1
 
 #define FUD 0xA2			   // Latches Contents of I/O Buffer into Memory
 #define FUD_SIZE 1
@@ -34,23 +34,23 @@
 #define POWER_PFD_SIZE 2       // 2nd byte set PFDs on or off, and toggles Fast Locking
 
 #define SETCPUMPREF 0xA7       // Sets the Charge Pump Reference
-#define SETCPUMPREF_SIZE 2     // 2nd bit: 0=GND REF, 1=Supply Ref 
+#define SETCPUMPREF_SIZE 2     // 2nd bit: 0=GND REF, 1=Supply Ref
 
 ///#define SET_PFD_DIVIDER 0xA8   // Sets the divisor ratio on the PLL comp 2 (ROSA) input (FUD reqd)
-///#define SET_PFD_DIVIDER_SIZE 2 // 2nd byte holds divisor ratio (1,2,or 4)	
+///#define SET_PFD_DIVIDER_SIZE 2 // 2nd byte holds divisor ratio (1,2,or 4)
 
 ///#define SET_CPCURRENT 0xA9     // Sets the CP current settings in the dds CFR
 ///#define SET_CPCURRENT_SIZE 3   // 2nd byte: wrote directly into CFR3, 3rd byte: 1 enables offset current, 0 disables
 
-#define DDSSCAN 0xAA		   // To initiate DDS Scanning (back and forth freq sweeps between two frequencies)            	
+#define DDSSCAN 0xAA		   // To initiate DDS Scanning (back and forth freq sweeps between two frequencies)
 #define DDSSCAN_SIZE 12		   // 2nd bit toggle on/off, bit 3-6 DFTW, bit 7-8 DFTRR, bit 9-12 ScanTime
 
-#define RAMPDDS_END 0xAB       // Ends DDS ramp (Prof Change reqd) 	
-#define RAMPDDS_END_SIZE 1	   
+#define RAMPDDS_END 0xAB       // Ends DDS ramp (Prof Change reqd)
+#define RAMPDDS_END_SIZE 1
 
 #define RAMPDDS_START 0xAC     // Begins a DDS ramp (FUD reqd)
 #define RAMPDDS_START_SIZE 7   // Byte 2-5 are DFTW, byte 6-7 are the DFRRW
-#define RAMP9854DDS_START_SIZE 16   // Byte 2-7 are DFTW, byte 8-10 are the DFRRW , 11-16 are stop freq   
+#define RAMP9854DDS_START_SIZE 16   // Byte 2-7 are DFTW, byte 8-10 are the DFRRW , 11-16 are stop freq
 
 #define SETDAC 0xAD
 #define SETDAC_SIZE 3 			 // Byte 2 and 3 hold the 12 bit value to set the DAC to LSB first
@@ -58,7 +58,7 @@
 #define DACSCAN 0xAE          // Begins a DAC scan. Last eight bytes hold four short ints for (in order)
 #define DACSCAN_SIZE 9			// Step Size,hold time at each step,scan bottom,scan top
 
-#define MODE_CFGS 0xAF		   // Sets values of linear/int, and feedback CMOS switches	
+#define MODE_CFGS 0xAF		   // Sets values of linear/int, and feedback CMOS switches
 #define MODE_CFGS_SIZE 2	   // Byte 2 holds info for switch states
 
 
@@ -68,7 +68,7 @@
 #define CLEAREVENTS_SIZE 1
 
 #define ADDEVENT 0xC1		   // Header Byte prefixing a commands to be added to the event table
-#define ADDEVENT_SIZE 1 		
+#define ADDEVENT_SIZE 1
 
 #define INIT_AUTOCONFIG 0xC2   // Saves the current Event Table to Flash (non volatile for future execution)
 #define INIT_AUTOCONFIG_SIZE 2 // 2nd Byte identifies which autoconfig to save to, options 0-4
@@ -76,7 +76,7 @@
 #define EXCT_AUTOCONFIG 0xC3   // executes the autoconfig identified by 2nd byte
 #define EXCT_AUTOCONFIG_SIZE 2
 
-#define EXCT_SEQ 0xC4    	   // Begins event table execution of 
+#define EXCT_SEQ 0xC4    	   // Begins event table execution of
 #define EXCT_SEQ_SIZE 2        //2nd byte: 0 for Adwin Triggering 1 for TCP/IP triggering
 
 #define TCP_TRIG 0xC5          // TCP trigger signal when executing in TCP triggered mode
@@ -88,7 +88,7 @@
 static double DDSCLK;          //the clock speed of the DDS in MHz
 static int DDSDiv;
 static int DDSType;
-///static double ICPREF;          // Charge Pump reference current in uA    
+///static double ICPREF;          // Charge Pump reference current in uA
 ///static int PFD_DivShadow;      //Takes values 0,1,2 for divider settings 1,2,4 respectively
 
 static char* RB9858ErrorBuffer[MAXRBERRS];	   // Holds error messages
@@ -120,13 +120,13 @@ void zero(unsigned char arr[],int arrsize)
 	int i=0;
 	for(i=0;i<arrsize;i++)
 		arr[i]=0x00;
-		
+
 }
 
 /*************************************************************************************************************************/
 unsigned char * cmd_powerDDS(unsigned int dds_on,int *cmdLength)
 /*  Returns the command required to turn the DDS core on or off
-	Parameters: dds_on=1 core powered up 
+	Parameters: dds_on=1 core powered up
 				dds_on=0 shut down
 */
 {
@@ -145,7 +145,7 @@ unsigned char * cmd_powerDDS(unsigned int dds_on,int *cmdLength)
 			cmd[1]=dds_on;
 		else
 		{
-			RB9858LibErr("INVALID powerDDS Command\n"); 
+			RB9858LibErr("INVALID powerDDS Command\n");
 			*cmdLength=0;
 		}
 	}
@@ -157,46 +157,46 @@ unsigned char * cmd_ddsReset(int *cmdLength)
 /*  Returns the command required to reset the dds to its default settings */
 {
 	unsigned char *cmd = (unsigned char *)malloc(DDSRESET_SIZE*sizeof(char));
-	*cmdLength=DDSRESET_SIZE; 
+	*cmdLength=DDSRESET_SIZE;
 	cmd[0]=DDSRESET;
 	///printf("cmd[0] = %x \t DDSRESET\n",cmd[0]);
 	return cmd;
 }
-/*************************************************************************************************************************/	
+/*************************************************************************************************************************/
 unsigned char * cmd_FUD(int *cmdLength)
-/*  Returns the command required to trigger a FUD on the DDS 
-	A FUD is required to latch the contents of the AD9858's IO buffer into system memory 
+/*  Returns the command required to trigger a FUD on the DDS
+	A FUD is required to latch the contents of the AD9858's IO buffer into system memory
 	This command is required following commands which list (req FUD) in order for that command to take effect */
 {
-	unsigned char *cmd = (unsigned char *)malloc(FUD_SIZE*sizeof(char));	
+	unsigned char *cmd = (unsigned char *)malloc(FUD_SIZE*sizeof(char));
 	*cmdLength=FUD_SIZE;
 	cmd[0]=FUD;
 	///printf("cmd[0] = %x \t FUD\n",cmd[0]);
 	return cmd;
 }
-/*************************************************************************************************************************/	
+/*************************************************************************************************************************/
 unsigned char* cmd_setFreq(int profile, double frequency,int *cmdLength)
-/* Returns the command required to set the FTW in order produce the frequency (parameter) in the selected profile 
+/* Returns the command required to set the FTW in order produce the frequency (parameter) in the selected profile
    2nd Byte is the profile to write to
    last 4 bytes are the FTW LSB first
    frequency in MHz */
 
 {
 	unsigned char *cmd = (unsigned char *)malloc(8*sizeof(char));
-	unsigned char *ftw_hex; 
+	unsigned char *ftw_hex;
 	unsigned int ftw_int;
 	int i;
-	
+
 	if((profile>=0) & (profile<=3) & (frequency<DDSCLK/(double)2) & (frequency>0))
 	{
-	
+
 		if(DDSType==9858)
-		{	
-			*cmdLength=SETDDS9858FREQ_SIZE; 
+		{
+			*cmdLength=SETDDS9858FREQ_SIZE;
 			cmd[0]=SETDDSFREQ;
 			///printf("cmd[0] = %x \t SETDDSFREQ\n",cmd[0]);
 			ftw_int=(unsigned int)(frequency*pow(2,32)/(DDSCLK));
-			ftw_hex=(unsigned char *)&ftw_int; 	
+			ftw_hex=(unsigned char *)&ftw_int;
 			cmd[1]=profile;
 			for (i=0;i<4;i++)										  // @@ this algoriothm can be improved
 			{
@@ -205,11 +205,11 @@ unsigned char* cmd_setFreq(int profile, double frequency,int *cmdLength)
 		}
 		else if(DDSType==9854)
 		{
-			*cmdLength=SETDDS9854FREQ_SIZE; 
+			*cmdLength=SETDDS9854FREQ_SIZE;
 			cmd[0]=SETDDSFREQ;
 			///printf("cmd[0] = %x \t SETDDSFREQ\n",cmd[0]);
 			ftw_int=(unsigned int)(frequency*(pow(2,32)/(DDSCLK)));
-			ftw_hex=(unsigned char *)&ftw_int; 	
+			ftw_hex=(unsigned char *)&ftw_int;
 			cmd[1]=0x00;
 			cmd[2]=0x00;
 			cmd[3]=0x00;
@@ -229,15 +229,15 @@ printf("Error:  Unacceptable Profile Setting [RCh199]\n" );             ///ALAN
 		}
 		if((frequency>DDSCLK/(double)2) | (frequency<0))
 		{
-		RB9858LibErr("Unacceptable Frequency Setting [RCh204]\n"); 
-printf("Error:  Unacceptable Frequency Setting [RCh204]\n" );             ///ALAN    
+		RB9858LibErr("Unacceptable Frequency Setting [RCh204]\n");
+printf("Error:  Unacceptable Frequency Setting [RCh204]\n" );             ///ALAN
 		*cmdLength=0;
 		}
 	}
-	
+
 	return cmd;
 }
-/*************************************************************************************************************************/			
+/*************************************************************************************************************************/
 unsigned char* cmd_setProfile(int profile, int *cmdLength)
 /*  Returns the command to change the Frequency profile of the DDS immediately
 	4 profiles: 0-3, 2nd byte indicates which one to change to */
@@ -252,19 +252,19 @@ unsigned char* cmd_setProfile(int profile, int *cmdLength)
 	}
 	else
 	{
-		RB9858LibErr("Unacceptable Profile\n"); 
+		RB9858LibErr("Unacceptable Profile\n");
 printf("Error:  Unacceptable Profile  [RCh228]\n" );             ///ALAN
-		
+
 		*cmdLength=0;
 	}
 	return cmd;
 }
 /*************************************************************************************************************************/
-///unsigned char* cmd_setPFD_Div(int divisor, int *cmdLength)		
+///unsigned char* cmd_setPFD_Div(int divisor, int *cmdLength)
 /*  Returns the command required to load I/O buffer with command to change the divider ratio on the COMP 1 (ROSA) input
-	Options: 1,2,4: 
+	Options: 1,2,4:
 	(FUD reqd)
-	
+
 	Note: The Rosa signal is divided by 16 in hardware, this divider acts after that producing total division of 16,32,64.
 	This is required to achieve high freq offsets becasue the COMP inputs are limited to 150MHz, 400Mhz (with 1/4 enabled) */
 /*{
@@ -282,7 +282,7 @@ printf("Error:  Unacceptable Profile  [RCh228]\n" );             ///ALAN
 ///printf("Error:  Bad PFD Divider Setting [RCh253]\n" );             ///ALAN
 		*cmdLength=0;
 	}
-		
+
 	return cmd;
 }   */
 
@@ -290,9 +290,9 @@ printf("Error:  Unacceptable Profile  [RCh228]\n" );             ///ALAN
 unsigned char* cmd_powerPFD(int power_toggle,int FastLock_enable,int useFTWforFL,int *cmdLength)
 /*  Returns the command to power on or off the DDS PFD and CP cores
 	cmd[1] contains the data to set the following settings
-	
+
 	Parameters: power_toggle 1 = power up
-	
+
  	bit0  use FTW for Fast Locking 0=enable 1=disable
   	bit1  Fast lock 1=enable 0=disable
   	bit3: Power PFD: 0=on 1=off	 */
@@ -307,15 +307,15 @@ unsigned char* cmd_powerPFD(int power_toggle,int FastLock_enable,int useFTWforFL
 	}
 	else
 	{
-		RB9858LibErr("Bad PFD Setting\n"); 
+		RB9858LibErr("Bad PFD Setting\n");
 printf("Error:  Bad PFD Setting [RCh281]\n" );             ///ALAN
 		*cmdLength=0;
 	}
 	return cmd;
-} 
+}
 /*************************************************************************************************************************/
 unsigned char* cmd_setCPRef(int ref, int *cmdLength)
-/*  Sets the charge pump to either GND (0) or Supply (1) reference mode 
+/*  Sets the charge pump to either GND (0) or Supply (1) reference mode
 	(FUD reqd) */
 {
 	unsigned char *cmd = (unsigned char *)malloc(SETCPUMPREF_SIZE*sizeof(char));
@@ -323,7 +323,7 @@ unsigned char* cmd_setCPRef(int ref, int *cmdLength)
 	{
 		*cmdLength=SETCPUMPREF_SIZE;
 		cmd[0]=SETCPUMPREF;
-		///printf("cmd[0] = %x \t SETCPUMPREF\n",cmd[0]); 
+		///printf("cmd[0] = %x \t SETCPUMPREF\n",cmd[0]);
 		cmd[1]=ref;
 	}
 	else
@@ -338,16 +338,16 @@ printf("Error:  Bad CP Ref Setting [RCh301]\n" );             ///ALAN
 ///unsigned char* cmd_setCPCurent(int freqDetect,int wideClosedLoop,int finalClosedLoop,int *cmdLength)
 /* Sets the charge pump current scaling factors for the three lock modes modes, the current is scalefactor*ICPREF
    Options are given in AD9858 man */
-/*{   
+/*{
    int errors;
    unsigned char *cmd = (unsigned char *)malloc(SET_CPCURRENT_SIZE*sizeof(char));
-   
+
    errors=0;
    cmd[0]=SET_CPCURRENT;
-   printf("cmd[0] = %x \t SET_CPCURRENT\n",cmd[0]); 
+   printf("cmd[0] = %x \t SET_CPCURRENT\n",cmd[0]);
    cmd[1]=0x00;
    cmd[2]=0x00;
-   
+
    switch(freqDetect)
    {
    		case 0:
@@ -366,7 +366,7 @@ printf("Error:  Bad CP Ref Setting [RCh301]\n" );             ///ALAN
    			errors++;
    		break;
    	}
-   	
+
    	switch(wideClosedLoop)
    	{
    		case 0:
@@ -397,7 +397,7 @@ printf("Error:  Bad CP Ref Setting [RCh301]\n" );             ///ALAN
    			errors++;
    		break;
    	}
-   	
+
    	switch(finalClosedLoop)
    	{
    		case 0:
@@ -431,23 +431,23 @@ printf("Error:  Bad CP Ref Setting [RCh301]\n" );             ///ALAN
    			cmd[1]+=0x07*0x08;
    			cmd[2]=1;
    		break;
-   		
+
    		default:
    			errors++;
    		break;
    	}
-   	
+
 	if (errors==0)
 		*cmdLength=SET_CPCURRENT_SIZE;
-	else 
-	{	
+	else
+	{
 		RB9858LibErr("Bad CP Current Setting\n");
 printf("Error:  Bad CP Current Setting [RCh413]\n" );             ///ALAN
 		*cmdLength=0;
 	}
-	
+
 	return cmd;
-		
+
 }	 /*
 /*************************************************************************************************************************/
 unsigned char* cmd_StopDDSRamp(int *cmdLength)
@@ -455,25 +455,25 @@ unsigned char* cmd_StopDDSRamp(int *cmdLength)
 	Follow this function with a FUD or profile change command triggered at the desired execution time */
 {
 	unsigned char *cmd = (unsigned char *)malloc(RAMPDDS_END_SIZE*sizeof(char));
-	*cmdLength=RAMPDDS_END_SIZE; 
+	*cmdLength=RAMPDDS_END_SIZE;
 	cmd[0]=RAMPDDS_END;
-	///printf("cmd[0] = %x \t RAMPDDS_END\n",cmd[0]); 
-	return cmd;			  
+	///printf("cmd[0] = %x \t RAMPDDS_END\n",cmd[0]);
+	return cmd;
 }
 /*************************************************************************************************************************/
 ///unsigned char* cmd_beginDDSRamp(double rampHeight,double rampTime, int *cmdLength)
-/*  This command ramps the dds from the current frequency to current+rampHeight (rampHeight can be negative) in 
+/*  This command ramps the dds from the current frequency to current+rampHeight (rampHeight can be negative) in
 	time rampTime. To use this command properly, first set the desired end frequency to an inactive profile. Use
 	a FUD to trigger beginning of ramp, then load StopDDSRamp, followed by a profile change triggeres rampTime after
 	the FUD. See example command list below
-	
-	setFreq(destination freq,destination profile)			///this sequence is no longer right - Alma  
-	beginDDSRamp()															
+
+	setFreq(destination freq,destination profile)			///this sequence is no longer right - Alma
+	beginDDSRamp()
 	WaitForTrigger()
 	FUD()
-	WaitForTrigger()							   
+	WaitForTrigger()
 	setProfile(destination profile)
-	
+
 	(FUD reqd)
 	rampHeight in MHz (can be negative),rampTime in ms
     cmd[1]-cmd[4] are DFTW, cmd[5]-cmd[6] are the DFRRW */
@@ -481,52 +481,52 @@ unsigned char* cmd_StopDDSRamp(int *cmdLength)
 	unsigned char *cmd = (unsigned char *)malloc(RAMPDDS_START_SIZE*sizeof(char));
 	unsigned short dfrrw=0;
 	int dftw=0,i;
-	
+
 	unsigned char * dftw_hex;
 	unsigned char * dfrrw_hex;
 	double dftw_over_dfrrw;
-	
+
 	if ((fabs(rampHeight)>0.0)&&(fabs(rampHeight)<400.0)&&(rampTime>0.0)&&(rampTime<pow(10,9)))
 	{
 		// Ensure that max scan rate not exceeded
 		if(fabs(rampHeight)/rampTime>MAX_DDS_SCANRATE)
 		{
-			RB9858LibErr("Max DDS Ramp rate exceeded\n"); 
+			RB9858LibErr("Max DDS Ramp rate exceeded\n");
 			*cmdLength=0;
 		}
 		else
 		{
 			*cmdLength=RAMPDDS_START_SIZE;
 			cmd[0]=RAMPDDS_START;
-			///printf("cmd[0] = %x \t RAMPDDS_START\n",cmd[0]); 
-		
+			///printf("cmd[0] = %x \t RAMPDDS_START\n",cmd[0]);
+
 			dftw_over_dfrrw=rampHeight*pow(2.0,35.0)/rampTime/pow(DDSCLK,2.0)/pow(10,3);
-		
+
 			//Algorithm to minimize stepsize, (ensuring it is non-zero)
 			if (fabs(dftw_over_dfrrw)>1.0)
 			{
 				dfrrw=1;
 				dftw=(int)(dftw_over_dfrrw);
-			
+
 			}
-			//otherwise set dftw to 1 and set ramp rate slower 
+			//otherwise set dftw to 1 and set ramp rate slower
 			else
 			{
 				if(dftw_over_dfrrw>0)
 					dftw=1;
 				else
 					dftw=-1;
-			
+
 				dfrrw=(short)(1.0/fabs(dftw_over_dfrrw));
 			}
 			///printf("rampHeight %f rampTime %f dfrrw: %d   dftw: %d \n",rampHeight,rampTime,dfrrw,dftw);
-			
-			dfrrw_hex=(unsigned char *)&dfrrw;  
-			dftw_hex=(unsigned char *)&dftw;  
-		
+
+			dfrrw_hex=(unsigned char *)&dfrrw;
+			dftw_hex=(unsigned char *)&dftw;
+
 			cmd[5]=dfrrw_hex[0];
 			cmd[6]=dfrrw_hex[1];
-		
+
 			for(i=0;i<4;i++)
 			{
 				cmd[i+1]=dftw_hex[i];
@@ -539,7 +539,7 @@ unsigned char* cmd_StopDDSRamp(int *cmdLength)
 	}
 	else
 	{
-		RB9858LibErr("Fatal Ramp Error\n"); 
+		RB9858LibErr("Fatal Ramp Error\n");
 		printf("Error:  Fatal Ramp Error [RCh509]\n" );             ///ALAN
 		*cmdLength=0;
 	}
@@ -555,20 +555,20 @@ unsigned char* cmd_beginDDSRamp(double rampHeight,double rampTime, int *cmdLengt
 	unsigned char *cmd = (unsigned char *)malloc(RAMPDDS_START_SIZE*sizeof(char));
 	unsigned short dfrrw=0;
 	int dftw=0,i;
-	
+
 	unsigned char * dftw_hex;
 	unsigned char * dfrrw_hex;
 	double dftw_over_dfrrw;
-	
+
 	if ((fabs(rampHeight)>0.0)&&(fabs(rampHeight)<400.0)&&(rampTime>0.0)&&(rampTime<pow(10,9)))
 	{
 
 			*cmdLength=RAMPDDS_START_SIZE;
 			cmd[0]=RAMPDDS_START;
-			///printf("cmd[0] = %x \t RAMPDDS_START\n",cmd[0]); 
-		
+			///printf("cmd[0] = %x \t RAMPDDS_START\n",cmd[0]);
+
 			dftw_over_dfrrw=rampHeight*pow(2.0,35.0)/rampTime/pow(DDSCLK,2.0)/pow(10,3);
-		
+
 
 			if (fabs(dftw_over_dfrrw)>pow(2.0,31.0))
 			{
@@ -580,13 +580,13 @@ unsigned char* cmd_beginDDSRamp(double rampHeight,double rampTime, int *cmdLengt
 			{
 				dfrrw=1;
 				dftw=(int)(dftw_over_dfrrw*dfrrw);
-			
+
 			}
 			else if (fabs(dftw_over_dfrrw)>pow(2.0,-8.0))
 			{
 				dfrrw=pow(2.0,16.0)-1;
 				dftw=(int)(dftw_over_dfrrw * dfrrw);
-			
+
 			}
 			else if (fabs(dftw_over_dfrrw)>pow(2.0,-16.0))
 			{
@@ -594,9 +594,9 @@ unsigned char* cmd_beginDDSRamp(double rampHeight,double rampTime, int *cmdLengt
 					dftw=1;
 				else
 					dftw=-1;
-					
+
 				dfrrw=(int)(dftw/dftw_over_dfrrw);
-			
+
 			}
 			else
 			{
@@ -604,15 +604,15 @@ unsigned char* cmd_beginDDSRamp(double rampHeight,double rampTime, int *cmdLengt
 			 	printf("Error:  Below Min DDS Ramp rate\n" );
 				*cmdLength=0;
 			}
-			
+
 			///printf("rampHeight %f rampTime %f dftw_over_dfrrw %f dfrrw: %d   dftw: %d \n",rampHeight,rampTime,dftw_over_dfrrw,dfrrw,dftw);
-			
-			dfrrw_hex=(unsigned char *)&dfrrw;  
- 			dftw_hex=(unsigned char *)&dftw;  
-		
+
+			dfrrw_hex=(unsigned char *)&dfrrw;
+ 			dftw_hex=(unsigned char *)&dftw;
+
 			cmd[5]=dfrrw_hex[0];
 			cmd[6]=dfrrw_hex[1];
-		
+
 			for(i=0;i<4;i++)
 			{
 				cmd[i+1]=dftw_hex[i];
@@ -624,7 +624,7 @@ unsigned char* cmd_beginDDSRamp(double rampHeight,double rampTime, int *cmdLengt
 	}
 	else
 	{
-		RB9858LibErr("Fatal Ramp Error\n"); 
+		RB9858LibErr("Fatal Ramp Error\n");
 		printf("Error:  Fatal Ramp Error [RCh509]\n" );             ///ALAN
 		*cmdLength=0;
 	}
@@ -639,23 +639,23 @@ unsigned char* cmd_beginDDSRamp(double rampHeight,double rampTime, int *cmdLengt
 	unsigned char *cmd = (unsigned char *)malloc(RAMP9854DDS_START_SIZE*sizeof(char));
 	//unsigned int dfrrw=0,dftw=0;
 	__int64 stw = 0, dfrrw=0,dftw=0;
-	
+
 	int i;
-	
+
 	unsigned char * dftw_hex;
 	unsigned char * dfrrw_hex;
 	unsigned char * stw_hex;
 	double slope, dftw_over_dfrrw;
-	
+
 	if ((fabs(rampHeight)>0.0)&&(fabs(rampHeight)<400.0)&&(rampTime>0.0)&&(rampTime<pow(10,9)))
 	{
 
 			*cmdLength=RAMP9854DDS_START_SIZE;
 			cmd[0]=RAMPDDS_START;
-			///printf("cmd[0] = %x \t RAMPDDS_START\n",cmd[0]); 
-		
+			///printf("cmd[0] = %x \t RAMPDDS_START\n",cmd[0]);
+
 			dftw_over_dfrrw=fabs(rampHeight)*pow(2.0,48.0)/rampTime/pow(DDSCLK,2.0)/pow(10,3);
-			//printf("rampHeight %f rampTime %f dftw_over_dfrrw %e \n",rampHeight,rampTime,dftw_over_dfrrw);    
+			//printf("rampHeight %f rampTime %f dftw_over_dfrrw %e \n",rampHeight,rampTime,dftw_over_dfrrw);
 
 			if (fabs(dftw_over_dfrrw)>(pow(2.0,32.0)-1))
 			{
@@ -668,35 +668,35 @@ unsigned char* cmd_beginDDSRamp(double rampHeight,double rampTime, int *cmdLengt
 				dfrrw=1-1;
 				dftw=(dftw_over_dfrrw*dfrrw);
 			//	printf("1: fabs(dftw_over_dfrrw)>pow(2.0,24.0)\n");
-			
+
 			}
 			else if (fabs(dftw_over_dfrrw)>pow(2.0,16.0))
 			{
 				dfrrw=pow(2.0,8.0)-1;
 				dftw=(dftw_over_dfrrw*dfrrw);
-			//	printf("2: fabs(dftw_over_dfrrw)>pow(2.0,16.0)\n"); 
-			
+			//	printf("2: fabs(dftw_over_dfrrw)>pow(2.0,16.0)\n");
+
 			}
 			else if (fabs(dftw_over_dfrrw)>pow(2.0,8.0))
 			{
 				dfrrw=pow(2.0,16.0)-1;
 				dftw=(dftw_over_dfrrw * dfrrw);
-			//	printf("2: fabs(dftw_over_dfrrw)>pow(2.0,8.0)\n"); 
-			
+			//	printf("2: fabs(dftw_over_dfrrw)>pow(2.0,8.0)\n");
+
 			}
 			else if (fabs(dftw_over_dfrrw)>pow(2.0,-12.0))
 			{
 				dfrrw=pow(2.0,20.0)-1;			  // changed from 2^24, 27 Aug 09
 				dftw=(dftw_over_dfrrw*dfrrw);
-			//	printf("2: fabs(dftw_over_dfrrw)>pow(2.0,-12.0)\n"); 
-			
+			//	printf("2: fabs(dftw_over_dfrrw)>pow(2.0,-12.0)\n");
+
 			}
 			else if (fabs(dftw_over_dfrrw)>pow(2.0,-20.0))
 			{
 				dftw=1;
 				dfrrw=(dftw/dftw_over_dfrrw-1);
 			//	printf("3: fabs(dftw_over_dfrrw)>pow(2.0,-24.0)\n");
-			
+
 			}
 			else
 			{
@@ -704,26 +704,26 @@ unsigned char* cmd_beginDDSRamp(double rampHeight,double rampTime, int *cmdLengt
 			 	printf("Error:  Below Min DDS Ramp rate\n" );
 				*cmdLength=0;
 			}
-			
+
 			//	dfrrw=1;
 			//	dftw=(int)(dftw_over_dfrrw*dfrrw);
-				
+
 			slope=(double) dftw/dfrrw;
 			//printf("rHeight %f rTime %f dftw_over_dfrrw %f \t dfrrw: %u \tdftw: %u slope %f\n",rampHeight,rampTime,dftw_over_dfrrw,dfrrw,dftw,slope);
-			
-			dfrrw_hex=(unsigned char *)&dfrrw;  
- 			dftw_hex=(unsigned char *)&dftw;  
-		
+
+			dfrrw_hex=(unsigned char *)&dfrrw;
+ 			dftw_hex=(unsigned char *)&dftw;
+
 			cmd[7]=dfrrw_hex[0];
 			cmd[8]=dfrrw_hex[1];
 			cmd[9]=dfrrw_hex[2];
-		
+
 
 			for(i=0;i<6;i++)
 			{
 				cmd[i+1]=dftw_hex[i];
 			}
-			
+
 		/*	stw=(unsigned int)(stopFreq*pow(2,32)/DDSCLK);
 			stw_hex=(unsigned char *)&stw;
 			cmd[10]=0;
@@ -732,8 +732,8 @@ unsigned char* cmd_beginDDSRamp(double rampHeight,double rampTime, int *cmdLengt
 			{
 				cmd[i+12]=stw_hex[i];
 			}
-		*/	
-		
+		*/
+
 			//
 			stw=(__int64)(stopFreq*pow(2,48)/DDSCLK);
 			stw_hex=(unsigned char *)&stw;
@@ -741,7 +741,7 @@ unsigned char* cmd_beginDDSRamp(double rampHeight,double rampTime, int *cmdLengt
 			{
 				cmd[i+10]=stw_hex[i];
 			}
-		 
+
 			//printf("Message: ");
    		   	//for (i=0;i<16;i++)
    		   	//printf("%x ",cmd[i]);
@@ -749,7 +749,7 @@ unsigned char* cmd_beginDDSRamp(double rampHeight,double rampTime, int *cmdLengt
 	}
 	else
 	{
-		RB9858LibErr("Fatal Ramp Error\n"); 
+		RB9858LibErr("Fatal Ramp Error\n");
 		printf("Error:  Fatal Ramp Error [RCh509]\n" );             ///ALAN
 		*cmdLength=0;
 	}
@@ -757,17 +757,17 @@ unsigned char* cmd_beginDDSRamp(double rampHeight,double rampTime, int *cmdLengt
 
 }
 
-   		
+
 /*************************************************************************************************************************/
 unsigned char* cmd_ScanDDS(double scanAmplitude,double scanTime, int *cmdLength)
-/*  2nd byt toggle on/off, byte 3-6 DFTW, byte 7-8 DFTRR, byte 9-12 ScanTime 
-	Sends the command to start DDS scanning from the current freq  
+/*  2nd byt toggle on/off, byte 3-6 DFTW, byte 7-8 DFTRR, byte 9-12 ScanTime
+	Sends the command to start DDS scanning from the current freq
 	DDS freq oscillates linearly from current setting to current setting +/- scanAmplitude (MHz) with a period of 2scanTime (in ms)
 	to scan downwards from current freq set scanDown to 1, otherwise, will scan up
 	Scan Amplitude in MHz, scanTime in ms
 	Note: There is an error in the AD9858 Documentation, the freq step size is DFTW*SYSCLK/2^32 (not2^31)
 	*/
-	
+
 {
 	unsigned char *cmd = (unsigned char *)malloc(DDSSCAN_SIZE*sizeof(char));
 	unsigned int scanTime_int = (unsigned int)scanTime;
@@ -777,50 +777,50 @@ unsigned char* cmd_ScanDDS(double scanAmplitude,double scanTime, int *cmdLength)
 	unsigned char * dftw_hex;
 	unsigned char * dfrrw_hex;
 	double dftw_over_dfrrw;
-	
+
 	if ((fabs(scanAmplitude)>0.0)&&(fabs(scanAmplitude)<400.0)&&(scanTime>0.0)&&(scanTime<pow(10,9)))
 	{
 		// Ensure that max scan rate not exceeded
 		if(fabs(scanAmplitude)/scanTime>MAX_DDS_SCANRATE)
 		{
-			RB9858LibErr("Max DDS Scan rate exceeded\n"); 
+			RB9858LibErr("Max DDS Scan rate exceeded\n");
 			*cmdLength=0;
 		}
 		else
 		{
 			*cmdLength=DDSSCAN_SIZE;
 			cmd[0]=DDSSCAN;
-			///printf("cmd[0] = %x \t DDSSCAN\n",cmd[0]); 
+			///printf("cmd[0] = %x \t DDSSCAN\n",cmd[0]);
 			cmd[1]=1;
 			scanTime_hex=(unsigned char *)&scanTime_int;
-		
+
 			dftw_over_dfrrw=scanAmplitude*pow(2.0,35.0)/scanTime/pow(DDSCLK,2.0)/pow(10,3);
-		
+
 			//Algorithm to minimize stepsize, (ensuring it is non-zero)
 			if (fabs(dftw_over_dfrrw)>1.0)
 			{
 				dfrrw=1;
 				dftw=(int)(dftw_over_dfrrw);
-				
+
 			}
-			//otherwise set dftw to 1 and set ramp rate slower 
+			//otherwise set dftw to 1 and set ramp rate slower
 			else
 			{
 				if(dftw_over_dfrrw>0)
 					dftw=1;
 				else
 					dftw=-1;
-				
+
 				dfrrw=(short)(1.0/fabs(dftw_over_dfrrw));
 			}
 			//printf("ScanTime: %dms\tdfrrw: %d\tdftw: %d\n",scanTime_int,dfrrw,dftw);
-			
-			dfrrw_hex=(unsigned char *)&dfrrw;  
-			dftw_hex=(unsigned char *)&dftw;  
-		
+
+			dfrrw_hex=(unsigned char *)&dfrrw;
+			dftw_hex=(unsigned char *)&dftw;
+
 			cmd[6]=dfrrw_hex[0];
 			cmd[7]=dfrrw_hex[1];
-		
+
 			for(i=0;i<4;i++)
 			{
 				cmd[i+8]=scanTime_hex[i];
@@ -830,7 +830,7 @@ unsigned char* cmd_ScanDDS(double scanAmplitude,double scanTime, int *cmdLength)
     	  	//for (i=0;i<12;i++)
     	  	//	printf("%d ",cmd[i]);
    		    // printf("\n");
-		}	
+		}
 	}
 	else
 	{
@@ -855,21 +855,21 @@ unsigned char* cmd_clearEvents(int *cmdLength)
 	unsigned char *cmd = (unsigned char *)malloc(CLEAREVENTS_SIZE*sizeof(char));
 	*cmdLength=CLEAREVENTS_SIZE;
 	cmd[0]=CLEAREVENTS;
-	///printf("cmd[0] = %x \t CLEAREVENTS\n",cmd[0]); 
+	///printf("cmd[0] = %x \t CLEAREVENTS\n",cmd[0]);
 	return cmd;
 }
 /*************************************************************************************************************************/
 unsigned char* cmd_startSeq(int triggerMode, int *cmdLength)
-/*  Begins execution of sequence loaded into cmdBlock 
-	triggerMode 0 for Adwin, 1 for TCP triggering */	
+/*  Begins execution of sequence loaded into cmdBlock
+	triggerMode 0 for Adwin, 1 for TCP triggering */
 {
 	unsigned char *cmd = (unsigned char *)malloc(EXCT_SEQ_SIZE*sizeof(char));
-	
+
 	if(triggerMode==0||triggerMode==1)
 	{
 		*cmdLength=EXCT_SEQ_SIZE;
 		cmd[0]=EXCT_SEQ;
-		///printf("cmd[0] = %x \t EXCT_SEQ\n",cmd[0]); 
+		///printf("cmd[0] = %x \t EXCT_SEQ\n",cmd[0]);
 		cmd[1]=triggerMode;
 	}
 	else
@@ -881,16 +881,16 @@ unsigned char* cmd_startSeq(int triggerMode, int *cmdLength)
 }
 /*************************************************************************************************************************/
 unsigned char* cmd_setAutoConfig(int configNum,int *cmdLength)
-/*  Saves the current sequence to flash (non volatile) and can be executed later with exct command 
-	Possible to set 5 autoconfigs, indexed 0-4, max 500 bytes each (~45 Commands) 
+/*  Saves the current sequence to flash (non volatile) and can be executed later with exct command
+	Possible to set 5 autoconfigs, indexed 0-4, max 500 bytes each (~45 Commands)
 	As a note, you can test the current sequence by executing normally before storing it in flash, this is recommended */
 {
 	unsigned char *cmd = (unsigned char *)malloc(INIT_AUTOCONFIG_SIZE*sizeof(char));
 	if(configNum>=0&&configNum<=4)
 	{
-		*cmdLength=INIT_AUTOCONFIG_SIZE;	
+		*cmdLength=INIT_AUTOCONFIG_SIZE;
 		cmd[0]=INIT_AUTOCONFIG;
-		///printf("cmd[0] = %x \t INIT_AUTOCONFIG\n",cmd[0]); 
+		///printf("cmd[0] = %x \t INIT_AUTOCONFIG\n",cmd[0]);
 		cmd[1]=configNum;
 	}
 	else
@@ -907,21 +907,21 @@ unsigned char* cmd_exctAutoConfig(int configNum,int *cmdLength)
 	unsigned char *cmd = (unsigned char *)malloc(EXCT_AUTOCONFIG_SIZE*sizeof(char));
 	if(configNum>=0&&configNum<=4)
 	{
-		*cmdLength=EXCT_AUTOCONFIG_SIZE;	
+		*cmdLength=EXCT_AUTOCONFIG_SIZE;
 		cmd[0]=EXCT_AUTOCONFIG;
-		///printf("cmd[0] = %x \t EXCT_AUTOCONFIG\n",cmd[0]); 
+		///printf("cmd[0] = %x \t EXCT_AUTOCONFIG\n",cmd[0]);
 		cmd[1]=configNum;
 	}
 	else
 	{
-		RB9858LibErr("Invalid Config Num\n");  
+		RB9858LibErr("Invalid Config Num\n");
 		*cmdLength=0;
 	}
 	return cmd;
 }
 /*************************************************************************************************************************/
 unsigned char* cmd_tcpTrig(int trigLength, int *cmdLength)
-/* Triggers resume of execution or break of sequence in TCP trigger mode 
+/* Triggers resume of execution or break of sequence in TCP trigger mode
    trigLength: 0 for short (resume)
    			   1 for long (break) */
 {
@@ -930,12 +930,12 @@ unsigned char* cmd_tcpTrig(int trigLength, int *cmdLength)
 	{
 		*cmdLength=TCP_TRIG_SIZE;
 		cmd[0]=TCP_TRIG;
-		///printf("cmd[0] = %x \t TCP_TRIG\n",cmd[0]); 
+		///printf("cmd[0] = %x \t TCP_TRIG\n",cmd[0]);
 		cmd[1]=trigLength;
 	}
 	else
 	{
-		RB9858LibErr("Bad TCP Trigger"); 
+		RB9858LibErr("Bad TCP Trigger");
 		*cmdLength=0;
 	}
 	return cmd;
@@ -948,12 +948,12 @@ unsigned char* cmd_waitForTrigger(int *cmdLength)
 	unsigned char *cmd = (unsigned char *)malloc(AWAIT_TRIG_SIZE*sizeof(char));
 	*cmdLength=AWAIT_TRIG_SIZE;
 	cmd[0]=AWAIT_TRIG;
-	///printf("cmd[0] = %x \t AWAIT_TRIG\n",cmd[0]); 
+	///printf("cmd[0] = %x \t AWAIT_TRIG\n",cmd[0]);
 	return cmd;
 }
 /*************************************************************************************************************************/
 unsigned char* cmd_setSwitchStates(int lin_or_int,int CPfb_or_DAC,int *cmdLength)
-/*  Sets the position of the CMOS switches. 
+/*  Sets the position of the CMOS switches.
 	lin_or_int: 1 for linear 0 for integral CP feedback
 	CPfb_or_DAC: 1 enables CP feedback 0 enables DAC control*/
 {
@@ -962,7 +962,7 @@ unsigned char* cmd_setSwitchStates(int lin_or_int,int CPfb_or_DAC,int *cmdLength
 	{
 		*cmdLength=MODE_CFGS_SIZE;
 		cmd[0]=MODE_CFGS;
-		///printf("cmd[0] = %x \t MODE_CFGS\n",cmd[0]); 
+		///printf("cmd[0] = %x \t MODE_CFGS\n",cmd[0]);
 		cmd[1]=CPfb_or_DAC+2*lin_or_int;
 	}
 	else
@@ -970,7 +970,7 @@ unsigned char* cmd_setSwitchStates(int lin_or_int,int CPfb_or_DAC,int *cmdLength
 		RB9858LibErr("Bad CMOS Switch Setting\n");
 		*cmdLength=0;
 	}
-	return cmd; 
+	return cmd;
 
 }
 /*************************************************************************************************************************/
@@ -979,7 +979,7 @@ unsigned char* cmd_forceMonCon(int *cmdLength)
 	unsigned char *cmd = (unsigned char *)malloc(FORCE_MONCON_SIZE*sizeof(char));
 	*cmdLength=FORCE_MONCON_SIZE;
 	cmd[0]=FORCE_MONCON;
-	///printf("cmd[0] = %x \t FORCE_MONCON\n",cmd[0]); 
+	///printf("cmd[0] = %x \t FORCE_MONCON\n",cmd[0]);
 	return cmd;
 }
 /*************************************************************************************************************************/
@@ -987,13 +987,13 @@ unsigned char* cmd_setDac(double voltage,int *cmdLength)
 /* DAC set to voltage, 0V-4.095V */
 {
 	short* vbin;
-	
+
 	unsigned char *cmd =(unsigned char *)malloc(SETDAC_SIZE*sizeof(char));
 	if(voltage>=0.0&&voltage<=4.095)
 	{
 		*cmdLength=SETDAC_SIZE;
 		cmd[0]=SETDAC;
-		///printf("cmd[0] = %x \t SETDAC\n",cmd[0]); 
+		///printf("cmd[0] = %x \t SETDAC\n",cmd[0]);
 		vbin=(short*)&cmd[1];
 		*vbin=voltage/4.095*4095;
 	}
@@ -1002,51 +1002,51 @@ unsigned char* cmd_setDac(double voltage,int *cmdLength)
 		RB9858LibErr("DAC Setting Error: Bad Voltage\n");
 		*cmdLength=0;
 	}
-	return cmd; 
+	return cmd;
 }
 /*************************************************************************************************************************/
 unsigned char* cmd_dacScan(double interval,double VBottom,double VTop,int *cmdLength)
-/*  Returns the Command to begin a DAC Scan from VBottom to VTop (Volts) within interval (ms) 
+/*  Returns the Command to begin a DAC Scan from VBottom to VTop (Volts) within interval (ms)
 	The LTC1451IC8 DAC full scale is 4.095V */
 {
 	short *step,*htime,*bottom,*top;
-	unsigned char *cmd =(unsigned char *)malloc(DACSCAN_SIZE*sizeof(char));   
-	
+	unsigned char *cmd =(unsigned char *)malloc(DACSCAN_SIZE*sizeof(char));
+
 	//check bounds
 	if((VBottom<VTop)&&(VBottom>=0.0)&&(VTop<=4.095))
 	{
-		*cmdLength=DACSCAN_SIZE;	
+		*cmdLength=DACSCAN_SIZE;
 		cmd[0]=DACSCAN;
-		///printf("cmd[0] = %x \t DACSCAN\n",cmd[0]); 
+		///printf("cmd[0] = %x \t DACSCAN\n",cmd[0]);
 		step=(short*)&cmd[1];
 		htime=(short*)&cmd[3];
 		bottom=(short*)&cmd[5];
 		top=(short*)&cmd[7];
-		
+
 		*bottom=(short)(4095.0*VBottom/4.095);
 		*top=(short)(4095.0*VTop/4.095);
-		
+
 		// @@ using min step time of 1 ms, test this to ensure the rabbit can keep up fast enough
 		*htime=1;
 		*step=(short)((*top-*bottom)/(interval/(double)*htime));
-		
+
 		if(*step>0)
 			*cmdLength=DACSCAN_SIZE;
 		else
 		{
-			RB9858LibErr("DAC Scan Interval too short\n"); 
-			*cmdLength=0; 
+			RB9858LibErr("DAC Scan Interval too short\n");
+			*cmdLength=0;
 		}
-		
+
 	}
 	else
 	{
-		RB9858LibErr("Invalid DAC Scan Voltage Bounds, use 0-4.095V\n"); 
-		*cmdLength=0; 
+		RB9858LibErr("Invalid DAC Scan Voltage Bounds, use 0-4.095V\n");
+		*cmdLength=0;
 	}
-	
+
 	return cmd;
 }
-	
+
 #endif
 

@@ -1,4 +1,4 @@
-/*  LaserTuning.h 
+/*  LaserTuning.h
 	Header File for LaserTuning.c
 	Author: David Burns, July 2006 */
 
@@ -9,7 +9,7 @@
 #include <tcpsupp.h>
 #include <ansi_c.h>
 #include <stdio.h>
-#include <cvirte.h>		
+#include <cvirte.h>
 #include "vars.h"
 
 #define MAXCMDNUM 2000		   //Max number of commands the rabbit can store in a single event list
@@ -33,5 +33,3 @@ void tcpTriggering(unsigned int tcp_handle,unsigned trigCount);
 int newProfile(int *profile);
 
 #endif
-
-

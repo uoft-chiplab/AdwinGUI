@@ -9,7 +9,7 @@
 //Final Voltage NUmeric control		CTRL_PANEL_NUMFINALVAL
 // Units indicator					CTRL_PANEL_STRUNITS
 //Timescale	numeric control			CTRL_PANEL_NUMTIMESCALE
-//Command button to set values		CTRL_PANEL_CMD_SETANALOG 
+//Command button to set values		CTRL_PANEL_CMD_SETANALOG
 
 /*
 This panel is used to set the value of an analog control.  It is called by double-clicking on an
@@ -23,7 +23,7 @@ Clicking on Set Value, reads the values from the control and stores them in the 
 //***********************************************************************
 int CVICALLBACK CMD_SETANALAOG_CALLBACK (int panel, int control, int event,
 		void *callbackData, int eventData1, int eventData2)
-/* Panel button to set analog data. 
+/* Panel button to set analog data.
 Reads data off of the panel controls, ringbox and numberboxes.
 Writes data to the AnalogTable array
 NOT DONE:  IF TIMESCALE IS TOO LONG THEN OVERWRITE THE FOLLOWING CELL
@@ -38,10 +38,10 @@ NOT DONE:  IF TIMESCALE IS TOO LONG THEN OVERWRITE THE FOLLOWING CELL
 	Point pval;
 	switch (event)
 		{
-								 
+
 		case EVENT_COMMIT:
 			valuesgood=0;
-			
+
 			//Retrieve Control/Data Values from Panel
 			GetCtrlVal (panelHandle4,CTRL_PANEL_RING_CTRLMODE, &itemp);
 			cmode=itemp;
@@ -49,32 +49,32 @@ NOT DONE:  IF TIMESCALE IS TOO LONG THEN OVERWRITE THE FOLLOWING CELL
 			GetCtrlVal (panelHandle4,CTRL_PANEL_NUMTIMESCALE, &ttemp);
 			usedtimescale=dtemp;
 			AnalogTable[currentx][currenty][currentpage].fcn=itemp;
-			
+
 			if(itemp!=6)
 			{
-				AnalogTable[currentx][currenty][currentpage].fval=dtemp;			
+				AnalogTable[currentx][currenty][currentpage].fval=dtemp;
 				AnalogTable[currentx][currenty][currentpage].tscale=ttemp;
 			}
-		
-			
+
+
 			max=(AChName[currenty].maxvolts-AChName[currenty].tbias)/AChName[currenty].tfcn;
 			min=(AChName[currenty].minvolts-AChName[currenty].tbias)/AChName[currenty].tfcn;
 			GetCtrlVal (panelHandle4,CTRL_PANEL_NUMFINALVAL, &dtemp);
 			if(dtemp>max)
-				SetCtrlVal (panelHandle4,CTRL_PANEL_NUMFINALVAL, max);  	
+				SetCtrlVal (panelHandle4,CTRL_PANEL_NUMFINALVAL, max);
 			else if (dtemp<min)
-				SetCtrlVal (panelHandle4,CTRL_PANEL_NUMFINALVAL, min); 
+				SetCtrlVal (panelHandle4,CTRL_PANEL_NUMFINALVAL, min);
 			else
 			{
-				AnalogTable[currentx][currenty][currentpage].fval=dtemp;			
+				AnalogTable[currentx][currenty][currentpage].fval=dtemp;
 				valuesgood=1;
 			}
-			
+
 			GetCtrlVal (panelHandle4,CTRL_PANEL_NUMTIMESCALE, &dtemp);
 			usedtimescale=dtemp;
 			AnalogTable[currentx][currenty][currentpage].tscale=dtemp;
-			
-			// Check if the timescale may be too long, if so prompt for 
+
+			// Check if the timescale may be too long, if so prompt for
 			//overwrite of the next block.
 			timematrixlength=TimeArray[currentx][currentpage];
 			docheck=0;
@@ -82,26 +82,26 @@ NOT DONE:  IF TIMESCALE IS TOO LONG THEN OVERWRITE THE FOLLOWING CELL
 			if((cmode==2)&&(usedtimescale>timematrixlength)) {docheck=1;}
 			if((cmode==3)&&(usedtimescale>timematrixlength/3)) {docheck=1;}
 			if(cmode==0) {docheck=0;}
-			
+
 			// Code below used to allow ramps to have shorter time constants... basically disabled now
 			if (docheck==1)
 			{
-				//valuesgood=ConfirmPopup("Overlong array selected","Do you want to overwrite the following array?");	
+				//valuesgood=ConfirmPopup("Overlong array selected","Do you want to overwrite the following array?");
 				//valuesgood=1;  // just assume timing is right.
 				if(valuesgood==1)
 				{
 				 //code to update the 2 columns
-				
+
 				}
 			}
-			if(valuesgood==1)  // everything checks out, return to main panel 
+			if(valuesgood==1)  // everything checks out, return to main panel
 			{
 				HidePanel(panelHandle4);
 				DrawNewTable(1);
 				break;
 			}
-			
-			
+
+
 		}
 	return 0;
 }
@@ -109,16 +109,16 @@ NOT DONE:  IF TIMESCALE IS TOO LONG THEN OVERWRITE THE FOLLOWING CELL
 void SetControlPanel(void)
 {
 	// Sets all relevant info into the DDS Control Panel based on the current cell selection
-	
+
 	SetCtrlVal(panelHandle4,CTRL_PANEL_STRUNITS, AChName[currenty].units);
 	SetCtrlVal(panelHandle4,CTRL_PANEL_STR_CHNAME,AChName[currenty].chname);
 	SetCtrlVal (panelHandle4,CTRL_PANEL_RING_CTRLMODE,AnalogTable[currentx][currenty][currentpage].fcn);
-	
+
 	if(AnalogTable[currentx][currenty][currentpage].fcn!=6)
 		SetCtrlVal (panelHandle4,CTRL_PANEL_NUMFINALVAL, AnalogTable[currentx][currenty][currentpage].fval);
 	else
-		SetCtrlVal (panelHandle4,CTRL_PANEL_NUMFINALVAL,findLastVal(currenty,currentx, currentpage));	
-	
+		SetCtrlVal (panelHandle4,CTRL_PANEL_NUMFINALVAL,findLastVal(currenty,currentx, currentpage));
+
 	SetCtrlVal (panelHandle4,CTRL_PANEL_NUMTIMESCALE, AnalogTable[currentx][currenty][currentpage].tscale);
 	SetCtrlVal(panelHandle4,CTRL_PANEL_NUMINITVAL,findLastVal(currenty,currentx, currentpage));
 }
@@ -129,15 +129,15 @@ int CVICALLBACK RING_CTRLMODE_CALLBACK (int panel, int control, int event,
 		void *callbackData, int eventData1, int eventData2)
 /* activated when using the control mode ring control.
 Cycles between the different control modes and changes the timescale of the ramp
-to an appropriate value for the mode. 
-If adding another function, just add another case, and modify the ring control on the 
+to an appropriate value for the mode.
+If adding another function, just add another case, and modify the ring control on the
 AnalogControl.uir file, and add function handling in CalcFcnVal() in GUIDesign.c
 
 */
 {
 	int ctrlmode=0;
 	double timescales=0,newtime=1,Vdiff=0,ctrlvfinal;
-	
+
 	GetCtrlVal (panelHandle4,CTRL_PANEL_RING_CTRLMODE, &ctrlmode);
 	GetCtrlVal (panelHandle4,CTRL_PANEL_NUMFINALVAL, &ctrlvfinal);
 	timescales=TimeArray[currentx][currentpage];
@@ -149,14 +149,14 @@ AnalogControl.uir file, and add function handling in CalcFcnVal() in GUIDesign.c
 		case EVENT_LEFT_CLICK:
 			break;
 		case EVENT_LEFT_DOUBLE_CLICK:
-	
+
 			break;
 			case EVENT_LOST_FOCUS:
-			
-		
+
+
 			case EVENT_COMMIT:
 			break;
-		
+
 		}
 	switch (ctrlmode)
 	{
@@ -178,21 +178,21 @@ AnalogControl.uir file, and add function handling in CalcFcnVal() in GUIDesign.c
 		case 4:
 			SetCtrlVal (panelHandle4,CTRL_PANEL_NUMTIMESCALE,timescales);
 			break;
-			
+
 		case 5: //S
 			SetCtrlAttribute (panelHandle4, CTRL_PANEL_NUMFINALVAL, ATTR_LABEL_TEXT,"Amplitude");
 			SetCtrlAttribute (panelHandle4, CTRL_PANEL_NUMTIMESCALE, ATTR_LABEL_TEXT,"Frequency");
 			break;
-	
+
 	}
-			
+
 	return 0;
 }
 //***************************************************************************
 
 int CVICALLBACK CMD_ANCANCEL_CALLBACK (int panel, int control, int event,
 		void *callbackData, int eventData1, int eventData2)
-// Cancel and don't make any changes.  
+// Cancel and don't make any changes.
 {
 	switch (event)
 		{

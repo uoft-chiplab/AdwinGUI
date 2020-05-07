@@ -1,8 +1,8 @@
 #ifndef ANALOGSETTINGS2_H
 #define ANALOGSETTINGS2_H
 
-#include <ansi_c.h> 
-#include <userint.h>                   
+#include <ansi_c.h>
+#include <userint.h>
 #include "vars.h"
 #include "GUIDesign.h"
 

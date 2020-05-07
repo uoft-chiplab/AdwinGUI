@@ -174,7 +174,7 @@
 #define  MENU_PREFS_STREAM_SETTINGS      63      /* callback function: STREAM_CALLBACK */
 
 
-     /* Callback Prototypes: */ 
+     /* Callback Prototypes: */
 
 void CVICALLBACK ANALOGSET_CALLBACK(int menubar, int menuItem, void *callbackData, int panel);
 int  CVICALLBACK ANALOGTABLE_CALLBACK(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);

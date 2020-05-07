@@ -88,7 +88,7 @@
           /* (no menu bars in the resource file) */
 
 
-     /* Callback Prototypes: */ 
+     /* Callback Prototypes: */
 
 int  CVICALLBACK CALLBACK_DDSFLOORSCANOK(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);
 int  CVICALLBACK CALLBACK_DDSFLOORSCANOK2(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);

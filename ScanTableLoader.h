@@ -33,7 +33,7 @@
           /* (no menu bars in the resource file) */
 
 
-     /* Callback Prototypes: */ 
+     /* Callback Prototypes: */
 
 int  CVICALLBACK SCAN_LOAD_CANCEL(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);
 int  CVICALLBACK SCAN_LOAD_OK(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);

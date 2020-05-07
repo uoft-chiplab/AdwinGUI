@@ -3,7 +3,7 @@ Modified for DDS control with Rabbits.
 Alma Bardon and Alan Stummer
 Started mods 7 June 2007
 
-* Include File zum Einbinden der Prototypen für die Aufrufe an 
+* Include File zum Einbinden der Prototypen für die Aufrufe an
 * die ADwin-Karten.
 * Erstellt am : 30.05.2001 von MS
 * geändert am :	12.06.2001 von MS
@@ -33,7 +33,7 @@ long    Iserv(char my_FAR *Filename, long Memsize);
 long	Boot(char my_FAR *Filename, long Memsize);
 long	ADboot(char *Filename, short DeviceNo, long Memsize);
 short	ADBPrLoad(char my_FAR *Filename);
-short	Load_Process(char my_FAR *Filename); 
+short	Load_Process(char my_FAR *Filename);
 short	ADBload(char *Filename, short DeviceNo, short msgbox);
 short	ADBStart(short ProcessNo);
 short	Start_Process(short ProcessNo);
@@ -77,7 +77,7 @@ long	GetFifoCount (short FifoNo);
 unsigned short ADC(short Channel);
 short	SetDAC(short Channel, unsigned short Value);
 short	DAC(short Channel, unsigned short Value);
-long	DigIn(void); 
+long	DigIn(void);
 long	Get_Digin(void);
 short	SetDigOut(short Value);
 short	Set_Digout(short Value);
@@ -95,7 +95,7 @@ void	Show_Errors(short OnOff);
 short	Net_Connect(char my_FAR *Protocol, char my_FAR *Address, char my_FAR *Endpoint, char my_FAR *Password);
 short	Net_Disconnect(void);
 long	Get_Last_Error(void);
-char*	Get_Last_Error_Text(long Last_Error); 
+char*	Get_Last_Error_Text(long Last_Error);
 short	Processor_Type(void);
 long	Clear_Process(short ProcessNo);
 long	Process_Status(short ProcessNo);
@@ -146,6 +146,6 @@ short	ZykStop(short ProzessNoZyk);
 
 #ifdef __cplusplus
 }
-#endif 	
+#endif
 
 #endif //__adwin_h__

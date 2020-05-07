@@ -3,18 +3,18 @@
 #include "DigitalSettings.h"
 #include "DigitalSettings2.h"
 /*
-Configure the digital lines.  
-For each line we configure 
- 			chnum: 		channel number (1-32 on first card, 101-132 on second card) 
-            chname:     name of the channel.             
-			resettolow:	Define 
+Configure the digital lines.
+For each line we configure
+ 			chnum: 		channel number (1-32 on first card, 101-132 on second card)
+            chname:     name of the channel.
+			resettolow:	Define
 
 */
 
 //********************************************************************************************
 int CVICALLBACK NUM_DIG_LINE_CALLBACK (int panel, int control, int event,
 		void *callbackData, int eventData1, int eventData2)
-/*  
+/*
 Numeric control to update information displayed on the digital settings panel, based on the current line
 */
 
@@ -26,7 +26,7 @@ Numeric control to update information displayed on the digital settings panel, b
 			GetCtrlVal (panelHandle3, DIGPANEL_NUM_DIGCH_LINE, &line);
 			SetCtrlVal (panelHandle3, DIGPANEL_NUM_DIGCHANNEL, DChName[line].chnum);
 			SetCtrlVal (panelHandle3, DIGPANEL_STR_DIGCHANNELNAME, DChName[line].chname);
-			SetCtrlVal (panelHandle3, DIGPANEL_CHK_DIGRESET, DChName[line].resettolow);			
+			SetCtrlVal (panelHandle3, DIGPANEL_CHK_DIGRESET, DChName[line].resettolow);
 			break;
 		}
 	return 0;
@@ -34,7 +34,7 @@ Numeric control to update information displayed on the digital settings panel, b
 //********************************************************************************************
 int CVICALLBACK CMD_DIGALLOWCHANGE_CALLBACK (int panel, int control, int event,
 		void *callbackData, int eventData1, int eventData2)
-/*  
+/*
 Button to allow changes to be made to textboxes.
 Changes textbox from dimmed (indicator) to activate (hot) mode
 */
@@ -43,10 +43,10 @@ Changes textbox from dimmed (indicator) to activate (hot) mode
 	switch (event)
 		{
 		case EVENT_COMMIT:
-			
+
 			SetCtrlAttribute (panelHandle3, DIGPANEL_NUM_DIGCHANNEL, ATTR_CTRL_MODE, VAL_HOT);
 			SetCtrlAttribute (panelHandle3, DIGPANEL_STR_DIGCHANNELNAME, ATTR_CTRL_MODE, VAL_HOT);
-			SetCtrlAttribute (panelHandle3, DIGPANEL_CHK_DIGRESET, ATTR_CTRL_MODE, VAL_HOT);			
+			SetCtrlAttribute (panelHandle3, DIGPANEL_CHK_DIGRESET, ATTR_CTRL_MODE, VAL_HOT);
 			break;
 		}
 	return 0;
@@ -57,7 +57,7 @@ int CVICALLBACK CMD_DIGSETCHANGES_CALLBACK (int panel, int control, int event,
 /*
 Set the digital line information DChName, based on information in text boxes.
 */
-{	
+{
 	int channel=0,line=0,resetlow=0,i,restrictedChannel=0;
 	char buff[150];
 	switch (event)
@@ -67,14 +67,14 @@ Set the digital line information DChName, based on information in text boxes.
 			GetCtrlVal (panelHandle3, DIGPANEL_NUM_DIGCH_LINE, &line);
 			GetCtrlVal (panelHandle3, DIGPANEL_STR_DIGCHANNELNAME, buff);
 			GetCtrlVal (panelHandle3, DIGPANEL_CHK_DIGRESET, &resetlow);
-			
+
 			for(i=0;i<NUMBERLASERS;i++)
 			{
 				if(LaserProperties[i].Active&&channel==LaserProperties[i].DigitalChannel)
 				   restrictedChannel=1;
 			}
-			
-			
+
+
 			if(!restrictedChannel)
 			{
 				DChName[line].chnum=channel;
@@ -85,7 +85,7 @@ Set the digital line information DChName, based on information in text boxes.
 			{
 				sprintf(buff,"Channel %d is currently in use for laser triggering",channel);
 				MessagePopup("Error: Restricted Channel",buff);
-			
+
 			}
 			SetDigitalChannels();
 			break;
@@ -127,14 +127,14 @@ Set the digital channel list (on main panel) with the information contained in t
 		{
 			if(LaserProperties[j].Active&&DChName[i].chnum==LaserProperties[j].DigitalChannel)
 				restrictedChannel++;
-			
+
 		}
 	}
 	if(restrictedChannel>0)
 		MessagePopup("Digital Settings Warning","Restricted digital channels are in use.\nEdit Digital Settings");
-	
-	
-	
+
+
+
 }
 
 //********************************************************************************************

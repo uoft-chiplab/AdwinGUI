@@ -30,7 +30,7 @@
           /* (no menu bars in the resource file) */
 
 
-     /* Callback Prototypes: */ 
+     /* Callback Prototypes: */
 
 int  CVICALLBACK CancelANRITSUConCALLBACK(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);
 int  CVICALLBACK SetANRITSUConCALLBACK(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);

@@ -3,7 +3,7 @@
 #define DDSSETTINGS_H
 
 #include "vars.h"
-#include <userint.h>          
+#include <userint.h>
 
 
 void SaveDDSSettings(void);

@@ -1,13 +1,13 @@
 /******************************************************************************************************
 * Collection of subroutines for the control of the ADwin measurement data acquisition
-* 
+*
 * Created : 22.08.1996 from Martin Hotze
-*  
-* Modified:	01.04.1998 from HPB 
+*
+* Modified:	01.04.1998 from HPB
 *******************************************************************
-* Version 1.00  M.S. 13.06.2001	Same function names as other adwin-developer driver 
+* Version 1.00  M.S. 13.06.2001	Same function names as other adwin-developer driver
 * Version 1.01  M.S. 07.08.2001	DeviceNo is now a variable	(earlier version it was a define)
-* Version 1.02	M.S. 17.05.2002 Five new functions (Get_Known_DeviceNo, Get_Known_USB_SerialNo, ADwin_Debug_Mode_Off, 
+* Version 1.02	M.S. 17.05.2002 Five new functions (Get_Known_DeviceNo, Get_Known_USB_SerialNo, ADwin_Debug_Mode_Off,
 *													ADwin_Debug_Mode_On, GetFifo_Packed_Short, GetFifo_Packed_Long)
 *
 * Function of the DLL ADwin32(32-bit, respectively)
@@ -19,7 +19,7 @@
 * the ADwin system!
 * The DLL ADwin32.dll respectively include all functions necessary for
 * the data transfer between PC and the ADwin system.
-* 	
+*
 * To Change from ADwin.c ->ADwin.cpp use #include "stdafx.h"
 *******************************************************************************************************/
 
@@ -33,11 +33,11 @@
 
 /* The variable "DeviceNo" is declared and inizialized to the default value of 0x150.
    This variable is responsible for all accesses to the ADwin-system(s). */
-short DeviceNo = 0x1;		// Device number 
+short DeviceNo = 0x1;		// Device number
 int	FirstTime  = 1;
 
 
-static HINSTANCE DLLHandle;      
+static HINSTANCE DLLHandle;
 long  (FAR PASCAL *Clear_Process_Ptr)(short ProcessNo, short Device_No);
 long  (FAR PASCAL *Boot_Ptr)(char my_FAR *Filename, short Device_No, long Memsize, short msgbox);
 short (FAR PASCAL *Load_Process_Ptr)(char my_FAR *Filename, short Device_No, short msgbox);
@@ -166,21 +166,21 @@ int LoadDLLIfNeeded(void)
     if ((AD_GetErrorText_Ptr = (char (FAR PASCAL *)(long, char *, long))GetProcAddress(DLLHandle,"ADGetErrorText"))==0)
         goto FunctionNotFoundError;
 	if ((Get_ADBPar_All_Ptr = (short (FAR PASCAL *)(short, short, long *, short))GetProcAddress(DLLHandle,"Get_ADBPar_All"))==0)
-		goto FunctionNotFoundError;	
+		goto FunctionNotFoundError;
 	if ((Get_ADBFPar_All_Ptr = (short (FAR PASCAL *)(short, short, float *, short))GetProcAddress(DLLHandle,"Get_ADBFPar_All"))==0)
-		goto FunctionNotFoundError;	
+		goto FunctionNotFoundError;
 	if ((Get_Data_Length_Ptr = (long (FAR PASCAL *)(short, short))GetProcAddress(DLLHandle,"Get_Data_Length"))==0)
-		goto FunctionNotFoundError;	
+		goto FunctionNotFoundError;
 	if ((ADSetLanguage_Ptr = (long (FAR PASCAL *)(long))GetProcAddress(DLLHandle,"ADSetLanguage"))==0)
-		goto FunctionNotFoundError;	
+		goto FunctionNotFoundError;
 	if ((GetData_String_Ptr = (long (FAR PASCAL *)(char *, long, short, short))GetProcAddress(DLLHandle,"Get_Data_String"))==0)
-		goto FunctionNotFoundError;	
+		goto FunctionNotFoundError;
 	if ((String_Length_Ptr = (long (FAR PASCAL *)(short, short))GetProcAddress(DLLHandle,"Get_Data_String_Length"))==0)
-		goto FunctionNotFoundError;	
+		goto FunctionNotFoundError;
 	if ((SetData_String_Ptr = (long (FAR PASCAL *)(char *, short, short))GetProcAddress(DLLHandle,"Set_Data_String"))==0)
-		goto FunctionNotFoundError;	
+		goto FunctionNotFoundError;
 	if ((GetData_Packed_Ptr = (short (FAR PASCAL *)(void *, short, short, long, long, short))GetProcAddress(DLLHandle,"Get_Data_packed"))==0)
-		goto FunctionNotFoundError;	
+		goto FunctionNotFoundError;
 	if ((ADProzessorTyp_Ptr = (short (FAR PASCAL *)(short Device_No))GetProcAddress(DLLHandle,"ProzessorTyp"))==0)
         goto FunctionNotFoundError;
 	if ((Clear_Process_Ptr = (long (FAR PASCAL *)(short, short))GetProcAddress(DLLHandle,"Clear_Process"))==0)
@@ -214,7 +214,7 @@ FunctionNotFoundError:
 	FreeLibrary(DLLHandle);     /* Remove the DLL */
 	DLLHandle = 0;
 
-	return kCouldNotFindFunction;	
+	return kCouldNotFindFunction;
 }
 
 /*****************************************/
@@ -240,7 +240,7 @@ long Boot(char my_FAR *Filename, long Memsize)
     long dllLoadError;
     if ((dllLoadError = (long)LoadDLLIfNeeded())!=0)
         return dllLoadError;
-	
+
 	return (Iserv(Filename, Memsize));							/* Boot the ADwin card */
 }
 
@@ -249,7 +249,7 @@ long ADboot(char my_FAR *Filename, short DeviceNo1, long Memsize)
     long dllLoadError;
     if ((dllLoadError = (long)LoadDLLIfNeeded())!=0)
         return dllLoadError;
-    
+
 	return (*Boot_Ptr)(Filename, DeviceNo1, Memsize, message);  /* Boot the ADwin card */
 }
 
@@ -260,7 +260,7 @@ short ADBPrLoad(char my_FAR *Filename)
     short dllLoadError;
     if ((dllLoadError = (short)LoadDLLIfNeeded())!=0)
         return dllLoadError;
-	
+
 	return (*Load_Process_Ptr)(Filename, DeviceNo, message);	/* Load bin file */
 }
 
@@ -271,7 +271,7 @@ short ADBload(char my_FAR *Filename,short DeviceNo1,short msgbox)
     short dllLoadError;
     if ((dllLoadError = (short)LoadDLLIfNeeded())!=0)
         return dllLoadError;
-	
+
 	return (*Load_Process_Ptr)(Filename, DeviceNo1, msgbox);	/* Load bin file */
 }
 
@@ -282,7 +282,7 @@ short Load_Process(char my_FAR *Filename)
     short dllLoadError;
     if ((dllLoadError = (short)LoadDLLIfNeeded())!=0)
         return dllLoadError;
-	
+
 	return (*Load_Process_Ptr)(Filename, DeviceNo, message);	/* Load bin file */
 }
 
@@ -304,7 +304,7 @@ short Start_Process(short ProcessNo)
     short dllLoadError;
     if ((dllLoadError = (short)LoadDLLIfNeeded())!=0)
         return dllLoadError;
-	
+
 	return (*Start_Process_Ptr)(ProcessNo, DeviceNo);	/* Start process */
 }
 
@@ -326,7 +326,7 @@ short Stop_Process(short ProcessNo)
     short dllLoadError;
     if ((dllLoadError = (short)LoadDLLIfNeeded())!=0)
         return dllLoadError;
-	
+
 	return (*Stop_Process_Ptr)(ProcessNo, DeviceNo);	/* Stop process */
 }
 
@@ -337,7 +337,7 @@ short SetPar (short Index, long Value)
     short dllLoadError;
     if ((dllLoadError = (short)LoadDLLIfNeeded())!=0)
         return dllLoadError;
-	
+
 	return (*Set_Par_Ptr)(Index, Value, DeviceNo);		/* Set parameter */
 }
 
@@ -348,7 +348,7 @@ short Set_Par (short Index, long Value)
     short dllLoadError;
     if ((dllLoadError = (short)LoadDLLIfNeeded())!=0)
         return dllLoadError;
-	
+
 	return (*Set_Par_Ptr)(Index, Value, DeviceNo);		/* Set parameter */
 }
 
@@ -370,7 +370,7 @@ short Set_FPar (short Index, float Value)
     short dllLoadError;
     if ((dllLoadError = (short)LoadDLLIfNeeded())!=0)
         return dllLoadError;
-	
+
 	return (*Set_FPar_Ptr)(Index, Value, DeviceNo);		/* Set float parameter */
 }
 
@@ -392,7 +392,7 @@ long Get_Par(short Index)
     long dllLoadError;
     if ((dllLoadError = (long)LoadDLLIfNeeded())!=0)
         return dllLoadError;
-    
+
 	return (*Get_Par_Ptr)(Index,DeviceNo);				/* Get parameter */
 }
 
@@ -403,7 +403,7 @@ float GetFPar(short Index)
     int dllLoadError;
     if ((dllLoadError = LoadDLLIfNeeded())!=0)
         return (float)dllLoadError;
-	
+
 	return (*Get_FPar_Ptr)(Index, DeviceNo);            /* Get float parameter */
 }
 
@@ -414,7 +414,7 @@ float Get_FPar(short Index)
     int dllLoadError;
     if ((dllLoadError = LoadDLLIfNeeded())!=0)
         return (float)dllLoadError;
-	
+
 	return (*Get_FPar_Ptr)(Index, DeviceNo);            /* Get float parameter */
 }
 
@@ -426,7 +426,7 @@ short GetData(short DataNo, short Data[], long Startindex, long Count )
     short dllLoadError;
     if ((dllLoadError = (short)LoadDLLIfNeeded())!=0)
         return dllLoadError;
-	
+
 	return (*Get_Data_Ptr)(Data, 1, DataNo, Startindex, Count, DeviceNo); /* Datensatz holen / get array of data */
 }
 
@@ -494,7 +494,7 @@ short SetData(short DataNo, short Data[], long Startindex, long Count)
     short dllLoadError;
     if ((dllLoadError = (short)LoadDLLIfNeeded())!=0)
         return dllLoadError;
-	
+
 	return (*Set_Data_Ptr)(Data, 1, DataNo, Startindex, Count, DeviceNo);
 }
 
@@ -505,7 +505,7 @@ short SetlData(short DataNo, long Data[], long Startindex, long Count)
     short dllLoadError;
     if ((dllLoadError = (short)LoadDLLIfNeeded())!=0)
         return dllLoadError;
-	
+
 	return (*Set_Data_Ptr)(Data, 2, DataNo, Startindex, Count, DeviceNo);
 }
 
@@ -538,7 +538,7 @@ short SetfData(short DataNo, float Data[], long Startindex, long Count)
     short dllLoadError;
     if ((dllLoadError = (short)LoadDLLIfNeeded())!=0)
         return dllLoadError;
-	
+
 	return (*Set_Data_Ptr)(Data, 5, DataNo, Startindex, Count, DeviceNo);
 }
 
@@ -549,7 +549,7 @@ short SetData_Float(short DataNo, float Data[], long Startindex, long Count)
     short dllLoadError;
     if ((dllLoadError = (short)LoadDLLIfNeeded())!=0)
         return dllLoadError;
-	
+
 	return (*Set_Data_Ptr)(Data, 5, DataNo, Startindex, Count, DeviceNo);
 }
 
@@ -560,7 +560,7 @@ short Data2File(char my_FAR *Filename, short DataNo, long Startindex, long Count
     short dllLoadError;
     if ((dllLoadError = (short)LoadDLLIfNeeded())!=0)
         return dllLoadError;
-	
+
 	return (*Save_Fast_Ptr)(Filename, DataNo, Startindex, Count, Mode, DeviceNo);
 }
 
@@ -571,7 +571,7 @@ short GetFifo(short FifoNo, short Data[], long Count)
     short dllLoadError;
     if ((dllLoadError = (short)LoadDLLIfNeeded())!=0)
         return dllLoadError;
-	
+
 	return (*Get_Fifo_Ptr)(Data, 1, FifoNo, Count, DeviceNo);
 }
 
@@ -582,7 +582,7 @@ short GetlFifo(short FifoNo, long Data[], long Count)
     short dllLoadError;
     if ((dllLoadError = (short)LoadDLLIfNeeded())!=0)
         return dllLoadError;
-	
+
 	return (*Get_Fifo_Ptr)(Data, 2, FifoNo, Count, DeviceNo);
 }
 
@@ -593,7 +593,7 @@ short GetFifo_Long(short FifoNo, long Data[], long Count)
     short dllLoadError;
     if ((dllLoadError = (short)LoadDLLIfNeeded())!=0)
         return dllLoadError;
-	
+
 	return (*Get_Fifo_Ptr)(Data, 2, FifoNo, Count, DeviceNo);
 }
 
@@ -604,7 +604,7 @@ short GetFifo_Double(short FifoNo, double Data[], long Count)
     short dllLoadError;
     if ((dllLoadError = (short)LoadDLLIfNeeded())!=0)
         return dllLoadError;
-	
+
 	return (*Get_Fifo_Ptr)(Data, 6, FifoNo, Count, DeviceNo);
 }
 
@@ -615,7 +615,7 @@ short GetfFifo(short FifoNo, float Data[], long Count)
     short dllLoadError;
     if ((dllLoadError = (short)LoadDLLIfNeeded())!=0)
         return dllLoadError;
-	
+
 	return (*Get_Fifo_Ptr)(Data, 5, FifoNo, Count, DeviceNo);
 }
 
@@ -626,7 +626,7 @@ short GetFifo_Float(short FifoNo, float Data[], long Count)
     short dllLoadError;
     if ((dllLoadError = (short)LoadDLLIfNeeded())!=0)
         return dllLoadError;
-	
+
 	return (*Get_Fifo_Ptr)(Data, 5, FifoNo, Count, DeviceNo);
 }
 
@@ -637,7 +637,7 @@ short SetFifo(short FifoNo, short Data[], long Count)
     short dllLoadError;
     if ((dllLoadError = (short)LoadDLLIfNeeded())!=0)
         return dllLoadError;
-	
+
 	return (*Set_Fifo_Ptr)(Data, 1, FifoNo, Count, DeviceNo);
 }
 
@@ -692,7 +692,7 @@ short SetFifo_Float(short FifoNo, float Data[], long Count)
     short dllLoadError;
     if ((dllLoadError = (short)LoadDLLIfNeeded())!=0)
         return dllLoadError;
-	
+
 	return (*Set_Fifo_Ptr)(Data, 5, FifoNo, Count, DeviceNo);
 }
 
@@ -703,7 +703,7 @@ long GetFifoCount(short FifoNo)
     long dllLoadError;
     if ((dllLoadError = (long)LoadDLLIfNeeded())!=0)
         return dllLoadError;
-	
+
 	return (*Get_Fifo_Count_Ptr)(FifoNo, DeviceNo);
 }
 
@@ -714,7 +714,7 @@ long Fifo_Full(short FifoNo)
     long dllLoadError;
     if ((dllLoadError = (long)LoadDLLIfNeeded())!=0)
         return dllLoadError;
-	
+
 	return (*Get_Fifo_Count_Ptr)(FifoNo, DeviceNo);
 }
 
@@ -725,7 +725,7 @@ long GetFifoEmpty(short FifoNo)
     long dllLoadError;
     if ((dllLoadError = (long)LoadDLLIfNeeded())!=0)
         return dllLoadError;
-	
+
 	return (*Get_Fifo_Empty_Ptr)(FifoNo, DeviceNo);
 }
 
@@ -736,7 +736,7 @@ long Fifo_Empty (short FifoNo)
     long dllLoadError;
     if ((dllLoadError = (long)LoadDLLIfNeeded())!=0)
         return dllLoadError;
-	
+
 	return (*Get_Fifo_Empty_Ptr)(FifoNo, DeviceNo);
 }
 
@@ -747,7 +747,7 @@ short ClearFifo (short FifoNo)
     short dllLoadError;
     if ((dllLoadError = (short)LoadDLLIfNeeded())!=0)
         return dllLoadError;
-	
+
 	return (*Fifo_Clear_Ptr)(FifoNo, DeviceNo);
 }
 
@@ -758,7 +758,7 @@ short Fifo_Clear (short FifoNo)
     short dllLoadError;
     if ((dllLoadError = (short)LoadDLLIfNeeded())!=0)
         return dllLoadError;
-	
+
 	return (*Fifo_Clear_Ptr)(FifoNo, DeviceNo);
 }
 
@@ -769,7 +769,7 @@ unsigned short ADC(short Value)
     unsigned short dllLoadError;
     if ((dllLoadError = (unsigned short)LoadDLLIfNeeded())!=0)
         return dllLoadError;
-	
+
 	return (*Get_ADC_Ptr)(Value, DeviceNo);   /* Messergebnis abholen */
 }
 
@@ -781,7 +781,7 @@ short SetDAC(short Channel, unsigned short Value)
     short dllLoadError;
     if ((dllLoadError = (short)LoadDLLIfNeeded())!=0)
         return dllLoadError;
-	
+
 	return (*Set_DAC_Ptr)(Channel, Value, DeviceNo);
 }
 
@@ -792,7 +792,7 @@ short DAC(short Channel, unsigned short Value)
     short dllLoadError;
     if ((dllLoadError = (short)LoadDLLIfNeeded())!=0)
         return dllLoadError;
-	
+
 	return (*Set_DAC_Ptr)(Channel, Value, DeviceNo);
 }
 
@@ -803,7 +803,7 @@ long DigIn()
     long dllLoadError;
     if ((dllLoadError = (long)LoadDLLIfNeeded())!=0)
         return dllLoadError;
-	
+
 	return (*Get_Digin_Ptr)(DeviceNo);           /* Ergebnis abholen */
 }
 
@@ -814,7 +814,7 @@ long Get_Digin()
     long dllLoadError;
     if ((dllLoadError = (long)LoadDLLIfNeeded())!=0)
         return dllLoadError;
-	
+
 	return (*Get_Digin_Ptr)(DeviceNo);           /* Ergebnis abholen */
 }
 
@@ -825,7 +825,7 @@ short SetDigOut (short Value)
     short dllLoadError;
     if ((dllLoadError = (short)LoadDLLIfNeeded())!=0)
         return dllLoadError;
-	
+
 	return (*Set_Digout_Ptr)(Value, DeviceNo);
 }
 
@@ -836,7 +836,7 @@ short Set_Digout (short Value)
     short dllLoadError;
     if ((dllLoadError = (short)LoadDLLIfNeeded())!=0)
         return dllLoadError;
-	
+
 	return (*Set_Digout_Ptr)(Value, DeviceNo);
 }
 
@@ -847,7 +847,7 @@ long DigOut()
     long dllLoadError;
     if ((dllLoadError = (long)LoadDLLIfNeeded())!=0)
         return dllLoadError;
-	
+
 	return (*Get_Digout_Ptr)(DeviceNo);          /* Ergebnis abholen */
 }
 
@@ -859,7 +859,7 @@ long Get_Digout()
     long dllLoadError;
     if ((dllLoadError = (long)LoadDLLIfNeeded())!=0)
         return dllLoadError;
-	
+
 	return (*Get_Digout_Ptr)(DeviceNo);          /* Ergebnis abholen */
 }
 
@@ -870,7 +870,7 @@ short Auslast()
     short dllLoadError;
     if ((dllLoadError = (short)LoadDLLIfNeeded())!=0)
         return dllLoadError;
-	
+
 	return (*Auslastung_Ptr)(DeviceNo);          /* Ergebnis abholen */
 }
 
@@ -892,7 +892,7 @@ short Test()
     short dllLoadError;
     if ((dllLoadError = (short)LoadDLLIfNeeded())!=0)
         return dllLoadError;
-	
+
 	return (*ADTest_Version_Ptr)(DeviceNo, message);
 }
 
@@ -903,7 +903,7 @@ short Test_Version()
     short dllLoadError;
     if ((dllLoadError = (short)LoadDLLIfNeeded())!=0)
         return dllLoadError;
-	
+
 	return (*ADTest_Version_Ptr)(DeviceNo, message);
 }
 
@@ -915,7 +915,7 @@ long Freemem()
     long dllLoadError;
     if ((dllLoadError = (long)LoadDLLIfNeeded())!=0)
         return dllLoadError;
-	
+
 	return (*AD_Memory_Ptr)(DeviceNo);          /* Get Freemem */
 }
 
@@ -926,7 +926,7 @@ long Freemem_T9(short Mem_Spec)
     long dllLoadError;
     if ((dllLoadError = (long)LoadDLLIfNeeded())!=0)
         return dllLoadError;
-	
+
 	switch(Mem_Spec)
 	{
 		case 0:
@@ -938,7 +938,7 @@ long Freemem_T9(short Mem_Spec)
 			return ((*AD_Memory_all_Ptr)(Mem_Spec, DeviceNo)*4); /* T9-DM_Local, T9-DM_Extern */
 		default:
 			return 255;
-	}         
+	}
 }
 
 /* Returns value of free memory from the ADwin-2, -4, -5 ,-8 and -9 System(in bytes) */
@@ -960,7 +960,7 @@ long Free_Mem(short Mem_Spec)
 			return ((*AD_Memory_all_Ptr)(Mem_Spec, DeviceNo)*4); /* T9-DM_Local, T9-DM_Extern */
 		default:
 			return 255;
-	}    
+	}
 }
 
 /* Error messages for Test, ADBload, Boot & Net_Connect    0/1 -> (off/on)        */
@@ -1015,7 +1015,7 @@ long Get_Last_Error()
 
 /* Gets the error text of the "Last error"										  */
 /* ============================================================================== */
-char* Get_Last_Error_Text(long Last_Error) 
+char* Get_Last_Error_Text(long Last_Error)
 {
     long		merker;
 	static char Fehlertext[255];
@@ -1039,10 +1039,10 @@ short Processor_Type()
     short dllLoadError;
     if ((dllLoadError = (short)LoadDLLIfNeeded())!=0)
         return dllLoadError;
-	
+
 	  merker = (*ADProzessorTyp_Ptr)(DeviceNo);
 	  Processor_Type = merker;
- 	  
+
  	  if (merker == 146)
 		Processor_Type = 5;
 	  if (merker == 1000)
@@ -1059,7 +1059,7 @@ long Clear_Process(short ProcessNo)
     long dllLoadError;
     if ((dllLoadError = (long)LoadDLLIfNeeded())!=0)
         return dllLoadError;
-    
+
 	return (*Clear_Process_Ptr)(ProcessNo,DeviceNo);
 }
 
@@ -1072,10 +1072,10 @@ long Process_Status(short ProcessNo)
 
 	erg = (short)(-100 + ProcessNo);
 	ProcessStatus = Get_Par(erg);
-	
+
 	return (ProcessStatus);
 }
-  
+
 /* Gets a block of ADwin long parameters into a long array						  */
 /* ============================================================================== */
 short Get_Par_Block(long Array[], short Startindex, short Count)
@@ -1083,7 +1083,7 @@ short Get_Par_Block(long Array[], short Startindex, short Count)
     short dllLoadError;
     if ((dllLoadError = (short)LoadDLLIfNeeded())!=0)
         return dllLoadError;
-    
+
 	return (*Get_ADBPar_All_Ptr)(Startindex, Count, Array, DeviceNo);
 }
 
@@ -1094,7 +1094,7 @@ short Get_FPar_Block(float Array[], short Startindex, short Count)
     short dllLoadError;
     if ((dllLoadError = (short)LoadDLLIfNeeded())!=0)
         return dllLoadError;
-    
+
 	return (*Get_ADBFPar_All_Ptr)(Startindex, Count, Array, DeviceNo);
 }
 
@@ -1105,7 +1105,7 @@ short Get_Par_All(long Array[])
     short dllLoadError;
     if ((dllLoadError = (short)LoadDLLIfNeeded())!=0)
         return dllLoadError;
-    
+
 	return (*Get_ADBPar_All_Ptr)(1, 80, Array, DeviceNo);
 }
 
@@ -1116,48 +1116,48 @@ short Get_FPar_All(float Array[])
     short dllLoadError;
     if ((dllLoadError = (short)LoadDLLIfNeeded())!=0)
         return dllLoadError;
-    
+
 	return (*Get_ADBFPar_All_Ptr)(1, 80, Array, DeviceNo);
 }
 
 /* Gets all 80 float parameters (FPar_1 - FPar_80) into a double array			  */
 /* ============================================================================== */
 short Get_FPar_All_Double(double Array[])
-{	
+{
 	short res;
 	float fArray[80];
     short dllLoadError, i;
     if ((dllLoadError = (short)LoadDLLIfNeeded())!=0)
         return dllLoadError;
-    
+
 	res = (*Get_ADBFPar_All_Ptr)(1, 80, fArray, DeviceNo);
-	
+
 	for (i=0; i<80; i++)
 	{
 		Array[i] = fArray[i];
 	}
 
-	return res; 
+	return res;
 }
 
 /* Gets a block of ADwin float parameters into a double array					  */
 /* ============================================================================== */
 short Get_FPar_Block_Double(double Array[], short Startindex, short Count)
-{	
+{
 	short res;
 	float fArray[80];
     short dllLoadError, i;
     if ((dllLoadError = (short)LoadDLLIfNeeded())!=0)
         return dllLoadError;
-    
+
 	res = (*Get_ADBFPar_All_Ptr)(Startindex, Count, fArray, DeviceNo);
-	
+
 	for (i=0; i<Count; i++)
 	{
 		Array[i] = fArray[i];
 	}
 
-	return res; 
+	return res;
 }
 
 /* Returns the lenght of a data													  */
@@ -1167,7 +1167,7 @@ long Data_Length(long DataNo)
     long dllLoadError;
     if ((dllLoadError = (long)LoadDLLIfNeeded())!=0)
         return dllLoadError;
-    
+
 	return (*Get_Data_Length_Ptr)((short)DataNo, DeviceNo);
 }
 
@@ -1178,7 +1178,7 @@ long Set_Globaldelay(long ProcessNo, long Globaldelay)
     long dllLoadError;
     if ((dllLoadError = (long)LoadDLLIfNeeded())!=0)
         return dllLoadError;
-	
+
 	return Set_Par((short)(-90+ProcessNo), Globaldelay);
 }
 
@@ -1189,7 +1189,7 @@ long Get_Globaldelay(long ProcessNo)
     long dllLoadError;
     if ((dllLoadError = (long)LoadDLLIfNeeded())!=0)
         return dllLoadError;
-	
+
 	return Get_Par((short)(-90+ProcessNo));
 }
 
@@ -1200,7 +1200,7 @@ long Set_Language(long language)
     long dllLoadError;
     if ((dllLoadError = (long)LoadDLLIfNeeded())!=0)
         return dllLoadError;
-	
+
 	return (*ADSetLanguage_Ptr)(language);
 }
 
@@ -1211,7 +1211,7 @@ long GetData_String(long DataNo, char *Data, long MaxCount)
     long dllLoadError;
     if ((dllLoadError = (long)LoadDLLIfNeeded())!=0)
         return dllLoadError;
-	
+
 	return (*GetData_String_Ptr)(Data, MaxCount+1, (short)DataNo, DeviceNo);
 }
 
@@ -1222,7 +1222,7 @@ long String_Length(long DataNo)
     long dllLoadError;
     if ((dllLoadError = (long)LoadDLLIfNeeded())!=0)
         return dllLoadError;
-	
+
 	return (*String_Length_Ptr)((short)DataNo, DeviceNo);
 }
 
@@ -1233,7 +1233,7 @@ long SetData_String(long DataNo, char *Data)
     long dllLoadError;
     if ((dllLoadError = (long)LoadDLLIfNeeded())!=0)
         return dllLoadError;
-	
+
 	return (*SetData_String_Ptr)(Data, (short)DataNo, DeviceNo);
 }
 
@@ -1293,7 +1293,7 @@ long GetActivate(short ProcessNo)
   erg = Get_Par(parno);     /* Parameter holen */
   if (erg == 1)
 	  Set_Par(parno, 0);
-  
+
   return (erg);
 }
 
@@ -1308,7 +1308,7 @@ long Activate_PC(short ProcessNo)
   erg = Get_Par(parno);     /* Parameter holen */
   if (erg == 1)
 	  Set_Par(parno, 0);
-  
+
   return (erg);
 }
 
@@ -1331,7 +1331,7 @@ long GetOpt(short Index)
     if ((dllLoadError = (long)LoadDLLIfNeeded())!=0)
         return dllLoadError;
 
-	return (Get_Par((short)(Index-1000)));          
+	return (Get_Par((short)(Index-1000)));
 }
 
 /* Das short Array auf welches iw zeigt als Ausgabesignalform auf ADwin-Karte ausgeben */
@@ -1374,7 +1374,7 @@ short ZykStop(short ProzessNoZyk)
     short dllLoadError;
     if ((dllLoadError = (short)LoadDLLIfNeeded())!=0)
         return dllLoadError;
-	
+
 	return (*Stop_Ptr)(ProzessNoZyk, DeviceNo);	/* Start process */
 }
 
@@ -1385,7 +1385,7 @@ short Get_Known_DeviceNo(short *Devices, long *Count_Devices)
     short dllLoadError;
     if ((dllLoadError = (short)LoadDLLIfNeeded())!=0)
         return dllLoadError;
-	
+
 	return (*Get_Known_Deviceno_Ptr)(Devices, Count_Devices);	/* Start process */
 }
 
@@ -1396,7 +1396,7 @@ long Get_Known_USB_SerialNo(long *SerialNo)
     short dllLoadError;
     if ((dllLoadError = (short)LoadDLLIfNeeded())!=0)
         return dllLoadError;
-	
+
 	return (*Get_Known_USB_SerialNo_Ptr)(SerialNo);	/* Start process */
 }
 
@@ -1407,7 +1407,7 @@ int ADwin_Debug_Mode_On(char my_FAR *Filename, long Size)
     short dllLoadError;
     if ((dllLoadError = (short)LoadDLLIfNeeded())!=0)
         return dllLoadError;
-	
+
 	return (*ADwin_Debug_Mode_On_Ptr)(Filename, Size);	/* Start process */
 }
 
@@ -1418,7 +1418,7 @@ int ADwin_Debug_Mode_Off(void)
     short dllLoadError;
     if ((dllLoadError = (short)LoadDLLIfNeeded())!=0)
         return dllLoadError;
-	
+
 	return (*ADwin_Debug_Mode_Off_Ptr)();	/* Start process */
 }
 

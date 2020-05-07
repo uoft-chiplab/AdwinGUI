@@ -30,7 +30,7 @@
           /* (no menu bars in the resource file) */
 
 
-     /* Callback Prototypes: */ 
+     /* Callback Prototypes: */
 
 int  CVICALLBACK CMD_ANCANCEL_CALLBACK(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);
 int  CVICALLBACK CMD_SETANALAOG_CALLBACK(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);

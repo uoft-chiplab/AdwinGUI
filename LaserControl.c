@@ -1,8 +1,8 @@
-/*  LaserControl.c 
+/*  LaserControl.c
 	Author: David Burns, July 2006 */
 
 #include <ansi_c.h>
-#include <cvirte.h>		
+#include <cvirte.h>
 #include <userint.h>
 #include "LaserSettings.h"
 #include "LaserControl.h"
@@ -30,19 +30,19 @@ int CVICALLBACK SetLasConCALLBACK (int panel, int control, int event,
 {
 	double freq;
 	int laserNum;
-	
+
 	laserNum =   currenty-(NUMBERANALOGCHANNELS+NUMBERDDS+1);
 	switch (event)
 		{
 		case EVENT_COMMIT:
 			GetCtrlVal (panel,PANEL_LAS_CONTROL_MODE, &LaserTable[laserNum][currentx][currentpage].fcn);
-			GetCtrlVal (panel,PANEL_LAS_TARGET_FREQ, &freq); 
-			if(fabs(freq) > MAX_DDS_FREQ*LaserProperties[laserNum].DDS_Div)		  
-			{   	
-				SetCtrlVal(panel,PANEL_LAS_TARGET_FREQ,freq/fabs(freq)*MAX_DDS_FREQ*LaserProperties[laserNum].DDS_Div);	
+			GetCtrlVal (panel,PANEL_LAS_TARGET_FREQ, &freq);
+			if(fabs(freq) > MAX_DDS_FREQ*LaserProperties[laserNum].DDS_Div)
+			{
+				SetCtrlVal(panel,PANEL_LAS_TARGET_FREQ,freq/fabs(freq)*MAX_DDS_FREQ*LaserProperties[laserNum].DDS_Div);
 			}
 			else if(fabs(freq) < MIN_DDS_FREQ*LaserProperties[laserNum].DDS_Div & fabs(freq)!=0)
-			{		
+			{
 				SetCtrlVal(panel,PANEL_LAS_TARGET_FREQ,freq/fabs(freq)*MIN_DDS_FREQ*LaserProperties[laserNum].DDS_Div);
 			}
 			else
@@ -57,16 +57,16 @@ int CVICALLBACK SetLasConCALLBACK (int panel, int control, int event,
 }
 
 void SetLaserControlPanel(int laserNum)
-/*  Called before LaserControl.uir is displayed. Sets the laser name and particular freq/mode values corresponding to the 
+/*  Called before LaserControl.uir is displayed. Sets the laser name and particular freq/mode values corresponding to the
 	cell which was clicked */
 {
 	SetCtrlVal (panelHandle11,PANEL_LAS_CONTROL_MODE, LaserTable[currenty-(NUMBERANALOGCHANNELS+NUMBERDDS+1)][currentx][currentpage].fcn);
-	
+
 	if(LaserTable[currenty-(NUMBERANALOGCHANNELS+NUMBERDDS+1)][currentx][currentpage].fcn!=0)
-		SetCtrlVal (panelHandle11,PANEL_LAS_TARGET_FREQ, LaserTable[currenty-(NUMBERANALOGCHANNELS+NUMBERDDS+1)][currentx][currentpage].fval); 
+		SetCtrlVal (panelHandle11,PANEL_LAS_TARGET_FREQ, LaserTable[currenty-(NUMBERANALOGCHANNELS+NUMBERDDS+1)][currentx][currentpage].fval);
 	else
-		SetCtrlVal (panelHandle11,PANEL_LAS_TARGET_FREQ, findLastVal(currenty,currentx, currentpage)); 
-	
+		SetCtrlVal (panelHandle11,PANEL_LAS_TARGET_FREQ, findLastVal(currenty,currentx, currentpage));
+
 	SetCtrlVal (panelHandle11,PANEL_LAS_NAME,LaserProperties[laserNum].Name);
-	SetCtrlVal (panelHandle11,PANEL_LAS_LAST_VAL,findLastVal(currenty,currentx, currentpage)); 
+	SetCtrlVal (panelHandle11,PANEL_LAS_LAST_VAL,findLastVal(currenty,currentx, currentpage));
 }

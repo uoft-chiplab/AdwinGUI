@@ -26,7 +26,7 @@
           /* (no menu bars in the resource file) */
 
 
-     /* Callback Prototypes: */ 
+     /* Callback Prototypes: */
 
 int  CVICALLBACK NumSet_Cancel(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);
 int  CVICALLBACK NumSet_Ok(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);

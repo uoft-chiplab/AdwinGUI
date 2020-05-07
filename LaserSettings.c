@@ -1,14 +1,14 @@
-/*  LaserSettings.c 
+/*  LaserSettings.c
 	Author: David Burns, July 2006
 	Jan 2011: Added NUMBEROFANRITSU to various table creation parameters
-	
+
 	*/
-	
-	
+
+
 
 
 #include <ansi_c.h>
-#include <cvirte.h>		
+#include <cvirte.h>
 #include <userint.h>
 #include "LaserSettings.h"
 #include "LaserSettings2.h"
@@ -24,7 +24,7 @@ int CVICALLBACK LaserSelect (int panel, int control, int event,
 	Loads Laser Settings into GUI table */
 {
 	int laserNum;
-	
+
 	switch (event)  {
 		case EVENT_COMMIT:
 			GetCtrlVal (panel, control, &laserNum);
@@ -55,7 +55,7 @@ int CVICALLBACK LaserSettingsTable (int panel, int control, int event,
 /* Callback function for the Settings Table. Updates changes to the corresponding virtual parameters */
 {
 	int laserNum;
-	
+
 	switch (event)  {
 		case EVENT_VAL_CHANGED:
 			GetCtrlVal (panel,PANEL_LASER_RING, &laserNum);
@@ -81,7 +81,7 @@ int CVICALLBACK LaserSettingsTable (int panel, int control, int event,
 					if(LaserProperties[laserNum].DDS_Div<1)
 					{
 						LaserProperties[laserNum].DDS_Div=1;
-						SetTableCellVal (panelHandle10, PANEL_LASER_SET_TABLE,MakePoint(2,6),LaserProperties[laserNum].DDS_Div);  
+						SetTableCellVal (panelHandle10, PANEL_LASER_SET_TABLE,MakePoint(2,6),LaserProperties[laserNum].DDS_Div);
 
 					}
 				break;
@@ -101,7 +101,7 @@ int CVICALLBACK LASER_TOGGLE_CALLBACK (int panel, int control, int event,
 /* Callback funtion for the Laser on/off button. */
 {
 	int laserNum;
-	
+
 	switch (event)  {
 		case EVENT_COMMIT:
 			GetCtrlVal (panel,PANEL_LASER_RING, &laserNum);
@@ -117,18 +117,18 @@ int CVICALLBACK LASER_TOGGLE_CALLBACK (int panel, int control, int event,
 
 /*************************************************************************************************************************/
 void SetLaserLabels(void)
-/*  Copies the LASER_NAMES into the appropriate label locations on the panel. Red bkgnd applied to active lasers, white 
+/*  Copies the LASER_NAMES into the appropriate label locations on the panel. Red bkgnd applied to active lasers, white
 	for inactive lasers. */
 {
 	int i;
 	for(i=0;i<NUMBERLASERS;i++)  {
 		SetTableCellVal (panelHandle, PANEL_TBL_ANAMES, MakePoint(1,i+NUMBERANALOGCHANNELS+NUMBERDDS+ NUMBEROFANRITSU*2+ 1), LaserProperties[i].Name);
-		
+
 		if (LaserProperties[i].Active ==1)
-			SetTableCellAttribute (panelHandle, PANEL_TBL_ANAMES,MakePoint(1,i+NUMBERANALOGCHANNELS+NUMBERDDS + NUMBEROFANRITSU*2 +1), ATTR_TEXT_BGCOLOR,0xFF3366L); 
+			SetTableCellAttribute (panelHandle, PANEL_TBL_ANAMES,MakePoint(1,i+NUMBERANALOGCHANNELS+NUMBERDDS + NUMBEROFANRITSU*2 +1), ATTR_TEXT_BGCOLOR,0xFF3366L);
 		else
 			SetTableCellAttribute (panelHandle, PANEL_TBL_ANAMES,MakePoint(1,i+NUMBERANALOGCHANNELS+NUMBERDDS + NUMBEROFANRITSU*2 +1), ATTR_TEXT_BGCOLOR,VAL_WHITE);
-			
+
 		ReplaceListItem (panelHandle10,PANEL_LASER_RING,i,LaserProperties[i].Name,i);
 	}
 }
@@ -143,8 +143,8 @@ void FillLaserTable(int laserNum)
 	SetTableCellVal (panelHandle10, PANEL_LASER_SET_TABLE,MakePoint(2,3),LaserProperties[laserNum].Port);	///alan says to take this out!
 	SetTableCellVal (panelHandle10, PANEL_LASER_SET_TABLE,MakePoint(2,4),LaserProperties[laserNum].DigitalChannel);
 	SetTableCellVal (panelHandle10, PANEL_LASER_SET_TABLE,MakePoint(2,5),LaserProperties[laserNum].DDS_Clock);
-	SetTableCellVal (panelHandle10, PANEL_LASER_SET_TABLE,MakePoint(2,6),LaserProperties[laserNum].DDS_Div);  
-	SetTableCellVal (panelHandle10, PANEL_LASER_SET_TABLE,MakePoint(2,7),LaserProperties[laserNum].DDS_Type); 
+	SetTableCellVal (panelHandle10, PANEL_LASER_SET_TABLE,MakePoint(2,6),LaserProperties[laserNum].DDS_Div);
+	SetTableCellVal (panelHandle10, PANEL_LASER_SET_TABLE,MakePoint(2,7),LaserProperties[laserNum].DDS_Type);
 	SetCtrlVal (panelHandle10, PANEL_LASER_TOGGLE, LaserProperties[laserNum].Active);
 }
 
@@ -152,16 +152,16 @@ void FillLaserTable(int laserNum)
 /*************************************************************************************************************************/
 void LaserSettingsInit(void)
 /*  Sets the LASER_CHANNEL array with values defined in LaserSettings2.h
-	Fills table with laser0 data and sets ring menu to laser0 
+	Fills table with laser0 data and sets ring menu to laser0
 	Called at program startup */
 {
 	int i;
-	
+
 ///	LaserProperties[0].DigitalChannel=LASCHAN0;
 ///	LaserProperties[1].DigitalChannel=LASCHAN1;
 ///	LaserProperties[2].DigitalChannel=LASCHAN2;
 ///	LaserProperties[3].DigitalChannel=LASCHAN3;
-	
+
 	for (i=0;i<NUMBERLASERS;i++)  {
 		SetTableCellAttribute (panelHandle, PANEL_TBL_ANAMES, MakePoint(2,i+NUMBERANALOGCHANNELS+NUMBERDDS + 2*NUMBEROFANRITSU+1), ATTR_CELL_TYPE, VAL_CELL_STRING);
 		SetTableCellVal (panelHandle, PANEL_TBL_ANAMES, MakePoint(2,i+NUMBERANALOGCHANNELS+NUMBERDDS +2*NUMBEROFANRITSU +1),"MHz");

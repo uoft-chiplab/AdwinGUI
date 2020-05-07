@@ -9,7 +9,7 @@ Really not needed.
 int CVICALLBACK SETFREQ_CALLBACK (int panel, int control, int event,
 		void *callbackData, int eventData1, int eventData2)
 {
-	
+
 	switch (event)
 		{
 		case EVENT_COMMIT:
@@ -22,7 +22,7 @@ int CVICALLBACK SETFREQ_CALLBACK (int panel, int control, int event,
 
 int CVICALLBACK SETPLL_CALLBACK (int panel, int control, int event,
 		void *callbackData, int eventData1, int eventData2)
-{   
+{
 	switch (event)
 		{
 		case EVENT_COMMIT:
@@ -36,12 +36,12 @@ int CVICALLBACK SETPLL_CALLBACK (int panel, int control, int event,
 int CVICALLBACK DDSDONE_CALLBACK (int panel, int control, int event,
 		void *callbackData, int eventData1, int eventData2)
 {
-	
-	
+
+
 	switch (event)
 		{
 		case EVENT_COMMIT:
-			
+
 			SaveDDSSettings();
 			HidePanel(panelHandle5);
 			break;
@@ -59,20 +59,20 @@ void LoadDDSSettings(void)
 	SetCtrlVal (panelHandle5, DDSPANEL_NUM_DDS2_CLOCK,DDS2_CLOCK);
 	SetCtrlVal (panelHandle5, DDSPANEL_NUM_DDS3_CLOCK,DDS3CLOCK);
 	return;
-	
+
 }
 
 
 void SaveDDSSettings(void)  {
 	int temp1;
 	double temp2;
-	
+
 	GetCtrlVal (panelHandle5, DDSPANEL_NUM_PLLMULTIPLIER, &temp1);
 	GetCtrlVal (panelHandle5, DDSPANEL_NUM_DDSBASEFREQ, &temp2);
-	
+
 	DDSFreq.extclock = temp2;
 	DDSFreq.PLLmult = temp1;
 	DDSFreq.clock = DDSFreq.extclock * DDSFreq.PLLmult;
-	
+
 	return;
 }

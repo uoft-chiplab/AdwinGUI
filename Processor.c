@@ -1,7 +1,7 @@
 #include <ansi_c.h>
 #include <userint.h>
 #include "Processor.h"
-#include "vars.h"  
+#include "vars.h"
 
 int CVICALLBACK PROCESSORSWITCH_CALLBACK (int panel, int control, int event,
 		void *callbackData, int eventData1, int eventData2)

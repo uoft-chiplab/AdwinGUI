@@ -34,7 +34,7 @@
           /* (no menu bars in the resource file) */
 
 
-     /* Callback Prototypes: */ 
+     /* Callback Prototypes: */
 
 int  CVICALLBACK DEVICENO_CALLBACK(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);
 int  CVICALLBACK GPIB_BUILD_CALLBACK(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);

@@ -55,7 +55,7 @@ Analog and Digital Channels (and laser table and necessary parts of dds and anri
 
 #define NUMBEROFCOLUMNS (17)		//
 #define NUMBEROFPAGES (11)			//currently hardwired up to 10
-									// to be quick & dirty about it, just change 
+									// to be quick & dirty about it, just change
 									//numberofpages to 1 more than actual (WTF???)
 
 
@@ -70,7 +70,7 @@ Analog and Digital Channels (and laser table and necessary parts of dds and anri
 									// reserved for DDS3				  NU
 #define NUMBERDDS (3)				// Number of DDS's
 #define DDS2_CLOCK (983.04)			// clock speed of DDS 2 in MHz
-#define DDS3CLOCK (300.0)			// clock speed of DDS 2 in MHz  
+#define DDS3CLOCK (300.0)			// clock speed of DDS 2 in MHz
 #define NUMBERLASERS (4)			// Number of Lasers
 #define NUMBEROFANRITSU (1) 	 	// Number of microwave generators (on the off chance we get more than one)
 
@@ -83,7 +83,7 @@ Analog and Digital Channels (and laser table and necessary parts of dds and anri
 
 
 // number of columns needed in the meta-tables (with some overhead)
-// reducing it to (NUMBEROFPAGES+1)*(NUMBEROFCOLUMNS+1) leads to a 
+// reducing it to (NUMBEROFPAGES+1)*(NUMBEROFCOLUMNS+1) leads to a
 // screwed-up update list.
 #define NUMBEROFMETACOLUMNS (500)
 
@@ -110,7 +110,7 @@ struct AnalogTableValues{
 	};
 
 struct AnalogTableValues AnalogTable[NUMBEROFCOLUMNS+1][NUMBERANALOGROWS+1][NUMBEROFPAGES]; //+1 needed because all code done assumed base 1 arrays...
-	// the structure is the values/elements contained at each point in the 
+	// the structure is the values/elements contained at each point in the
 	// analog panel.  The array aval, is set up as [x][y][page]
 
 int DigTableValues[NUMBEROFCOLUMNS+1][MAXDIGITAL][NUMBEROFPAGES];
@@ -134,15 +134,15 @@ struct DigitalChannelProperties{
 	}	DChName[MAXDIGITAL];
 
 
-int ChMap[MAXANALOG];	// The channel mapping (for analog). i.e. if we program line 1 as channel 
+int ChMap[MAXANALOG];	// The channel mapping (for analog). i.e. if we program line 1 as channel
 				// 12, the ChMap[12]=1
 
 
 
 /***********************************************************************
 Color definitions for panel display
-*************************************************************************/									
-#define CLR_ANALOG_STEP		0xFF3366L	
+*************************************************************************/
+#define CLR_ANALOG_STEP		0xFF3366L
 #define CLR_ANALOG_LINEAR 	0x33FF66L
 #define CLR_ANALOG_EXP 		VAL_BLUE
 #define CLR_ANALOG_MINJERK 	0xCC33FFL
@@ -191,7 +191,7 @@ int panelHandle0;
 int panelHandle,panelHandle2,panelHandle3,panelHandle4,panelHandle5;
 int panelHandle6,panelHandle7,panelHandle8,panelHandle9,panelHandle10;
 int panelHandle11,panelHandle12,panelHandle13;
-int panelHandleANRITSU, panelHandleANRITSUSETTINGS; 
+int panelHandleANRITSU, panelHandleANRITSUSETTINGS;
 int panelHandle_sub1,panelHandle_sub2;
 int menuHandle;
 
@@ -254,7 +254,7 @@ struct LaserProps{
 	int Active;				 	  // 1 if that laser is being used, 0 otherwise
 	char Name[20];			 	  // Laser name
 	char IP[20];			 	  // IP addresses for Rabbit controller TCP Socket
-	unsigned int Port;		 	  // Port for Rabbit controller TCP Socket  
+	unsigned int Port;		 	  // Port for Rabbit controller TCP Socket
 	int DigitalChannel;		      // An array built from the LASCHAN values
 	double DDS_Clock;		      // Laser DDS Clock Frequency
 	double ICPREF;			      // Charge Pump Ref Current(mA) Note: ICP=1.24V/CPISET --> CPISET resistor is 2.4kOhm on eval board
@@ -278,7 +278,7 @@ struct LaserProps{
 
 #define MINRAMP_LEADOUT (0.0)   //This much time in (ms) is given to the rabbit to begin preprocessing of events following a ramp.
 #define MAX_DDS_SCANRATE (100.0) //in MHz/ms (this is actually currently limited by the max laser scan response rate
-#define MIN_DDS_FREQ (0.001) //MHz - this is a result of the minimum freq which is accepted into Hittite prescalers 
+#define MIN_DDS_FREQ (0.001) //MHz - this is a result of the minimum freq which is accepted into Hittite prescalers
 #define MAX_DDS_FREQ (450.0) //MHz
 #define MAX_PFD_INPUT (150.0) //MHz - limitation of AD9858 detector
 ///#define ONBOARD_ROSA_DIV (1) //On board integer divders ratio cutting down rosa signal (16 on eval boad)
@@ -345,7 +345,7 @@ double SRS_amplitude, SRS_offset,SRS_frequency;
 struct GPIBDDeviceProperties{
 	int		address;	// GPIB address (1..32), 0 means: not initialized
 	char    devname[50]; // name of the device
-	char	cmdmask[1024]; 
+	char	cmdmask[1024];
 	char	command[1024];
 	char	lastsent[1024];
 	double	value[20];
@@ -405,7 +405,7 @@ struct MultiScanParameters{
 	int    	Column;
 	int    	Page;
 	int    	Type;// 0 for Analog, 1 for Time, 2 for DDS, 3 for Laser, 4 for Anritsu
-	double	CurrentScanValue;	
+	double	CurrentScanValue;
 	BOOL   	CellExists;
 	double	Time;					  // for Time scan
 	struct 	AnalogTableValues Analog; // for Analog Channel scan
@@ -572,7 +572,7 @@ struct ScanSet{
 	int	   Iterations;
 	int    Current_Step;
 	double Current_Value;
-	int    Current_Iteration;	
+	int    Current_Iteration;
 }	ScanVal;
 
 struct Scan2Set{
@@ -582,7 +582,7 @@ struct Scan2Set{
 	int	   Iterations;
 	int    Current_Step;
 	double Current_Value;
-	int    Current_Iteration;	
+	int    Current_Iteration;
 }	Scan2Val;
 
 
