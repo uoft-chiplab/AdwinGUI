@@ -139,7 +139,7 @@ int ChMap[MAXANALOG];	// The channel mapping (for analog). i.e. if we program li
 
 
 
-/***********************************************************************
+/************************************************************************
 Color definitions for panel display
 *************************************************************************/
 #define CLR_ANALOG_STEP		0xFF3366L
