@@ -10,7 +10,7 @@ IVI Standard Root Dir = "/C/Program Files (x86)/IVI Foundation/IVI"
 VXIplug&play Framework Dir = "/C/Program Files (x86)/IVI Foundation/VISA/winnt"
 IVI Standard Root 64-bit Dir = "/C/Program Files/IVI Foundation/IVI"
 VXIplug&play Framework 64-bit Dir = "/C/Program Files/IVI Foundation/VISA/win64"
-Number of Files = 67
+Number of Files = 69
 Target Type = "Executable"
 Flags = 16
 Copied From Locked InstrDrv Directory = False
@@ -242,8 +242,9 @@ File Type = "CSource"
 Res Id = 16
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "scan.c"
-Path = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/scan.c"
+Path Rel Path = "saveload.c"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/savelo"
+Path Line0002 = "ad.c"
 Exclude = False
 Compile Into Object File = False
 Project Flags = 0
@@ -255,9 +256,8 @@ File Type = "CSource"
 Res Id = 17
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "ScanTableLoader.c"
-Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/ScanTa"
-Path Line0002 = "bleLoader.c"
+Path Rel Path = "scan.c"
+Path = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/scan.c"
 Exclude = False
 Compile Into Object File = False
 Project Flags = 0
@@ -269,6 +269,20 @@ File Type = "CSource"
 Res Id = 18
 Path Is Rel = True
 Path Rel To = "Project"
+Path Rel Path = "ScanTableLoader.c"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/ScanTa"
+Path Line0002 = "bleLoader.c"
+Exclude = False
+Compile Into Object File = False
+Project Flags = 0
+Folder = "Source Files"
+Folder Id = 0
+
+[File 0019]
+File Type = "CSource"
+Res Id = 19
+Path Is Rel = True
+Path Rel To = "Project"
 Path Rel Path = "VISA_SRS_SETUP.c"
 Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/VISA_S"
 Path Line0002 = "RS_SETUP.c"
@@ -278,9 +292,9 @@ Project Flags = 0
 Folder = "Source Files"
 Folder Id = 0
 
-[File 0019]
+[File 0020]
 File Type = "Include"
-Res Id = 19
+Res Id = 20
 Path Is Rel = True
 Path Rel To = "Project"
 Path Rel Path = "Adwin.h"
@@ -291,9 +305,9 @@ Project Flags = 0
 Folder = "Include Files"
 Folder Id = 1
 
-[File 0020]
+[File 0021]
 File Type = "Include"
-Res Id = 20
+Res Id = 21
 Path Is Rel = True
 Path Rel To = "Project"
 Path Rel Path = "AnalogControl.h"
@@ -304,9 +318,9 @@ Project Flags = 0
 Folder = "Include Files"
 Folder Id = 1
 
-[File 0021]
+[File 0022]
 File Type = "Include"
-Res Id = 21
+Res Id = 22
 Path Is Rel = True
 Path Rel To = "Project"
 Path Rel Path = "AnalogControl2.h"
@@ -317,9 +331,9 @@ Project Flags = 0
 Folder = "Include Files"
 Folder Id = 1
 
-[File 0022]
+[File 0023]
 File Type = "Include"
-Res Id = 22
+Res Id = 23
 Path Is Rel = True
 Path Rel To = "Project"
 Path Rel Path = "AnalogSettings.h"
@@ -330,9 +344,9 @@ Project Flags = 0
 Folder = "Include Files"
 Folder Id = 1
 
-[File 0023]
+[File 0024]
 File Type = "Include"
-Res Id = 23
+Res Id = 24
 Path Is Rel = True
 Path Rel To = "Project"
 Path Rel Path = "AnalogSettings2.h"
@@ -343,9 +357,9 @@ Project Flags = 0
 Folder = "Include Files"
 Folder Id = 1
 
-[File 0024]
+[File 0025]
 File Type = "Include"
-Res Id = 24
+Res Id = 25
 Path Is Rel = True
 Path Rel To = "Project"
 Path Rel Path = "AnritsuControl.h"
@@ -356,9 +370,9 @@ Project Flags = 0
 Folder = "Include Files"
 Folder Id = 1
 
-[File 0025]
+[File 0026]
 File Type = "Include"
-Res Id = 25
+Res Id = 26
 Path Is Rel = True
 Path Rel To = "Project"
 Path Rel Path = "AnritsuControl2.h"
@@ -369,9 +383,9 @@ Project Flags = 0
 Folder = "Include Files"
 Folder Id = 1
 
-[File 0026]
+[File 0027]
 File Type = "Include"
-Res Id = 26
+Res Id = 27
 Path Is Rel = True
 Path Rel To = "Project"
 Path Rel Path = "AnritsuSettings.h"
@@ -382,9 +396,9 @@ Project Flags = 0
 Folder = "Include Files"
 Folder Id = 1
 
-[File 0027]
+[File 0028]
 File Type = "Include"
-Res Id = 27
+Res Id = 28
 Path Is Rel = True
 Path Rel To = "Project"
 Path Rel Path = "AnritsuSettings2.h"
@@ -395,9 +409,9 @@ Project Flags = 0
 Folder = "Include Files"
 Folder Id = 1
 
-[File 0028]
+[File 0029]
 File Type = "Include"
-Res Id = 28
+Res Id = 29
 Path Is Rel = True
 Path Rel To = "Project"
 Path Rel Path = "DDSControl.h"
@@ -408,9 +422,9 @@ Project Flags = 0
 Folder = "Include Files"
 Folder Id = 1
 
-[File 0029]
+[File 0030]
 File Type = "Include"
-Res Id = 29
+Res Id = 30
 Path Is Rel = True
 Path Rel To = "Project"
 Path Rel Path = "DDSControl2.h"
@@ -421,9 +435,9 @@ Project Flags = 0
 Folder = "Include Files"
 Folder Id = 1
 
-[File 0030]
+[File 0031]
 File Type = "Include"
-Res Id = 30
+Res Id = 31
 Path Is Rel = True
 Path Rel To = "Project"
 Path Rel Path = "DDSSettings.h"
@@ -434,9 +448,9 @@ Project Flags = 0
 Folder = "Include Files"
 Folder Id = 1
 
-[File 0031]
+[File 0032]
 File Type = "Include"
-Res Id = 31
+Res Id = 32
 Path Is Rel = True
 Path Rel To = "Project"
 Path Rel Path = "DDSSettings2.h"
@@ -447,9 +461,9 @@ Project Flags = 0
 Folder = "Include Files"
 Folder Id = 1
 
-[File 0032]
+[File 0033]
 File Type = "Include"
-Res Id = 32
+Res Id = 33
 Path Is Rel = True
 Path Rel To = "Project"
 Path Rel Path = "ddstranslator.h"
@@ -460,9 +474,9 @@ Project Flags = 0
 Folder = "Include Files"
 Folder Id = 1
 
-[File 0033]
+[File 0034]
 File Type = "Include"
-Res Id = 33
+Res Id = 34
 Path Is Rel = True
 Path Rel To = "Project"
 Path Rel Path = "DigitalSettings.h"
@@ -473,9 +487,9 @@ Project Flags = 0
 Folder = "Include Files"
 Folder Id = 1
 
-[File 0034]
+[File 0035]
 File Type = "Include"
-Res Id = 34
+Res Id = 35
 Path Is Rel = True
 Path Rel To = "Project"
 Path Rel Path = "DigitalSettings2.h"
@@ -486,9 +500,9 @@ Project Flags = 0
 Folder = "Include Files"
 Folder Id = 1
 
-[File 0035]
+[File 0036]
 File Type = "Include"
-Res Id = 35
+Res Id = 36
 Path Is Rel = True
 Path Rel To = "Project"
 Path Rel Path = "GPIB_SRS_SETUP.h"
@@ -499,9 +513,9 @@ Project Flags = 0
 Folder = "Include Files"
 Folder Id = 1
 
-[File 0036]
+[File 0037]
 File Type = "Include"
-Res Id = 36
+Res Id = 37
 Path Is Rel = True
 Path Rel To = "Project"
 Path Rel Path = "GPIB_SRS_SETUP2.h"
@@ -512,9 +526,9 @@ Project Flags = 0
 Folder = "Include Files"
 Folder Id = 1
 
-[File 0037]
+[File 0038]
 File Type = "Include"
-Res Id = 37
+Res Id = 38
 Path Is Rel = True
 Path Rel To = "Project"
 Path Rel Path = "GUIDesign.h"
@@ -525,9 +539,9 @@ Project Flags = 0
 Folder = "Include Files"
 Folder Id = 1
 
-[File 0038]
+[File 0039]
 File Type = "Include"
-Res Id = 38
+Res Id = 39
 Path Is Rel = True
 Path Rel To = "Project"
 Path Rel Path = "GUIDesign2.h"
@@ -538,9 +552,9 @@ Project Flags = 0
 Folder = "Include Files"
 Folder Id = 1
 
-[File 0039]
+[File 0040]
 File Type = "Include"
-Res Id = 39
+Res Id = 40
 Path Is Rel = True
 Path Rel To = "Project"
 Path Rel Path = "LaserControl.h"
@@ -551,9 +565,9 @@ Project Flags = 0
 Folder = "Include Files"
 Folder Id = 1
 
-[File 0040]
+[File 0041]
 File Type = "Include"
-Res Id = 40
+Res Id = 41
 Path Is Rel = True
 Path Rel To = "Project"
 Path Rel Path = "LaserControl2.h"
@@ -564,9 +578,9 @@ Project Flags = 0
 Folder = "Include Files"
 Folder Id = 1
 
-[File 0041]
+[File 0042]
 File Type = "Include"
-Res Id = 41
+Res Id = 42
 Path Is Rel = True
 Path Rel To = "Project"
 Path Rel Path = "LaserSettings.h"
@@ -577,9 +591,9 @@ Project Flags = 0
 Folder = "Include Files"
 Folder Id = 1
 
-[File 0042]
+[File 0043]
 File Type = "Include"
-Res Id = 42
+Res Id = 43
 Path Is Rel = True
 Path Rel To = "Project"
 Path Rel Path = "LaserSettings2.h"
@@ -590,9 +604,9 @@ Project Flags = 0
 Folder = "Include Files"
 Folder Id = 1
 
-[File 0043]
+[File 0044]
 File Type = "Include"
-Res Id = 43
+Res Id = 44
 Path Is Rel = True
 Path Rel To = "Project"
 Path Rel Path = "LaserTuning.h"
@@ -603,26 +617,13 @@ Project Flags = 0
 Folder = "Include Files"
 Folder Id = 1
 
-[File 0044]
-File Type = "Include"
-Res Id = 44
-Path Is Rel = True
-Path Rel To = "Project"
-Path Rel Path = "main.h"
-Path = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/main.h"
-Exclude = False
-Project Flags = 0
-Folder = "Include Files"
-Folder Id = 1
-
 [File 0045]
 File Type = "Include"
 Res Id = 45
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "NumSet.h"
-Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/NumSet"
-Path Line0002 = ".h"
+Path Rel Path = "main.h"
+Path = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/main.h"
 Exclude = False
 Project Flags = 0
 Folder = "Include Files"
@@ -633,9 +634,9 @@ File Type = "Include"
 Res Id = 46
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "Processor.h"
-Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Proces"
-Path Line0002 = "sor.h"
+Path Rel Path = "NumSet.h"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/NumSet"
+Path Line0002 = ".h"
 Exclude = False
 Project Flags = 0
 Folder = "Include Files"
@@ -646,9 +647,9 @@ File Type = "Include"
 Res Id = 47
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "RabbitCom9858.h"
-Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Rabbit"
-Path Line0002 = "Com9858.h"
+Path Rel Path = "Processor.h"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Proces"
+Path Line0002 = "sor.h"
 Exclude = False
 Project Flags = 0
 Folder = "Include Files"
@@ -659,8 +660,9 @@ File Type = "Include"
 Res Id = 48
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "Scan.h"
-Path = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Scan.h"
+Path Rel Path = "RabbitCom9858.h"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Rabbit"
+Path Line0002 = "Com9858.h"
 Exclude = False
 Project Flags = 0
 Folder = "Include Files"
@@ -671,9 +673,9 @@ File Type = "Include"
 Res Id = 49
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "scan2.h"
-Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/scan2."
-Path Line0002 = "h"
+Path Rel Path = "saveload.h"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/savelo"
+Path Line0002 = "ad.h"
 Exclude = False
 Project Flags = 0
 Folder = "Include Files"
@@ -684,9 +686,8 @@ File Type = "Include"
 Res Id = 50
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "ScanTableLoader.h"
-Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/ScanTa"
-Path Line0002 = "bleLoader.h"
+Path Rel Path = "Scan.h"
+Path = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Scan.h"
 Exclude = False
 Project Flags = 0
 Folder = "Include Files"
@@ -697,9 +698,9 @@ File Type = "Include"
 Res Id = 51
 Path Is Rel = True
 Path Rel To = "Project"
-Path Rel Path = "ScanTableLoader2.h"
-Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/ScanTa"
-Path Line0002 = "bleLoader2.h"
+Path Rel Path = "scan2.h"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/scan2."
+Path Line0002 = "h"
 Exclude = False
 Project Flags = 0
 Folder = "Include Files"
@@ -710,6 +711,32 @@ File Type = "Include"
 Res Id = 52
 Path Is Rel = True
 Path Rel To = "Project"
+Path Rel Path = "ScanTableLoader.h"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/ScanTa"
+Path Line0002 = "bleLoader.h"
+Exclude = False
+Project Flags = 0
+Folder = "Include Files"
+Folder Id = 1
+
+[File 0053]
+File Type = "Include"
+Res Id = 53
+Path Is Rel = True
+Path Rel To = "Project"
+Path Rel Path = "ScanTableLoader2.h"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/ScanTa"
+Path Line0002 = "bleLoader2.h"
+Exclude = False
+Project Flags = 0
+Folder = "Include Files"
+Folder Id = 1
+
+[File 0054]
+File Type = "Include"
+Res Id = 54
+Path Is Rel = True
+Path Rel To = "Project"
 Path Rel Path = "vars.h"
 Path = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/vars.h"
 Exclude = False
@@ -717,9 +744,9 @@ Project Flags = 0
 Folder = "Include Files"
 Folder Id = 1
 
-[File 0053]
+[File 0055]
 File Type = "User Interface Resource"
-Res Id = 53
+Res Id = 55
 Path Is Rel = True
 Path Rel To = "Project"
 Path Rel Path = "AnalogControl.uir"
@@ -730,9 +757,9 @@ Project Flags = 0
 Folder = "User Interface Files"
 Folder Id = 2
 
-[File 0054]
+[File 0056]
 File Type = "User Interface Resource"
-Res Id = 54
+Res Id = 56
 Path Is Rel = True
 Path Rel To = "Project"
 Path Rel Path = "AnalogSettings.uir"
@@ -743,9 +770,9 @@ Project Flags = 0
 Folder = "User Interface Files"
 Folder Id = 2
 
-[File 0055]
+[File 0057]
 File Type = "User Interface Resource"
-Res Id = 55
+Res Id = 57
 Path Is Rel = True
 Path Rel To = "Project"
 Path Rel Path = "AnritsuControl.uir"
@@ -756,9 +783,9 @@ Project Flags = 0
 Folder = "User Interface Files"
 Folder Id = 2
 
-[File 0056]
+[File 0058]
 File Type = "User Interface Resource"
-Res Id = 56
+Res Id = 58
 Path Is Rel = True
 Path Rel To = "Project"
 Path Rel Path = "AnritsuSettings.uir"
@@ -769,9 +796,9 @@ Project Flags = 0
 Folder = "User Interface Files"
 Folder Id = 2
 
-[File 0057]
+[File 0059]
 File Type = "User Interface Resource"
-Res Id = 57
+Res Id = 59
 Path Is Rel = True
 Path Rel To = "Project"
 Path Rel Path = "DDSControl.uir"
@@ -782,9 +809,9 @@ Project Flags = 0
 Folder = "User Interface Files"
 Folder Id = 2
 
-[File 0058]
+[File 0060]
 File Type = "User Interface Resource"
-Res Id = 58
+Res Id = 60
 Path Is Rel = True
 Path Rel To = "Project"
 Path Rel Path = "DDSSettings.uir"
@@ -795,9 +822,9 @@ Project Flags = 0
 Folder = "User Interface Files"
 Folder Id = 2
 
-[File 0059]
+[File 0061]
 File Type = "User Interface Resource"
-Res Id = 59
+Res Id = 61
 Path Is Rel = True
 Path Rel To = "Project"
 Path Rel Path = "DigitalSettings.uir"
@@ -808,9 +835,9 @@ Project Flags = 0
 Folder = "User Interface Files"
 Folder Id = 2
 
-[File 0060]
+[File 0062]
 File Type = "User Interface Resource"
-Res Id = 60
+Res Id = 62
 Path Is Rel = True
 Path Rel To = "Project"
 Path Rel Path = "GPIB_SRS_SETUP.uir"
@@ -821,9 +848,9 @@ Project Flags = 0
 Folder = "User Interface Files"
 Folder Id = 2
 
-[File 0061]
+[File 0063]
 File Type = "User Interface Resource"
-Res Id = 61
+Res Id = 63
 Path Is Rel = True
 Path Rel To = "Project"
 Path Rel Path = "GUIDesign.uir"
@@ -834,9 +861,9 @@ Project Flags = 0
 Folder = "User Interface Files"
 Folder Id = 2
 
-[File 0062]
+[File 0064]
 File Type = "User Interface Resource"
-Res Id = 62
+Res Id = 64
 Path Is Rel = True
 Path Rel To = "Project"
 Path Rel Path = "LaserControl.uir"
@@ -847,9 +874,9 @@ Project Flags = 0
 Folder = "User Interface Files"
 Folder Id = 2
 
-[File 0063]
+[File 0065]
 File Type = "User Interface Resource"
-Res Id = 63
+Res Id = 65
 Path Is Rel = True
 Path Rel To = "Project"
 Path Rel Path = "LaserSettings.uir"
@@ -860,9 +887,9 @@ Project Flags = 0
 Folder = "User Interface Files"
 Folder Id = 2
 
-[File 0064]
+[File 0066]
 File Type = "User Interface Resource"
-Res Id = 64
+Res Id = 66
 Path Is Rel = True
 Path Rel To = "Project"
 Path Rel Path = "NumSet.uir"
@@ -873,9 +900,9 @@ Project Flags = 0
 Folder = "User Interface Files"
 Folder Id = 2
 
-[File 0065]
+[File 0067]
 File Type = "User Interface Resource"
-Res Id = 65
+Res Id = 67
 Path Is Rel = True
 Path Rel To = "Project"
 Path Rel Path = "Processor.uir"
@@ -886,9 +913,9 @@ Project Flags = 0
 Folder = "User Interface Files"
 Folder Id = 2
 
-[File 0066]
+[File 0068]
 File Type = "User Interface Resource"
-Res Id = 66
+Res Id = 68
 Path Is Rel = True
 Path Rel To = "Project"
 Path Rel Path = "Scan.uir"
@@ -899,9 +926,9 @@ Project Flags = 0
 Folder = "User Interface Files"
 Folder Id = 2
 
-[File 0067]
+[File 0069]
 File Type = "User Interface Resource"
-Res Id = 67
+Res Id = 69
 Path Is Rel = True
 Path Rel To = "Project"
 Path Rel Path = "ScanTableLoader.uir"
@@ -1267,12 +1294,12 @@ Single Header NI Type Info File = ""
 Default Calling Convention = "cdecl"
 Require Prototypes = True
 Require Return Values = True
-Enable Pointer Mismatch Warning = True
-Enable Unreachable Code Warning = True
+Enable Pointer Mismatch Warning = False
+Enable Unreachable Code Warning = False
 Enable Unreferenced Identifiers Warning = False
 Enable Assignment In Conditional Warning = False
 Enable C99 Extensions = False
-Uninitialized Locals Compile Warning = "Conservative"
+Uninitialized Locals Compile Warning = "Aggressive"
 Precompile Prefix Header = False
 Prefix Header File = ""
 

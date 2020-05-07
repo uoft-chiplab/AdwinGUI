@@ -2,7 +2,7 @@
 #define GUIDESIGN2_H
 
 #include <ansi_c.h>
-#include <userint.h>          
+#include <userint.h>
 #include "Adwin.h"
 #include "vars.h"
 #include "AnalogControl2.h"
@@ -20,11 +20,11 @@ struct AnVals{
 	double	tscale;		//the timescale to approach final value
 	} ;
 
-void LoadSettings(int);   
+void LoadSettings(int);
 void SaveSettings(int);
 void LoadLastSettings(int check);
-void ShiftColumn3(int col, int page,int dir);    
-void RunOnce(void); 
+void ShiftColumn3(int col, int page,int dir);
+void RunOnce(void);
 int  GetPage(void);
 void DrawNewTable(int dimmed);
 void CheckActivePages(void);
@@ -53,7 +53,7 @@ void UpdateScan1Value(int);
 void UpdateScan2Value(int);
 void ScanSetUp(void);
 void ExportScanBuffer(void);
-void ExportScan2Buffer(void); 
+void ExportScan2Buffer(void);
 double findLastVal(int row, int column, int page);
 
 void EnableScanControls(void);
@@ -75,11 +75,11 @@ void DrawLoopIndicators(void);// draw lines to indicate looping region
 
 
 // Right-click menu callback prototypes
-void CVICALLBACK Dig_Cell_Copy(int panelHandle, int controlID, int MenuItemID, void *callbackData);		  
-void CVICALLBACK Dig_Cell_Paste(int panelHandle, int controlID, int MenuItemID, void *callbackData);	  
-void CVICALLBACK Analog_Cell_Copy(int panelHandle, int controlID, int MenuItemID, void *callbackData);	  
-void CVICALLBACK Analog_Cell_Paste(int panelHandle, int controlID, int MenuItemID, void *callbackData);   
-void CVICALLBACK Scan_Table_Load(int panelHandle, int controlID, int MenuItemID, void *callbackData);  
+void CVICALLBACK Dig_Cell_Copy(int panelHandle, int controlID, int MenuItemID, void *callbackData);
+void CVICALLBACK Dig_Cell_Paste(int panelHandle, int controlID, int MenuItemID, void *callbackData);
+void CVICALLBACK Analog_Cell_Copy(int panelHandle, int controlID, int MenuItemID, void *callbackData);
+void CVICALLBACK Analog_Cell_Paste(int panelHandle, int controlID, int MenuItemID, void *callbackData);
+void CVICALLBACK Scan_Table_Load(int panelHandle, int controlID, int MenuItemID, void *callbackData);
 void CVICALLBACK Scan_Table_NumSet_Load(int panelHandle, int controlID, int MenuItemID, void *callbackData);
 void CVICALLBACK Scan_Table_Shuffle(int panelHandle, int controlID, int MenuItemID, void *callbackData);
 void CVICALLBACK MultiScan_AddCellToScan(int panelHandle, int controlID, int MenuItemID, void *callbackData);
