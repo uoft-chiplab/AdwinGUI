@@ -72,7 +72,6 @@ int main (int argc, char *argv[])
 	CloseFile (fileHandle);
 
 
-//	SetCtrlAttribute (panelHandle, PANEL_DEBUG, ATTR_VISIBLE, 0);
 	// Initialize arrays (to avoid undefined elements causing -99 to be written)
 	for (j=0;j<=NUMBERANALOGCHANNELS;j++)
 	{		 //ramp over # of analog chanels
@@ -163,7 +162,6 @@ int main (int argc, char *argv[])
 	// done initializing
 
 	EventPeriod=DefaultEventPeriod;
-	//ClearListCtrl(panelHandle,PANEL_DEBUG);
 
 	//LoadLastSettings(1); //This feature is not fully implemented
 

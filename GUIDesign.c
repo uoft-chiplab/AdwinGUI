@@ -1070,7 +1070,6 @@ void BuildUpdateList(double TMatrix[],
 	cycletime=(double)timesum/(double)timemult/1000;	// Total duration of the cycle, in seconds
 
 	sprintf(buff,"timesum %d",timesum);					// Print more debug info
-	//InsertListItem(panelHandle,PANEL_DEBUG,-1,buff,1);
 
 	// Update the ADWIN array if the user values have changed or we are requiring a rebuild.
 	if( ChangedVals == TRUE || forceBuild == TRUE){
@@ -1333,18 +1332,6 @@ void BuildUpdateList(double TMatrix[],
 
 		tstop=clock();
 
-	/*	#ifdef PRINT_TO_DEBUG
-			sprintf(buff,"count %d",count);
-			InsertListItem(panelHandle,PANEL_DEBUG,-1,buff,1);
-			sprintf(buff,"compressed count %d",newcount);
-			InsertListItem(panelHandle,PANEL_DEBUG,-1,buff,1);
-			sprintf(buff,"updates %d",nuptotal);
-			InsertListItem(panelHandle,PANEL_DEBUG,-1,buff,1);
-			sprintf(buff,"time to generate arrays:   %d",tstop-tstart);
-			InsertListItem(panelHandle,PANEL_DEBUG,-1,buff,1);
-
-		#endif		   */
-
 
 		if(processorT1x==0)
 		{
@@ -1479,7 +1466,6 @@ void BuildUpdateList(double TMatrix[],
 
 
 
-
 	// more debug info
 	//tstop=clock();
 	//timeused=tstop-tstart;
@@ -1498,15 +1484,6 @@ void BuildUpdateList(double TMatrix[],
 		//Fill IN
 
 	}
-
-	// even more debug info
-/*	InsertListItem(panelHandle,PANEL_DEBUG,-1,buff,1);
-	memused=(count+2*nuptotal)*4;//in bytes
-	sprintf(buff,"MB of data sent:   %f",(double)memused/1000000);
-	InsertListItem(panelHandle,PANEL_DEBUG,-1,buff,1);
-	sprintf(buff,"Transfer Rate:   %f   MB/s",(double)memused/(double)timeused/1000);
-	InsertListItem(panelHandle,PANEL_DEBUG,-1,buff,1);
- */
 
 	SetCtrlAttribute (panelHandle, PANEL_CMD_RUN,ATTR_CMD_BUTTON_COLOR, 0x00B0B0B0);
 

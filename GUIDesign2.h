@@ -11,7 +11,6 @@
 #include "DDSSettings2.h"
 #include "Scan2.h"
 #include "GPIB_SRS_SETUP2.h"
-#define PRINT_TO_DEBUG //if defined, outputs the array to the debug window
 
 struct AnVals{
 	int		fcn;		//fcn is an integer refering to a function to use.

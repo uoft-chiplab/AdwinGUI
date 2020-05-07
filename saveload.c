@@ -50,7 +50,6 @@ Feb 09, 2006   Clear the Debug box before saving. (was causing insanely large sa
 	GetMenuBarAttribute (menuHandle, MENU_FILE_BOOTLOAD, ATTR_CHECKED, &loadonboot);
 	if(!(status==0))
 	{
-	//	ClearListCtrl (panelHandle, PANEL_DEBUG);  // added Feb 09, 2006
 		SavePanelState(PANEL, fsavename, 1);  // This one can be problematic when elements have been removed from the GUI!!!
 		if(!(fpini=fopen("gui.ini","w"))==NULL)
 		{
@@ -999,7 +998,7 @@ void LoadLaserData(char savedname[500],int nameSize)
 
 
 /************************************************************************
-Even older ExportPanel functions
+Even older ExportPanel/Config functions
 *************************************************************************/
 
 // From GUIDesign.c
@@ -1143,7 +1142,6 @@ void ExportConfig(char fconfigname[290],int fnamesize)
 
 	if((fconfig=fopen(fconfigname,"w"))==NULL)
 	{
-		//InsertListItem(panelHandle,PANEL_DEBUG,-1,buff,1);
 		MessagePopup("Save Error","Failed to save configuration file");
 	}
 
