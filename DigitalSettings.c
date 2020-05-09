@@ -71,9 +71,10 @@ Set the digital line information DChName, based on information in text boxes.
 			for(i=0;i<NUMBERLASERS;i++)
 			{
 				if(LaserProperties[i].Active&&channel==LaserProperties[i].DigitalChannel)
-				   restrictedChannel=1;
+				{
+					restrictedChannel=1;
+				}
 			}
-
 
 			if(!restrictedChannel)
 			{
@@ -85,7 +86,6 @@ Set the digital line information DChName, based on information in text boxes.
 			{
 				sprintf(buff,"Channel %d is currently in use for laser triggering",channel);
 				MessagePopup("Error: Restricted Channel",buff);
-
 			}
 			SetDigitalChannels();
 			break;
@@ -126,15 +126,16 @@ Set the digital channel list (on main panel) with the information contained in t
 		for(j=0;j<NUMBERLASERS;j++)
 		{
 			if(LaserProperties[j].Active&&DChName[i].chnum==LaserProperties[j].DigitalChannel)
+			{
 				restrictedChannel++;
+			}
 
 		}
 	}
 	if(restrictedChannel>0)
+	{
 		MessagePopup("Digital Settings Warning","Restricted digital channels are in use.\nEdit Digital Settings");
-
-
-
+	}
 }
 
 //********************************************************************************************
