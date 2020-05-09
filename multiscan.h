@@ -24,6 +24,7 @@ void CVICALLBACK MultiScan_AddAnalogCellTimeScaleToScan(int panelHandle, int con
 void CVICALLBACK MultiScan_Table_SetVals(int panelHandle, int controlID, int MenuItemID, void *callbackData);
 void CVICALLBACK MultiScan_Table_DeleteColumn(int panelHandle, int controlID, int MenuItemID, void *callbackData);
 void CVICALLBACK MultiScan_Table_Shuffle(int panelHandle, int controlID, int MenuItemID, void *callbackData);
+void MultiScan_AddDdsEorToScan(int control);
 
 // Helper functions
 int ToDigital(double);

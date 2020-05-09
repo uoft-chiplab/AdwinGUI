@@ -3654,46 +3654,13 @@ void CVICALLBACK Analog_Cell_Paste(int panelHandle, int controlID, int MenuItemI
 
 // Callback so that right clicking on an EOR numeric entry element will add that EOR to the scan table.
 int CVICALLBACK DDS_OFFSET_CALLBACK (int panel, int control, int event,
-		void *callbackData, int eventData1, int eventData2)
+									 void *callbackData, int eventData1, int eventData2)
 {
-	int numCols, ccol, crow, cpage;
-
 	switch (event)
 	{
-	case EVENT_RIGHT_CLICK:
-		if( parameterscanmode == 0 ){
-			GetNumTableColumns(panelHandle0, PANEL_MULTISCAN_VAL_TABLE, &numCols);
-			if( numCols < NUMMAXSCANPARAMETERS )
-			{
-				// Add a column to the right, step up number in numeric control
-				InsertTableColumns(panelHandle0, PANEL_MULTISCAN_POS_TABLE, -1, 1, 0);
-				InsertTableColumns(panelHandle0, PANEL_MULTISCAN_VAL_TABLE, -1, 1, 0);
-				SetCtrlVal(panelHandle0, PANEL_MULTISCAN_NUM_NUMERIC, numCols+1);
-
-				// Get pseudo page,col,row for the DDS
-				// Same row as DDS in analog channel table
-				// Page doesn't make sense so set to 1 arbitrarily.
-				// Column doesn't make sense so set to a large value which will be the "EOR" column from now on
-				cpage = 1;
-				ccol = DDS_EOR_SCAN_COLUMN_VALUE;
-				switch( control )
-				{
-				case PANEL_NUM_DDS_OFFSET: crow = NUMBERANALOGCHANNELS+1; break;
-				case PANEL_NUM_DDS2_OFFSET: crow = NUMBERANALOGCHANNELS+2; break;
-				case PANEL_NUM_DDS3_OFFSET : crow = NUMBERANALOGCHANNELS+3; break;
-				}
-
-				// Write page, col, row to scan table
-				SetTableCellVal(panelHandle, PANEL_MULTISCAN_POS_TABLE, MakePoint(numCols+1,1), cpage);
-				SetTableCellVal(panelHandle, PANEL_MULTISCAN_POS_TABLE, MakePoint(numCols+1,2), ccol);
-				SetTableCellVal(panelHandle, PANEL_MULTISCAN_POS_TABLE, MakePoint(numCols+1,3), crow);
-			}
-			else
-			{
-				MessagePopup("Multi scan error","Cannot add parameter to scanlist. Maximum number\nof parameters reached. Need to increase NUMMAXSCANPARAMETERS.");
-			}
-		}
-		break;
+		case EVENT_RIGHT_CLICK:
+			MultiScan_AddDdsEorToScan(control);
+			break;
 	}
 	return 0;
 }
