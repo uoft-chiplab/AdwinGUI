@@ -19,6 +19,8 @@ The file that starts everything off.
 //#include <stdio.h>
 //#include  <Windows.h>
 
+#include "multiscan.h"
+
 int main (int argc, char *argv[])
 {
 	int i,j,k,status;

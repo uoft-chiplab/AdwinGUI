@@ -20,34 +20,16 @@ struct AnVals{
 	} ;
 
 
+int scancount;
+
+
 void ShiftColumn3(int col, int page,int dir);
 void RunOnce(void);
 int  GetPage(void);
 void DrawNewTable(int dimmed);
 void CheckActivePages(void);
 
-
-
-// To multiscan file
-void ExportScanBuffer(void);
-void ExportScan2Buffer(void);
-void AutoExportMultiScanBuffer(void);
-void ExportMultiScanBuffer(void);
-void UpdateMultiScanValues(int);
-void UpdateScanValue(int);
-void UpdateScan1Value(int);
-void UpdateScan2Value(int);
-void ScanSetUp(void);
 double findLastVal(int row, int column, int page);
-void EnableScanControls(void);
-void GetNewMultiScanCommands(void);
-void updateScannedCellsWithScanTableLine(int);
-void updateScannedCellsWithOriginalValues(void);
-void writeToScanInfoFile(void);
-int SetupScanFiles(int version, char *outputCmdsFileDir);
-// maybe the callback functions too
-
-
 
 void BuildUpdateList(double TMatrix[],struct AnVals AMat[NUMBERANALOGCHANNELS+1][500],int DMat[NUMBERDIGITALCHANNELS+1][500],ddsoptions_struct DDSArray[500],ddsoptions_struct DDS2Array[500],dds3options_struct DDS3Array[500],unsigned int LaserTriggerArray[NUMBERLASERS][500],int numtimes,int forceBuild);
 void SeqError(char * msg);
@@ -61,7 +43,6 @@ void SetDisplayType(int display_setting); //toggle graphic and numeric
 double CheckIfWithinLimits(double OutputVoltage, int linenumber);
 void OptimizeTimeLoop(int *,int,int*);
 
-int ToDigital(double);
 
 void MoveCanvasStart(int,int); // start arrow indicator, (x pos,on/off (i.e. True/False));
 void MoveCanvasEnd(int,int); // end arrow indicator, (x pos,on/off (i.e. True/False));
@@ -73,16 +54,7 @@ void CVICALLBACK Dig_Cell_Copy(int panelHandle, int controlID, int MenuItemID, v
 void CVICALLBACK Dig_Cell_Paste(int panelHandle, int controlID, int MenuItemID, void *callbackData);
 void CVICALLBACK Analog_Cell_Copy(int panelHandle, int controlID, int MenuItemID, void *callbackData);
 void CVICALLBACK Analog_Cell_Paste(int panelHandle, int controlID, int MenuItemID, void *callbackData);
-void CVICALLBACK Scan_Table_Load(int panelHandle, int controlID, int MenuItemID, void *callbackData);
-void CVICALLBACK Scan_Table_NumSet_Load(int panelHandle, int controlID, int MenuItemID, void *callbackData);
-void CVICALLBACK Scan_Table_Shuffle(int panelHandle, int controlID, int MenuItemID, void *callbackData);
-void CVICALLBACK MultiScan_AddCellToScan(int panelHandle, int controlID, int MenuItemID, void *callbackData);
-void CVICALLBACK MultiScan_AddAnalogCellTimeScaleToScan(int panelHandle, int controlID, int MenuItemID, void *callbackData);
-void CVICALLBACK MultiScan_Table_SetVals(int panelHandle, int controlID, int MenuItemID, void *callbackData);
-void CVICALLBACK MultiScan_Table_DeleteColumn(int panelHandle, int controlID, int MenuItemID, void *callbackData);
-void CVICALLBACK MultiScan_Table_Shuffle(int panelHandle, int controlID, int MenuItemID, void *callbackData);
 
 
 
-int scancount;
 #endif
