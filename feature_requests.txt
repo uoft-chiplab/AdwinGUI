@@ -8,6 +8,7 @@ Move all saving functions to their own c file.
 
 Decouple saving a sequence from the gui itself. Now, there are things saved in the .pan file that get lost if loading with a changed gui version.
 
+Move (Multi)Scan functions to their own c file.
 
 Broadly, clean up (duplicate and misplaced) function definitions.
 
