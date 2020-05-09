@@ -1,3 +1,6 @@
+#ifndef GPIB_SRS_SETUP2_H
+#define GPIB_SRS_SETUP2_H
+
 /*  GPIB_SRS_SETUP2.h */
 
 
@@ -11,3 +14,6 @@ void SendGPIBWaveform(int, double*);
 void SendVISAWaveform(ViSession, double*);
 void convertRigolDataToCmd(double *data, char *voltages, int ndata, int nChars, int outputnumber);
 int BuildRIGOLWaveform(char *voltages, double *pars, int *wavfchk, int nChars);
+
+
+#endif
