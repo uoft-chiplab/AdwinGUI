@@ -4,7 +4,14 @@
 // For now, do not put (Multi)Scan export functions here. They will go in the multiscan.c file eventually.
 
 // TODO:
-// There is fn CONFIG_EXPORT_CALLBACK which does similar things to ExportPanel but is all in the callback fn.
+// Write SaveArraysV17 where V17 save file
+//		a) saves the existing variables that are saved to the .arr file with better metalanguage
+//		b) saves the gpib settings in the same file
+//		c) saves everything that is required to not need the .pan file (specifics of this tbd)
+// Note that this code is still technically V16 until this work on saving is completed.
+// The idea being at the moment that to load an old panel, we would start this program (say V16.9.9 or
+// something) and then save the panel as V17 savefile version. After we get that working then we can
+// write LoadV16intoV17 function if we want to.
 
 
 #include "saveload.h"
@@ -218,6 +225,32 @@ void LoadLastSettings(int check)
 	DrawNewTable(0);
 }
 
+
+/************************************************************************
+Version 17 Save and Load
+*************************************************************************/
+
+int SaveSequenceV17(char* save_name, int sn_length)
+{
+
+
+	return 0;
+}
+
+
+int LoadSequenceV17(char* load_name, int ln_length)
+{
+	return 0;
+}
+
+
+int LoadArraysV16intoV17(char savedname[500], int csize)
+{
+	// This is the function that I (Scott) implemented in the previous version of V17.
+	// For now let's focus on writing a new save fn without having to work through the
+	// details of reverse engineering the V16 file format.
+	return 0;
+}
 
 
 

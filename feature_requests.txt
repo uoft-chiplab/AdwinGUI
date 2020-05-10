@@ -23,6 +23,8 @@ Stop the sequence based on condition
 	Writing to a communication file as interlock.
 	Check things are okay before starting a new cycle.
 
+Fix the dds and Phaseo/Micromatic rows in the analog table.
+
 
 ------
 Minor:
