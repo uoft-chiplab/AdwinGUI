@@ -31,7 +31,7 @@ void CheckActivePages(void);
 
 double findLastVal(int row, int column, int page);
 
-void BuildUpdateList(double TMatrix[],struct AnVals AMat[NUMBERANALOGCHANNELS+1][500],int DMat[NUMBERDIGITALCHANNELS+1][500],ddsoptions_struct DDSArray[500],ddsoptions_struct DDS2Array[500],dds3options_struct DDS3Array[500],unsigned int LaserTriggerArray[NUMBERLASERS][500],int numtimes,int forceBuild);
+void BuildUpdateList(double TMatrix[],struct AnVals AMat[NUMBERANALOGCHANNELS+1][500],int DMat[NUMBERDIGITALCHANNELS+1][500],ddsoptions_struct DDSArray[500],dds2options_struct DDS2Array[500],dds3options_struct DDS3Array[500],unsigned int LaserTriggerArray[NUMBERLASERS][500],int numtimes,int forceBuild);
 void SeqError(char * msg);
 int int_power(int base, int power);
 double CalcFcnValue(int fcn,double Vinit,double Vfinal, double timescale,double telapsed,double celltime);

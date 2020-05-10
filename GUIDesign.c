@@ -353,7 +353,7 @@ void RunOnce (void)
 	static int MetaDigitalArray[NUMBERDIGITALCHANNELS+1][NUMBEROFMETACOLUMNS];
 	static struct AnVals MetaAnalogArray[NUMBERANALOGCHANNELS+1][NUMBEROFMETACOLUMNS];
 	static ddsoptions_struct MetaDDSArray[NUMBEROFMETACOLUMNS];
-	static ddsoptions_struct MetaDDS2Array[NUMBEROFMETACOLUMNS];
+	static dds2options_struct MetaDDS2Array[NUMBEROFMETACOLUMNS];
 	static dds3options_struct MetaDDS3Array[NUMBEROFMETACOLUMNS];
 	static struct LaserTableValues	MetaLaserArray[NUMBERLASERS][NUMBEROFMETACOLUMNS];
 	static unsigned int MetaTriggerArray[NUMBERLASERS][NUMBEROFMETACOLUMNS];
@@ -606,7 +606,7 @@ void BuildUpdateList(double TMatrix[],
 					 struct AnVals AMat[NUMBERANALOGCHANNELS+1][500],
 					 int DMat[NUMBERDIGITALCHANNELS+1][500],
 					 ddsoptions_struct DDSArray[500],
-					 ddsoptions_struct DDS2Array[500],
+					 dds2options_struct DDS2Array[500],
 					 dds3options_struct DDS3Array[500],
 					 unsigned int LaserTriggerArray[NUMBERLASERS][500],
 					 int numtimes,
