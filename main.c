@@ -26,6 +26,14 @@ int main (int argc, char *argv[])
 	int i,j,k,status;
 	int fileHandle;
 
+
+	// Scott Testing V17 saving and loading
+
+
+
+
+
+
 	if (InitCVIRTE (0, argv, 0) == 0)
 		return -1;	/* out of memory */
 	if ((panelHandle = LoadPanel (0, "GUIDesign.uir", PANEL)) < 0)
