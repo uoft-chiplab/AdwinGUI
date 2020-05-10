@@ -232,10 +232,48 @@ Version 17 Save and Load
 
 int SaveSequenceV17(char* save_name, int sn_length)
 {
+	// Lots of decisions to be made on how to make this new file format.
+	// Probably want to keep as close to old layout as possible.
+
+	// List all things that are saved:
+	// Sequencer version (as vars.h string)
+	// Consider explicitly stating the version of the format of the save file.
+	// For EACH array, explicitly state the dimension, size_dim1, size_dim2, et cetera
+	// For EACH array, put ascii name before it as a demarkation
+	// For EACH array, put the type of each element (int, double, struct ddsoptions_struct, et cetera)
+	// For arrays of structs, consider not saving the binary data but saving the elements themselves with
+	//	specific writing (and reading) functions.
+	//
+	// (Global) Arrays that are already saved in .arr file:
+	// TimeArray
+	// AnalogTable
+	// DigTableValues
+	// AChName
+	// DChName
+	// ddstable
+	// dds2table
+	// dds3table
+	// LaserProperties
+	// LaserTable
+	// AnritsuSettingsValues
+	// InfoArray (column labels)
+	// Page enabled checkboxes statuses (ie. PANEL_TB_SHOWPHASE[i])
+	// The update period of the ADwin (from the menu setting)
+	//
+	// Other things that need to be saved in the new file format:
+	// Titles of each page
 
 
-	return 0;
+
+
+
+
+
+
+
+	return 0;// return zero for no errors
 }
+
 
 
 int LoadSequenceV17(char* load_name, int ln_length)
@@ -317,28 +355,8 @@ void SaveArraysV16(char savedname[500],int csize)
 			fwrite(&buff2,sizeof buff2,1,fdata);
 		}
 
-		GetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD5, ATTR_CHECKED, &usupd5);
-		GetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD10, ATTR_CHECKED, &usupd10);
-		GetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD15, ATTR_CHECKED, &usupd15);
-		GetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD25, ATTR_CHECKED, &usupd25);
-		GetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD50, ATTR_CHECKED, &usupd50);
-		GetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD100, ATTR_CHECKED, &usupd100);
-		GetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD1000, ATTR_CHECKED, &usupd1000);
-
-		if (usupd5==1)
-			updatePer=5;
-		else if (usupd10==1)
-			updatePer=10;
-		else if (usupd15==1)
-			updatePer=15;
-		else if (usupd25==1)
-			updatePer=25;
-		else if (usupd50==1)
-			updatePer=50;
-		else if(usupd100==1)
-			updatePer=100;
-		else if(usupd1000==1)
-			updatePer=1000;
+		// Update period
+		updatePer = getUpdatePeriodFromMenu();
 		fwrite(&updatePer,sizeof updatePer,1,fdata);
 
 		// global DDS settings
@@ -428,58 +446,9 @@ int LoadArraysV16(char savedname[500],int csize)
 			SetCtrlAttribute (panelHandle, PANEL_TB_SHOWPHASE[i],ATTR_ON_TEXT, buff2);
 		}
 
-
 		//Update Period Retrieved and Set
 		fread(&updatePer,sizeof updatePer,1,fdata);
-		if (updatePer==5)
-		{
-			SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD5, ATTR_CHECKED, 1);
-			EventPeriod=0.005;
-		}
-		else
-			SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD5, ATTR_CHECKED, 0);
-		if (updatePer==10)
-		{
-			SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD10, ATTR_CHECKED, 1);
-			EventPeriod=0.01;
-		}
-		else
-			SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD10, ATTR_CHECKED, 0);
-		if (updatePer==15)
-		{
-			SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD15, ATTR_CHECKED, 1);
-			EventPeriod=0.015;
-		}
-		else
-			SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD15, ATTR_CHECKED, 0);
-		if (updatePer==25)
-		{
-			SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD25, ATTR_CHECKED, 1);
-			EventPeriod=0.025;
-		}
-		else
-			SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD25, ATTR_CHECKED, 0);
-		if (updatePer==50)
-		{
-			SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD50, ATTR_CHECKED, 1);
-			EventPeriod=0.05;
-		}
-		else
-			SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD50, ATTR_CHECKED, 0);
-		if (updatePer==100)
-		{
-			SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD100, ATTR_CHECKED, 1);
-			EventPeriod=0.1;
-		}
-		else
-			SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD100, ATTR_CHECKED, 0);
-		if (updatePer==1000)
-		{
-			SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD1000, ATTR_CHECKED, 1);
-			EventPeriod=1;
-		}
-		else
-			SetMenuBarAttribute (menuHandle, MENU_UPDATEPERIOD_SETGD1000, ATTR_CHECKED, 0);
+		EventPeriod = setUpdatePeriodToMenu(updatePer);// assume the value in the file is okay
 
 		fread(&DDSFreq.extclock,sizeof DDSFreq.extclock,1,fdata);
 		fread(&DDSFreq.PLLmult,sizeof DDSFreq.PLLmult,1,fdata);
@@ -1024,7 +993,9 @@ void LoadLaserData(char savedname[500],int nameSize)
 
 
 
-
+/************************************************************************
+Helper functions
+*************************************************************************/
 
 
 

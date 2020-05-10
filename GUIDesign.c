@@ -2371,6 +2371,114 @@ void CVICALLBACK SETGD1000_CALLBACK (int menuBar, int menuItem, void *callbackDa
 	EventPeriod=1.00;
 }
 
+// Scott Smale - 2020-05-10
+// Get the update period (in us) from the menu bar cause why not.
+// Performs minimal checking that there is only one choice chosen.
+// I am writing this initially as a helper function for saving the update period to file.
+int getUpdatePeriodFromMenu(void)
+{
+	int usupd5,usupd10,usupd15,usupd25,usupd50,usupd100,usupd1000;
+
+	GetMenuBarAttribute(menuHandle, MENU_UPDATEPERIOD_SETGD5, ATTR_CHECKED, &usupd5);
+	GetMenuBarAttribute(menuHandle, MENU_UPDATEPERIOD_SETGD10, ATTR_CHECKED, &usupd10);
+	GetMenuBarAttribute(menuHandle, MENU_UPDATEPERIOD_SETGD15, ATTR_CHECKED, &usupd15);
+	GetMenuBarAttribute(menuHandle, MENU_UPDATEPERIOD_SETGD25, ATTR_CHECKED, &usupd25);
+	GetMenuBarAttribute(menuHandle, MENU_UPDATEPERIOD_SETGD50, ATTR_CHECKED, &usupd50);
+	GetMenuBarAttribute(menuHandle, MENU_UPDATEPERIOD_SETGD100, ATTR_CHECKED, &usupd100);
+	GetMenuBarAttribute(menuHandle, MENU_UPDATEPERIOD_SETGD1000, ATTR_CHECKED, &usupd1000);
+
+	if( usupd5+usupd10+usupd15+usupd25+usupd50+usupd100+usupd1000 > 1 )
+	{// if more than one of these {0,1} values are true then there has been a mistake
+		return -1;// negative for error
+	}
+
+	// Having passed checks on the validity of the values, return the one that was selected
+	if( usupd5 == 1 ){
+		return 5;
+	}
+	if( usupd10 == 1 ){
+		return 10;
+	}
+	if( usupd15 == 1 ){
+		return 15;
+	}
+	if( usupd25 == 1 ){
+		return 25;
+	}
+	if( usupd50 == 1 ){
+		return 50;
+	}
+	if( usupd100 == 1 ){
+		return 100;
+	}
+	if( usupd1000 == 1 ){
+		return 1000;
+	}
+
+	return -1;// if none of the if stmts were true then error
+}
+
+// Scott Smale - 2020-05-10
+// Set the given updatePeriod (in us) to the correct menu option.
+// Returns value to set as global var EventPeriod if successful; negative if error.
+// Performs minimal checking.
+// I am writing this initially as a helper function for loading the update period from file.
+double setUpdatePeriodToMenu(int updatePeriod)
+{
+	double ev_period = -1.0;// prepare an invalid value for error
+
+	if( updatePeriod == 5 ){
+		SetMenuBarAttribute( menuHandle, MENU_UPDATEPERIOD_SETGD5, ATTR_CHECKED, 1);
+		ev_period = 0.005;
+	}
+	else {
+		SetMenuBarAttribute( menuHandle, MENU_UPDATEPERIOD_SETGD5, ATTR_CHECKED, 0);
+	}
+	if( updatePeriod == 10 ){
+		SetMenuBarAttribute( menuHandle, MENU_UPDATEPERIOD_SETGD10, ATTR_CHECKED, 1);
+		ev_period = 0.010;
+	}
+	else {
+		SetMenuBarAttribute( menuHandle, MENU_UPDATEPERIOD_SETGD10, ATTR_CHECKED, 0);
+	}
+	if( updatePeriod == 15 ){
+		SetMenuBarAttribute( menuHandle, MENU_UPDATEPERIOD_SETGD15, ATTR_CHECKED, 1);
+		ev_period=0.015;
+	}
+	else {
+		SetMenuBarAttribute( menuHandle, MENU_UPDATEPERIOD_SETGD15, ATTR_CHECKED, 0);
+	}
+	if( updatePeriod == 25 ){
+		SetMenuBarAttribute( menuHandle, MENU_UPDATEPERIOD_SETGD25, ATTR_CHECKED, 1);
+		ev_period=0.025;
+	}
+	else {
+		SetMenuBarAttribute( menuHandle, MENU_UPDATEPERIOD_SETGD25, ATTR_CHECKED, 0);
+	}
+	if( updatePeriod == 50 ){
+		SetMenuBarAttribute( menuHandle, MENU_UPDATEPERIOD_SETGD50, ATTR_CHECKED, 1);
+		ev_period=0.050;
+	}
+	else {
+		SetMenuBarAttribute( menuHandle, MENU_UPDATEPERIOD_SETGD50, ATTR_CHECKED, 0);
+	}
+	if( updatePeriod == 100 ){
+		SetMenuBarAttribute( menuHandle, MENU_UPDATEPERIOD_SETGD100, ATTR_CHECKED, 1);
+		ev_period=0.100;
+	}
+	else {
+		SetMenuBarAttribute( menuHandle, MENU_UPDATEPERIOD_SETGD100, ATTR_CHECKED, 0);
+	}
+	if( updatePeriod == 1000 ){
+		SetMenuBarAttribute( menuHandle, MENU_UPDATEPERIOD_SETGD1000, ATTR_CHECKED, 1);
+		ev_period = 1.000;
+	}
+	else {
+		SetMenuBarAttribute( menuHandle, MENU_UPDATEPERIOD_SETGD1000, ATTR_CHECKED, 0);
+	}
+
+	return ev_period;
+}
 
 //*********************************************************************************************************
 void CVICALLBACK BOOTADWIN_CALLBACK (int menuBar, int menuItem, void *callbackData,

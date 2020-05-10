@@ -44,6 +44,10 @@ double CheckIfWithinLimits(double OutputVoltage, int linenumber);
 void OptimizeTimeLoop(int *,int,int*);
 
 
+int getUpdatePeriodFromMenu(void);
+double setUpdatePeriodToMenu(int updatePeriod);
+
+
 void MoveCanvasStart(int,int); // start arrow indicator, (x pos,on/off (i.e. True/False));
 void MoveCanvasEnd(int,int); // end arrow indicator, (x pos,on/off (i.e. True/False));
 void DrawLoopIndicators(void);// draw lines to indicate looping region
