@@ -20,6 +20,16 @@ int putAnalogTableToFile(FILE *fbuff);
 long getAnalogTableFromFile(FILE *fbuff, long fpos_eof);
 int putDigitalTableToFile(FILE *fbuff);
 long getDigitalTableFromFile(FILE *fbuff, long fpos_eof);
+int putAnalogChPropsToFile(FILE *fbuff);
+long getAnalogChPropsFromFile(FILE *fbuff, long fpos_eof);
+int putDigitalChPropsToFile(FILE *fbuff);
+long getDigitalChPropsFromFile(FILE *fbuff, long fpos_eof);
+int putDds1TableToFile(FILE *fbuff);
+long getDds1TableFromFile(FILE *fbuff, long fpos_eof);
+int putDds2TableToFile(FILE *fbuff);
+long getDds2TableFromFile(FILE *fbuff, long fpos_eof);
+int putDds3TableToFile(FILE *fbuff);
+long getDds3TableFromFile(FILE *fbuff, long fpos_eof);
 long readHeader(FILE *fbuff, char *tag, int *elem_size, int *num_dims, int *dims, const int max_dims, long fpos_eof);
 long checkFooter(FILE *fbuff, char *endtag, long fpos_eof);
 

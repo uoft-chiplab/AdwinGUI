@@ -225,8 +225,8 @@ typedef struct dds3options_struct {
 	BOOL is_stop;
 } dds3options_struct;
 
-ddsoptions_struct ddstable[NUMBEROFCOLUMNS+1][NUMBEROFPAGES]; //17 columns (actually only 14, but in case we expand), 10 pages
-dds2options_struct dds2table[NUMBEROFCOLUMNS+1][NUMBEROFPAGES]; //17 columns (actually only 14, but in case we expand), 10 pages
+ddsoptions_struct ddstable[NUMBEROFCOLUMNS+1][NUMBEROFPAGES];
+dds2options_struct dds2table[NUMBEROFCOLUMNS+1][NUMBEROFPAGES];
 dds3options_struct dds3table[NUMBEROFCOLUMNS+1][NUMBEROFPAGES];
 
 int Active_DDS_Panel; // 1 for Rb evap dds, 2 for K40 evap dds, 3 for HFS dds   !!!!

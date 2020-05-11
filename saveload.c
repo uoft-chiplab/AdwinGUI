@@ -109,7 +109,7 @@ void LoadSettings(int version)
 	FILE *fpini;
 	char fname[100]="",c,fsavename[500]="",buff[600];
 	static char defaultdir[200]="C:\\UserDate\\Data";
-	int i=0,j=0,k=0,inisize=0,success;
+	int i=0,j=0,k=0,inisize=0,success=0;
 
 	//Check if .ini file exists.  Load it if it does.
 	if(!(fpini=fopen("gui_V16.ini","r"))==NULL)
@@ -319,6 +319,25 @@ int SaveSequenceV17(char* save_name, int sn_length)
 	status = putDigitalTableToFile(fbuffer);
 	if( status < 0 ){ fclose(fbuffer); return status; }
 
+	// Write Analog channel properties
+	status = putAnalogChPropsToFile(fbuffer);
+	if( status < 0 ){ fclose(fbuffer); return status; }
+
+	// Write Digital channel properties
+	status = putDigitalChPropsToFile(fbuffer);
+	if( status < 0 ){ fclose(fbuffer); return status; }
+
+	// Write DDS1 Table
+	status = putDds1TableToFile(fbuffer);
+	if( status < 0 ){ fclose(fbuffer); return status; }
+
+	// Write DDS2 Table
+	status = putDds2TableToFile(fbuffer);
+	if( status < 0 ){ fclose(fbuffer); return status; }
+
+	// Write DDS3 Table
+	status = putDds3TableToFile(fbuffer);
+	if( status < 0 ){ fclose(fbuffer); return status; }
 
 
 
@@ -349,14 +368,14 @@ int SaveSequenceV17(char* save_name, int sn_length)
 
 
 	fflush(fbuffer);// make sure the file is completely written by the time we leave this function
+	printf("Saved file successfully\n");
 	return 0;// return success
 }
 
 // Generic format for now is:
 // <tag_name>~elem_size~num_dim~dim1~dim2~...~BINARY_DATA</tag_name>
 
-
-	// possibly change to make temp variable pointer and pass it in then free memory allocated in these functions
+// possibly change to make temp variable pointer and pass it in then free memory allocated in these functions
 
 int LoadSequenceV17(char* load_name, int ln_length)
 {
@@ -397,7 +416,28 @@ int LoadSequenceV17(char* load_name, int ln_length)
 
 	// Get the DigitalTable
 	fpos = getDigitalTableFromFile(fbuffer, fpos_file_end);
+	if( fpos < 0 ){ fclose(fbuffer); return -1; }// pass though error
+
+	// Get the Analog channel properties
+	fpos = getAnalogChPropsFromFile(fbuffer, fpos_file_end);
+	if( fpos < 0 ){ fclose(fbuffer); return -1; }// pass though error
+
+	// Get the Digital channel properties
+	fpos = getDigitalChPropsFromFile(fbuffer, fpos_file_end);
+	if( fpos < 0 ){ fclose(fbuffer); return -1; }// pass though error
+
+	// Get the DDS1 Table
+	fpos = getDds1TableFromFile(fbuffer, fpos_file_end);
+	if( fpos < 0 ){ fclose(fbuffer); return -1; }// pass though error
+
+	// Get the DDS2 Table
+	fpos = getDds2TableFromFile(fbuffer, fpos_file_end);
+	if( fpos < 0 ){ fclose(fbuffer); return -1; }// pass though error
+
+	// Get the DDS3 Table
+	fpos = getDds3TableFromFile(fbuffer, fpos_file_end);
 	//if( fpos < 0 ){ fclose(fbuffer); return -1; }// pass though error
+
 
 
 
@@ -600,6 +640,7 @@ long getTimeArrayFromFile(FILE *fbuff, long fpos_eof)
 
 int putAnalogTableToFile(FILE *fbuff)
 {
+
 	char cbuff[512] = "";// header/footer buffer
 	int clen = 512;
 	char bf[256] = "";// assembly buffer
@@ -757,6 +798,408 @@ long getDigitalTableFromFile(FILE *fbuff, long fpos_eof)
 
 	return fpos;
 }
+
+int putAnalogChPropsToFile(FILE *fbuff)
+{
+	char cbuff[512] = "";// header/footer buffer
+	int clen = 512;
+	char bf[256] = "";// assembly buffer
+	int elems_writ;
+
+	// Particulars of the object to write (don't forget to change the actual data write line too)
+	// AChName[MAXANALOG+NUMBERDDS];// vars.h line
+	char stag[] = "<AnalogChProps>";
+	char etag[] = "</AnalogChProps>";
+	int num_dims = 1;
+	int dims[] = {(MAXANALOG+NUMBERDDS)};// ordering is: object[dims[0]][dims[1]]...
+	int elem_size = sizeof(AChName[0]);
+	int linear_size = 1;
+
+	// Make the header automatically and write it
+	sprintf(cbuff, "%s~%d~%d~", stag, elem_size, num_dims);
+	for( int i = 0; i < num_dims; ++i ){
+		sprintf(bf, "%d~", dims[i]);
+		strcat(cbuff, bf);
+		linear_size = linear_size * dims[i];
+	}
+	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write header
+
+	elems_writ = fwrite(&AChName, elem_size, linear_size, fbuff);// write binary data
+
+	sprintf(cbuff, etag);
+	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write footer
+
+	if( elems_writ != linear_size ){
+		fclose(fbuff);
+		printf("Failed to write the correct number of bytes for tag |%s|\n", stag);
+		return -1;
+	}
+
+	return 0;
+}
+
+long getAnalogChPropsFromFile(FILE *fbuff, long fpos_eof)
+{
+	// Particulars of the object to load (don't forget to change the actual data write line too)
+	char stag[] = "<AnalogChProps>";
+	char etag[] = "</AnalogChProps>";
+	int max_dims = 1;
+
+	int elem_size;
+	int num_dims;
+	int dims[max_dims];
+	int linear_size = 1;
+	long fpos;
+	int elems_read;
+
+	fpos = readHeader(fbuff, stag, &elem_size, &num_dims, dims, max_dims, fpos_eof);
+	// Do some simple checks
+	if( fpos < 0 ){// if there was an err in readHeader (printf's in readHeader)
+		return fpos;
+	}
+	for( int i=0; i<max_dims; ++i ){ linear_size *= dims[i]; }// calculate linear_size
+	if( elem_size*linear_size != sizeof(AChName) ){
+		printf("Binary data read from file for tag |%s| is not the correct size\n", stag);
+		return -1;
+	}
+
+	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the binary data
+	elems_read = fread(&AChName, elem_size, linear_size, fbuff);// load the binary data directly into the array
+	if( elems_read != linear_size ){// didn't read expected number of elements
+		printf("Expected to read more elements from file for tag |%s|\n", stag);
+		return -1;
+	}
+
+	fpos = checkFooter(fbuff, etag, fpos_eof);
+	if( fpos < 0 ){// pass though signal, either -1 for error or -2 for eof
+		return fpos;
+	}
+	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the next header
+
+	return fpos;
+}
+
+int putDigitalChPropsToFile(FILE *fbuff)
+{
+	char cbuff[512] = "";// header/footer buffer
+	int clen = 512;
+	char bf[256] = "";// assembly buffer
+	int elems_writ;
+
+	// Particulars of the object to write (don't forget to change the actual data write line too)
+	// DChName[MAXDIGITAL];// vars.h line
+	char stag[] = "<DigitalChProps>";
+	char etag[] = "</DigitalChProps>";
+	int num_dims = 1;
+	int dims[] = {(MAXDIGITAL)};// ordering is: object[dims[0]][dims[1]]...
+	int elem_size = sizeof(DChName[0]);
+	int linear_size = 1;
+
+	// Make the header automatically and write it
+	sprintf(cbuff, "%s~%d~%d~", stag, elem_size, num_dims);
+	for( int i = 0; i < num_dims; ++i ){
+		sprintf(bf, "%d~", dims[i]);
+		strcat(cbuff, bf);
+		linear_size = linear_size * dims[i];
+	}
+	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write header
+
+	elems_writ = fwrite(&DChName, elem_size, linear_size, fbuff);// write binary data
+
+	sprintf(cbuff, etag);
+	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write footer
+
+	if( elems_writ != linear_size ){
+		fclose(fbuff);
+		printf("Failed to write the correct number of bytes for tag |%s|\n", stag);
+		return -1;
+	}
+
+	return 0;
+}
+
+long getDigitalChPropsFromFile(FILE *fbuff, long fpos_eof)
+{
+	// Particulars of the object to load (don't forget to change the actual data write line too)
+	char stag[] = "<DigitalChProps>";
+	char etag[] = "</DigitalChProps>";
+	int max_dims = 1;
+
+	int elem_size;
+	int num_dims;
+	int dims[max_dims];
+	int linear_size = 1;
+	long fpos;
+	int elems_read;
+
+	fpos = readHeader(fbuff, stag, &elem_size, &num_dims, dims, max_dims, fpos_eof);
+	// Do some simple checks
+	if( fpos < 0 ){// if there was an err in readHeader (printf's in readHeader)
+		return fpos;
+	}
+	for( int i=0; i<max_dims; ++i ){ linear_size *= dims[i]; }// calculate linear_size
+	if( elem_size*linear_size != sizeof(DChName) ){
+		printf("Binary data read from file for tag |%s| is not the correct size\n", stag);
+		return -1;
+	}
+
+	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the binary data
+	elems_read = fread(&DChName, elem_size, linear_size, fbuff);// load the binary data directly into the array
+	if( elems_read != linear_size ){// didn't read expected number of elements
+		printf("Expected to read more elements from file for tag |%s|\n", stag);
+		return -1;
+	}
+
+	fpos = checkFooter(fbuff, etag, fpos_eof);
+	if( fpos < 0 ){// pass though signal, either -1 for error or -2 for eof
+		return fpos;
+	}
+	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the next header
+
+	return fpos;
+}
+
+int putDds1TableToFile(FILE *fbuff)
+{
+	char cbuff[512] = "";// header/footer buffer
+	int clen = 512;
+	char bf[256] = "";// assembly buffer
+	int elems_writ;
+
+	// Particulars of the object to write (don't forget to change the actual data write line too)
+	// ddsoptions_struct ddstable[NUMBEROFCOLUMNS+1][NUMBEROFPAGES];// vars.h line
+	char stag[] = "<DDS1Table>";
+	char etag[] = "</DDS1Table>";
+	int num_dims = 2;
+	int dims[] = {(NUMBEROFCOLUMNS+1), (NUMBEROFPAGES)};// ordering is: object[dims[0]][dims[1]]...
+	int elem_size = sizeof(ddstable[0][0]);
+	int linear_size = 1;
+
+	// Make the header automatically and write it
+	sprintf(cbuff, "%s~%d~%d~", stag, elem_size, num_dims);
+	for( int i = 0; i < num_dims; ++i ){
+		sprintf(bf, "%d~", dims[i]);
+		strcat(cbuff, bf);
+		linear_size = linear_size * dims[i];
+	}
+	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write header
+
+	elems_writ = fwrite(&ddstable, elem_size, linear_size, fbuff);// write binary data
+
+	sprintf(cbuff, etag);
+	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write footer
+
+	if( elems_writ != linear_size ){
+		fclose(fbuff);
+		printf("Failed to write the correct number of bytes for tag |%s|\n", stag);
+		return -1;
+	}
+
+	return 0;
+}
+
+long getDds1TableFromFile(FILE *fbuff, long fpos_eof)
+{
+	// Particulars of the object to load (don't forget to change the actual data write line too)
+	char stag[] = "<DDS1Table>";
+	char etag[] = "</DDS1Table>";
+	int max_dims = 2;
+
+	int elem_size;
+	int num_dims;
+	int dims[max_dims];
+	int linear_size = 1;
+	long fpos;
+	int elems_read;
+
+	fpos = readHeader(fbuff, stag, &elem_size, &num_dims, dims, max_dims, fpos_eof);
+	// Do some simple checks
+	if( fpos < 0 ){// if there was an err in readHeader (printf's in readHeader)
+		return fpos;
+	}
+	for( int i=0; i<max_dims; ++i ){ linear_size *= dims[i]; }// calculate linear_size
+	if( elem_size*linear_size != sizeof(ddstable) ){
+		printf("Binary data read from file for tag |%s| is not the correct size\n", stag);
+		return -1;
+	}
+
+	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the binary data
+	elems_read = fread(&ddstable, elem_size, linear_size, fbuff);// load the binary data directly into the array
+	if( elems_read != linear_size ){// didn't read expected number of elements
+		printf("Expected to read more elements from file for tag |%s|\n", stag);
+		return -1;
+	}
+
+	fpos = checkFooter(fbuff, etag, fpos_eof);
+	if( fpos < 0 ){// pass though signal, either -1 for error or -2 for eof
+		return fpos;
+	}
+	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the next header
+
+	return fpos;
+}
+
+int putDds2TableToFile(FILE *fbuff)
+{
+	char cbuff[512] = "";// header/footer buffer
+	int clen = 512;
+	char bf[256] = "";// assembly buffer
+	int elems_writ;
+
+	// Particulars of the object to write (don't forget to change the actual data write line too)
+	// dds2options_struct dds2table[NUMBEROFCOLUMNS+1][NUMBEROFPAGES];// vars.h line
+	char stag[] = "<DDS2Table>";
+	char etag[] = "</DDS2Table>";
+	int num_dims = 2;
+	int dims[] = {(NUMBEROFCOLUMNS+1), (NUMBEROFPAGES)};// ordering is: object[dims[0]][dims[1]]...
+	int elem_size = sizeof(dds2table[0][0]);
+	int linear_size = 1;
+
+	// Make the header automatically and write it
+	sprintf(cbuff, "%s~%d~%d~", stag, elem_size, num_dims);
+	for( int i = 0; i < num_dims; ++i ){
+		sprintf(bf, "%d~", dims[i]);
+		strcat(cbuff, bf);
+		linear_size = linear_size * dims[i];
+	}
+	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write header
+
+	elems_writ = fwrite(&dds2table, elem_size, linear_size, fbuff);// write binary data
+
+	sprintf(cbuff, etag);
+	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write footer
+
+	if( elems_writ != linear_size ){
+		fclose(fbuff);
+		printf("Failed to write the correct number of bytes for tag |%s|\n", stag);
+		return -1;
+	}
+
+	return 0;
+}
+
+long getDds2TableFromFile(FILE *fbuff, long fpos_eof)
+{
+	// Particulars of the object to load (don't forget to change the actual data write line too)
+	char stag[] = "<DDS2Table>";
+	char etag[] = "</DDS2Table>";
+	int max_dims = 2;
+
+	int elem_size;
+	int num_dims;
+	int dims[max_dims];
+	int linear_size = 1;
+	long fpos;
+	int elems_read;
+
+	fpos = readHeader(fbuff, stag, &elem_size, &num_dims, dims, max_dims, fpos_eof);
+	// Do some simple checks
+	if( fpos < 0 ){// if there was an err in readHeader (printf's in readHeader)
+		return fpos;
+	}
+	for( int i=0; i<max_dims; ++i ){ linear_size *= dims[i]; }// calculate linear_size
+	if( elem_size*linear_size != sizeof(dds2table) ){
+		printf("Binary data read from file for tag |%s| is not the correct size\n", stag);
+		return -1;
+	}
+
+	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the binary data
+	elems_read = fread(&dds2table, elem_size, linear_size, fbuff);// load the binary data directly into the array
+	if( elems_read != linear_size ){// didn't read expected number of elements
+		printf("Expected to read more elements from file for tag |%s|\n", stag);
+		return -1;
+	}
+
+	fpos = checkFooter(fbuff, etag, fpos_eof);
+	if( fpos < 0 ){// pass though signal, either -1 for error or -2 for eof
+		return fpos;
+	}
+	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the next header
+
+	return fpos;
+}
+
+int putDds3TableToFile(FILE *fbuff)
+{
+	char cbuff[512] = "";// header/footer buffer
+	int clen = 512;
+	char bf[256] = "";// assembly buffer
+	int elems_writ;
+
+	// Particulars of the object to write (don't forget to change the actual data write line too)
+	// dds3options_struct dds3table[NUMBEROFCOLUMNS+1][NUMBEROFPAGES];// vars.h line
+	char stag[] = "<DDS3Table>";
+	char etag[] = "</DDS3Table>";
+	int num_dims = 2;
+	int dims[] = {(NUMBEROFCOLUMNS+1), (NUMBEROFPAGES)};// ordering is: object[dims[0]][dims[1]]...
+	int elem_size = sizeof(dds3table[0][0]);
+	int linear_size = 1;
+
+	// Make the header automatically and write it
+	sprintf(cbuff, "%s~%d~%d~", stag, elem_size, num_dims);
+	for( int i = 0; i < num_dims; ++i ){
+		sprintf(bf, "%d~", dims[i]);
+		strcat(cbuff, bf);
+		linear_size = linear_size * dims[i];
+	}
+	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write header
+
+	elems_writ = fwrite(&dds3table, elem_size, linear_size, fbuff);// write binary data
+
+	sprintf(cbuff, etag);
+	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write footer
+
+	if( elems_writ != linear_size ){
+		fclose(fbuff);
+		printf("Failed to write the correct number of bytes for tag |%s|\n", stag);
+		return -1;
+	}
+
+	return 0;
+}
+
+long getDds3TableFromFile(FILE *fbuff, long fpos_eof)
+{
+	// Particulars of the object to load (don't forget to change the actual data write line too)
+	char stag[] = "<DDS3Table>";
+	char etag[] = "</DDS3Table>";
+	int max_dims = 2;
+
+	int elem_size;
+	int num_dims;
+	int dims[max_dims];
+	int linear_size = 1;
+	long fpos;
+	int elems_read;
+
+	fpos = readHeader(fbuff, stag, &elem_size, &num_dims, dims, max_dims, fpos_eof);
+	// Do some simple checks
+	if( fpos < 0 ){// if there was an err in readHeader (printf's in readHeader)
+		return fpos;
+	}
+	for( int i=0; i<max_dims; ++i ){ linear_size *= dims[i]; }// calculate linear_size
+	if( elem_size*linear_size != sizeof(dds3table) ){
+		printf("Binary data read from file for tag |%s| is not the correct size\n", stag);
+		return -1;
+	}
+
+	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the binary data
+	elems_read = fread(&dds3table, elem_size, linear_size, fbuff);// load the binary data directly into the array
+	if( elems_read != linear_size ){// didn't read expected number of elements
+		printf("Expected to read more elements from file for tag |%s|\n", stag);
+		return -1;
+	}
+
+	fpos = checkFooter(fbuff, etag, fpos_eof);
+	if( fpos < 0 ){// pass though signal, either -1 for error or -2 for eof
+		return fpos;
+	}
+	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the next header
+
+	return fpos;
+}
+
+
 
 
 
