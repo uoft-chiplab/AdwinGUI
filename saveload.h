@@ -14,7 +14,12 @@ int SaveSequenceV17(char* save_name, int sn_length);
 int LoadSequenceV17(char* load_name, int ln_length);
 int checkVersionFromFile(FILE *fbuff, long fpos_eof);
 long getSaveVersionFromFile(FILE *fbuff, long fpos_eof, int *majorVer, int *minorVer);
+int putTimeArrayToFile(FILE *fbuff);
 long getTimeArrayFromFile(FILE *fbuff, long fpos_eof);
+int putAnalogTableToFile(FILE *fbuff);
+long getAnalogTableFromFile(FILE *fbuff, long fpos_eof);
+int putDigitalTableToFile(FILE *fbuff);
+long getDigitalTableFromFile(FILE *fbuff, long fpos_eof);
 long readHeader(FILE *fbuff, char *tag, int *elem_size, int *num_dims, int *dims, const int max_dims, long fpos_eof);
 long checkFooter(FILE *fbuff, char *endtag, long fpos_eof);
 

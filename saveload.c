@@ -285,6 +285,7 @@ int SaveSequenceV17(char* save_name, int sn_length)
 	char cbuff[512] = "";
 
 	int elems_writ;
+	int status;
 
 
 	// Copy characters to buffer to prevent overflow of filename
@@ -307,18 +308,18 @@ int SaveSequenceV17(char* save_name, int sn_length)
 	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuffer);
 
 	// Write TimeArray
-	sprintf(cbuff, "<TimeArray>~%d~%d~%d~%d~", sizeof(TimeArray[0][0]), 2, NUMBEROFCOLUMNS+1, NUMBEROFPAGES);
-	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuffer);// write header
-	elems_writ = fwrite(&TimeArray, sizeof(TimeArray[0][0]), (NUMBEROFCOLUMNS+1)*(NUMBEROFPAGES), fbuffer);// write binary data
-	sprintf(cbuff, "</TimeArray>");
-	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuffer);// write footer
-	printf("%d %d\n", sizeof(TimeArray), sizeof(TimeArray[0][0])*(NUMBEROFCOLUMNS+1)*(NUMBEROFPAGES));//debug
-	printf("%d %d\n", elems_writ, (NUMBEROFCOLUMNS+1)*(NUMBEROFPAGES));//debug
-	if( elems_writ != (NUMBEROFCOLUMNS+1)*(NUMBEROFPAGES) ){
-		fclose(fbuffer);
-		printf("Failed to write the correct number of bytes for %s\n", "TimeArray");
-		return -1;
-	}
+	status = putTimeArrayToFile(fbuffer);
+	if( status < 0 ){ fclose(fbuffer); return -1; }
+
+	// Write AnalogTable
+	status = putAnalogTableToFile(fbuffer);
+	if( status < 0 ){ fclose(fbuffer); return -1; }
+
+	// Write DigitalTable
+	status = putDigitalTableToFile(fbuffer);
+	if( status < 0 ){ fclose(fbuffer); return -1; }
+
+
 
 
 
@@ -355,6 +356,8 @@ int SaveSequenceV17(char* save_name, int sn_length)
 // <tag_name>~elem_size~num_dim~dim1~dim2~...~BINARY_DATA</tag_name>
 
 
+	// possibly change to make temp variable pointer and pass it in then free memory allocated in these functions
+
 int LoadSequenceV17(char* load_name, int ln_length)
 {
 	FILE *fbuffer;
@@ -385,11 +388,16 @@ int LoadSequenceV17(char* load_name, int ln_length)
 	if( fpos < 0 ){ fclose(fbuffer); return -1; }// pass though error
 
 	// Get the TimeArray
-	// possibly change to make temp variable pointer and pass it in then free memory allocated in these functions
 	fpos = getTimeArrayFromFile(fbuffer, fpos_file_end);
 	if( fpos < 0 ){ fclose(fbuffer); return -1; }// pass though error
 
+	// Get the AnalogTable
+	fpos = getAnalogTableFromFile(fbuffer, fpos_file_end);
+	if( fpos < 0 ){ fclose(fbuffer); return -1; }// pass though error
 
+	// Get the DigitalTable
+	fpos = getDigitalTableFromFile(fbuffer, fpos_file_end);
+	//if( fpos < 0 ){ fclose(fbuffer); return -1; }// pass though error
 
 
 
@@ -409,41 +417,46 @@ int LoadSequenceV17(char* load_name, int ln_length)
 
 	// We have finally gotten to this point so close the file and return success
 	fclose(fbuffer);
+	printf("Loaded file successfully\n");
 	return 0;
 }
 
 
 int checkVersionFromFile(FILE *fbuff, long fpos_eof)
 {
+	// Particulars of the object to load (don't forget to change the actual data write line too)
+	char stag[] = "<SeqVer>";
+	char etag[] = "</SeqVer>";
+	int max_dims = 1;// SeqVer is 1D (chars)
+
 	int elem_size;
 	int num_dims;
-	int dims[1];
-	int max_dims = 1;
-	int linear_size;
+	int dims[max_dims];
+	int linear_size = 1;
 	long fpos;
 	int elems_read;
 
 	char cbuff[512];
 	int clen = 512;
 
-	fpos = readHeader(fbuff, "<SeqVer>", &elem_size, &num_dims, dims, max_dims, fpos_eof);
+	fpos = readHeader(fbuff, stag, &elem_size, &num_dims, dims, max_dims, fpos_eof);
 	// Do some simple checks
-	linear_size = dims[0];
+	for( int i=0; i<max_dims; ++i ){ linear_size *= dims[i]; }// calculate linear_size
 	if( elem_size*linear_size >= clen ){
-		printf("Binary data in file for tag |%s| is too big for buffer\n", "<SeqVer>");
+		printf("Binary data in file for tag |%s| is too big for buffer\n", stag);
 		return -1;
 	}
 
 	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the binary data
 	elems_read = fread(cbuff, elem_size, linear_size, fbuff);// load the binary data directly into the array
 	if( elems_read != elem_size*linear_size ){
-		printf("Expected to read more bytes from file for tag |%s|\n", "<SeqVer>");
+		printf("Expected to read more bytes from file for tag |%s|\n", stag);
 		return -1;
 	}
 
 	printf("SeqVer loaded is |%.*s|\n", elem_size*linear_size, cbuff);// print the SeqVer line
 
-	fpos = checkFooter(fbuff, "</SeqVer>", fpos_eof);
+	fpos = checkFooter(fbuff, etag, fpos_eof);
 	if( fpos < 0 ){
 		return -1;
 	}
@@ -457,11 +470,15 @@ int checkVersionFromFile(FILE *fbuff, long fpos_eof)
 
 long getSaveVersionFromFile(FILE *fbuff, long fpos_eof, int *majorVer, int *minorVer)
 {
+	// Particulars of the object to load (don't forget to change the actual data write line too)
+	char stag[] = "<SaveVersion>";
+	char etag[] = "</SaveVersion>";
+	int max_dims = 1;// SaveVersion is 1D (chars)
+
 	int elem_size;
 	int num_dims;
-	int dims[1];// SaveVersion is 1D (chars)
-	int max_dims = 1;
-	int linear_size;
+	int dims[max_dims];
+	int linear_size = 1;
 	long fpos;
 	int elems_read;
 
@@ -469,21 +486,21 @@ long getSaveVersionFromFile(FILE *fbuff, long fpos_eof, int *majorVer, int *mino
 	int clen = 512;
 	char *cptr = cbuff;
 
-	fpos = readHeader(fbuff, "<SaveVersion>", &elem_size, &num_dims, dims, max_dims, fpos_eof);
+	fpos = readHeader(fbuff, stag, &elem_size, &num_dims, dims, max_dims, fpos_eof);
 	// Do some simple checks
 	if( fpos < 0 ){// if there was an err in readHeader (printf's in readHeader)
 		return -1;
 	}
-	linear_size = dims[0];
+	for( int i=0; i<max_dims; ++i ){ linear_size *= dims[i]; }// calculate linear_size
 	if( elem_size*linear_size >= clen ){
-		printf("Binary data in file for tag |%s| is too big for buffer\n", "<SaveVersion>");
+		printf("Binary data in file for tag |%s| is too big for buffer\n", stag);
 		return -1;
 	}
 
 	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the binary data
 	elems_read = fread(cbuff, elem_size, linear_size, fbuff);// load the binary data directly into the array
-	if( elems_read != linear_size ){// didn't read expected number of bytes
-		printf("Expected to read more bytes from file for tag |%s|\n", "<SaveVersion>");
+	if( elems_read != linear_size ){// didn't read expected number of elements
+		printf("Expected to read more elements from file for tag |%s|\n", stag);
 		return -1;
 	}
 
@@ -497,7 +514,7 @@ long getSaveVersionFromFile(FILE *fbuff, long fpos_eof, int *majorVer, int *mino
 	}
 	// at the moment we don't care about the minor version
 
-	fpos = checkFooter(fbuff, "</SaveVersion>", fpos_eof);
+	fpos = checkFooter(fbuff, etag, fpos_eof);
 	if( fpos < 0 ){
 		return -1;
 	}
@@ -507,37 +524,79 @@ long getSaveVersionFromFile(FILE *fbuff, long fpos_eof, int *majorVer, int *mino
 	}
 	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the next header
 	return fpos;
+}
+
+int putTimeArrayToFile(FILE *fbuff)
+{
+	char cbuff[512] = "";// header/footer buffer
+	int clen = 512;
+	char bf[256] = "";// assembly buffer
+	int elems_writ;
+
+	// Particulars of the object to write (don't forget to change the actual data write line too)
+	char stag[] = "<TimeArray>";
+	char etag[] = "</TimeArray>";
+	int num_dims = 2;
+	int dims[] = {(NUMBEROFCOLUMNS+1), (NUMBEROFPAGES)};// ordering is: object[dims[0]][dims[1]]...
+	int elem_size = sizeof(TimeArray[0][0]);
+	int linear_size = 1;
+
+	// Make the header automatically and write it
+	sprintf(cbuff, "%s~%d~%d~", stag, elem_size, num_dims);
+	for( int i = 0; i < num_dims; ++i ){
+		sprintf(bf, "%d~", dims[i]);
+		strcat(cbuff, bf);
+		linear_size = linear_size * dims[i];
+	}
+	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write header
+
+	elems_writ = fwrite(&TimeArray, elem_size, linear_size, fbuff);// write binary data
+
+	sprintf(cbuff, etag);
+	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write footer
+
+	if( elems_writ != linear_size ){
+		fclose(fbuff);
+		printf("Failed to write the correct number of bytes for tag |%s|\n", stag);
+		return -1;
+	}
+
+	return 0;
 }
 
 long getTimeArrayFromFile(FILE *fbuff, long fpos_eof)
 {
+	// Particulars of the object to load (don't forget to change the actual data write line too)
+	char stag[] = "<TimeArray>";
+	char etag[] = "</TimeArray>";
+	int max_dims = 2;// TimeArray is 2D (cols x pages)
+
 	int elem_size;
 	int num_dims;
-	int dims[2];// TimeArray is 2D (cols x pages)
-	int max_dims = 2;
-	int linear_size;
+	int dims[max_dims];
+	int linear_size = 1;
 	long fpos;
 	int elems_read;
 
-	fpos = readHeader(fbuff, "<TimeArray>", &elem_size, &num_dims, dims, max_dims, fpos_eof);
+	fpos = readHeader(fbuff, stag, &elem_size, &num_dims, dims, max_dims, fpos_eof);
 	// Do some simple checks
 	if( fpos < 0 ){// if there was an err in readHeader (printf's in readHeader)
 		return -1;
 	}
-	linear_size = dims[0]*dims[1];
+	for( int i=0; i<max_dims; ++i ){ linear_size *= dims[i]; }// calculate linear_size
 	if( elem_size*linear_size != sizeof(TimeArray) ){
-		printf("Binary data read from file for tag |%s| is not the correct size\n", "<TimeArray>");
+		printf("Binary data read from file for tag |%s| is not the correct size\n", stag);
 		return -1;
 	}
 
 	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the binary data
 	elems_read = fread(&TimeArray, elem_size, linear_size, fbuff);// load the binary data directly into the array
-	if( elems_read != linear_size ){// didn't read expected number of bytes
-		printf("Expected to read more bytes from file for tag |%s|\n", "<TimeArray>");
+	if( elems_read != linear_size ){// didn't read expected number of elements
+		printf("Expected to read more elements from file for tag |%s|\n", stag);
 		return -1;
 	}
 
-	fpos = checkFooter(fbuff, "</TimeArray>", fpos_eof);
+	fpos = checkFooter(fbuff, etag, fpos_eof);
 	if( fpos < 0 ){
 		return -1;
 	}
@@ -550,35 +609,78 @@ long getTimeArrayFromFile(FILE *fbuff, long fpos_eof)
 	return fpos;
 }
 
-long getAnalogArrayFromFile(FILE *fbuff, long fpos_eof)
+int putAnalogTableToFile(FILE *fbuff)
 {
+	char cbuff[512] = "";// header/footer buffer
+	int clen = 512;
+	char bf[256] = "";// assembly buffer
+	int elems_writ;
+
+	// Particulars of the object to write (don't forget to change the actual data write line too)
+	// struct AnalogTableValues AnalogTable[NUMBEROFCOLUMNS+1][NUMBERANALOGROWS+1][NUMBEROFPAGES];// vars.h line
+	char stag[] = "<AnalogTable>";
+	char etag[] = "</AnalogTable>";
+	int num_dims = 3;
+	int dims[] = {(NUMBEROFCOLUMNS+1), (NUMBERANALOGROWS+1), (NUMBEROFPAGES)};// ordering is: object[dims[0]][dims[1]]...
+	int elem_size = sizeof(AnalogTable[0][0][0]);
+	int linear_size = 1;
+
+	// Make the header automatically and write it
+	sprintf(cbuff, "%s~%d~%d~", stag, elem_size, num_dims);
+	for( int i = 0; i < num_dims; ++i ){
+		sprintf(bf, "%d~", dims[i]);
+		strcat(cbuff, bf);
+		linear_size = linear_size * dims[i];
+	}
+	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write header
+
+	elems_writ = fwrite(&AnalogTable, elem_size, linear_size, fbuff);// write binary data
+
+	sprintf(cbuff, etag);
+	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write footer
+
+	if( elems_writ != linear_size ){
+		fclose(fbuff);
+		printf("Failed to write the correct number of bytes for tag |%s|\n", stag);
+		return -1;
+	}
+
+	return 0;
+}
+
+long getAnalogTableFromFile(FILE *fbuff, long fpos_eof)
+{
+	// Particulars of the object to load (don't forget to change the actual data write line too)
+	char stag[] = "<AnalogTable>";
+	char etag[] = "</AnalogTable>";
+	int max_dims = 3;// AnalogTable is 3D (cols x rows x pages)
+
 	int elem_size;
 	int num_dims;
-	int dims[2];// TimeArray is 2D (cols x pages)
-	int max_dims = 2;
-	int linear_size;
+	int dims[max_dims];
+	int linear_size = 1;
 	long fpos;
 	int elems_read;
 
-	fpos = readHeader(fbuff, "<TimeArray>", &elem_size, &num_dims, dims, max_dims, fpos_eof);
+	fpos = readHeader(fbuff, stag, &elem_size, &num_dims, dims, max_dims, fpos_eof);
 	// Do some simple checks
 	if( fpos < 0 ){// if there was an err in readHeader (printf's in readHeader)
 		return -1;
 	}
-	linear_size = dims[0]*dims[1];
-	if( elem_size*linear_size != sizeof(TimeArray) ){
-		printf("Binary data in file is not the correct size for %s\n", "TimeArray");
+	for( int i=0; i<max_dims; ++i ){ linear_size *= dims[i]; }// calculate linear_size
+	if( elem_size*linear_size != sizeof(AnalogTable) ){
+		printf("Binary data read from file for tag |%s| is not the correct size\n", stag);
 		return -1;
 	}
 
 	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the binary data
-	elems_read = fread(&TimeArray, elem_size, linear_size, fbuff);// load the binary data directly into the array
-	if( elems_read != linear_size ){// didn't read expected number of bytes
-		printf("Expected to read more bytes from file for %s\n", "TimeArray");
+	elems_read = fread(&AnalogTable, elem_size, linear_size, fbuff);// load the binary data directly into the array
+	if( elems_read != linear_size ){// didn't read expected number of elements
+		printf("Expected to read more elements from file for tag |%s|\n", stag);
 		return -1;
 	}
 
-	fpos = checkFooter(fbuff, "</TimeArray>", fpos_eof);
+	fpos = checkFooter(fbuff, etag, fpos_eof);
 	if( fpos < 0 ){
 		return -1;
 	}
@@ -590,6 +692,119 @@ long getAnalogArrayFromFile(FILE *fbuff, long fpos_eof)
 
 	return fpos;
 }
+
+int putDigitalTableToFile(FILE *fbuff)
+{
+	char cbuff[512] = "";// header/footer buffer
+	int clen = 512;
+	char bf[256] = "";// assembly buffer
+	int elems_writ;
+
+	// Particulars of the object to write (don't forget to change the actual data write line too)
+	// int DigTableValues[NUMBEROFCOLUMNS+1][MAXDIGITAL][NUMBEROFPAGES];// vars.h line
+	char stag[] = "<DigitalTable>";
+	char etag[] = "</DigitalTable>";
+	int num_dims = 3;
+	int dims[] = {(NUMBEROFCOLUMNS+1), (MAXDIGITAL), (NUMBEROFPAGES)};// ordering is: object[dims[0]][dims[1]]...
+	int elem_size = sizeof(DigTableValues[0][0][0]);
+	int linear_size = 1;
+
+	// Make the header automatically and write it
+	sprintf(cbuff, "%s~%d~%d~", stag, elem_size, num_dims);
+	for( int i = 0; i < num_dims; ++i ){
+		sprintf(bf, "%d~", dims[i]);
+		strcat(cbuff, bf);
+		linear_size = linear_size * dims[i];
+	}
+	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write header
+
+	elems_writ = fwrite(&DigTableValues, elem_size, linear_size, fbuff);// write binary data
+
+	sprintf(cbuff, etag);
+	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write footer
+
+	if( elems_writ != linear_size ){
+		fclose(fbuff);
+		printf("Failed to write the correct number of bytes for tag |%s|\n", stag);
+		return -1;
+	}
+
+	return 0;
+}
+
+long getDigitalTableFromFile(FILE *fbuff, long fpos_eof)
+{
+	// Particulars of the object to load (don't forget to change the actual data write line too)
+	char stag[] = "<DigitalTable>";
+	char etag[] = "</DigitalTable>";
+	int max_dims = 3;// DigTableValues is 3D (cols x maxrows x pages)
+
+	int elem_size;
+	int num_dims;
+	int dims[max_dims];
+	int linear_size = 1;
+	long fpos;
+	int elems_read;
+
+	fpos = readHeader(fbuff, stag, &elem_size, &num_dims, dims, max_dims, fpos_eof);
+	// Do some simple checks
+	if( fpos < 0 ){// if there was an err in readHeader (printf's in readHeader)
+		return -1;
+	}
+	for( int i=0; i<max_dims; ++i ){ linear_size *= dims[i]; }// calculate linear_size
+	if( elem_size*linear_size != sizeof(DigTableValues) ){
+		printf("Binary data read from file for tag |%s| is not the correct size\n", stag);
+		return -1;
+	}
+
+	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the binary data
+	elems_read = fread(&DigTableValues, elem_size, linear_size, fbuff);// load the binary data directly into the array
+	if( elems_read != linear_size ){// didn't read expected number of elements
+		printf("Expected to read more elements from file for tag |%s|\n", stag);
+		return -1;
+	}
+
+	fpos = checkFooter(fbuff, etag, fpos_eof);
+	if( fpos < 0 ){
+		return -1;
+	}
+	if( fpos > fpos_eof ){
+		printf("Passed eof\n");
+		return -2;
+	}
+	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the next header
+
+	return fpos;
+}
+
+
+
+	/*
+	strcpy(buff2,SEQUENCER_VERSION);
+		fwrite(&buff2, sizeof buff2, 1,fdata);
+		fwrite(&xval,sizeof xval, 1,fdata);
+		fwrite(&yval,sizeof yval, 1,fdata);
+		fwrite(&zval,sizeof zval, 1,fdata);
+		// Times
+		fwrite(&TimeArray,sizeof TimeArray,1,fdata);
+		// Analog and Digital Channels
+		fwrite(&AnalogTable,sizeof AnalogTable,1,fdata);
+		fwrite(&DigTableValues,sizeof DigTableValues,1,fdata);
+		fwrite(&AChName,sizeof AChName,1,fdata);
+		fwrite(&DChName,sizeof DChName,1,fdata);
+		// DDS settings
+		fwrite(&ddstable,sizeof ddstable,1,fdata);
+		fwrite(&dds2table,sizeof dds2table,1,fdata);
+		fwrite(&dds3table,sizeof dds3table,1,fdata);
+		// 'Laser" settings (used to be in .laser files)
+		fwrite(&LaserProperties,sizeof LaserProperties, 1,fdata);
+		fwrite(&LaserTable,sizeof LaserTable,1,fdata);
+		// Anritsu settings
+		fwrite(&AnritsuSettingValues,sizeof AnritsuSettingValues,1,fdata);
+	*/
+
+
+
 
 long readHeader(FILE *fbuff, char *tag, int *elem_size, int *num_dims, int *dims, const int max_dims, long fpos_eof){
 	// fbuff's file pointer should be pointing at the start of the header ie. '<'
@@ -603,7 +818,7 @@ long readHeader(FILE *fbuff, char *tag, int *elem_size, int *num_dims, int *dims
 	long fpos, fpos_binary;
 	int elems_read;
 
-	printf("Enter readHeader\n");
+	printf("---Enter readHeader\n");
 
 	fpos = ftell(fbuff);// First save position in file
 	elems_read = fread(cbuff, sizeof(char), clen, fbuff);// read into char buffer
@@ -623,7 +838,7 @@ long readHeader(FILE *fbuff, char *tag, int *elem_size, int *num_dims, int *dims
 		return -1;// return negative for error (not V17 and above)
 	}
 
-	printf("cptr:|%.20s|\n", cptr);
+	printf("cptr:|%.40s|\n", cptr);
 	printf("etag:|%s|\n", tag);
 	if( strncmp(cptr,tag,strlen(tag)) == 0 ){// if strs match
 		cptr += strlen(tag);// cptr now points to the first '~'
@@ -680,7 +895,7 @@ long checkFooter(FILE *fbuff, char *endtag, long fpos_eof){
 	long fpos, fpos_next;
 	int elems_read;
 
-	printf("Enter checkFooter\n");
+	printf("---Enter checkFooter\n");
 
 	fpos = ftell(fbuff);// First save position in file
 	elems_read = fread(cbuff, sizeof(char), clen, fbuff);// read into char buffer
@@ -695,7 +910,7 @@ long checkFooter(FILE *fbuff, char *endtag, long fpos_eof){
 		}
 	}
 
-	printf("cptr:|%.20s|\n", cptr);
+	printf("cptr:|%.40s|\n", cptr);
 	printf("etag:|%s|\n", endtag);
 	if( strncmp(cptr,endtag,strlen(endtag)) == 0 ){// if strs match
 		cptr += strlen(endtag);// cptr now points to the char after the '>'
