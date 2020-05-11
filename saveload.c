@@ -309,15 +309,15 @@ int SaveSequenceV17(char* save_name, int sn_length)
 
 	// Write TimeArray
 	status = putTimeArrayToFile(fbuffer);
-	if( status < 0 ){ fclose(fbuffer); return -1; }
+	if( status < 0 ){ fclose(fbuffer); return status; }
 
 	// Write AnalogTable
 	status = putAnalogTableToFile(fbuffer);
-	if( status < 0 ){ fclose(fbuffer); return -1; }
+	if( status < 0 ){ fclose(fbuffer); return status; }
 
 	// Write DigitalTable
 	status = putDigitalTableToFile(fbuffer);
-	if( status < 0 ){ fclose(fbuffer); return -1; }
+	if( status < 0 ){ fclose(fbuffer); return status; }
 
 
 
@@ -403,11 +403,9 @@ int LoadSequenceV17(char* load_name, int ln_length)
 
 
 
-
-
-	if( fpos < 0 && fpos != -2 ){// pass though error but if fpos == -2 then we have reached the end of the file as we expect.
+	if( fpos < 0 && fpos != -2 ){// pass though error, but not if fpos == -2 then we have reached the end of the file as we expect.
 		fclose(fbuffer);
-		return -1;
+		return fpos;
 	}
 	if( fpos > 0 ){
 		printf("There is still more file to read but nothing to put it in!\n");
@@ -441,6 +439,9 @@ int checkVersionFromFile(FILE *fbuff, long fpos_eof)
 
 	fpos = readHeader(fbuff, stag, &elem_size, &num_dims, dims, max_dims, fpos_eof);
 	// Do some simple checks
+	if( fpos < 0 ){// if there was an err in readHeader (printf's in readHeader)
+		return fpos;
+	}
 	for( int i=0; i<max_dims; ++i ){ linear_size *= dims[i]; }// calculate linear_size
 	if( elem_size*linear_size >= clen ){
 		printf("Binary data in file for tag |%s| is too big for buffer\n", stag);
@@ -457,12 +458,8 @@ int checkVersionFromFile(FILE *fbuff, long fpos_eof)
 	printf("SeqVer loaded is |%.*s|\n", elem_size*linear_size, cbuff);// print the SeqVer line
 
 	fpos = checkFooter(fbuff, etag, fpos_eof);
-	if( fpos < 0 ){
-		return -1;
-	}
-	if( fpos > fpos_eof ){
-		printf("Passed eof\n");
-		return -2;
+	if( fpos < 0 ){// pass though signal, either -1 for error or -2 for eof
+		return fpos;
 	}
 	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the next header
 	return fpos;
@@ -489,7 +486,7 @@ long getSaveVersionFromFile(FILE *fbuff, long fpos_eof, int *majorVer, int *mino
 	fpos = readHeader(fbuff, stag, &elem_size, &num_dims, dims, max_dims, fpos_eof);
 	// Do some simple checks
 	if( fpos < 0 ){// if there was an err in readHeader (printf's in readHeader)
-		return -1;
+		return fpos;
 	}
 	for( int i=0; i<max_dims; ++i ){ linear_size *= dims[i]; }// calculate linear_size
 	if( elem_size*linear_size >= clen ){
@@ -515,12 +512,8 @@ long getSaveVersionFromFile(FILE *fbuff, long fpos_eof, int *majorVer, int *mino
 	// at the moment we don't care about the minor version
 
 	fpos = checkFooter(fbuff, etag, fpos_eof);
-	if( fpos < 0 ){
-		return -1;
-	}
-	if( fpos > fpos_eof ){
-		printf("Passed eof\n");
-		return -2;
+	if( fpos < 0 ){// pass though signal, either -1 for error or -2 for eof
+		return fpos;
 	}
 	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the next header
 	return fpos;
@@ -581,7 +574,7 @@ long getTimeArrayFromFile(FILE *fbuff, long fpos_eof)
 	fpos = readHeader(fbuff, stag, &elem_size, &num_dims, dims, max_dims, fpos_eof);
 	// Do some simple checks
 	if( fpos < 0 ){// if there was an err in readHeader (printf's in readHeader)
-		return -1;
+		return fpos;
 	}
 	for( int i=0; i<max_dims; ++i ){ linear_size *= dims[i]; }// calculate linear_size
 	if( elem_size*linear_size != sizeof(TimeArray) ){
@@ -597,12 +590,8 @@ long getTimeArrayFromFile(FILE *fbuff, long fpos_eof)
 	}
 
 	fpos = checkFooter(fbuff, etag, fpos_eof);
-	if( fpos < 0 ){
-		return -1;
-	}
-	if( fpos > fpos_eof ){
-		printf("Passed eof\n");
-		return -2;
+	if( fpos < 0 ){// pass though signal, either -1 for error or -2 for eof
+		return fpos;
 	}
 	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the next header
 
@@ -665,7 +654,7 @@ long getAnalogTableFromFile(FILE *fbuff, long fpos_eof)
 	fpos = readHeader(fbuff, stag, &elem_size, &num_dims, dims, max_dims, fpos_eof);
 	// Do some simple checks
 	if( fpos < 0 ){// if there was an err in readHeader (printf's in readHeader)
-		return -1;
+		return fpos;
 	}
 	for( int i=0; i<max_dims; ++i ){ linear_size *= dims[i]; }// calculate linear_size
 	if( elem_size*linear_size != sizeof(AnalogTable) ){
@@ -681,12 +670,8 @@ long getAnalogTableFromFile(FILE *fbuff, long fpos_eof)
 	}
 
 	fpos = checkFooter(fbuff, etag, fpos_eof);
-	if( fpos < 0 ){
-		return -1;
-	}
-	if( fpos > fpos_eof ){
-		printf("Passed eof\n");
-		return -2;
+	if( fpos < 0 ){// pass though signal, either -1 for error or -2 for eof
+		return fpos;
 	}
 	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the next header
 
@@ -749,7 +734,7 @@ long getDigitalTableFromFile(FILE *fbuff, long fpos_eof)
 	fpos = readHeader(fbuff, stag, &elem_size, &num_dims, dims, max_dims, fpos_eof);
 	// Do some simple checks
 	if( fpos < 0 ){// if there was an err in readHeader (printf's in readHeader)
-		return -1;
+		return fpos;
 	}
 	for( int i=0; i<max_dims; ++i ){ linear_size *= dims[i]; }// calculate linear_size
 	if( elem_size*linear_size != sizeof(DigTableValues) ){
@@ -765,12 +750,8 @@ long getDigitalTableFromFile(FILE *fbuff, long fpos_eof)
 	}
 
 	fpos = checkFooter(fbuff, etag, fpos_eof);
-	if( fpos < 0 ){
-		return -1;
-	}
-	if( fpos > fpos_eof ){
-		printf("Passed eof\n");
-		return -2;
+	if( fpos < 0 ){// pass though signal, either -1 for error or -2 for eof
+		return fpos;
 	}
 	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the next header
 
@@ -923,7 +904,7 @@ long checkFooter(FILE *fbuff, char *endtag, long fpos_eof){
 	fseek(fbuff, fpos, SEEK_SET);// seek back to the start of the footer
 	fpos_next = fpos + (cptr-cbuff);// calc the position of the next header's '<'
 	if( fpos_next >= fpos_eof ){// if we have reached the end of the file
-		printf("Reached end of file in checkFooter\n");
+		printf("Reached end of file in checkFooter for tag |%s|\n", endtag);
 		return -2;
 	}
 	return fpos_next;
