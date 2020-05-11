@@ -230,6 +230,9 @@ void LoadLastSettings(int check)
 Version 17 Save and Load
 *************************************************************************/
 
+// The calling code of SaveV17 and LoadV17 should pop up a window saying that there was an error saving/loading.
+// In the case of loading it should ideally run the initialization again to zero everything.
+
 int SaveSequenceV17(char* save_name, int sn_length)
 {
 	// Lots of decisions to be made on how to make this new file format.
@@ -276,58 +279,95 @@ int SaveSequenceV17(char* save_name, int sn_length)
 
 	// Let's try making something and seeing how it behaves
 
-	int linear_size, num_rows, num_cols, num_pages;
-	int return_val = 0;// Default to success this time
-
 	FILE *fbuffer;
 	char file_buff[MAX_PATHNAME_LEN] = "";
 
 	char cbuff[512] = "";
+
+	int elems_writ;
 
 
 	// Copy characters to buffer to prevent overflow of filename
 	strncpy(file_buff, save_name, sn_length);
-	if( (fbuffer = fopen(file_buff,'w')) == NULL ){
+	if( (fbuffer = fopen(file_buff,"w")) == NULL ){
 		MessagePopup("Save Error", "Failed to open file for saving");
-		return_val = -1;
-	}// If fbuffer is null then all the saving actions save to a black hole so don't have to skip anything
+		return -1;
+	}
 
-	// Write ADwin version
-	sprintf(cbuff, "<SeqVer>~%d~$d~%d~", sizeof(char), 1, strlen(SEQUENCER_VERSION));
+	// Write sequencer version
+	sprintf(cbuff, "<SeqVer>~%d~%d~%d~", sizeof(char), 1, strlen(SEQUENCER_VERSION));
 	strncat(cbuff, SEQUENCER_VERSION, strlen(SEQUENCER_VERSION));
-	strcat(cbuff, "</SeqVer>"));
+	strcat(cbuff, "</SeqVer>");
+	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuffer);
 
-	// Write TimeArray next
-	//fwrite(&TimeArray,sizeof TimeArray,1,fdata);
+	// Write save file version
+	sprintf(cbuff, "<SaveVersion>~%d~%d~%d~", sizeof(char), 1, strlen("17.0"));
+	strncat(cbuff, "17.0", strlen("17.0"));
+	strcat(cbuff, "</SaveVersion>");
+	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuffer);
+
+	// Write TimeArray
+	sprintf(cbuff, "<TimeArray>~%d~%d~%d~%d~", sizeof(TimeArray[0][0]), 2, NUMBEROFCOLUMNS+1, NUMBEROFPAGES);
+	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuffer);// write header
+	elems_writ = fwrite(&TimeArray, sizeof(TimeArray[0][0]), (NUMBEROFCOLUMNS+1)*(NUMBEROFPAGES), fbuffer);// write binary data
+	sprintf(cbuff, "</TimeArray>");
+	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuffer);// write footer
+	printf("%d %d\n", sizeof(TimeArray), sizeof(TimeArray[0][0])*(NUMBEROFCOLUMNS+1)*(NUMBEROFPAGES));//debug
+	printf("%d %d\n", elems_writ, (NUMBEROFCOLUMNS+1)*(NUMBEROFPAGES));//debug
+	if( elems_writ != (NUMBEROFCOLUMNS+1)*(NUMBEROFPAGES) ){
+		fclose(fbuffer);
+		printf("Failed to write the correct number of bytes for %s\n", "TimeArray");
+		return -1;
+	}
 
 
 
+	/*
+	strcpy(buff2,SEQUENCER_VERSION);
+		fwrite(&buff2, sizeof buff2, 1,fdata);
+		fwrite(&xval,sizeof xval, 1,fdata);
+		fwrite(&yval,sizeof yval, 1,fdata);
+		fwrite(&zval,sizeof zval, 1,fdata);
+		// Times
+		fwrite(&TimeArray,sizeof TimeArray,1,fdata);
+		// Analog and Digital Channels
+		fwrite(&AnalogTable,sizeof AnalogTable,1,fdata);
+		fwrite(&DigTableValues,sizeof DigTableValues,1,fdata);
+		fwrite(&AChName,sizeof AChName,1,fdata);
+		fwrite(&DChName,sizeof DChName,1,fdata);
+		// DDS settings
+		fwrite(&ddstable,sizeof ddstable,1,fdata);
+		fwrite(&dds2table,sizeof dds2table,1,fdata);
+		fwrite(&dds3table,sizeof dds3table,1,fdata);
+		// 'Laser" settings (used to be in .laser files)
+		fwrite(&LaserProperties,sizeof LaserProperties, 1,fdata);
+		fwrite(&LaserTable,sizeof LaserTable,1,fdata);
+		// Anritsu settings
+		fwrite(&AnritsuSettingValues,sizeof AnritsuSettingValues,1,fdata);
+	*/
 
-	return return_val;// return zero for no errors
+
+	fflush(fbuffer);// make sure the file is completely written by the time we leave this function
+	return 0;// return success
 }
 
 // Generic format for now is:
-// <tag_name>~elem_size~num_dim~dim1~dim2~...~BINARY_DATA~</tag_name>
+// <tag_name>~elem_size~num_dim~dim1~dim2~...~BINARY_DATA</tag_name>
 
 
 int LoadSequenceV17(char* load_name, int ln_length)
 {
-	int linear_size, num_rows, num_cols, num_pages;
-	int dims[5];// hardcode maximum number of dimensions of an array to 5. Should only ever need 3 max.
-
 	FILE *fbuffer;
 	char file_buff[MAX_PATHNAME_LEN] = "";
 	long fpos, fpos_file_end;
 
-	char cbuff[512] = "";
-
+	int majorVer, minorVer;
 
 	// Copy characters to buffer to prevent overflow of filename
 	strncpy(file_buff, load_name, ln_length);
-	if( (fbuffer = fopen(file_buff,'r')) == NULL ){
+	if( (fbuffer = fopen(file_buff,"r")) == NULL ){
 		MessagePopup("Load Error", "Failed to open file for loading");
-		return_val = -1;
-		return return_val;// Don't try to load anything from a NULL file pointer
+		return -1;// Don't try to load anything from a NULL file pointer
 	}
 	// File is ready for reading
 
@@ -336,56 +376,222 @@ int LoadSequenceV17(char* load_name, int ln_length)
 	fpos_file_end = ftell(fbuffer);
 	fseek(fbuffer, 0, SEEK_SET);
 
-	// Read the first part of the file to print version info
-	fpos = checkVersionFromFile(fbuffer);
+	// Read the first part of the file to print seq version info
+	fpos = checkVersionFromFile(fbuffer, fpos_file_end);
+	if( fpos < 0 ){ fclose(fbuffer); return -1; }// pass though error
+
+	// Get the version of the save file
+	fpos = getSaveVersionFromFile(fbuffer, fpos_file_end, &majorVer, &minorVer);
+	if( fpos < 0 ){ fclose(fbuffer); return -1; }// pass though error
 
 	// Get the TimeArray
 	// possibly change to make temp variable pointer and pass it in then free memory allocated in these functions
-	fpos = getTimeArrayFromFile(fbuffer);
-	if( fpos < 0 ){
-		prinft("Stop loading at %s\n", "TimeArray");
+	fpos = getTimeArrayFromFile(fbuffer, fpos_file_end);
+	if( fpos < 0 ){ fclose(fbuffer); return -1; }// pass though error
+
+
+
+
+
+
+
+
+
+	if( fpos < 0 && fpos != -2 ){// pass though error but if fpos == -2 then we have reached the end of the file as we expect.
+		fclose(fbuffer);
 		return -1;
 	}
-	if( fpos >= fpos_file_end ){
-		printf("Reached eof before expected\n");
+	if( fpos > 0 ){
+		printf("There is still more file to read but nothing to put it in!\n");
+		fclose(fbuffer);
 		return -1;
 	}
 
-
-
-
-
-
+	// We have finally gotten to this point so close the file and return success
+	fclose(fbuffer);
 	return 0;
 }
 
-long getTimeArrayFromFile(FILE *fbuff)
+
+int checkVersionFromFile(FILE *fbuff, long fpos_eof)
 {
 	int elem_size;
 	int num_dims;
 	int dims[1];
 	int max_dims = 1;
+	int linear_size;
 	long fpos;
+	int elems_read;
 
-	fpos = readHeader(fbuff, "<TimeArray>", &elem_size, &num_dims, dims, max_dims);
+	char cbuff[512];
+	int clen = 512;
+
+	fpos = readHeader(fbuff, "<SeqVer>", &elem_size, &num_dims, dims, max_dims, fpos_eof);
 	// Do some simple checks
-	if( fpos < 0 ){// if there was an err in readHeader (printf's in readHeader)
+	linear_size = dims[0];
+	if( elem_size*linear_size >= clen ){
+		printf("Binary data in file for tag |%s| is too big for buffer\n", "<SeqVer>");
 		return -1;
 	}
-	if( elem_size*dims[0] != sizeof(TimeArray) ){
-		printf("Binary data in file is not the correct size for %s\n", "TimeArray");
-		return -1;
-	}
+
 	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the binary data
-	fread(buff, elem_size, dims[0], fdata);// load the binary data directly into the array
-	fpos = checkFooter(fbuff, "</TimeArray>");
+	elems_read = fread(cbuff, elem_size, linear_size, fbuff);// load the binary data directly into the array
+	if( elems_read != elem_size*linear_size ){
+		printf("Expected to read more bytes from file for tag |%s|\n", "<SeqVer>");
+		return -1;
+	}
+
+	printf("SeqVer loaded is |%.*s|\n", elem_size*linear_size, cbuff);// print the SeqVer line
+
+	fpos = checkFooter(fbuff, "</SeqVer>", fpos_eof);
+	if( fpos < 0 ){
+		return -1;
+	}
+	if( fpos > fpos_eof ){
+		printf("Passed eof\n");
+		return -2;
+	}
 	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the next header
 	return fpos;
 }
 
-// These functions as is will probably run into problems when they read the eof into the buffer.
+long getSaveVersionFromFile(FILE *fbuff, long fpos_eof, int *majorVer, int *minorVer)
+{
+	int elem_size;
+	int num_dims;
+	int dims[1];// SaveVersion is 1D (chars)
+	int max_dims = 1;
+	int linear_size;
+	long fpos;
+	int elems_read;
 
-long readHeader(FILE *fbuff, char *tag, int *elem_size, int *num_dims, int *dims, const int max_dims){
+	char cbuff[512] = "";
+	int clen = 512;
+	char *cptr = cbuff;
+
+	fpos = readHeader(fbuff, "<SaveVersion>", &elem_size, &num_dims, dims, max_dims, fpos_eof);
+	// Do some simple checks
+	if( fpos < 0 ){// if there was an err in readHeader (printf's in readHeader)
+		return -1;
+	}
+	linear_size = dims[0];
+	if( elem_size*linear_size >= clen ){
+		printf("Binary data in file for tag |%s| is too big for buffer\n", "<SaveVersion>");
+		return -1;
+	}
+
+	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the binary data
+	elems_read = fread(cbuff, elem_size, linear_size, fbuff);// load the binary data directly into the array
+	if( elems_read != linear_size ){// didn't read expected number of bytes
+		printf("Expected to read more bytes from file for tag |%s|\n", "<SaveVersion>");
+		return -1;
+	}
+
+	// Check that the file version is valid (##.#)
+	*(cptr+linear_size) = '\0';// explicitly set the char after the string to null cause fread doesn't care
+	sscanf(cptr, "%d.%d", majorVer, minorVer);// get major and minor version numbers
+	printf("Major.minor version: %d.%d\n", *majorVer, *minorVer);
+	if( majorVer < 17 ){// if save file doesn't use tags (this shouldn't ever be true hehe)
+		printf("Version of save file is invalid\n");
+		return -1;
+	}
+	// at the moment we don't care about the minor version
+
+	fpos = checkFooter(fbuff, "</SaveVersion>", fpos_eof);
+	if( fpos < 0 ){
+		return -1;
+	}
+	if( fpos > fpos_eof ){
+		printf("Passed eof\n");
+		return -2;
+	}
+	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the next header
+	return fpos;
+}
+
+long getTimeArrayFromFile(FILE *fbuff, long fpos_eof)
+{
+	int elem_size;
+	int num_dims;
+	int dims[2];// TimeArray is 2D (cols x pages)
+	int max_dims = 2;
+	int linear_size;
+	long fpos;
+	int elems_read;
+
+	fpos = readHeader(fbuff, "<TimeArray>", &elem_size, &num_dims, dims, max_dims, fpos_eof);
+	// Do some simple checks
+	if( fpos < 0 ){// if there was an err in readHeader (printf's in readHeader)
+		return -1;
+	}
+	linear_size = dims[0]*dims[1];
+	if( elem_size*linear_size != sizeof(TimeArray) ){
+		printf("Binary data read from file for tag |%s| is not the correct size\n", "<TimeArray>");
+		return -1;
+	}
+
+	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the binary data
+	elems_read = fread(&TimeArray, elem_size, linear_size, fbuff);// load the binary data directly into the array
+	if( elems_read != linear_size ){// didn't read expected number of bytes
+		printf("Expected to read more bytes from file for tag |%s|\n", "<TimeArray>");
+		return -1;
+	}
+
+	fpos = checkFooter(fbuff, "</TimeArray>", fpos_eof);
+	if( fpos < 0 ){
+		return -1;
+	}
+	if( fpos > fpos_eof ){
+		printf("Passed eof\n");
+		return -2;
+	}
+	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the next header
+
+	return fpos;
+}
+
+long getAnalogArrayFromFile(FILE *fbuff, long fpos_eof)
+{
+	int elem_size;
+	int num_dims;
+	int dims[2];// TimeArray is 2D (cols x pages)
+	int max_dims = 2;
+	int linear_size;
+	long fpos;
+	int elems_read;
+
+	fpos = readHeader(fbuff, "<TimeArray>", &elem_size, &num_dims, dims, max_dims, fpos_eof);
+	// Do some simple checks
+	if( fpos < 0 ){// if there was an err in readHeader (printf's in readHeader)
+		return -1;
+	}
+	linear_size = dims[0]*dims[1];
+	if( elem_size*linear_size != sizeof(TimeArray) ){
+		printf("Binary data in file is not the correct size for %s\n", "TimeArray");
+		return -1;
+	}
+
+	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the binary data
+	elems_read = fread(&TimeArray, elem_size, linear_size, fbuff);// load the binary data directly into the array
+	if( elems_read != linear_size ){// didn't read expected number of bytes
+		printf("Expected to read more bytes from file for %s\n", "TimeArray");
+		return -1;
+	}
+
+	fpos = checkFooter(fbuff, "</TimeArray>", fpos_eof);
+	if( fpos < 0 ){
+		return -1;
+	}
+	if( fpos > fpos_eof ){
+		printf("Passed eof\n");
+		return -2;
+	}
+	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the next header
+
+	return fpos;
+}
+
+long readHeader(FILE *fbuff, char *tag, int *elem_size, int *num_dims, int *dims, const int max_dims, long fpos_eof){
 	// fbuff's file pointer should be pointing at the start of the header ie. '<'
 	//returns ftell at start of binary data that is to be read
 	// assumes tag is properly '\0' terminated
@@ -395,34 +601,48 @@ long readHeader(FILE *fbuff, char *tag, int *elem_size, int *num_dims, int *dims
 	char *cptr = cbuff;
 	int i;
 	long fpos, fpos_binary;
+	int elems_read;
 
-	fpos = ftell(fbuffer);// First save position in file
-	fread(cbuff, sizeof(char), 512, fbuffer)// read into char buffer
+	printf("Enter readHeader\n");
+
+	fpos = ftell(fbuff);// First save position in file
+	elems_read = fread(cbuff, sizeof(char), clen, fbuff);// read into char buffer
+	if( elems_read != clen ){
+		clen = elems_read;// prevent looking at bad data
+		if( ftell(fbuff) >= fpos_eof ){
+			printf("Will reach EOF in %d bytes\n", elems_read);
+		}
+		else {// there was some kind of error and we didn't read all the bytes we wanted to
+			printf("Bytes read %d in readHeader less than buffer size.\n", elems_read);
+			return -1;
+		}
+	}
 
 	if( cbuff[0] == 'A' ){// only relevant for the first header
 		printf("Savefile format seems to be pre V17\n");
-		return -1;// return negative for error (not V17)
+		return -1;// return negative for error (not V17 and above)
 	}
 
+	printf("cptr:|%.20s|\n", cptr);
+	printf("etag:|%s|\n", tag);
 	if( strncmp(cptr,tag,strlen(tag)) == 0 ){// if strs match
 		cptr += strlen(tag);// cptr now points to the first '~'
-		print(*cptr);// show ~ for testing
 	}
 	else {// we got a tag we didn't expect
-		printf("Unexpected tag when expected: %s\n", tag);
+		printf("Unexpected tag when expected |%s|\n", tag);
 		return -1;
 	}
 
 	sscanf(cptr, "~%d~", elem_size);// Get the sizeof() of each element in the array
 	if( *elem_size <= 0 ){// Simple error checking
-		printf("Invalid element size ~%d~ for tag: %s\n", *elem_size, tag);
+		printf("Invalid element size ~%d~ for tag |%s|\n", *elem_size, tag);
 		return -1;
 	}
 	++cptr; while( *cptr != '~' && cptr-cbuff < clen ){ ++cptr; }// Increment cptr to the tilde after the number
 
 	sscanf(cptr, "~%d~", num_dims);// Get the number of dimensions
 	if( *num_dims > max_dims ){
-		printf("Invalid number of dims ~%d~ for tag: %s\n", *num_dims, tag);
+		printf("Invalid number of dims ~%d~ for tag |%s|\n", *num_dims, tag);
 		return -1;
 	}
 	++cptr; while( *cptr != '~' && cptr-cbuff < clen ){ ++cptr; }// Increment cptr to the tilde after the number
@@ -430,70 +650,68 @@ long readHeader(FILE *fbuff, char *tag, int *elem_size, int *num_dims, int *dims
 	for( i = 0; i < *num_dims; ++i ){// Get the size of each dim
 		sscanf(cptr, "~%d~", dims+i);// Get the length of the ith dim and put it in dims[i] by reference
 		if( dims[i] <= 0 ){
-			printf("Invalid dimension size ~%d~ for tag: %s\n", dims[i], tag);
+			printf("Invalid dimension size ~%d~ for tag |%s|\n", dims[i], tag);
 			return -1;
 		}
 		++cptr; while( *cptr != '~' && cptr-cbuff < clen ){ ++cptr; }
 	}
 	// Now we have parsed the entire header part
 
-	fpos_binary = fpos + (cptr-cbuff);// calculate the fpos for the binary data start !! double check I'm not off by 1 here
-	fseek(fbuff, fpos, SEEK_SET;// seek to the start of the header (for generality; after this function the returned seek value is the binary data)
+	fseek(fbuff, fpos, SEEK_SET);// seek back to the start of the header
+	++cptr;// increment to point at the first byte of the binary data
+	fpos_binary = fpos + (cptr-cbuff);// calculate the fpos for the binary data start
+	printf("diff %d\n", (cptr-cbuff));
+	printf("fpbi %d\n", fpos_binary);
+	if( fpos_binary >= fpos_eof ){// if we have reached the end of the file
+		printf("Binary data is past the end of the file\n");
+		return -1;// contrary to checkFooter, having the location of the binary data be past the end of the file is an error
+	}
 	return fpos_binary;// return the offset from the start of the file of the binary data
 }
 
-long checkFooter(FILE *fbuff, char *endtag){
+long checkFooter(FILE *fbuff, char *endtag, long fpos_eof){
 	// Check that the next part after the binary data is actually the end tag
 	// returns fpos at the end of the end tag
 	// assumes tag is properly '\0' terminated
 
 	char cbuff[512] = "";
 	int clen = 512;// max len of cbuff
-	int bytesread;
 	char *cptr = cbuff;
 	long fpos, fpos_next;
+	int elems_read;
 
-	fpos = ftell(fbuffer);// First save position in file
-	fread(cbuff, sizeof(char), 512, fbuffer);// read into char buffer
+	printf("Enter checkFooter\n");
 
+	fpos = ftell(fbuff);// First save position in file
+	elems_read = fread(cbuff, sizeof(char), clen, fbuff);// read into char buffer
+	if( elems_read != clen ){
+		clen = elems_read;// prevent looking at bad data
+		if( ftell(fbuff) >= fpos_eof ){
+			printf("Will reach EOF in %d bytes\n", elems_read);
+		}
+		else {// there was some kind of error and we didn't read all the bytes we wanted to
+			printf("Bytes read %d in checkFooter less than buffer size.\n", elems_read);
+			return -1;
+		}
+	}
+
+	printf("cptr:|%.20s|\n", cptr);
+	printf("etag:|%s|\n", endtag);
 	if( strncmp(cptr,endtag,strlen(endtag)) == 0 ){// if strs match
 		cptr += strlen(endtag);// cptr now points to the char after the '>'
 	}
 	else {// we got an endtag we didn't expect
-		printf("Unexpected endtag when expected: %s\n", endtag);
+		printf("Unexpected endtag when expected tag |%s|\n", endtag);
 		return -1;
 	}
 
+	fseek(fbuff, fpos, SEEK_SET);// seek back to the start of the footer
 	fpos_next = fpos + (cptr-cbuff);// calc the position of the next header's '<'
-	fseek(fbuff, fpos, SEEK_SET;// seek to the start of the footer
-	return fpos_next;
-}
-
-
-
-int checkVersionFromFile(FILE *fbuff)
-{
-	int elem_size;
-	int num_dims;
-	int dims[1];
-	int max_dims = 1;
-	long fpos;
-
-	char *buff[512];
-
-	fpos = readHeader(fbuff, "<SeqVer>", &elem_size, &num_dims, dims, max_dims);
-	// Do some simple checks
-	if( elem_size*dims[0] <= 512-1 ){
-		printf("Binary data in file is too big for %s\n", "SeqVer");
+	if( fpos_next >= fpos_eof ){// if we have reached the end of the file
+		printf("Reached end of file in checkFooter\n");
+		return -2;
 	}
-
-	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the binary data
-	fread(buff, elem_size, dims[0], fdata);// load the binary data directly into the array
-	printf("SeqVer loading is: %.*s\n", elem_size*dims[0], buff);// print the SeqVer line
-
-	fpos = checkFooter(fbuff, "</SeqVer>");
-	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the next header
-	return fpos;
+	return fpos_next;
 }
 
 

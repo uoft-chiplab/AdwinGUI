@@ -66,27 +66,27 @@ In Projects = "1,"
 Source Window State = "1,2420,2420,2420,27,27,27,0,0,0,0,0,0,0,0,0,2361,0,2420,27,401,602,1,0,"
 Window Top = 33
 Window Left = 10
-Window Z-Order = 6
+Window Z-Order = 4
 
 [File 0003]
 Path = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/vars.h"
 File Type = "Include"
 Disk Date = 3671915361
 In Projects = "1,"
-Source Window State = "1,1,1,1,16,16,16,0,0,0,0,0,0,0,0,0,1,0,1,16,401,602,1,0,"
+Source Window State = "1,90,92,90,33,0,33,0,3,0,0,0,0,0,0,0,74,0,92,0,401,602,1,0,"
 Window Top = 64
 Window Left = 26
-Window Z-Order = 7
+Window Z-Order = 5
 
 [File 0004]
 Path = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/main.c"
 File Type = "CSource"
-Disk Date = 3671975422
+Disk Date = 3671998023
 In Projects = "1,"
-Source Window State = "1,30,30,30,0,0,0,0,0,0,0,0,0,0,0,0,16,0,30,0,349,700,1,0,"
+Source Window State = "1,190,190,190,11,11,11,0,0,0,0,0,0,0,0,0,170,0,190,11,349,700,1,0,"
 Window Top = 32
 Window Left = 6
-Window Z-Order = 2
+Window Z-Order = 3
 
 [File 0005]
 Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/GUIDes"
@@ -97,7 +97,7 @@ In Projects = "1,"
 Source Window State = "1,222,222,222,17,32,17,0,3,0,0,0,0,0,0,0,205,0,222,32,315,631,1,0,"
 Window Top = 431
 Window Left = 26
-Window Z-Order = 8
+Window Z-Order = 9
 
 [File 0006]
 Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/GUIDes"
@@ -119,7 +119,7 @@ In Projects = "1,"
 Source Window State = "1,48,48,48,0,0,0,0,0,0,0,0,0,0,0,0,26,0,48,0,356,402,1,0,"
 Window Top = 485
 Window Left = 141
-Window Z-Order = 4
+Window Z-Order = 7
 
 [File 0008]
 Path = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/main.h"
@@ -146,9 +146,9 @@ Window Z-Order = 10
 Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/savelo"
 Path Line0002 = "ad.c"
 File Type = "CSource"
-Disk Date = 3671986824
+Disk Date = 3672052694
 In Projects = "1,"
-Source Window State = "1,353,353,353,0,0,0,0,0,0,0,0,0,0,0,0,313,0,353,0,401,721,1,0,"
+Source Window State = "1,321,321,321,0,0,0,0,0,0,0,0,0,0,0,0,302,0,321,0,401,721,1,0,"
 Window Top = 33
 Window Left = 10
 Window Z-Order = 1
@@ -157,12 +157,12 @@ Window Z-Order = 1
 Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/savelo"
 Path Line0002 = "ad.h"
 File Type = "Include"
-Disk Date = 3671729459
+Disk Date = 3672052659
 In Projects = "1,"
-Source Window State = "1,25,25,25,5,5,5,0,0,0,0,0,0,0,0,0,0,0,25,5,401,721,1,0,"
+Source Window State = "1,24,24,24,12,12,12,0,0,0,0,0,0,0,0,0,0,0,24,12,401,721,1,0,"
 Window Top = 64
 Window Left = 26
-Window Z-Order = 9
+Window Z-Order = 2
 
 [File 0012]
 Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/multis"
@@ -173,7 +173,7 @@ In Projects = "1,"
 Source Window State = "1,1547,1547,1547,34,34,34,0,0,0,0,0,0,0,0,0,1520,0,1547,34,401,721,1,0,"
 Window Top = 33
 Window Left = 10
-Window Z-Order = 3
+Window Z-Order = 6
 
 [File 0013]
 Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/multis"
@@ -796,7 +796,7 @@ In Projects = ""
 Source Window State = "1,253,253,253,36,36,36,0,0,0,0,0,0,0,0,0,235,0,253,36,386,721,1,0,"
 Window Top = 33
 Window Left = 10
-Window Z-Order = 5
+Window Z-Order = 8
 
 [Tab Order]
 Tab 0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/main.c"

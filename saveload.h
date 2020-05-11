@@ -1,6 +1,7 @@
 #ifndef SAVELOAD_H
 #define SAVELOAD_H
 
+#include <ansi_c.h>// For FILE
 
 
 void SaveSettings(int);
@@ -8,6 +9,14 @@ void LoadSettings(int);
 
 void SaveLastGuiSettings(void);
 void LoadLastSettings(int);
+
+int SaveSequenceV17(char* save_name, int sn_length);
+int LoadSequenceV17(char* load_name, int ln_length);
+int checkVersionFromFile(FILE *fbuff, long fpos_eof);
+long getSaveVersionFromFile(FILE *fbuff, long fpos_eof, int *majorVer, int *minorVer);
+long getTimeArrayFromFile(FILE *fbuff, long fpos_eof);
+long readHeader(FILE *fbuff, char *tag, int *elem_size, int *num_dims, int *dims, const int max_dims, long fpos_eof);
+long checkFooter(FILE *fbuff, char *endtag, long fpos_eof);
 
 void SaveArraysV16(char*,int);
 int LoadArraysV16(char*,int);

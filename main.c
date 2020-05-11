@@ -21,18 +21,12 @@ The file that starts everything off.
 
 #include "multiscan.h"
 
+#include "saveload.h"// for testing saveload functionality only
+
 int main (int argc, char *argv[])
 {
 	int i,j,k,status;
 	int fileHandle;
-
-
-	// Scott Testing V17 saving and loading
-
-
-
-
-
 
 	if (InitCVIRTE (0, argv, 0) == 0)
 		return -1;	/* out of memory */
@@ -183,6 +177,16 @@ int main (int argc, char *argv[])
 	}
 
 	Initialization();
+
+
+	// Scott Testing V17 saving and loading
+	SaveSequenceV17("C:\\Users\\coldatoms\\Documents\\Lab\\LocalCode\\ADwin_sequencers\\test.woot",
+			 strlen("C:\\Users\\coldatoms\\Documents\\Lab\\LocalCode\\ADwin_sequencers\\test.woot"));
+
+	LoadSequenceV17("C:\\Users\\coldatoms\\Documents\\Lab\\LocalCode\\ADwin_sequencers\\test.woot",
+			 strlen("C:\\Users\\coldatoms\\Documents\\Lab\\LocalCode\\ADwin_sequencers\\test.woot"));
+
+
 
 	DisplayPanel (panelHandle);
 
