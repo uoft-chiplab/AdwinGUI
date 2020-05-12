@@ -52,7 +52,7 @@ int round (double x) //stupid incomplete C libs
 }
 
 
-double TOTALTIME (void)   // Finds the anritsu table length (in milli seconds) by scanning for the first non zero frequency
+double TOTALTIME (void)// Finds the anritsu table length (in milli seconds) by scanning for the first non zero frequency
 {
 	double total_time = 0;
 	double target_freq;
@@ -73,121 +73,128 @@ double TOTALTIME (void)   // Finds the anritsu table length (in milli seconds) b
 	f1 = 0;
 
 	// initialize is time good array to ones
-	for (kk = 1; kk < NUMBEROFPAGES; kk++){
-
-		for(jj = 1; jj <NUMBEROFCOLUMNS + 1; jj++){
-
-		time_is_good[jj][kk] =1;
-
-
+	for (kk = 1; kk < NUMBEROFPAGES; kk++)
+	{
+		for(jj = 1; jj <NUMBEROFCOLUMNS + 1; jj++)
+		{
+			time_is_good[jj][kk] =1;
 		}
 	}
 
 	//Now turn off i.e zero invalid time cell points
-	for (kk = 1; kk < NUMBEROFPAGES; kk++){
-
-		if (ischecked[kk] == 0){	  // decheck a page
-		for (a = 1; a <NUMBEROFCOLUMNS +1; a++){
-
-		time_is_good[a][kk] = 0;
-		}
-
-		}
-
-		for(jj =1; jj <NUMBEROFCOLUMNS +1; jj++){
-
-		if(TimeArray[jj][kk] ==0){
-			for (c = jj; c <NUMBEROFCOLUMNS +1; c++){
-
-			time_is_good[c][kk] = 0;
+	for (kk = 1; kk < NUMBEROFPAGES; kk++)
+	{
+		if (ischecked[kk] == 0) 	  // decheck a page
+		{
+			for (a = 1; a <NUMBEROFCOLUMNS +1; a++)
+			{
+				time_is_good[a][kk] = 0;
 			}
-			//break;
+
 		}
-		if(TimeArray[jj][kk] < 0){
-			time_is_good[jj][kk] = 0;
-		}
+
+		for(jj =1; jj <NUMBEROFCOLUMNS +1; jj++)
+		{
+			if(TimeArray[jj][kk] ==0)
+			{
+				for (c = jj; c <NUMBEROFCOLUMNS +1; c++)
+				{
+					time_is_good[c][kk] = 0;
+				}
+				//break;
+			}
+			if(TimeArray[jj][kk] < 0)
+			{
+				time_is_good[jj][kk] = 0;
+			}
 		}
 	}
 
 	//flag 1
-	for (kk = NUMBEROFPAGES; kk >= 1; kk--){ // scan through backwards to find
-	// last instance of a nonzero element
+	for (kk = NUMBEROFPAGES; kk >= 1; kk--)  // scan through backwards to find
+	{
+		// last instance of a nonzero element
+		if(ischecked[kk] ==1)
+		{
+			for (jj = NUMBEROFCOLUMNS; jj>= 1; jj--)
+			{
+				last_freq = AnalogTable[jj][NUMBERANALOGCHANNELS+NUMBERDDS+NUMBERLASERS + 1][kk].fval;
 
-		if(ischecked[kk] ==1){
-			for (jj = NUMBEROFCOLUMNS; jj>= 1; jj--){
-
-			last_freq = AnalogTable[jj][NUMBERANALOGCHANNELS+NUMBERDDS+NUMBERLASERS + 1][kk].fval;
-
-			if (time_is_good[jj][kk] == 1){   // only consider non-dimmed columns
-				if(last_freq > 0){
-				last_col = jj;
-				last_page =kk;
-				f1 = 1; //sets flag to exit
-				break;
+				if (time_is_good[jj][kk] == 1)    // only consider non-dimmed columns
+				{
+					if(last_freq > 0)
+					{
+						last_col = jj;
+						last_page =kk;
+						f1 = 1; //sets flag to exit
+						break;
+					}
 				}
 			}
-			}
-			}
-			if (f1 ==1){
+		}
+		if (f1 ==1)
+		{
 			break;
-			}
+		}
 	}
 
-	for (kk = 1; kk < NUMBEROFPAGES; kk++){ // scan through forwards to find
-	// first instance of a nonzero element
-
-		if(ischecked[kk] ==1){
-			for (jj = 1; jj < NUMBEROFCOLUMNS+1; jj++){
-
-			last_freq = AnalogTable[jj][NUMBERANALOGCHANNELS+NUMBERDDS+NUMBERLASERS + 1][kk].fval;
-				if(TimeArray[jj][kk] == 0){
-				break;
+	for (kk = 1; kk < NUMBEROFPAGES; kk++)  // scan through forwards to find
+	{
+		// first instance of a nonzero element
+		if(ischecked[kk] ==1)
+		{
+			for (jj = 1; jj < NUMBEROFCOLUMNS+1; jj++)
+			{
+				last_freq = AnalogTable[jj][NUMBERANALOGCHANNELS+NUMBERDDS+NUMBERLASERS + 1][kk].fval;
+				if(TimeArray[jj][kk] == 0)
+				{
+					break;
 				}
 
-				if (TimeArray[jj][kk] > 0){
-
-				if(last_freq > 0){
-				first_col = jj;
-				first_page =kk;
-				f2 = 1; //sets flag to exit
-				break;
-				}
+				if (TimeArray[jj][kk] > 0)
+				{
+					if(last_freq > 0)
+					{
+						first_col = jj;
+						first_page =kk;
+						f2 = 1; //sets flag to exit
+						break;
+					}
 				}
 			}
-			}
-			if (f2 ==1){
+		}
+		if (f2 ==1)
+		{
 			break;
-			}
+		}
 	}
 
 	first_pos = (first_page-1)*(NUMBEROFCOLUMNS-1) + first_col;
 
 	//adding to the total time
-	for (kk = first_page; kk < NUMBEROFPAGES; kk++){
-
+	for (kk = first_page; kk < NUMBEROFPAGES; kk++)
+	{
 		jj=1;
-
-		if (kk == first_page){
-			 	jj = first_col;
+		if (kk == first_page)
+		{
+			jj = first_col;
 		}
+		for (; jj < NUMBEROFCOLUMNS + 1; jj++)
+		{
+			if (time_is_good[jj][kk]== 1)
+			{
+				total_time = total_time + TimeArray[jj][kk];
+				if(kk == last_page && jj == last_col)
+				{
+					break;
+				}
+			}
 
-		for (; jj < NUMBEROFCOLUMNS + 1; jj++){
-
-
-			if (time_is_good[jj][kk]== 1){
-			total_time = total_time + TimeArray[jj][kk];
-			if(kk == last_page && jj == last_col){
+			if(kk == last_page && jj == last_col)
+			{
 				break;
 			}
 		}
-
-		if(kk == last_page && jj == last_col){
-			break;
-			}
-		}
-
-
-
 	}
 
 	// actually adding up the time cells for total time
@@ -225,13 +232,14 @@ double TOTALTIME (void)   // Finds the anritsu table length (in milli seconds) b
 	 */
 
 	printf(" First column: %i\n", first_col);
-   printf("First page: %i\n", first_page);
+	printf("First page: %i\n", first_page);
 
 	printf(" Last column: %i\n", last_col);
-   printf("last_page: %i\n", last_page);
+	printf("last_page: %i\n", last_page);
 
-	if (total_time == 0){
-	total_time =100;
+	if (total_time == 0)
+	{
+		total_time =100;
 	}
 
 	return total_time; //in ms
