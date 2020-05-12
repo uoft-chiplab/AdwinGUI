@@ -3153,9 +3153,9 @@ void CVICALLBACK RESETZERO_CALLBACK (int
 menuBar, int menuItem, void *callbackData,
 		int panel)
 {
-	int ischecked=0;
-	GetMenuBarAttribute (menuHandle, MENU_SETTINGS_RESETZERO, ATTR_CHECKED,&ischecked);
-	SetMenuBarAttribute (menuHandle, MENU_SETTINGS_RESETZERO, ATTR_CHECKED,abs(ischecked-1));
+	int wantResetZero = 0;
+	GetMenuBarAttribute (menuHandle, MENU_SETTINGS_RESETZERO, ATTR_CHECKED,&wantResetZero);
+	SetMenuBarAttribute (menuHandle, MENU_SETTINGS_RESETZERO, ATTR_CHECKED,abs(wantResetZero-1));
 }
 
 
