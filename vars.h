@@ -225,6 +225,9 @@ typedef struct dds3options_struct {
 	BOOL is_stop;
 } dds3options_struct;
 
+// Create the ddstable arrays. One array per row of cells.
+// Note that if dds2options_struct (and 3) is ever different from ddsoptions_struct
+//	then many functions will break with dds2 things if they are ever uncommented again.
 ddsoptions_struct ddstable[NUMBEROFCOLUMNS+1][NUMBEROFPAGES];
 dds2options_struct dds2table[NUMBEROFCOLUMNS+1][NUMBEROFPAGES];
 dds3options_struct dds3table[NUMBEROFCOLUMNS+1][NUMBEROFPAGES];
@@ -242,6 +245,8 @@ struct DDSClock{
 /************************************************************************
 Laser variables
 *************************************************************************/
+
+// LaserTable Data and Settings Arrays
 
 struct LaserTableValues{
 	int fcn;			   // 0 for hold,1 for step,2 for ramp
@@ -265,8 +270,6 @@ struct LaserProps{
 	unsigned int DDS_Type;		  // either 9854 or 9858. NewExtavour
 }LaserProperties[NUMBERLASERS];
 
-
-// LaserTable Data and Settings Arrays
 
 //The digital channels which the Adwin triggers the rabbits for the respective lasers on
 //Colums array done in base 1  in accordance with the rest of this program

@@ -339,6 +339,13 @@ int SaveSequenceV17(char* save_name, int sn_length)
 	status = putDds3TableToFile(fbuffer);
 	if( status < 0 ){ fclose(fbuffer); return status; }
 
+	// Write LaserTable
+	status = putLaserTableToFile(fbuffer);
+	if( status < 0 ){ fclose(fbuffer); return status; }
+
+
+
+
 
 
 
@@ -436,8 +443,11 @@ int LoadSequenceV17(char* load_name, int ln_length)
 
 	// Get the DDS3 Table
 	fpos = getDds3TableFromFile(fbuffer, fpos_file_end);
-	//if( fpos < 0 ){ fclose(fbuffer); return -1; }// pass though error
+	if( fpos < 0 ){ fclose(fbuffer); return -1; }// pass though error
 
+	// Get the LaserTable
+	fpos = getLaserTableFromFile(fbuffer, fpos_file_end);
+	//if( fpos < 0 ){ fclose(fbuffer); return -1; }// pass though error
 
 
 
@@ -1200,7 +1210,112 @@ long getDds3TableFromFile(FILE *fbuff, long fpos_eof)
 }
 
 
+int putLaserTableToFile(FILE *fbuff)
+{
+	char cbuff[512] = "";// header/footer buffer
+	int clen = 512;
+	char bf[256] = "";// assembly buffer
+	int elems_writ;
 
+	// Particulars of the object to write (don't forget to change the actual data write line too)
+	// struct LaserTableValues LaserTable[NUMBERLASERS][NUMBEROFCOLUMNS+1][NUMBEROFPAGES];// vars.h line
+	char stag[] = "<LaserTable>";
+	char etag[] = "</LaserTable>";
+	int num_dims = 3;
+	int dims[] = {(NUMBERLASERS), (NUMBEROFCOLUMNS+1), (NUMBEROFPAGES)};// ordering is: object[dims[0]][dims[1]]...
+	int elem_size = sizeof(LaserTable[0][0][0]);
+	int linear_size = 1;
+
+	// Make the header automatically and write it
+	sprintf(cbuff, "%s~%d~%d~", stag, elem_size, num_dims);
+	for( int i = 0; i < num_dims; ++i ){
+		sprintf(bf, "%d~", dims[i]);
+		strcat(cbuff, bf);
+		linear_size = linear_size * dims[i];
+	}
+	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write header
+
+	elems_writ = fwrite(&LaserTable, elem_size, linear_size, fbuff);// write binary data
+
+	sprintf(cbuff, etag);
+	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write footer
+
+	if( elems_writ != linear_size ){
+		fclose(fbuff);
+		printf("Failed to write the correct number of bytes for tag |%s|\n", stag);
+		return -1;
+	}
+
+	return 0;
+}
+
+long getLaserTableFromFile(FILE *fbuff, long fpos_eof)
+{
+	// Particulars of the object to load (don't forget to change the actual data write line too)
+	char stag[] = "<LaserTable>";
+	char etag[] = "</LaserTable>";
+	int max_dims = 3;
+
+	int elem_size;
+	int num_dims;
+	int dims[max_dims];
+	int linear_size = 1;
+	long fpos;
+	int elems_read;
+
+	fpos = readHeader(fbuff, stag, &elem_size, &num_dims, dims, max_dims, fpos_eof);
+	// Do some simple checks
+	if( fpos < 0 ){// if there was an err in readHeader (printf's in readHeader)
+		return fpos;
+	}
+	for( int i=0; i<max_dims; ++i ){ linear_size *= dims[i]; }// calculate linear_size
+	if( elem_size*linear_size != sizeof(LaserTable) ){
+		printf("Binary data read from file for tag |%s| is not the correct size\n", stag);
+		return -1;
+	}
+
+	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the binary data
+	elems_read = fread(&LaserTable, elem_size, linear_size, fbuff);// load the binary data directly into the array
+	if( elems_read != linear_size ){// didn't read expected number of elements
+		printf("Expected to read more elements from file for tag |%s|\n", stag);
+		return -1;
+	}
+
+	fpos = checkFooter(fbuff, etag, fpos_eof);
+	if( fpos < 0 ){// pass though signal, either -1 for error or -2 for eof
+		return fpos;
+	}
+	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the next header
+
+	return fpos;
+}
+
+//LaserTable
+
+/*
+struct LaserTableValues{
+	int fcn;			   // 0 for hold,1 for step,2 for ramp
+	double fval;
+};
+struct LaserTableValues LaserTable[NUMBERLASERS][NUMBEROFCOLUMNS+1][NUMBEROFPAGES];
+
+// Channel properties structs
+struct LaserProps{
+	int Active;				 	  // 1 if that laser is being used, 0 otherwise
+	char Name[20];			 	  // Laser name
+	char IP[20];			 	  // IP addresses for Rabbit controller TCP Socket
+	unsigned int Port;		 	  // Port for Rabbit controller TCP Socket
+	int DigitalChannel;		      // An array built from the LASCHAN values
+	double DDS_Clock;		      // Laser DDS Clock Frequency
+	double ICPREF;			      // Charge Pump Ref Current(mA) Note: ICP=1.24V/CPISET --> CPISET resistor is 2.4kOhm on eval board
+	int ICP_FD_Mult;			  // Charge pump current mode multipliers: FD -> Freq Detect
+	int ICP_WL_Mult;			  // Wide Loop
+	int ICP_FL_Mult;			  // Final Loop
+	unsigned int DDS_Div;
+	unsigned int DDS_Type;		  // either 9854 or 9858. NewExtavour
+}LaserProperties[NUMBERLASERS];
+
+*/
 
 
 	/*

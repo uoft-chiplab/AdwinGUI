@@ -30,6 +30,8 @@ int putDds2TableToFile(FILE *fbuff);
 long getDds2TableFromFile(FILE *fbuff, long fpos_eof);
 int putDds3TableToFile(FILE *fbuff);
 long getDds3TableFromFile(FILE *fbuff, long fpos_eof);
+int putLaserTableToFile(FILE *fbuff);
+long getLaserTableFromFile(FILE *fbuff, long fpos_eof);
 long readHeader(FILE *fbuff, char *tag, int *elem_size, int *num_dims, int *dims, const int max_dims, long fpos_eof);
 long checkFooter(FILE *fbuff, char *endtag, long fpos_eof);
 
