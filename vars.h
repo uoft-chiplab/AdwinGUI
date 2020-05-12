@@ -182,7 +182,8 @@ int MNU_TIMETABLE_SCANCELL;
 int MNU_DDS_EOR_SCANCELL;
 
 int PANEL_TB_SHOWPHASE[NUMBEROFPAGES]; 	// Toggle buttons for pages
-int PANEL_CHKBOX[NUMBEROFPAGES];		// Check boxes for pages
+int PANEL_CHKBOX[NUMBEROFPAGES];		// Array for collecting the handles for the enable check boxes for pages
+int ischecked[NUMBEROFPAGES];			// Array of if a page is enabled or not
 int PANEL_OLD_LABEL[NUMBEROFPAGES];   	// Old column labels
 
 // Various panels
@@ -462,8 +463,8 @@ Misc
 // Keep track of where in a table things are taking place
 int currentx,currenty,currentpage;
 
-// Pages enable/disable
-int ischecked[NUMBEROFPAGES],isdimmed;
+// Draw or do not draw unused columns (eg. true if want draw negative time columns faded)
+int isdimmed;
 
 // Flow of control variables
 BOOL ChangedVals;

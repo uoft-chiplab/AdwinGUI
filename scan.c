@@ -476,26 +476,28 @@ int CVICALLBACK CMD_GETSCANVALS_CALLBACK2 (int panel, int control, int event,
 int CVICALLBACK MULTISCAN_CHK (int panel, int control, int event,
 		void *callbackData, int eventData1, int eventData2)
 {
-	int ischecked;
+	int useMultiScan;
 
 	switch (event)
 		{
 		case EVENT_COMMIT:
 
-		   	GetCtrlVal (panelHandle7, SCANPANEL_MULTISCAN_CHK, &ischecked);
-			SetCtrlVal (panelHandle7, SCANPANEL_MULTISCAN_CHK, ischecked);
+		   	GetCtrlVal (panelHandle7, SCANPANEL_MULTISCAN_CHK, &useMultiScan);
+			SetCtrlVal (panelHandle7, SCANPANEL_MULTISCAN_CHK, useMultiScan);
 
-			if (ischecked)
+			if (useMultiScan)
 			{
 				parameterscanmode = 0;
 			}
 			else
 			{
-				GetCtrlVal (panelHandle7, SCANPANEL_CHECK_2PARAM, &ischecked);
-				if (ischecked)
-				{   parameterscanmode = 2;  } // two-parameter scan
-				else
-				{	parameterscanmode = 1;	} // single-parameter scan
+				GetCtrlVal (panelHandle7, SCANPANEL_CHECK_2PARAM, &useMultiScan);
+				if (useMultiScan){
+					parameterscanmode = 2; // two-parameter scan
+				}
+				else {
+					parameterscanmode = 1; // single-parameter scan
+				}
 			}
 
 			break;
@@ -504,19 +506,18 @@ int CVICALLBACK MULTISCAN_CHK (int panel, int control, int event,
 }
 
 
-
 int CVICALLBACK CALLBACK_DONESCANSETUP (int panel, int control, int event,
 		void *callbackData, int eventData1, int eventData2)
 {
-	int ischecked;
+	int useMultiScan;
 
 	switch (event)
 		{
 		case EVENT_COMMIT:
 
 			// Override parameterscanmode in case box is checked
-		   	GetCtrlVal (panelHandle7, SCANPANEL_MULTISCAN_CHK, &ischecked);
-			if (ischecked)
+		   	GetCtrlVal (panelHandle7, SCANPANEL_MULTISCAN_CHK, &useMultiScan);
+			if (useMultiScan)
 			{
 				parameterscanmode = 0;
 			}
@@ -528,5 +529,3 @@ int CVICALLBACK CALLBACK_DONESCANSETUP (int panel, int control, int event,
 		}
 	return 0;
 }
-
-
