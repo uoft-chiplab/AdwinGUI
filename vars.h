@@ -293,11 +293,10 @@ struct LaserProps{
 Anritsu variables
 *************************************************************************/
 
-// Anritsu stuff
 typedef struct anritsuoptions_struct {
-	//float start_frequency; /* in GHz*/
+	//float start_frequency;// in GHz
 	float end_frequency;
-	//float start_power;  /*in dBm*/
+	//float start_power;// in dBm
 	float end_power;
 	int framptype;
 	int pramptype;
@@ -314,7 +313,7 @@ struct AnritsuSetting{
 	int com_on; // communication on/off switch
 	double offset; // offset for frequency in GHz
 	};
-struct AnritsuSetting	AnritsuSettingValues[NUMBEROFANRITSU];
+struct AnritsuSetting AnritsuSettingValues[NUMBEROFANRITSU];
 
 
 /************************************************************************

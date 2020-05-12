@@ -32,6 +32,14 @@ int putDds3TableToFile(FILE *fbuff);
 long getDds3TableFromFile(FILE *fbuff, long fpos_eof);
 int putLaserTableToFile(FILE *fbuff);
 long getLaserTableFromFile(FILE *fbuff, long fpos_eof);
+int putLaserPropsToFile(FILE *fbuff);
+long getLaserPropsFromFile(FILE *fbuff, long fpos_eof);
+int putAnritsuTableToFile(FILE *fbuff);
+long getAnritsuTableFromFile(FILE *fbuff, long fpos_eof);
+int putAnritsuPropsToFile(FILE *fbuff);
+long getAnritsuPropsFromFile(FILE *fbuff, long fpos_eof);
+int putInfoArrayToFile(FILE *fbuff);
+long getInfoArrayFromFile(FILE *fbuff, long fpos_eof);
 long readHeader(FILE *fbuff, char *tag, int *elem_size, int *num_dims, int *dims, const int max_dims, long fpos_eof);
 long checkFooter(FILE *fbuff, char *endtag, long fpos_eof);
 

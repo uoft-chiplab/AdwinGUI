@@ -343,35 +343,27 @@ int SaveSequenceV17(char* save_name, int sn_length)
 	status = putLaserTableToFile(fbuffer);
 	if( status < 0 ){ fclose(fbuffer); return status; }
 
+	// Write LaserProps
+	status = putLaserPropsToFile(fbuffer);
+	if( status < 0 ){ fclose(fbuffer); return status; }
+
+	// Write Anritsu Table
+	status = putAnritsuTableToFile(fbuffer);
+	if( status < 0 ){ fclose(fbuffer); return status; }
+
+	// Write Anritsu Props
+	status = putAnritsuPropsToFile(fbuffer);
+	if( status < 0 ){ fclose(fbuffer); return status; }
+
+	// Write InfoArray (column labels)
+	status = putInfoArrayToFile(fbuffer);
+	if( status < 0 ){ fclose(fbuffer); return status; }
 
 
 
 
 
 
-	/*
-	strcpy(buff2,SEQUENCER_VERSION);
-		fwrite(&buff2, sizeof buff2, 1,fdata);
-		fwrite(&xval,sizeof xval, 1,fdata);
-		fwrite(&yval,sizeof yval, 1,fdata);
-		fwrite(&zval,sizeof zval, 1,fdata);
-		// Times
-		fwrite(&TimeArray,sizeof TimeArray,1,fdata);
-		// Analog and Digital Channels
-		fwrite(&AnalogTable,sizeof AnalogTable,1,fdata);
-		fwrite(&DigTableValues,sizeof DigTableValues,1,fdata);
-		fwrite(&AChName,sizeof AChName,1,fdata);
-		fwrite(&DChName,sizeof DChName,1,fdata);
-		// DDS settings
-		fwrite(&ddstable,sizeof ddstable,1,fdata);
-		fwrite(&dds2table,sizeof dds2table,1,fdata);
-		fwrite(&dds3table,sizeof dds3table,1,fdata);
-		// 'Laser" settings (used to be in .laser files)
-		fwrite(&LaserProperties,sizeof LaserProperties, 1,fdata);
-		fwrite(&LaserTable,sizeof LaserTable,1,fdata);
-		// Anritsu settings
-		fwrite(&AnritsuSettingValues,sizeof AnritsuSettingValues,1,fdata);
-	*/
 
 
 	fflush(fbuffer);// make sure the file is completely written by the time we leave this function
@@ -447,7 +439,24 @@ int LoadSequenceV17(char* load_name, int ln_length)
 
 	// Get the LaserTable
 	fpos = getLaserTableFromFile(fbuffer, fpos_file_end);
+	if( fpos < 0 ){ fclose(fbuffer); return -1; }// pass though error
+
+	// Get the Laser properties
+	fpos = getLaserPropsFromFile(fbuffer, fpos_file_end);
+	if( fpos < 0 ){ fclose(fbuffer); return -1; }// pass though error
+
+	// Get the Anritsu Table
+	fpos = getAnritsuTableFromFile(fbuffer, fpos_file_end);
+	if( fpos < 0 ){ fclose(fbuffer); return -1; }// pass though error
+
+	// Get the Anritsu Props
+	fpos = getAnritsuPropsFromFile(fbuffer, fpos_file_end);
+	if( fpos < 0 ){ fclose(fbuffer); return -1; }// pass though error
+
+	// Get the InfoArray (column labels)
+	fpos = getInfoArrayFromFile(fbuffer, fpos_file_end);
 	//if( fpos < 0 ){ fclose(fbuffer); return -1; }// pass though error
+
 
 
 
@@ -1209,7 +1218,6 @@ long getDds3TableFromFile(FILE *fbuff, long fpos_eof)
 	return fpos;
 }
 
-
 int putLaserTableToFile(FILE *fbuff)
 {
 	char cbuff[512] = "";// header/footer buffer
@@ -1290,57 +1298,378 @@ long getLaserTableFromFile(FILE *fbuff, long fpos_eof)
 	return fpos;
 }
 
-//LaserTable
+int putLaserPropsToFile(FILE *fbuff)
+{
+	char cbuff[512] = "";// header/footer buffer
+	int clen = 512;
+	char bf[256] = "";// assembly buffer
+	int elems_writ;
+
+	// Particulars of the object to write (don't forget to change the actual data write line too)
+	// struct LaserProps{...}LaserProperties[NUMBERLASERS];// vars.h line
+	char stag[] = "<LaserProperties>";
+	char etag[] = "</LaserProperties>";
+	int num_dims = 1;
+	int dims[] = {(NUMBERLASERS)};// ordering is: object[dims[0]][dims[1]]...
+	int elem_size = sizeof(LaserProperties[0]);
+	int linear_size = 1;
+
+	// Make the header automatically and write it
+	sprintf(cbuff, "%s~%d~%d~", stag, elem_size, num_dims);
+	for( int i = 0; i < num_dims; ++i ){
+		sprintf(bf, "%d~", dims[i]);
+		strcat(cbuff, bf);
+		linear_size = linear_size * dims[i];
+	}
+	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write header
+
+	elems_writ = fwrite(&LaserProperties, elem_size, linear_size, fbuff);// write binary data
+
+	sprintf(cbuff, etag);
+	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write footer
+
+	if( elems_writ != linear_size ){
+		fclose(fbuff);
+		printf("Failed to write the correct number of bytes for tag |%s|\n", stag);
+		return -1;
+	}
+
+	return 0;
+}
+
+long getLaserPropsFromFile(FILE *fbuff, long fpos_eof)
+{
+	// Particulars of the object to load (don't forget to change the actual data write line too)
+	char stag[] = "<LaserProperties>";
+	char etag[] = "</LaserProperties>";
+	int max_dims = 1;
+
+	int elem_size;
+	int num_dims;
+	int dims[max_dims];
+	int linear_size = 1;
+	long fpos;
+	int elems_read;
+
+	fpos = readHeader(fbuff, stag, &elem_size, &num_dims, dims, max_dims, fpos_eof);
+	// Do some simple checks
+	if( fpos < 0 ){// if there was an err in readHeader (printf's in readHeader)
+		return fpos;
+	}
+	for( int i=0; i<max_dims; ++i ){ linear_size *= dims[i]; }// calculate linear_size
+	if( elem_size*linear_size != sizeof(LaserProperties) ){
+		printf("Binary data read from file for tag |%s| is not the correct size\n", stag);
+		return -1;
+	}
+
+	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the binary data
+	elems_read = fread(&LaserProperties, elem_size, linear_size, fbuff);// load the binary data directly into the array
+	if( elems_read != linear_size ){// didn't read expected number of elements
+		printf("Expected to read more elements from file for tag |%s|\n", stag);
+		return -1;
+	}
+
+	fpos = checkFooter(fbuff, etag, fpos_eof);
+	if( fpos < 0 ){// pass though signal, either -1 for error or -2 for eof
+		return fpos;
+	}
+	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the next header
+
+	return fpos;
+}
+
+int putAnritsuTableToFile(FILE *fbuff)// this table isn't used anymore but it might in the future so why not save it too
+{
+	char cbuff[512] = "";// header/footer buffer
+	int clen = 512;
+	char bf[256] = "";// assembly buffer
+	int elems_writ;
+
+	// Particulars of the object to write (don't forget to change the actual data write line too)
+	// anritsuoptions_struct anritsutable[NUMBEROFCOLUMNS+1][NUMBEROFPAGES];// vars.h line
+	char stag[] = "<AnritsuTable>";
+	char etag[] = "</AnritsuTable>";
+	int num_dims = 2;
+	int dims[] = {(NUMBEROFCOLUMNS+1), (NUMBEROFPAGES)};// ordering is: object[dims[0]][dims[1]]...
+	int elem_size = sizeof(anritsutable[0][0]);
+	int linear_size = 1;
+
+	// Make the header automatically and write it
+	sprintf(cbuff, "%s~%d~%d~", stag, elem_size, num_dims);
+	for( int i = 0; i < num_dims; ++i ){
+		sprintf(bf, "%d~", dims[i]);
+		strcat(cbuff, bf);
+		linear_size = linear_size * dims[i];
+	}
+	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write header
+
+	elems_writ = fwrite(&anritsutable, elem_size, linear_size, fbuff);// write binary data
+
+	sprintf(cbuff, etag);
+	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write footer
+
+	if( elems_writ != linear_size ){
+		fclose(fbuff);
+		printf("Failed to write the correct number of bytes for tag |%s|\n", stag);
+		return -1;
+	}
+
+	return 0;
+}
+
+long getAnritsuTableFromFile(FILE *fbuff, long fpos_eof)
+{
+	// Particulars of the object to load (don't forget to change the actual data write line too)
+	char stag[] = "<AnritsuTable>";
+	char etag[] = "</AnritsuTable>";
+	int max_dims = 2;
+
+	int elem_size;
+	int num_dims;
+	int dims[max_dims];
+	int linear_size = 1;
+	long fpos;
+	int elems_read;
+
+	fpos = readHeader(fbuff, stag, &elem_size, &num_dims, dims, max_dims, fpos_eof);
+	// Do some simple checks
+	if( fpos < 0 ){// if there was an err in readHeader (printf's in readHeader)
+		return fpos;
+	}
+	for( int i=0; i<max_dims; ++i ){ linear_size *= dims[i]; }// calculate linear_size
+	if( elem_size*linear_size != sizeof(anritsutable) ){
+		printf("Binary data read from file for tag |%s| is not the correct size\n", stag);
+		return -1;
+	}
+
+	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the binary data
+	elems_read = fread(&anritsutable, elem_size, linear_size, fbuff);// load the binary data directly into the array
+	if( elems_read != linear_size ){// didn't read expected number of elements
+		printf("Expected to read more elements from file for tag |%s|\n", stag);
+		return -1;
+	}
+
+	fpos = checkFooter(fbuff, etag, fpos_eof);
+	if( fpos < 0 ){// pass though signal, either -1 for error or -2 for eof
+		return fpos;
+	}
+	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the next header
+
+	return fpos;
+}
+
+int putAnritsuPropsToFile(FILE *fbuff)
+{
+	char cbuff[512] = "";// header/footer buffer
+	int clen = 512;
+	char bf[256] = "";// assembly buffer
+	int elems_writ;
+
+	// Particulars of the object to write (don't forget to change the actual data write line too)
+	// struct AnritsuSetting AnritsuSettingValues[NUMBEROFANRITSU];// vars.h line
+	char stag[] = "<AnritsuProps>";
+	char etag[] = "</AnritsuProps>";
+	int num_dims = 1;
+	int dims[] = {(NUMBEROFANRITSU)};// ordering is: object[dims[0]][dims[1]]...
+	int elem_size = sizeof(AnritsuSettingValues[0]);
+	int linear_size = 1;
+
+	// Make the header automatically and write it
+	sprintf(cbuff, "%s~%d~%d~", stag, elem_size, num_dims);
+	for( int i = 0; i < num_dims; ++i ){
+		sprintf(bf, "%d~", dims[i]);
+		strcat(cbuff, bf);
+		linear_size = linear_size * dims[i];
+	}
+	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write header
+
+	elems_writ = fwrite(&AnritsuSettingValues, elem_size, linear_size, fbuff);// write binary data
+
+	sprintf(cbuff, etag);
+	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write footer
+
+	if( elems_writ != linear_size ){
+		fclose(fbuff);
+		printf("Failed to write the correct number of bytes for tag |%s|\n", stag);
+		return -1;
+	}
+
+	return 0;
+}
+
+long getAnritsuPropsFromFile(FILE *fbuff, long fpos_eof)
+{
+	// Particulars of the object to load (don't forget to change the actual data write line too)
+	char stag[] = "<AnritsuProps>";
+	char etag[] = "</AnritsuProps>";
+	int max_dims = 1;
+
+	int elem_size;
+	int num_dims;
+	int dims[max_dims];
+	int linear_size = 1;
+	long fpos;
+	int elems_read;
+
+	fpos = readHeader(fbuff, stag, &elem_size, &num_dims, dims, max_dims, fpos_eof);
+	// Do some simple checks
+	if( fpos < 0 ){// if there was an err in readHeader (printf's in readHeader)
+		return fpos;
+	}
+	for( int i=0; i<max_dims; ++i ){ linear_size *= dims[i]; }// calculate linear_size
+	if( elem_size*linear_size != sizeof(AnritsuSettingValues) ){
+		printf("Binary data read from file for tag |%s| is not the correct size\n", stag);
+		return -1;
+	}
+
+	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the binary data
+	elems_read = fread(&AnritsuSettingValues, elem_size, linear_size, fbuff);// load the binary data directly into the array
+	if( elems_read != linear_size ){// didn't read expected number of elements
+		printf("Expected to read more elements from file for tag |%s|\n", stag);
+		return -1;
+	}
+
+	fpos = checkFooter(fbuff, etag, fpos_eof);
+	if( fpos < 0 ){// pass though signal, either -1 for error or -2 for eof
+		return fpos;
+	}
+	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the next header
+
+	return fpos;
+}
+
+int putInfoArrayToFile(FILE *fbuff)
+{
+	char cbuff[512] = "";// header/footer buffer
+	int clen = 512;
+	char bf[256] = "";// assembly buffer
+	int elems_writ;
+
+	// Particulars of the object to write (don't forget to change the actual data write line too)
+	// struct InfoArrayValues InfoArray[NUMBEROFCOLUMNS+1][NUMBEROFPAGES];// vars.h line
+	char stag[] = "<InfoArray>";
+	char etag[] = "</InfoArray>";
+	int num_dims = 2;
+	int dims[] = {(NUMBEROFCOLUMNS+1), (NUMBEROFPAGES)};// ordering is: object[dims[0]][dims[1]]...
+	int elem_size = sizeof(InfoArray[0][0]);
+	int linear_size = 1;
+
+	// Make the header automatically and write it
+	sprintf(cbuff, "%s~%d~%d~", stag, elem_size, num_dims);
+	for( int i = 0; i < num_dims; ++i ){
+		sprintf(bf, "%d~", dims[i]);
+		strcat(cbuff, bf);
+		linear_size = linear_size * dims[i];
+	}
+	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write header
+
+	elems_writ = fwrite(&InfoArray, elem_size, linear_size, fbuff);// write binary data
+
+	sprintf(cbuff, etag);
+	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write footer
+
+	if( elems_writ != linear_size ){
+		fclose(fbuff);
+		printf("Failed to write the correct number of bytes for tag |%s|\n", stag);
+		return -1;
+	}
+
+	return 0;
+}
+
+long getInfoArrayFromFile(FILE *fbuff, long fpos_eof)
+{
+	// Particulars of the object to load (don't forget to change the actual data write line too)
+	char stag[] = "<InfoArray>";
+	char etag[] = "</InfoArray>";
+	int max_dims = 2;
+
+	int elem_size;
+	int num_dims;
+	int dims[max_dims];
+	int linear_size = 1;
+	long fpos;
+	int elems_read;
+
+	fpos = readHeader(fbuff, stag, &elem_size, &num_dims, dims, max_dims, fpos_eof);
+	// Do some simple checks
+	if( fpos < 0 ){// if there was an err in readHeader (printf's in readHeader)
+		return fpos;
+	}
+	for( int i=0; i<max_dims; ++i ){ linear_size *= dims[i]; }// calculate linear_size
+	if( elem_size*linear_size != sizeof(InfoArray) ){
+		printf("Binary data read from file for tag |%s| is not the correct size\n", stag);
+		return -1;
+	}
+
+	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the binary data
+	elems_read = fread(&InfoArray, elem_size, linear_size, fbuff);// load the binary data directly into the array
+	if( elems_read != linear_size ){// didn't read expected number of elements
+		printf("Expected to read more elements from file for tag |%s|\n", stag);
+		return -1;
+	}
+
+	fpos = checkFooter(fbuff, etag, fpos_eof);
+	if( fpos < 0 ){// pass though signal, either -1 for error or -2 for eof
+		return fpos;
+	}
+	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the next header
+
+	return fpos;
+}
+
+
+
 
 /*
-struct LaserTableValues{
-	int fcn;			   // 0 for hold,1 for step,2 for ramp
-	double fval;
-};
-struct LaserTableValues LaserTable[NUMBERLASERS][NUMBEROFCOLUMNS+1][NUMBEROFPAGES];
 
-// Channel properties structs
-struct LaserProps{
-	int Active;				 	  // 1 if that laser is being used, 0 otherwise
-	char Name[20];			 	  // Laser name
-	char IP[20];			 	  // IP addresses for Rabbit controller TCP Socket
-	unsigned int Port;		 	  // Port for Rabbit controller TCP Socket
-	int DigitalChannel;		      // An array built from the LASCHAN values
-	double DDS_Clock;		      // Laser DDS Clock Frequency
-	double ICPREF;			      // Charge Pump Ref Current(mA) Note: ICP=1.24V/CPISET --> CPISET resistor is 2.4kOhm on eval board
-	int ICP_FD_Mult;			  // Charge pump current mode multipliers: FD -> Freq Detect
-	int ICP_WL_Mult;			  // Wide Loop
-	int ICP_FL_Mult;			  // Final Loop
-	unsigned int DDS_Div;
-	unsigned int DDS_Type;		  // either 9854 or 9858. NewExtavour
-}LaserProperties[NUMBERLASERS];
+
+
 
 */
 
 
-	/*
-	strcpy(buff2,SEQUENCER_VERSION);
-		fwrite(&buff2, sizeof buff2, 1,fdata);
-		fwrite(&xval,sizeof xval, 1,fdata);
-		fwrite(&yval,sizeof yval, 1,fdata);
-		fwrite(&zval,sizeof zval, 1,fdata);
-		// Times
-		fwrite(&TimeArray,sizeof TimeArray,1,fdata);
-		// Analog and Digital Channels
-		fwrite(&AnalogTable,sizeof AnalogTable,1,fdata);
-		fwrite(&DigTableValues,sizeof DigTableValues,1,fdata);
-		fwrite(&AChName,sizeof AChName,1,fdata);
-		fwrite(&DChName,sizeof DChName,1,fdata);
-		// DDS settings
-		fwrite(&ddstable,sizeof ddstable,1,fdata);
-		fwrite(&dds2table,sizeof dds2table,1,fdata);
-		fwrite(&dds3table,sizeof dds3table,1,fdata);
-		// 'Laser" settings (used to be in .laser files)
-		fwrite(&LaserProperties,sizeof LaserProperties, 1,fdata);
-		fwrite(&LaserTable,sizeof LaserTable,1,fdata);
-		// Anritsu settings
-		fwrite(&AnritsuSettingValues,sizeof AnritsuSettingValues,1,fdata);
-	*/
+
+/*
+		// Column labels (new since V16.02)
+		fwrite(&InfoArray, sizeof InfoArray,1,fdata);
+		for (i=1;i<=zval;i++)
+		{
+			GetCtrlAttribute (panelHandle, PANEL_TB_SHOWPHASE[i],ATTR_OFF_TEXT, buff2);
+			fwrite(&buff2,sizeof buff2,1,fdata);
+		}
+
+		// Update period
+		updatePer = getUpdatePeriodFromMenu();
+		fwrite(&updatePer,sizeof updatePer,1,fdata);
+
+		// global DDS settings
+		fwrite(&DDSFreq.extclock,sizeof DDSFreq.extclock,1,fdata);
+		fwrite(&DDSFreq.PLLmult,sizeof DDSFreq.PLLmult,1,fdata);
+
+		// Save SRS settings (obsolete with new GPIB feature -- 2013-01 -- to
+		// be removed at a convenient point in time)
+		fwrite(&GPIB_address,sizeof GPIB_address,1,fdata);
+		fwrite(&SRS_amplitude,sizeof SRS_amplitude,1,fdata);
+		fwrite(&SRS_offset,sizeof SRS_offset,1,fdata);
+		fwrite(&SRS_frequency,sizeof SRS_frequency,1,fdata);
+		fwrite(&GPIB_ON,sizeof GPIB_ON,1,fdata);
+
+		fclose(fdata);
+
+		strncat(buff3, savedname, csize-4);
+		strcat(buff3,".gpib");
+		if((fdata=fopen(buff3,"w"))==NULL)
+		{
+			printf("Failed to save GPIB settings.\n");
+		}
+		else
+		{
+			fwrite(&GPIBDev,(sizeof GPIBDev),1,fdata);
+			fclose(fdata);
+		}
+
+*/
 
 
 
