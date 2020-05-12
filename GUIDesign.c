@@ -2040,8 +2040,6 @@ void CheckActivePages(void)
 	ischecked[9]=bool;
   	GetCtrlVal (panelHandle, PANEL_CHECKBOX_10, &bool);
 	ischecked[10]=bool;
-
-
 }
 
 //***************************************************************************************************
@@ -2507,9 +2505,9 @@ void CVICALLBACK BOOTADWIN_CALLBACK (int menuBar, int menuItem, void *callbackDa
 void CVICALLBACK BOOTLOAD_CALLBACK (int menuBar, int menuItem, void *callbackData,
 		int panel)
 {
-	  int ischecked=0;
-	  GetMenuBarAttribute (menuHandle, MENU_FILE_BOOTLOAD, ATTR_CHECKED,&ischecked);
-	  SetMenuBarAttribute (menuHandle, MENU_FILE_BOOTLOAD, ATTR_CHECKED,abs(ischecked-1));
+	  int wantBootload = 0;
+	  GetMenuBarAttribute (menuHandle, MENU_FILE_BOOTLOAD, ATTR_CHECKED,&wantBootload);
+	  SetMenuBarAttribute (menuHandle, MENU_FILE_BOOTLOAD, ATTR_CHECKED,abs(wantBootload-1));
 
 }
 
