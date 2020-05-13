@@ -27,7 +27,8 @@ void ShiftColumn3(int col, int page,int dir);
 void RunOnce(void);
 int  GetPage(void);
 void DrawNewTable(int dimmed);
-void CheckActivePages(void);
+void checkActivePages(void);
+void setActivePages(void);
 
 double findLastVal(int row, int column, int page);
 

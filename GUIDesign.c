@@ -1413,7 +1413,7 @@ void OptimizeTimeLoop(int *UpdateNum,int count, int *newcount)
 
 
  	// Dimm out complete page if not checked (THIS APPEARS TO BE OBSOLETE HERE!)
- 	CheckActivePages();
+ 	checkActivePages();
  	if(ischecked[page]==FALSE)
  	{   // dim the tables
  		SetCtrlAttribute (panelHandle, PANEL_ANALOGTABLE, ATTR_DIMMED, 1);
@@ -2017,9 +2017,14 @@ int CVICALLBACK TOGGLE_ALL_CALLBACK (int panel, int control, int event,
 }
 
 //***************************************************************************************************
-void CheckActivePages(void)
+void checkActivePages(void)// Check the checkboxes and put the info in global var ischecked
 {
   	int bool;
+	for( int i = 1; i < NUMBEROFPAGES; ++i ){// remember that PANEL_CHKBOX[0] is undset/undefined
+		GetCtrlVal(panelHandle, PANEL_CHKBOX[i], &bool);
+		ischecked[i] = bool;// ischecked[0] is also unset/undefined
+	}
+	/*
   	GetCtrlVal (panelHandle, PANEL_CHECKBOX, &bool);
   	ischecked[1]=bool;
   	GetCtrlVal (panelHandle, PANEL_CHECKBOX_2, &bool);
@@ -2040,7 +2045,17 @@ void CheckActivePages(void)
 	ischecked[9]=bool;
   	GetCtrlVal (panelHandle, PANEL_CHECKBOX_10, &bool);
 	ischecked[10]=bool;
+	*/
 }
+
+//***************************************************************************************************
+void setActivePages(void)
+{
+	for( int i = 1; i< NUMBEROFPAGES; ++i ){
+		SetCtrlVal(panelHandle, PANEL_CHKBOX[i], ischecked[i]);
+	}
+}
+
 
 //***************************************************************************************************
 int CVICALLBACK DIGTABLE_CALLBACK (int panel, int control, int event,

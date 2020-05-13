@@ -363,6 +363,11 @@ int SaveSequenceV17(char* save_name, int sn_length)
 	status = putPageNamesToFile(fbuffer);
 	if( status < 0 ){ fclose(fbuffer); return status; }
 
+	// Write Page Names (text on buttons)
+	status = putPageCheckboxesToFile(fbuffer);
+	if( status < 0 ){ fclose(fbuffer); return status; }
+
+
 
 
 
@@ -463,8 +468,11 @@ int LoadSequenceV17(char* load_name, int ln_length)
 
 	// Get the Page Names (text on buttons)
 	fpos = getPageNamesFromFile(fbuffer, fpos_file_end);
-	//if( fpos < 0 ){ fclose(fbuffer); return -1; }// pass though error
+	if( fpos < 0 ){ fclose(fbuffer); return -1; }// pass though error
 
+	// Get the Page Names (text on buttons)
+	fpos = getPageCheckboxesFromFile(fbuffer, fpos_file_end);
+	//if( fpos < 0 ){ fclose(fbuffer); return -1; }// pass though error
 
 
 
@@ -619,7 +627,7 @@ int putTimeArrayToFile(FILE *fbuff)
 
 	if( elems_writ != linear_size ){
 		fclose(fbuff);
-		printf("Failed to write the correct number of bytes for tag |%s|\n", stag);
+		printf("Failed to write the correct number of elems for tag |%s|\n", stag);
 		return -1;
 	}
 
@@ -700,7 +708,7 @@ int putAnalogTableToFile(FILE *fbuff)
 
 	if( elems_writ != linear_size ){
 		fclose(fbuff);
-		printf("Failed to write the correct number of bytes for tag |%s|\n", stag);
+		printf("Failed to write the correct number of elems for tag |%s|\n", stag);
 		return -1;
 	}
 
@@ -780,7 +788,7 @@ int putDigitalTableToFile(FILE *fbuff)
 
 	if( elems_writ != linear_size ){
 		fclose(fbuff);
-		printf("Failed to write the correct number of bytes for tag |%s|\n", stag);
+		printf("Failed to write the correct number of elems for tag |%s|\n", stag);
 		return -1;
 	}
 
@@ -860,7 +868,7 @@ int putAnalogChPropsToFile(FILE *fbuff)
 
 	if( elems_writ != linear_size ){
 		fclose(fbuff);
-		printf("Failed to write the correct number of bytes for tag |%s|\n", stag);
+		printf("Failed to write the correct number of elems for tag |%s|\n", stag);
 		return -1;
 	}
 
@@ -940,7 +948,7 @@ int putDigitalChPropsToFile(FILE *fbuff)
 
 	if( elems_writ != linear_size ){
 		fclose(fbuff);
-		printf("Failed to write the correct number of bytes for tag |%s|\n", stag);
+		printf("Failed to write the correct number of elems for tag |%s|\n", stag);
 		return -1;
 	}
 
@@ -1020,7 +1028,7 @@ int putDds1TableToFile(FILE *fbuff)
 
 	if( elems_writ != linear_size ){
 		fclose(fbuff);
-		printf("Failed to write the correct number of bytes for tag |%s|\n", stag);
+		printf("Failed to write the correct number of elems for tag |%s|\n", stag);
 		return -1;
 	}
 
@@ -1100,7 +1108,7 @@ int putDds2TableToFile(FILE *fbuff)
 
 	if( elems_writ != linear_size ){
 		fclose(fbuff);
-		printf("Failed to write the correct number of bytes for tag |%s|\n", stag);
+		printf("Failed to write the correct number of elems for tag |%s|\n", stag);
 		return -1;
 	}
 
@@ -1180,7 +1188,7 @@ int putDds3TableToFile(FILE *fbuff)
 
 	if( elems_writ != linear_size ){
 		fclose(fbuff);
-		printf("Failed to write the correct number of bytes for tag |%s|\n", stag);
+		printf("Failed to write the correct number of elems for tag |%s|\n", stag);
 		return -1;
 	}
 
@@ -1260,7 +1268,7 @@ int putLaserTableToFile(FILE *fbuff)
 
 	if( elems_writ != linear_size ){
 		fclose(fbuff);
-		printf("Failed to write the correct number of bytes for tag |%s|\n", stag);
+		printf("Failed to write the correct number of elems for tag |%s|\n", stag);
 		return -1;
 	}
 
@@ -1340,7 +1348,7 @@ int putLaserPropsToFile(FILE *fbuff)
 
 	if( elems_writ != linear_size ){
 		fclose(fbuff);
-		printf("Failed to write the correct number of bytes for tag |%s|\n", stag);
+		printf("Failed to write the correct number of elems for tag |%s|\n", stag);
 		return -1;
 	}
 
@@ -1420,7 +1428,7 @@ int putAnritsuTableToFile(FILE *fbuff)// this table isn't used anymore but it mi
 
 	if( elems_writ != linear_size ){
 		fclose(fbuff);
-		printf("Failed to write the correct number of bytes for tag |%s|\n", stag);
+		printf("Failed to write the correct number of elems for tag |%s|\n", stag);
 		return -1;
 	}
 
@@ -1500,7 +1508,7 @@ int putAnritsuPropsToFile(FILE *fbuff)
 
 	if( elems_writ != linear_size ){
 		fclose(fbuff);
-		printf("Failed to write the correct number of bytes for tag |%s|\n", stag);
+		printf("Failed to write the correct number of elems for tag |%s|\n", stag);
 		return -1;
 	}
 
@@ -1580,7 +1588,7 @@ int putInfoArrayToFile(FILE *fbuff)
 
 	if( elems_writ != linear_size ){
 		fclose(fbuff);
-		printf("Failed to write the correct number of bytes for tag |%s|\n", stag);
+		printf("Failed to write the correct number of elems for tag |%s|\n", stag);
 		return -1;
 	}
 
@@ -1757,8 +1765,7 @@ long getPageNamesFromFile(FILE *fbuff, long fpos_eof)
 	return fpos;
 }
 
-// NOT FINISHED YET
-int putPagesEnabledToFile(FILE *fbuff)
+int putPageCheckboxesToFile(FILE *fbuff)// These used to be saved in the panel in V16 and lower
 {
 	char cbuff[512] = "";// header/footer buffer
 	int clen = 512;
@@ -1766,12 +1773,17 @@ int putPagesEnabledToFile(FILE *fbuff)
 	int elems_writ;
 
 	// Particulars of the object to write (don't forget to change the actual data write line too)
-	// struct InfoArrayValues InfoArray[NUMBEROFCOLUMNS+1][NUMBEROFPAGES];// vars.h line
-	char stag[] = "<InfoArray>";
-	char etag[] = "</InfoArray>";
-	int num_dims = 2;
-	int dims[] = {(NUMBEROFCOLUMNS+1), (NUMBEROFPAGES)};// ordering is: object[dims[0]][dims[1]]...
-	int elem_size = sizeof(InfoArray[0][0]);
+	// There are no callbacks for the enable checkboxes for each page. The binary values are stored in global var "ischecked".
+	// The handles for each checkbox are PANEL_CHECKBOX, PANEL_CHECKBOX_2, etc.
+	// The handles are also saved in the array PANEL_CHKBOX[NUMBEROFPAGES].
+	// However, cannot rely on values in ischecked being accurate so call checkActivePages() to set ischecked before saving.
+	// Or just do it manually.
+	// int ischecked[NUMBEROFPAGES];// vars.h line
+	char stag[] = "<PageCheckboxes>";
+	char etag[] = "</PageCheckboxes>";
+	int num_dims = 1;
+	int dims[] = {(NUMBEROFPAGES)};// ordering is: object[dims[0]][dims[1]]...
+	int elem_size = sizeof(ischecked[0]);
 	int linear_size = 1;
 
 	// Make the header automatically and write it
@@ -1783,26 +1795,27 @@ int putPagesEnabledToFile(FILE *fbuff)
 	}
 	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write header
 
-	elems_writ = fwrite(&InfoArray, elem_size, linear_size, fbuff);// write binary data
+	checkActivePages();// insure that global var ischecked is up to date
+	elems_writ = fwrite(&ischecked, elem_size, linear_size, fbuff);// write binary data
 
 	sprintf(cbuff, etag);
 	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write footer
 
 	if( elems_writ != linear_size ){
 		fclose(fbuff);
-		printf("Failed to write the correct number of bytes for tag |%s|\n", stag);
+		printf("Failed to write the correct number of elems for tag |%s|\n", stag);
 		return -1;
 	}
 
 	return 0;
 }
 
-long getPagesEnabledFromFile(FILE *fbuff, long fpos_eof)
+long getPageCheckboxesFromFile(FILE *fbuff, long fpos_eof)
 {
 	// Particulars of the object to load (don't forget to change the actual data write line too)
-	char stag[] = "<InfoArray>";
-	char etag[] = "</InfoArray>";
-	int max_dims = 2;
+	char stag[] = "<PageCheckboxes>";
+	char etag[] = "</PageCheckboxes>";
+	int max_dims = 1;
 
 	int elem_size;
 	int num_dims;
@@ -1817,17 +1830,18 @@ long getPagesEnabledFromFile(FILE *fbuff, long fpos_eof)
 		return fpos;
 	}
 	for( int i=0; i<max_dims; ++i ){ linear_size *= dims[i]; }// calculate linear_size
-	if( elem_size*linear_size != sizeof(InfoArray) ){
+	if( elem_size*linear_size != sizeof(ischecked) ){
 		printf("Binary data read from file for tag |%s| is not the correct size\n", stag);
 		return -1;
 	}
 
 	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the binary data
-	elems_read = fread(&InfoArray, elem_size, linear_size, fbuff);// load the binary data directly into the array
+	elems_read = fread(&ischecked, elem_size, linear_size, fbuff);// load the binary data directly into the array
 	if( elems_read != linear_size ){// didn't read expected number of elements
 		printf("Expected to read more elements from file for tag |%s|\n", stag);
 		return -1;
 	}
+	setActivePages();// set the checkboxes according to the values in global var ischecked
 
 	fpos = checkFooter(fbuff, etag, fpos_eof);
 	if( fpos < 0 ){// pass though signal, either -1 for error or -2 for eof
@@ -1841,18 +1855,13 @@ long getPagesEnabledFromFile(FILE *fbuff, long fpos_eof)
 
 
 /*
-		for (i=1;i<=zval;i++)
-		{
-			GetCtrlAttribute (panelHandle, PANEL_TB_SHOWPHASE[i],ATTR_OFF_TEXT, buff2);
-			fwrite(&buff2,sizeof buff2,1,fdata);
-		}
+Next do update period
+global DDS settings; are these used anymore?
+Don't save obsolete SRS settings; double check they are not used anywhere
+GPIB settings
+And then what is left?
 
-// There are no callbacks for the enable checkboxes for each page. The binary values are stored in global var "ischecked".
-// The handles for each checkbox are PANEL_CHECKBOX, PANEL_CHECKBOX_2, etc.
-// The handles are also saved in the array PANEL_CHKBOX[NUMBEROFPAGES].
-// However, cannot rely on values in ischecked being accurate so call CheckActivePages() to set ischecked before saving.
-// Or just do it manually.
-int ischecked[NUMBEROFPAGES];
+
 
 
 */
