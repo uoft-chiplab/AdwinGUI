@@ -239,7 +239,7 @@ int Active_DDS_Panel; // 1 for Rb evap dds, 2 for K40 evap dds, 3 for HFS dds   
 struct DDSClock{
 	double 	extclock;
 	int 	PLLmult;
-	double	clock;
+	double	clock;// clock is a derived quantity from extclock and PLLmult
 }	DDSFreq;
 
 

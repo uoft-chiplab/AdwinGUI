@@ -367,6 +367,12 @@ int SaveSequenceV17(char* save_name, int sn_length)
 	status = putPageCheckboxesToFile(fbuffer);
 	if( status < 0 ){ fclose(fbuffer); return status; }
 
+	// Write Page Names (text on buttons)
+	status = putUpdatePeriodToFile(fbuffer);
+	if( status < 0 ){ fclose(fbuffer); return status; }
+
+
+
 
 
 
@@ -472,8 +478,11 @@ int LoadSequenceV17(char* load_name, int ln_length)
 
 	// Get the Page Names (text on buttons)
 	fpos = getPageCheckboxesFromFile(fbuffer, fpos_file_end);
-	//if( fpos < 0 ){ fclose(fbuffer); return -1; }// pass though error
+	if( fpos < 0 ){ fclose(fbuffer); return -1; }// pass though error
 
+	// Get the Page Names (text on buttons)
+	fpos = getUpdatePeriodFromFile(fbuffer, fpos_file_end);
+	//if( fpos < 0 ){ fclose(fbuffer); return -1; }// pass though error
 
 
 
@@ -1765,7 +1774,7 @@ long getPageNamesFromFile(FILE *fbuff, long fpos_eof)
 	return fpos;
 }
 
-int putPageCheckboxesToFile(FILE *fbuff)// These used to be saved in the panel in V16 and lower
+int putPageCheckboxesToFile(FILE *fbuff)// These used to be saved in the .pan file in V16 and lower
 {
 	char cbuff[512] = "";// header/footer buffer
 	int clen = 512;
@@ -1852,15 +1861,110 @@ long getPageCheckboxesFromFile(FILE *fbuff, long fpos_eof)
 	return fpos;
 }
 
+int putUpdatePeriodToFile(FILE *fbuff)
+{
+	char cbuff[512] = "";// header/footer buffer
+	int clen = 512;
+	char bf[256] = "";// assembly buffer
+	int elems_writ;
+
+	// Particulars of the object to write (don't forget to change the actual data write line too)
+	// struct InfoArrayValues InfoArray[NUMBEROFCOLUMNS+1][NUMBEROFPAGES];// vars.h line
+	char stag[] = "<UpdatePeriod>";
+	char etag[] = "</UpdatePeriod>";
+	int updatePeriod;
+	int num_dims = 1;
+	int dims[] = {(1)};// ordering is: object[dims[0]][dims[1]]...
+	int elem_size = sizeof(updatePeriod);
+	int linear_size = 1;
+
+	// Make the header automatically and write it
+	sprintf(cbuff, "%s~%d~%d~", stag, elem_size, num_dims);
+	for( int i = 0; i < num_dims; ++i ){
+		sprintf(bf, "%d~", dims[i]);
+		strcat(cbuff, bf);
+		linear_size = linear_size * dims[i];
+	}
+	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write header
+
+	updatePeriod = getUpdatePeriodFromMenu();
+	elems_writ = fwrite(&updatePeriod, elem_size, linear_size, fbuff);// write binary data
+
+	sprintf(cbuff, etag);
+	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write footer
+
+	if( elems_writ != linear_size ){
+		fclose(fbuff);
+		printf("Failed to write the correct number of elems for tag |%s|\n", stag);
+		return -1;
+	}
+
+	return 0;
+}
+
+long getUpdatePeriodFromFile(FILE *fbuff, long fpos_eof)
+{
+	// Particulars of the object to load (don't forget to change the actual data write line too)
+	char stag[] = "<UpdatePeriod>";
+	char etag[] = "</UpdatePeriod>";
+	int updatePeriod;
+	double ev_period;
+	int max_dims = 1;
+
+	int elem_size;
+	int num_dims;
+	int dims[max_dims];
+	int linear_size = 1;
+	long fpos;
+	int elems_read;
+
+	fpos = readHeader(fbuff, stag, &elem_size, &num_dims, dims, max_dims, fpos_eof);
+	// Do some simple checks
+	if( fpos < 0 ){// if there was an err in readHeader (printf's in readHeader)
+		return fpos;
+	}
+	for( int i=0; i<max_dims; ++i ){ linear_size *= dims[i]; }// calculate linear_size
+	if( elem_size*linear_size != sizeof(updatePeriod) ){
+		printf("Binary data read from file for tag |%s| is not the correct size\n", stag);
+		return -1;
+	}
+
+	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the binary data
+	elems_read = fread(&updatePeriod, elem_size, linear_size, fbuff);// load the binary data directly into the array
+	if( elems_read != linear_size ){// didn't read expected number of elements
+		printf("Expected to read more elements from file for tag |%s|\n", stag);
+		return -1;
+	}
+	ev_period = setUpdatePeriodToMenu(updatePeriod);// set the menu options
+	if( ev_period < 0.0 ){// if error
+		printf("An error occured setting the update period menus\n");
+		return -1;
+	}
+	EventPeriod = ev_period;// if things are good then set the global var EventPeriod
+
+	fpos = checkFooter(fbuff, etag, fpos_eof);
+	if( fpos < 0 ){// pass though signal, either -1 for error or -2 for eof
+		return fpos;
+	}
+	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the next header
+
+	return fpos;
+}
+
+
+
+
+
+
 
 
 /*
-Next do update period
-global DDS settings; are these used anymore?
+global DDS settings; are these used anymore? Yes, save only extclock and PLLmult and compute clock by multiplication on load; also set DDSsettings
 Don't save obsolete SRS settings; double check they are not used anywhere
 GPIB settings
 And then what is left?
-
+Build every time check mark
+The on/off menu options in the menu bar
 
 
 
@@ -1869,13 +1973,6 @@ And then what is left?
 
 
 /*
-		// Column labels (new since V16.02)
-		fwrite(&InfoArray, sizeof InfoArray,1,fdata);
-		for (i=1;i<=zval;i++)
-		{
-			GetCtrlAttribute (panelHandle, PANEL_TB_SHOWPHASE[i],ATTR_OFF_TEXT, buff2);
-			fwrite(&buff2,sizeof buff2,1,fdata);
-		}
 
 		// Update period
 		updatePer = getUpdatePeriodFromMenu();
