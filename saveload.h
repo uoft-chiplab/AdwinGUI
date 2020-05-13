@@ -40,6 +40,9 @@ int putAnritsuPropsToFile(FILE *fbuff);
 long getAnritsuPropsFromFile(FILE *fbuff, long fpos_eof);
 int putInfoArrayToFile(FILE *fbuff);
 long getInfoArrayFromFile(FILE *fbuff, long fpos_eof);
+int putPageNamesToFile(FILE *fbuff);
+long getPageNamesFromFile(FILE *fbuff, long fpos_eof);
+void nullCharBuff(char *buff, int max_len);
 long readHeader(FILE *fbuff, char *tag, int *elem_size, int *num_dims, int *dims, const int max_dims, long fpos_eof);
 long checkFooter(FILE *fbuff, char *endtag, long fpos_eof);
 
