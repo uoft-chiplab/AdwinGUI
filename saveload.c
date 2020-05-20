@@ -556,7 +556,7 @@ int LoadSequenceV17(char* load_name, int ln_length)
 	fpos = getUpdatePeriodFromFile(fbuffer, fpos_file_end);
 	//if( fpos < 0 ){ fclose(fbuffer); return -1; }// pass though error
 
-
+	// this is a change
 
 
 

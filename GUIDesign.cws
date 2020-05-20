@@ -78,7 +78,7 @@ In Projects = "1,"
 Source Window State = "1,146,146,146,47,47,47,0,0,0,0,0,0,0,0,0,135,0,146,47,401,602,1,0,"
 Window Top = 64
 Window Left = 26
-Window Z-Order = 2
+Window Z-Order = 3
 
 [File 0004]
 Path = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/main.c"
@@ -151,7 +151,7 @@ Path Line0002 = "ad.c"
 File Type = "CSource"
 Disk Date = 3672848550
 In Projects = "1,"
-Source Window State = "1,107,107,107,0,0,0,0,0,0,0,0,0,0,0,0,192,0,107,0,401,721,1,0,"
+Source Window State = "1,553,553,553,0,0,0,0,0,0,0,0,0,0,0,0,547,0,553,0,401,721,1,0,"
 Window Top = 33
 Window Left = 10
 Window Z-Order = 1
@@ -173,10 +173,10 @@ Path Line0002 = "can.c"
 File Type = "CSource"
 Disk Date = 3672435221
 In Projects = "1,"
-Source Window State = "1,151,151,151,0,0,0,0,0,0,0,0,0,0,0,0,129,0,151,0,401,721,1,0,"
+Source Window State = "1,155,155,155,56,56,56,0,0,0,0,0,0,0,0,0,129,0,155,56,401,721,1,0,"
 Window Top = 33
 Window Left = 10
-Window Z-Order = 3
+Window Z-Order = 2
 
 [File 0013]
 Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/DDSSet"
