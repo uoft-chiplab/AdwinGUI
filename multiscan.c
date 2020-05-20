@@ -8,7 +8,6 @@
 
 #include "multiscan.h"
 
-// Auto added includes
 #include <ansi_c.h>
 #include <utility.h>
 #include <formatio.h>
@@ -1421,6 +1420,7 @@ void GetNewMultiScanCommands(void)
 // the scanned parameters (page, column and row).
 // Auto-writes when scan is done to the scan directory.
 //*****************************************************************************************
+//Kenneth is changing this so that it says save .mscan to standard location?
 void AutoExportMultiScanBuffer(void)
 {
 	int i,j,status;
@@ -1432,11 +1432,11 @@ void AutoExportMultiScanBuffer(void)
 
 
     manualSaveStatus = ConfirmPopup ( "Scan Finished",
-    						"Save .mscan file to non-standard location?");
-    if( manualSaveStatus == 0 ){// User selected no
+    						"Save .mscan file to standard location?");
+    if( manualSaveStatus == 1 ){// User selected yes
     	strcpy(mscanFileNameWithPath,MultiScan.ScanDirPath);
 	}
-	else if( manualSaveStatus == 1 ){// User selected yes
+	else if( manualSaveStatus == 0 ){// User selected no
 		// So ask user where they want to put the mscan file.
 		fileSelectStatus = FileSelectPopup("", "*.mscan", "", "Save MultiScan Buffer",
 									VAL_SAVE_BUTTON, 0, 0, 1, 1,mscanFileNameWithPath );

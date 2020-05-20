@@ -12,13 +12,14 @@
 // The idea being at the moment that to load an old panel, we would start this program (say V16.9.9 or
 // something) and then save the panel as V17 savefile version. After we get that working then we can
 // write LoadV16intoV17 function if we want to.
+// Update default directory to look for save files
 
 
 #include "saveload.h"
 
-// Auto added includes
 #include <ansi_c.h>
 #include <userint.h>
+#include <utility.h>
 
 #include "vars.h"
 #include "GUIDesign.h"// For menubar definitions
@@ -44,9 +45,16 @@ Feb 09, 2006   Clear the Debug box before saving. (was causing insanely large sa
 	// Save settings:  First look for file .ini  This will be a simple 1 line file staating the name of the last file
 	//saved.  Load this up and use as the starting name in the file dialog.
 	FILE *fpini;
-	char fname[100]="",c,fsavename[500]="",buff[600];
-	static char defaultdir[200]="C:\\UserDate\\Data";
+	char fname[100]="",c,fsavename[500]="",buff[600]="";
+	static char defaultdir[200]="";
 	int i=0,j=0,k=0,inisize=0,status,loadonboot=0;
+	char imgsDirPath[MAX_PATHNAME_LEN];
+	char runDirPath[MAX_PATHNAME_LEN];
+	char panFileDir[MAX_PATHNAME_LEN];
+	char panFileName[MAX_PATHNAME_LEN];
+	int runDirStatus;
+	int imgsDirStatus;
+	int confirmStatus;
 	//Check if .ini file exists.  Load it if it does.
 	if(!(fpini=fopen("gui.ini","r"))==NULL)		// if "gui.ini" exists, then read it  Just contains a filename.
 	{												//If not, do nothing
@@ -84,12 +92,76 @@ Feb 09, 2006   Clear the Debug box before saving. (was causing insanely large sa
 
 
 		i=499;
-		while(i>=0&&fsavename[i]!='\\')
-			i--;
-
+		while( i>=0 && fsavename[i] != '\\' ){ i--; }
 		strcpy(buff,SEQUENCER_VERSION);
 		strcat(buff,&fsavename[i+1]);
 		SetPanelAttribute (panelHandle, ATTR_TITLE, buff);
+
+		SplitPath(fsavename, NULL, panFileDir, panFileName);
+		strcpy(buff, panFileName);
+		buff[strlen(buff)-4] = '\0';// Assume the last 4 characters of panFileName are the ".pan"
+		MakePathname(panFileDir, buff, runDirPath);
+
+		printf("runDirPath:\n>%s<\n", runDirPath);
+
+		runDirStatus = MakeDir(runDirPath);
+
+		if( runDirStatus == 0 ){// Successfully created directory
+
+
+			// Form the imgs subdirectory path and print it.
+			strcpy(buff, "imgs");
+			MakePathname(runDirPath, buff, imgsDirPath);
+			printf("imgsDirPath:\n>%s<\n", imgsDirPath);
+
+			// Attempt to create the subdirectories
+			imgsDirStatus = MakeDir(imgsDirPath);
+
+			// Check status of subdirectories
+
+			if( imgsDirStatus < 0 ){//Error
+				printf("Error when creating images directory. Error code: %d\n", imgsDirStatus);
+				MessagePopup ("Directory Error", "An error occured while creating the images directory.");
+			}
+		}
+		else if( runDirStatus == -9 ){// The directory (or file) already exists
+
+			// Ask for confimation to use existing directory.
+			confirmStatus = ConfirmPopup ("Confirm use of existing directory",
+							"Warning! Use existing scan directory?");
+			if( confirmStatus == 0 ){// User selected no
+			}
+			else if( confirmStatus == 1 ){// User selected yes
+				// Since the scan directory already exists the subdirectories probably also
+				// already exist so we should accept those that exist as is.
+
+				// Form the imgs subdirectory path and print it.
+				strcpy(buff, "imgs");
+				MakePathname(runDirPath, buff, imgsDirPath);
+				printf("imgsDirPath:\n>%s<\n", imgsDirPath);
+
+				// Attempt to create the subdirectories
+				imgsDirStatus = MakeDir(imgsDirPath);
+
+				// Check status of subdirectories
+
+				if( imgsDirStatus < 0  && imgsDirStatus != -9){//Error but not error that imgs already exists
+					printf("Error when creating images directory. Error code: %d\n", imgsDirStatus);
+					MessagePopup ("Directory Error", "An error occured while creating the images directory.");
+				}
+			}
+			else {
+				MessagePopup ("Directory Error", "Unknown status code from MakeDir");
+			}
+		}
+		else if( runDirStatus < 0 ){// Error
+			printf("Error when creating run directory. Error code: %d\n", runDirStatus);
+			MessagePopup ("Directory Error", "An error occured while creating the run directory.");
+		}
+
+		else {
+				MessagePopup ("Directory Error", "Unknown status code from MakeDir");
+			}
 	}
 	else
 	{

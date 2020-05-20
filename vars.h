@@ -144,7 +144,7 @@ Color definitions for panel display
 *************************************************************************/
 #define CLR_ANALOG_STEP		0xFF3366L
 #define CLR_ANALOG_LINEAR 	0x33FF66L
-#define CLR_ANALOG_EXP 		VAL_BLUE
+#define CLR_ANALOG_EXP 		0x33CCFFL//VAL_BLUE
 #define CLR_ANALOG_MINJERK 	0xCC33FFL
 #define CLR_ANALOG_SINEWAVE VAL_CYAN
 #define CLR_ANALOG_COPYPREV 0xFF99CCL
@@ -184,7 +184,7 @@ int MNU_DDS_EOR_SCANCELL;
 int PANEL_TB_SHOWPHASE[NUMBEROFPAGES]; 	// Toggle buttons for pages
 int PANEL_CHKBOX[NUMBEROFPAGES];		// Array for collecting the handles for the enable check boxes for pages
 int ischecked[NUMBEROFPAGES];			// Array of if a page is enabled or not
-int PANEL_OLD_LABEL[NUMBEROFPAGES];   	// Old column labels
+int PANEL_OLD_LABEL[NUMBEROFPAGES];   	// Old column labels; superceded by InfoArray; kept for backwards compatibility with old save files
 
 // Various panels
 //panelHandles: 8: ScanTableLoader  9:NumSet  10:LaserSettings  11:LaserControl
