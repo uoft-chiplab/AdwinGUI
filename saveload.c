@@ -447,6 +447,10 @@ int SaveSequenceV17(char* save_name, int sn_length)
 	status = putUpdatePeriodToFile(fbuffer);
 	if( status < 0 ){ fclose(fbuffer); return status; }
 
+	// Write GPIB Devices Settings
+	status = putGpibDevsToFile(fbuffer);
+	if( status < 0 ){ fclose(fbuffer); return status; }
+
 
 
 
@@ -562,6 +566,10 @@ int LoadSequenceV17(char* load_name, int ln_length)
 
 	// Get the Update Period
 	fpos = getUpdatePeriodFromFile(fbuffer, fpos_file_end);
+	if( fpos < 0 ){ fclose(fbuffer); return -1; }// pass though error
+
+	// Get the GPIB Devices Settings
+	fpos = getGpibDevsFromFile(fbuffer, fpos_file_end);
 	//if( fpos < 0 ){ fclose(fbuffer); return -1; }// pass though error
 
 
@@ -1786,7 +1794,7 @@ long getPageNamesFromFile(FILE *fbuff, long fpos_eof)
 	}
 
 	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the binary data
-	for( i = 0; i < linear_size; ++i ){
+	for( i = 1; i <= linear_size; ++i ){
 		elems_read = fread(&text_buff, elem_size, 1, fbuff);// load chars into buffer
 		if( elems_read != 1 ){
 			printf("Failed to read all of char block for page name %d\n", i);
@@ -1965,6 +1973,84 @@ long getUpdatePeriodFromFile(FILE *fbuff, long fpos_eof)
 	return fpos;
 }
 
+int putGpibDevsToFile(FILE *fbuff)
+{
+	char cbuff[512] = "";// header/footer buffer
+	int clen = 512;
+	char bf[256] = "";// assembly buffer
+	int elems_writ;
+
+	// Particulars of the object to write (don't forget to change the actual data write line too)
+	//	struct GPIBDDeviceProperties{// vars.h line
+	//	int		address;	// GPIB address (1..32), 0 means: not initialized
+	//	char    devname[50]; // name of the device
+	//	char	cmdmask[1024];
+	//	char	command[1024];
+	//	char	lastsent[1024];
+	//	double	value[20];
+	//	BOOL	active;
+	//	} GPIBDev[NUMBERGPIBDEV];
+	char stag[] = "<GpibDevs>";
+	char etag[] = "</GpibDevs>";
+	int num_dims = 1;
+	int dims[] = {(NUMBERGPIBDEV)};// ordering is: object[dims[0]][dims[1]]...
+	int elem_size = sizeof(GPIBDev[0]);
+	int linear_size;
+
+	linear_size = writeHeader(fbuff, stag, elem_size, num_dims, dims);// write header
+	if( linear_size < 0 ){ return linear_size; }// pass though error
+
+	elems_writ = fwrite(&GPIBDev, elem_size, linear_size, fbuff);// write binary data
+
+	if( elems_writ != linear_size ){
+		fclose(fbuff);
+		printf("Failed to write the correct number of elems for tag |%s|\n", stag);
+		return -1;
+	}
+
+	return writeFooter(fbuff, etag);// write footer and pass through any errors
+}
+
+long getGpibDevsFromFile(FILE *fbuff, long fpos_eof)
+{
+	// Particulars of the object to load (don't forget to change the actual data write line too)
+	char stag[] = "<GpibDevs>";
+	char etag[] = "</GpibDevs>";
+	int max_dims = 1;
+
+	int elem_size;
+	int num_dims;
+	int dims[max_dims];
+	int linear_size = 1;
+	long fpos;
+	int elems_read;
+
+	fpos = readHeader(fbuff, stag, &elem_size, &num_dims, dims, max_dims, fpos_eof);
+	// Do some simple checks
+	if( fpos < 0 ){// if there was an err in readHeader (printf's in readHeader)
+		return fpos;
+	}
+	for( int i=0; i<max_dims; ++i ){ linear_size *= dims[i]; }// calculate linear_size
+	if( elem_size*linear_size != sizeof(GPIBDev) ){
+		printf("Binary data read from file for tag |%s| is not the correct size\n", stag);
+		return -1;
+	}
+
+	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the binary data
+	elems_read = fread(&GPIBDev, elem_size, linear_size, fbuff);// load the binary data directly into the array
+	if( elems_read != linear_size ){// didn't read expected number of elements
+		printf("Expected to read more elements from file for tag |%s|\n", stag);
+		return -1;
+	}
+
+	fpos = checkFooter(fbuff, etag, fpos_eof);
+	if( fpos < 0 ){// pass though signal, either -1 for error or -2 for eof
+		return fpos;
+	}
+	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the next header
+
+	return fpos;
+}
 
 
 
@@ -1981,24 +2067,6 @@ The on/off menu options in the menu bar
 */
 
 /*
-		// Update period
-		updatePer = getUpdatePeriodFromMenu();
-		fwrite(&updatePer,sizeof updatePer,1,fdata);
-
-		// global DDS settings
-		fwrite(&DDSFreq.extclock,sizeof DDSFreq.extclock,1,fdata);
-		fwrite(&DDSFreq.PLLmult,sizeof DDSFreq.PLLmult,1,fdata);
-
-		// Save SRS settings (obsolete with new GPIB feature -- 2013-01 -- to
-		// be removed at a convenient point in time)
-		fwrite(&GPIB_address,sizeof GPIB_address,1,fdata);
-		fwrite(&SRS_amplitude,sizeof SRS_amplitude,1,fdata);
-		fwrite(&SRS_offset,sizeof SRS_offset,1,fdata);
-		fwrite(&SRS_frequency,sizeof SRS_frequency,1,fdata);
-		fwrite(&GPIB_ON,sizeof GPIB_ON,1,fdata);
-
-		fclose(fdata);
-
 		strncat(buff3, savedname, csize-4);
 		strcat(buff3,".gpib");
 		if((fdata=fopen(buff3,"w"))==NULL)
