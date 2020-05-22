@@ -341,16 +341,16 @@ int SaveSequenceV17(char* save_name, int sn_length)
 	// Titles of each page (button text) -- Done
 	// The rest of the (global) DDS settings (ie. DDSFreq) -- Done
 	// The gpib settings (merge .gpib and .arr files) -- Done
-	// Build every time check mark
-	// The on/off menu options in the menu bar
-	//	...
-	// End of ramps for DDS
+	// End of ramps for DDS -- Done
 	//		Put and get the EORs separately from the other DDS things
 	// End of ramps for Anritsu -- Done
 	//		Explicitly save to AnritsuSettingValues[0].offset during the put fn
 	//		And load to the PANEL_ANRITSU_OFFSET during the get fn
+	// Build every time check mark -- Done
 	//
-
+	//
+	// The on/off menu options in the menu bar
+	//	...
 
 	FILE *fbuffer;
 	char file_buff[MAX_PATHNAME_LEN] = "";
@@ -454,6 +454,10 @@ int SaveSequenceV17(char* save_name, int sn_length)
 
 	// Write GPIB Devices Settings
 	status = putGpibDevsToFile(fbuffer);
+	if( status < 0 ){ fclose(fbuffer); return status; }
+
+	// Write Force Build Checkbox
+	status = putForceBuildChkToFile(fbuffer);
 	if( status < 0 ){ fclose(fbuffer); return status; }
 
 
@@ -579,7 +583,13 @@ int LoadSequenceV17(char* load_name, int ln_length)
 
 	// Get the GPIB Devices Settings
 	fpos = getGpibDevsFromFile(fbuffer, fpos_file_end);
+	if( fpos < 0 ){ fclose(fbuffer); return -1; }// pass though error
+
+	// Get the Force Build Checkbox
+	fpos = getForceBuildChkFromFile(fbuffer, fpos_file_end);
 	//if( fpos < 0 ){ fclose(fbuffer); return -1; }// pass though error
+
+
 
 
 
@@ -2166,6 +2176,81 @@ long getGpibDevsFromFile(FILE *fbuff, long fpos_eof)
 }
 
 
+int putForceBuildChkToFile(FILE *fbuff)
+{
+	char cbuff[512] = "";// header/footer buffer
+	int clen = 512;
+	char bf[256] = "";// assembly buffer
+	int elems_writ;
+
+	// Particulars of the object to write (don't forget to change the actual data write line too)
+	// GetCtrlVal(panelHandle, PANEL_FORCE_BUILD_CHK, &forceBuild);
+	char stag[] = "<ForceBuildCheckbox>";
+	char etag[] = "</ForceBuildCheckbox>";
+	int num_dims = 1;
+	int dims[] = {(1)};// ordering is: object[dims[0]][dims[1]]...
+	int forceBuild;
+	int elem_size = sizeof(forceBuild);
+	int linear_size;
+
+	linear_size = writeHeader(fbuff, stag, elem_size, num_dims, dims);// write header
+	if( linear_size < 0 ){ return linear_size; }// pass though error
+
+	// Get the status of the Force build checkbox and write to file
+	GetCtrlVal(panelHandle, PANEL_FORCE_BUILD_CHK, &forceBuild);
+	elems_writ = fwrite(&forceBuild, elem_size, linear_size, fbuff);// write binary data
+
+	if( elems_writ != linear_size ){
+		fclose(fbuff);
+		printf("Failed to write the correct number of elems for tag |%s|\n", stag);
+		return -1;
+	}
+
+	return writeFooter(fbuff, etag);// write footer and pass through any errors
+}
+
+long getForceBuildChkFromFile(FILE *fbuff, long fpos_eof)
+{
+	// Particulars of the object to load (don't forget to change the actual data write line too)
+	char stag[] = "<ForceBuildCheckbox>";
+	char etag[] = "</ForceBuildCheckbox>";
+	int max_dims = 1;
+	int forceBuild;
+
+	int elem_size;
+	int num_dims;
+	int dims[max_dims];
+	int linear_size = 1;
+	long fpos;
+	int elems_read;
+
+	fpos = readHeader(fbuff, stag, &elem_size, &num_dims, dims, max_dims, fpos_eof);
+	// Do some simple checks
+	if( fpos < 0 ){// if there was an err in readHeader (printf's in readHeader)
+		return fpos;
+	}
+	for( int i=0; i<max_dims; ++i ){ linear_size *= dims[i]; }// calculate linear_size
+	if( elem_size*linear_size != sizeof(forceBuild) ){
+		printf("Binary data read from file for tag |%s| is not the correct size\n", stag);
+		return -1;
+	}
+
+	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the binary data
+	elems_read = fread(&forceBuild, elem_size, linear_size, fbuff);// load the binary data directly into the array
+	if( elems_read != linear_size ){// didn't read expected number of elements
+		printf("Expected to read more elements from file for tag |%s|\n", stag);
+		return -1;
+	}
+	SetCtrlVal(panelHandle, PANEL_FORCE_BUILD_CHK, forceBuild);// set the checkbox
+
+	fpos = checkFooter(fbuff, etag, fpos_eof);
+	if( fpos < 0 ){// pass though signal, either -1 for error or -2 for eof
+		return fpos;
+	}
+	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the next header
+
+	return fpos;
+}
 
 
 

@@ -53,6 +53,8 @@ int putUpdatePeriodToFile(FILE *fbuff);
 long getUpdatePeriodFromFile(FILE *fbuff, long fpos_eof);
 int putGpibDevsToFile(FILE *fbuff);
 long getGpibDevsFromFile(FILE *fbuff, long fpos_eof);
+int putForceBuildChkToFile(FILE *fbuff);
+long getForceBuildChkFromFile(FILE *fbuff, long fpos_eof);
 
 void nullCharBuff(char *buff, int max_len);
 int writeHeader(FILE *fbuff, char *stag, int elem_size, int num_dims, int *dims);
