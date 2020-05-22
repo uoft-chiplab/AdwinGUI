@@ -411,6 +411,10 @@ int SaveSequenceV17(char* save_name, int sn_length)
 	status = putDds3TableToFile(fbuffer);
 	if( status < 0 ){ fclose(fbuffer); return status; }
 
+	// Write DDS Globals
+	status = putDdsGlobalsToFile(fbuffer);
+	if( status < 0 ){ fclose(fbuffer); return status; }
+
 	// Write LaserTable
 	status = putLaserTableToFile(fbuffer);
 	if( status < 0 ){ fclose(fbuffer); return status; }
@@ -435,11 +439,11 @@ int SaveSequenceV17(char* save_name, int sn_length)
 	status = putPageNamesToFile(fbuffer);
 	if( status < 0 ){ fclose(fbuffer); return status; }
 
-	// Write Page Names (text on buttons)
+	// Write Page Checkboxes
 	status = putPageCheckboxesToFile(fbuffer);
 	if( status < 0 ){ fclose(fbuffer); return status; }
 
-	// Write Page Names (text on buttons)
+	// Write Update Period
 	status = putUpdatePeriodToFile(fbuffer);
 	if( status < 0 ){ fclose(fbuffer); return status; }
 
@@ -524,6 +528,10 @@ int LoadSequenceV17(char* load_name, int ln_length)
 	fpos = getDds3TableFromFile(fbuffer, fpos_file_end);
 	if( fpos < 0 ){ fclose(fbuffer); return -1; }// pass though error
 
+	// Get the DDS Globals
+	fpos = getDdsGlobalsFromFile(fbuffer, fpos_file_end);
+	if( fpos < 0 ){ fclose(fbuffer); return -1; }// pass though error
+
 	// Get the LaserTable
 	fpos = getLaserTableFromFile(fbuffer, fpos_file_end);
 	if( fpos < 0 ){ fclose(fbuffer); return -1; }// pass though error
@@ -548,13 +556,14 @@ int LoadSequenceV17(char* load_name, int ln_length)
 	fpos = getPageNamesFromFile(fbuffer, fpos_file_end);
 	if( fpos < 0 ){ fclose(fbuffer); return -1; }// pass though error
 
-	// Get the Page Names (text on buttons)
+	// Get the Page Checkboxes
 	fpos = getPageCheckboxesFromFile(fbuffer, fpos_file_end);
 	if( fpos < 0 ){ fclose(fbuffer); return -1; }// pass though error
 
-	// Get the Page Names (text on buttons)
+	// Get the Update Period
 	fpos = getUpdatePeriodFromFile(fbuffer, fpos_file_end);
 	//if( fpos < 0 ){ fclose(fbuffer); return -1; }// pass though error
+
 
 
 
@@ -692,7 +701,7 @@ int putTimeArrayToFile(FILE *fbuff)
 	int elem_size = sizeof(TimeArray[0][0]);
 	int linear_size;
 
-	linear_size = writeHeader(fbuff, stag, elem_size,num_dims, dims);// write header
+	linear_size = writeHeader(fbuff, stag, elem_size, num_dims, dims);// write header
 	if( linear_size < 0 ){ return linear_size; }// pass though error
 
 	elems_writ = fwrite(&TimeArray, elem_size, linear_size, fbuff);// write binary data
@@ -764,7 +773,7 @@ int putAnalogTableToFile(FILE *fbuff)
 	int elem_size = sizeof(AnalogTable[0][0][0]);
 	int linear_size;
 
-	linear_size = writeHeader(fbuff, stag, elem_size,num_dims, dims);// write header
+	linear_size = writeHeader(fbuff, stag, elem_size, num_dims, dims);// write header
 	if( linear_size < 0 ){ return linear_size; }// pass though error
 
 	elems_writ = fwrite(&AnalogTable, elem_size, linear_size, fbuff);// write binary data
@@ -835,7 +844,7 @@ int putDigitalTableToFile(FILE *fbuff)
 	int elem_size = sizeof(DigTableValues[0][0][0]);
 	int linear_size;
 
-	linear_size = writeHeader(fbuff, stag, elem_size,num_dims, dims);// write header
+	linear_size = writeHeader(fbuff, stag, elem_size, num_dims, dims);// write header
 	if( linear_size < 0 ){ return linear_size; }// pass though error
 
 	elems_writ = fwrite(&DigTableValues, elem_size, linear_size, fbuff);// write binary data
@@ -906,7 +915,7 @@ int putAnalogChPropsToFile(FILE *fbuff)
 	int elem_size = sizeof(AChName[0]);
 	int linear_size;
 
-	linear_size = writeHeader(fbuff, stag, elem_size,num_dims, dims);// write header
+	linear_size = writeHeader(fbuff, stag, elem_size, num_dims, dims);// write header
 	if( linear_size < 0 ){ return linear_size; }// pass though error
 
 	elems_writ = fwrite(&AChName, elem_size, linear_size, fbuff);// write binary data
@@ -977,7 +986,7 @@ int putDigitalChPropsToFile(FILE *fbuff)
 	int elem_size = sizeof(DChName[0]);
 	int linear_size;
 
-	linear_size = writeHeader(fbuff, stag, elem_size,num_dims, dims);// write header
+	linear_size = writeHeader(fbuff, stag, elem_size, num_dims, dims);// write header
 	if( linear_size < 0 ){ return linear_size; }// pass though error
 
 	elems_writ = fwrite(&DChName, elem_size, linear_size, fbuff);// write binary data
@@ -1048,7 +1057,7 @@ int putDds1TableToFile(FILE *fbuff)
 	int elem_size = sizeof(ddstable[0][0]);
 	int linear_size;
 
-	linear_size = writeHeader(fbuff, stag, elem_size,num_dims, dims);// write header
+	linear_size = writeHeader(fbuff, stag, elem_size, num_dims, dims);// write header
 	if( linear_size < 0 ){ return linear_size; }// pass though error
 
 	elems_writ = fwrite(&ddstable, elem_size, linear_size, fbuff);// write binary data
@@ -1119,7 +1128,7 @@ int putDds2TableToFile(FILE *fbuff)
 	int elem_size = sizeof(dds2table[0][0]);
 	int linear_size;
 
-	linear_size = writeHeader(fbuff, stag, elem_size,num_dims, dims);// write header
+	linear_size = writeHeader(fbuff, stag, elem_size, num_dims, dims);// write header
 	if( linear_size < 0 ){ return linear_size; }// pass though error
 
 	elems_writ = fwrite(&dds2table, elem_size, linear_size, fbuff);// write binary data
@@ -1190,7 +1199,7 @@ int putDds3TableToFile(FILE *fbuff)
 	int elem_size = sizeof(dds3table[0][0]);
 	int linear_size;
 
-	linear_size = writeHeader(fbuff, stag, elem_size,num_dims, dims);// write header
+	linear_size = writeHeader(fbuff, stag, elem_size, num_dims, dims);// write header
 	if( linear_size < 0 ){ return linear_size; }// pass though error
 
 	elems_writ = fwrite(&dds3table, elem_size, linear_size, fbuff);// write binary data
@@ -1245,6 +1254,83 @@ long getDds3TableFromFile(FILE *fbuff, long fpos_eof)
 	return fpos;
 }
 
+int putDdsGlobalsToFile(FILE *fbuff)
+{
+	char cbuff[512] = "";// header/footer buffer
+	int clen = 512;
+	char bf[256] = "";// assembly buffer
+	int elems_writ;
+
+	// Particulars of the object to write (don't forget to change the actual data write line too)
+	//struct DDSClock{// vars.h line
+	//		double	extclock;
+	//		int 	PLLmult;
+	//		double	clock;// clock is a derived quantity from extclock and PLLmult
+	//}	DDSFreq;
+	char stag[] = "<DdsGlobals>";
+	char etag[] = "</DdsGlobals>";
+	int num_dims = 1;
+	int dims[] = {(1)};// ordering is: object[dims[0]][dims[1]]...
+	int elem_size = sizeof(DDSFreq);
+	int linear_size;
+
+	linear_size = writeHeader(fbuff, stag, elem_size, num_dims, dims);// write header
+	if( linear_size < 0 ){ return linear_size; }// pass though error
+
+	elems_writ = fwrite(&DDSFreq, elem_size, linear_size, fbuff);// write binary data
+
+	if( elems_writ != linear_size ){
+		fclose(fbuff);
+		printf("Failed to write the correct number of elems for tag |%s|\n", stag);
+		return -1;
+	}
+
+	return writeFooter(fbuff, etag);// write footer and pass through any errors
+}
+
+long getDdsGlobalsFromFile(FILE *fbuff, long fpos_eof)
+{
+	// Particulars of the object to load (don't forget to change the actual data write line too)
+	char stag[] = "<DdsGlobals>";
+	char etag[] = "</DdsGlobals>";
+	int max_dims = 1;
+
+	int elem_size;
+	int num_dims;
+	int dims[max_dims];
+	int linear_size = 1;
+	long fpos;
+	int elems_read;
+
+	fpos = readHeader(fbuff, stag, &elem_size, &num_dims, dims, max_dims, fpos_eof);
+	// Do some simple checks
+	if( fpos < 0 ){// if there was an err in readHeader (printf's in readHeader)
+		return fpos;
+	}
+	for( int i=0; i<max_dims; ++i ){ linear_size *= dims[i]; }// calculate linear_size
+	if( elem_size*linear_size != sizeof(DDSFreq) ){
+		printf("Binary data read from file for tag |%s| is not the correct size\n", stag);
+		return -1;
+	}
+
+	// Read the data into DDSFreq and also set the DDSsettings panel
+	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the binary data
+	elems_read = fread(&DDSFreq, elem_size, linear_size, fbuff);// load the binary data directly into the array
+	if( elems_read != linear_size ){// didn't read expected number of elements
+		printf("Expected to read more elements from file for tag |%s|\n", stag);
+		return -1;
+	}
+	LoadDDSSettings();// load DDSFreq global var into ddssettings panel
+
+	fpos = checkFooter(fbuff, etag, fpos_eof);
+	if( fpos < 0 ){// pass though signal, either -1 for error or -2 for eof
+		return fpos;
+	}
+	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the next header
+
+	return fpos;
+}
+
 int putLaserTableToFile(FILE *fbuff)
 {
 	char cbuff[512] = "";// header/footer buffer
@@ -1261,7 +1347,7 @@ int putLaserTableToFile(FILE *fbuff)
 	int elem_size = sizeof(LaserTable[0][0][0]);
 	int linear_size;
 
-	linear_size = writeHeader(fbuff, stag, elem_size,num_dims, dims);// write header
+	linear_size = writeHeader(fbuff, stag, elem_size, num_dims, dims);// write header
 	if( linear_size < 0 ){ return linear_size; }// pass though error
 
 	elems_writ = fwrite(&LaserTable, elem_size, linear_size, fbuff);// write binary data
@@ -1332,7 +1418,7 @@ int putLaserPropsToFile(FILE *fbuff)
 	int elem_size = sizeof(LaserProperties[0]);
 	int linear_size;
 
-	linear_size = writeHeader(fbuff, stag, elem_size,num_dims, dims);// write header
+	linear_size = writeHeader(fbuff, stag, elem_size, num_dims, dims);// write header
 	if( linear_size < 0 ){ return linear_size; }// pass though error
 
 	elems_writ = fwrite(&LaserProperties, elem_size, linear_size, fbuff);// write binary data
@@ -1403,7 +1489,7 @@ int putAnritsuTableToFile(FILE *fbuff)// this table isn't used anymore but it mi
 	int elem_size = sizeof(anritsutable[0][0]);
 	int linear_size;
 
-	linear_size = writeHeader(fbuff, stag, elem_size,num_dims, dims);// write header
+	linear_size = writeHeader(fbuff, stag, elem_size, num_dims, dims);// write header
 	if( linear_size < 0 ){ return linear_size; }// pass though error
 
 	elems_writ = fwrite(&anritsutable, elem_size, linear_size, fbuff);// write binary data
@@ -1474,7 +1560,7 @@ int putAnritsuPropsToFile(FILE *fbuff)
 	int elem_size = sizeof(AnritsuSettingValues[0]);
 	int linear_size;
 
-	linear_size = writeHeader(fbuff, stag, elem_size,num_dims, dims);// write header
+	linear_size = writeHeader(fbuff, stag, elem_size, num_dims, dims);// write header
 	if( linear_size < 0 ){ return linear_size; }// pass though error
 
 	elems_writ = fwrite(&AnritsuSettingValues, elem_size, linear_size, fbuff);// write binary data
@@ -1545,7 +1631,7 @@ int putInfoArrayToFile(FILE *fbuff)
 	int elem_size = sizeof(InfoArray[0][0]);
 	int linear_size;
 
-	linear_size = writeHeader(fbuff, stag, elem_size,num_dims, dims);// write header
+	linear_size = writeHeader(fbuff, stag, elem_size, num_dims, dims);// write header
 	if( linear_size < 0 ){ return linear_size; }// pass though error
 
 	elems_writ = fwrite(&InfoArray, elem_size, linear_size, fbuff);// write binary data
@@ -1631,7 +1717,7 @@ int putPageNamesToFile(FILE *fbuff)
 	int elem_size = sizeof(text_buff);
 	int linear_size;
 
-	linear_size = writeHeader(fbuff, stag, elem_size,num_dims, dims);// write header
+	linear_size = writeHeader(fbuff, stag, elem_size, num_dims, dims);// write header
 	if( linear_size < 0 ){ return linear_size; }// pass though error
 
 	// Here we need to do a little more work than simply dumping the binary array to file
@@ -1741,7 +1827,7 @@ int putPageCheckboxesToFile(FILE *fbuff)// These used to be saved in the .pan fi
 	int elem_size = sizeof(ischecked[0]);
 	int linear_size;
 
-	linear_size = writeHeader(fbuff, stag, elem_size,num_dims, dims);// write header
+	linear_size = writeHeader(fbuff, stag, elem_size, num_dims, dims);// write header
 	if( linear_size < 0 ){ return linear_size; }// pass though error
 
 	checkActivePages();// insure that global var ischecked is up to date
@@ -1815,7 +1901,7 @@ int putUpdatePeriodToFile(FILE *fbuff)
 	int elem_size = sizeof(updatePeriod);
 	int linear_size;
 
-	linear_size = writeHeader(fbuff, stag, elem_size,num_dims, dims);// write header
+	linear_size = writeHeader(fbuff, stag, elem_size, num_dims, dims);// write header
 	if( linear_size < 0 ){ return linear_size; }// pass though error
 
 	updatePeriod = getUpdatePeriodFromMenu();
@@ -1887,8 +1973,6 @@ long getUpdatePeriodFromFile(FILE *fbuff, long fpos_eof)
 
 
 /*
-global DDS settings; are these used anymore? Yes, save only extclock and PLLmult and compute clock by multiplication on load; also set DDSsettings
-Don't save obsolete SRS settings; double check they are not used anywhere
 GPIB settings
 And then what is left?
 Build every time check mark
@@ -1939,9 +2023,10 @@ void nullCharBuff(char *buff, int max_len)// simple fn to null all elements of a
 	return;
 }
 
-int writeHeader(FILE *fbuff, char *stag, int elem_size, int num_dims, int *dims)
-{// num_dims is the number of elements of array dims
-//	return either linear_size (positive) or <0 for error
+int writeHeader(FILE *fbuff, char *stag, int elem_size, int num_dims, int *dims){
+	// num_dims is the number of elements of array dims
+	// return either linear_size (positive) or <0 for error
+	// assumes tag is properly '\0' terminated
 
 	char cbuff[512] = "";// header buffer
 	char bf[256] = "";// assembly buffer
@@ -1969,8 +2054,9 @@ int writeHeader(FILE *fbuff, char *stag, int elem_size, int num_dims, int *dims)
 	return linear_size;
 }
 
-int writeFooter(FILE *fbuff, char *etag)
-{
+int writeFooter(FILE *fbuff, char *etag){
+	// assumes tag is properly '\0' terminated
+
 	char cbuff[512] = "";// header buffer
 	int elems_writ;
 
@@ -1991,7 +2077,7 @@ int writeFooter(FILE *fbuff, char *etag)
 
 long readHeader(FILE *fbuff, char *tag, int *elem_size, int *num_dims, int *dims, const int max_dims, long fpos_eof){
 	// fbuff's file pointer should be pointing at the start of the header ie. '<'
-	//returns ftell at start of binary data that is to be read
+	// returns ftell at start of binary data that is to be read
 	// assumes tag is properly '\0' terminated
 
 	char cbuff[512] = "";
