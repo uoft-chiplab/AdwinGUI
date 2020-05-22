@@ -474,6 +474,15 @@ int SaveSequenceV17(char* save_name, int sn_length)
 	status = putUseSimpleTimingToFile(fbuffer);
 	if( status < 0 ){ fclose(fbuffer); return status; }
 
+	// Write MultiScan object
+	status = putMultiScanToFile(fbuffer);
+	if( status < 0 ){ fclose(fbuffer); return status; }
+
+	// Write ScanBuffer
+	status = putScanBufferToFile(fbuffer);
+	if( status < 0 ){ fclose(fbuffer); return status; }
+
+
 
 
 
@@ -609,9 +618,15 @@ int LoadSequenceV17(char* load_name, int ln_length)
 
 	// Get the Use Simple Timing Preferences Menu option
 	fpos = getUseSimpleTimingFromFile(fbuffer, fpos_file_end);
+	if( fpos < 0 ){ fclose(fbuffer); return -1; }// pass though error
+
+	// Get the MultiScan object
+	fpos = getMultiScanFromFile(fbuffer, fpos_file_end);
+	if( fpos < 0 ){ fclose(fbuffer); return -1; }// pass though error
+
+	// Get the ScanBuffer
+	fpos = getScanBufferFromFile(fbuffer, fpos_file_end);
 	//if( fpos < 0 ){ fclose(fbuffer); return -1; }// pass though error
-
-
 
 
 
@@ -2215,7 +2230,6 @@ long getForceBuildChkFromFile(FILE *fbuff, long fpos_eof)
 	return fpos;
 }
 
-
 int putUseCompressionToFile(FILE *fbuff)
 {
 	int elems_writ;
@@ -2369,7 +2383,151 @@ long getUseSimpleTimingFromFile(FILE *fbuff, long fpos_eof)
 	return fpos;
 }
 
+int putMultiScanToFile(FILE *fbuff)
+{
+	int elems_writ;
 
+	// Particulars of the object to write (don't forget to change the actual data write line too)
+	// struct MultiScanValues{...; struct MultiScanParameters Par[NUMMAXSCANPARAMETERS]; } MultiScan;// vars.h line
+	// Note that if NUMMAXSCANPARAMETERS changes then loading a version with an old num will fail.
+	// Could change the code to have the parameters struct be a pointer to another global variable.
+	char stag[] = "<MultiScan>";
+	char etag[] = "</MultiScan>";
+	int num_dims = 1;
+	int dims[] = {(1)};// ordering is: object[dims[0]][dims[1]]...
+	int elem_size = sizeof(MultiScan);
+	int linear_size;
+
+	linear_size = writeHeader(fbuff, stag, elem_size, num_dims, dims);// write header
+	if( linear_size < 0 ){ return linear_size; }// pass though error
+
+	elems_writ = fwrite(&MultiScan, elem_size, linear_size, fbuff);// write binary data
+
+	if( elems_writ != linear_size ){
+		fclose(fbuff);
+		printf("Failed to write the correct number of elems for tag |%s|\n", stag);
+		return -1;
+	}
+
+	return writeFooter(fbuff, etag);// write footer and pass through any errors
+}
+
+long getMultiScanFromFile(FILE *fbuff, long fpos_eof)
+{
+	// Particulars of the object to load (don't forget to change the actual data write line too)
+	char stag[] = "<MultiScan>";
+	char etag[] = "</MultiScan>";
+	int max_dims = 1;
+
+	int elem_size;
+	int num_dims;
+	int dims[max_dims];
+	int linear_size = 1;
+	long fpos;
+	int elems_read;
+
+	fpos = readHeader(fbuff, stag, &elem_size, &num_dims, dims, max_dims, fpos_eof);
+	// Do some simple checks
+	if( fpos < 0 ){// if there was an err in readHeader (printf's in readHeader)
+		return fpos;
+	}
+	for( int i=0; i<max_dims; ++i ){ linear_size *= dims[i]; }// calculate linear_size
+	if( elem_size*linear_size != sizeof(MultiScan) ){
+		printf("Binary data read from file for tag |%s| is not the correct size\n", stag);
+		return -1;
+	}
+
+	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the binary data
+	elems_read = fread(&MultiScan, elem_size, linear_size, fbuff);// load the binary data directly into the array
+	if( elems_read != linear_size ){// didn't read expected number of elements
+		printf("Expected to read more elements from file for tag |%s|\n", stag);
+		return -1;
+	}
+
+	fpos = checkFooter(fbuff, etag, fpos_eof);
+	if( fpos < 0 ){// pass though signal, either -1 for error or -2 for eof
+		return fpos;
+	}
+	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the next header
+
+	return fpos;
+}
+
+
+int putScanBufferToFile(FILE *fbuff)
+{
+	int elems_writ;
+
+	// Particulars of the object to write (don't forget to change the actual data write line too)
+	// struct ScanBuff{ // Needing a scan buffer to watch scan, since list can be updated during scan
+	// int Iteration;
+	// int Step;
+	// double Value;
+	// double MultiScanValue[NUMMAXSCANPARAMETERS]; // Added for MultiScans, not interferring with other scans
+	// char Time[SCANBUFFER_TIMEBUFFER_LENGTH];
+	// int BufferSize;
+	//} ScanBuffer[SCANBUFFER_LENGTH];
+	char stag[] = "<ScanBuffer>";
+	char etag[] = "</ScanBuffer>";
+	int num_dims = 1;
+	int dims[] = {(SCANBUFFER_LENGTH)};// ordering is: object[dims[0]][dims[1]]...
+	int elem_size = sizeof(ScanBuffer[0]);
+	int linear_size;
+
+	linear_size = writeHeader(fbuff, stag, elem_size, num_dims, dims);// write header
+	if( linear_size < 0 ){ return linear_size; }// pass though error
+
+	elems_writ = fwrite(&ScanBuffer, elem_size, linear_size, fbuff);// write binary data
+
+	if( elems_writ != linear_size ){
+		fclose(fbuff);
+		printf("Failed to write the correct number of elems for tag |%s|\n", stag);
+		return -1;
+	}
+
+	return writeFooter(fbuff, etag);// write footer and pass through any errors
+}
+
+long getScanBufferFromFile(FILE *fbuff, long fpos_eof)
+{
+	// Particulars of the object to load (don't forget to change the actual data write line too)
+	char stag[] = "<ScanBuffer>";
+	char etag[] = "</ScanBuffer>";
+	int max_dims = 1;
+
+	int elem_size;
+	int num_dims;
+	int dims[max_dims];
+	int linear_size = 1;
+	long fpos;
+	int elems_read;
+
+	fpos = readHeader(fbuff, stag, &elem_size, &num_dims, dims, max_dims, fpos_eof);
+	// Do some simple checks
+	if( fpos < 0 ){// if there was an err in readHeader (printf's in readHeader)
+		return fpos;
+	}
+	for( int i=0; i<max_dims; ++i ){ linear_size *= dims[i]; }// calculate linear_size
+	if( elem_size*linear_size != sizeof(ScanBuffer) ){
+		printf("Binary data read from file for tag |%s| is not the correct size\n", stag);
+		return -1;
+	}
+
+	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the binary data
+	elems_read = fread(&ScanBuffer, elem_size, linear_size, fbuff);// load the binary data directly into the array
+	if( elems_read != linear_size ){// didn't read expected number of elements
+		printf("Expected to read more elements from file for tag |%s|\n", stag);
+		return -1;
+	}
+
+	fpos = checkFooter(fbuff, etag, fpos_eof);
+	if( fpos < 0 ){// pass though signal, either -1 for error or -2 for eof
+		return fpos;
+	}
+	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the next header
+
+	return fpos;
+}
 
 
 

@@ -59,6 +59,10 @@ int putUseCompressionToFile(FILE *fbuff);
 long getUseCompressionFromFile(FILE *fbuff, long fpos_eof);
 int putUseSimpleTimingToFile(FILE *fbuff);
 long getUseSimpleTimingFromFile(FILE *fbuff, long fpos_eof);
+int putMultiScanToFile(FILE *fbuff);
+long getMultiScanFromFile(FILE *fbuff, long fpos_eof);
+int putScanBufferToFile(FILE *fbuff);
+long getScanBufferFromFile(FILE *fbuff, long fpos_eof);
 
 void nullCharBuff(char *buff, int max_len);
 int writeHeader(FILE *fbuff, char *stag, int elem_size, int num_dims, int *dims);
