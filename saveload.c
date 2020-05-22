@@ -1346,7 +1346,7 @@ int putDdsEorsToFile(FILE *fbuff)
 	char etag[] = "</DdsEors>";
 	int num_dims = 1;
 	int dims[] = {(3)};// ordering is: object[dims[0]][dims[1]]...
-	double ddseors[num_dims];
+	double ddseors[dims[0]];
 	int elem_size = sizeof(ddseors[0]);
 	int linear_size;
 
@@ -1355,9 +1355,9 @@ int putDdsEorsToFile(FILE *fbuff)
 
 	// Get each EOR and write array to file
 
-	GetCtrlVal( panelHandle, PANEL_NUM_DDS_OFFSET, ddseors );
-	GetCtrlVal( panelHandle, PANEL_NUM_DDS2_OFFSET, ddseors+1 );
-	GetCtrlVal( panelHandle, PANEL_NUM_DDS3_OFFSET, ddseors+2 );
+	GetCtrlVal( panelHandle, PANEL_NUM_DDS_OFFSET,  &(ddseors[0]) );
+	GetCtrlVal( panelHandle, PANEL_NUM_DDS2_OFFSET, &(ddseors[1]) );
+	GetCtrlVal( panelHandle, PANEL_NUM_DDS3_OFFSET, &(ddseors[2]) );
 
 	elems_writ = fwrite(&ddseors, elem_size, linear_size, fbuff);// write binary data
 
@@ -2118,7 +2118,6 @@ long getGpibDevsFromFile(FILE *fbuff, long fpos_eof)
 
 	return fpos;
 }
-
 
 int putForceBuildChkToFile(FILE *fbuff)
 {
