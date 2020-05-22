@@ -47,6 +47,8 @@ long getPageCheckboxesFromFile(FILE *fbuff, long fpos_eof);
 int putUpdatePeriodToFile(FILE *fbuff);
 long getUpdatePeriodFromFile(FILE *fbuff, long fpos_eof);
 void nullCharBuff(char *buff, int max_len);
+int writeHeader(FILE *fbuff, char *stag, int elem_size, int num_dims, int *dims);
+int writeFooter(FILE *fbuff, char *etag);
 long readHeader(FILE *fbuff, char *tag, int *elem_size, int *num_dims, int *dims, const int max_dims, long fpos_eof);
 long checkFooter(FILE *fbuff, char *endtag, long fpos_eof);
 

@@ -556,7 +556,7 @@ int LoadSequenceV17(char* load_name, int ln_length)
 	fpos = getUpdatePeriodFromFile(fbuffer, fpos_file_end);
 	//if( fpos < 0 ){ fclose(fbuffer); return -1; }// pass though error
 
-	// this is a change
+
 
 
 
@@ -690,21 +690,12 @@ int putTimeArrayToFile(FILE *fbuff)
 	int num_dims = 2;
 	int dims[] = {(NUMBEROFCOLUMNS+1), (NUMBEROFPAGES)};// ordering is: object[dims[0]][dims[1]]...
 	int elem_size = sizeof(TimeArray[0][0]);
-	int linear_size = 1;
+	int linear_size;
 
-	// Make the header automatically and write it
-	sprintf(cbuff, "%s~%d~%d~", stag, elem_size, num_dims);
-	for( int i = 0; i < num_dims; ++i ){
-		sprintf(bf, "%d~", dims[i]);
-		strcat(cbuff, bf);
-		linear_size = linear_size * dims[i];
-	}
-	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write header
+	linear_size = writeHeader(fbuff, stag, elem_size,num_dims, dims);// write header
+	if( linear_size < 0 ){ return linear_size; }// pass though error
 
 	elems_writ = fwrite(&TimeArray, elem_size, linear_size, fbuff);// write binary data
-
-	sprintf(cbuff, etag);
-	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write footer
 
 	if( elems_writ != linear_size ){
 		fclose(fbuff);
@@ -712,7 +703,7 @@ int putTimeArrayToFile(FILE *fbuff)
 		return -1;
 	}
 
-	return 0;
+	return writeFooter(fbuff, etag);// write footer and pass through any errors
 }
 
 long getTimeArrayFromFile(FILE *fbuff, long fpos_eof)
@@ -771,21 +762,12 @@ int putAnalogTableToFile(FILE *fbuff)
 	int num_dims = 3;
 	int dims[] = {(NUMBEROFCOLUMNS+1), (NUMBERANALOGROWS+1), (NUMBEROFPAGES)};// ordering is: object[dims[0]][dims[1]]...
 	int elem_size = sizeof(AnalogTable[0][0][0]);
-	int linear_size = 1;
+	int linear_size;
 
-	// Make the header automatically and write it
-	sprintf(cbuff, "%s~%d~%d~", stag, elem_size, num_dims);
-	for( int i = 0; i < num_dims; ++i ){
-		sprintf(bf, "%d~", dims[i]);
-		strcat(cbuff, bf);
-		linear_size = linear_size * dims[i];
-	}
-	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write header
+	linear_size = writeHeader(fbuff, stag, elem_size,num_dims, dims);// write header
+	if( linear_size < 0 ){ return linear_size; }// pass though error
 
 	elems_writ = fwrite(&AnalogTable, elem_size, linear_size, fbuff);// write binary data
-
-	sprintf(cbuff, etag);
-	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write footer
 
 	if( elems_writ != linear_size ){
 		fclose(fbuff);
@@ -793,7 +775,7 @@ int putAnalogTableToFile(FILE *fbuff)
 		return -1;
 	}
 
-	return 0;
+	return writeFooter(fbuff, etag);// write footer and pass through any errors
 }
 
 long getAnalogTableFromFile(FILE *fbuff, long fpos_eof)
@@ -851,21 +833,12 @@ int putDigitalTableToFile(FILE *fbuff)
 	int num_dims = 3;
 	int dims[] = {(NUMBEROFCOLUMNS+1), (MAXDIGITAL), (NUMBEROFPAGES)};// ordering is: object[dims[0]][dims[1]]...
 	int elem_size = sizeof(DigTableValues[0][0][0]);
-	int linear_size = 1;
+	int linear_size;
 
-	// Make the header automatically and write it
-	sprintf(cbuff, "%s~%d~%d~", stag, elem_size, num_dims);
-	for( int i = 0; i < num_dims; ++i ){
-		sprintf(bf, "%d~", dims[i]);
-		strcat(cbuff, bf);
-		linear_size = linear_size * dims[i];
-	}
-	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write header
+	linear_size = writeHeader(fbuff, stag, elem_size,num_dims, dims);// write header
+	if( linear_size < 0 ){ return linear_size; }// pass though error
 
 	elems_writ = fwrite(&DigTableValues, elem_size, linear_size, fbuff);// write binary data
-
-	sprintf(cbuff, etag);
-	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write footer
 
 	if( elems_writ != linear_size ){
 		fclose(fbuff);
@@ -873,7 +846,7 @@ int putDigitalTableToFile(FILE *fbuff)
 		return -1;
 	}
 
-	return 0;
+	return writeFooter(fbuff, etag);// write footer and pass through any errors
 }
 
 long getDigitalTableFromFile(FILE *fbuff, long fpos_eof)
@@ -931,21 +904,12 @@ int putAnalogChPropsToFile(FILE *fbuff)
 	int num_dims = 1;
 	int dims[] = {(MAXANALOG+NUMBERDDS)};// ordering is: object[dims[0]][dims[1]]...
 	int elem_size = sizeof(AChName[0]);
-	int linear_size = 1;
+	int linear_size;
 
-	// Make the header automatically and write it
-	sprintf(cbuff, "%s~%d~%d~", stag, elem_size, num_dims);
-	for( int i = 0; i < num_dims; ++i ){
-		sprintf(bf, "%d~", dims[i]);
-		strcat(cbuff, bf);
-		linear_size = linear_size * dims[i];
-	}
-	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write header
+	linear_size = writeHeader(fbuff, stag, elem_size,num_dims, dims);// write header
+	if( linear_size < 0 ){ return linear_size; }// pass though error
 
 	elems_writ = fwrite(&AChName, elem_size, linear_size, fbuff);// write binary data
-
-	sprintf(cbuff, etag);
-	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write footer
 
 	if( elems_writ != linear_size ){
 		fclose(fbuff);
@@ -953,7 +917,7 @@ int putAnalogChPropsToFile(FILE *fbuff)
 		return -1;
 	}
 
-	return 0;
+	return writeFooter(fbuff, etag);// write footer and pass through any errors
 }
 
 long getAnalogChPropsFromFile(FILE *fbuff, long fpos_eof)
@@ -1011,21 +975,12 @@ int putDigitalChPropsToFile(FILE *fbuff)
 	int num_dims = 1;
 	int dims[] = {(MAXDIGITAL)};// ordering is: object[dims[0]][dims[1]]...
 	int elem_size = sizeof(DChName[0]);
-	int linear_size = 1;
+	int linear_size;
 
-	// Make the header automatically and write it
-	sprintf(cbuff, "%s~%d~%d~", stag, elem_size, num_dims);
-	for( int i = 0; i < num_dims; ++i ){
-		sprintf(bf, "%d~", dims[i]);
-		strcat(cbuff, bf);
-		linear_size = linear_size * dims[i];
-	}
-	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write header
+	linear_size = writeHeader(fbuff, stag, elem_size,num_dims, dims);// write header
+	if( linear_size < 0 ){ return linear_size; }// pass though error
 
 	elems_writ = fwrite(&DChName, elem_size, linear_size, fbuff);// write binary data
-
-	sprintf(cbuff, etag);
-	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write footer
 
 	if( elems_writ != linear_size ){
 		fclose(fbuff);
@@ -1033,7 +988,7 @@ int putDigitalChPropsToFile(FILE *fbuff)
 		return -1;
 	}
 
-	return 0;
+	return writeFooter(fbuff, etag);// write footer and pass through any errors
 }
 
 long getDigitalChPropsFromFile(FILE *fbuff, long fpos_eof)
@@ -1091,21 +1046,12 @@ int putDds1TableToFile(FILE *fbuff)
 	int num_dims = 2;
 	int dims[] = {(NUMBEROFCOLUMNS+1), (NUMBEROFPAGES)};// ordering is: object[dims[0]][dims[1]]...
 	int elem_size = sizeof(ddstable[0][0]);
-	int linear_size = 1;
+	int linear_size;
 
-	// Make the header automatically and write it
-	sprintf(cbuff, "%s~%d~%d~", stag, elem_size, num_dims);
-	for( int i = 0; i < num_dims; ++i ){
-		sprintf(bf, "%d~", dims[i]);
-		strcat(cbuff, bf);
-		linear_size = linear_size * dims[i];
-	}
-	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write header
+	linear_size = writeHeader(fbuff, stag, elem_size,num_dims, dims);// write header
+	if( linear_size < 0 ){ return linear_size; }// pass though error
 
 	elems_writ = fwrite(&ddstable, elem_size, linear_size, fbuff);// write binary data
-
-	sprintf(cbuff, etag);
-	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write footer
 
 	if( elems_writ != linear_size ){
 		fclose(fbuff);
@@ -1113,7 +1059,7 @@ int putDds1TableToFile(FILE *fbuff)
 		return -1;
 	}
 
-	return 0;
+	return writeFooter(fbuff, etag);// write footer and pass through any errors
 }
 
 long getDds1TableFromFile(FILE *fbuff, long fpos_eof)
@@ -1171,21 +1117,12 @@ int putDds2TableToFile(FILE *fbuff)
 	int num_dims = 2;
 	int dims[] = {(NUMBEROFCOLUMNS+1), (NUMBEROFPAGES)};// ordering is: object[dims[0]][dims[1]]...
 	int elem_size = sizeof(dds2table[0][0]);
-	int linear_size = 1;
+	int linear_size;
 
-	// Make the header automatically and write it
-	sprintf(cbuff, "%s~%d~%d~", stag, elem_size, num_dims);
-	for( int i = 0; i < num_dims; ++i ){
-		sprintf(bf, "%d~", dims[i]);
-		strcat(cbuff, bf);
-		linear_size = linear_size * dims[i];
-	}
-	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write header
+	linear_size = writeHeader(fbuff, stag, elem_size,num_dims, dims);// write header
+	if( linear_size < 0 ){ return linear_size; }// pass though error
 
 	elems_writ = fwrite(&dds2table, elem_size, linear_size, fbuff);// write binary data
-
-	sprintf(cbuff, etag);
-	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write footer
 
 	if( elems_writ != linear_size ){
 		fclose(fbuff);
@@ -1193,7 +1130,7 @@ int putDds2TableToFile(FILE *fbuff)
 		return -1;
 	}
 
-	return 0;
+	return writeFooter(fbuff, etag);// write footer and pass through any errors
 }
 
 long getDds2TableFromFile(FILE *fbuff, long fpos_eof)
@@ -1251,21 +1188,12 @@ int putDds3TableToFile(FILE *fbuff)
 	int num_dims = 2;
 	int dims[] = {(NUMBEROFCOLUMNS+1), (NUMBEROFPAGES)};// ordering is: object[dims[0]][dims[1]]...
 	int elem_size = sizeof(dds3table[0][0]);
-	int linear_size = 1;
+	int linear_size;
 
-	// Make the header automatically and write it
-	sprintf(cbuff, "%s~%d~%d~", stag, elem_size, num_dims);
-	for( int i = 0; i < num_dims; ++i ){
-		sprintf(bf, "%d~", dims[i]);
-		strcat(cbuff, bf);
-		linear_size = linear_size * dims[i];
-	}
-	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write header
+	linear_size = writeHeader(fbuff, stag, elem_size,num_dims, dims);// write header
+	if( linear_size < 0 ){ return linear_size; }// pass though error
 
 	elems_writ = fwrite(&dds3table, elem_size, linear_size, fbuff);// write binary data
-
-	sprintf(cbuff, etag);
-	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write footer
 
 	if( elems_writ != linear_size ){
 		fclose(fbuff);
@@ -1273,7 +1201,7 @@ int putDds3TableToFile(FILE *fbuff)
 		return -1;
 	}
 
-	return 0;
+	return writeFooter(fbuff, etag);// write footer and pass through any errors
 }
 
 long getDds3TableFromFile(FILE *fbuff, long fpos_eof)
@@ -1331,21 +1259,12 @@ int putLaserTableToFile(FILE *fbuff)
 	int num_dims = 3;
 	int dims[] = {(NUMBERLASERS), (NUMBEROFCOLUMNS+1), (NUMBEROFPAGES)};// ordering is: object[dims[0]][dims[1]]...
 	int elem_size = sizeof(LaserTable[0][0][0]);
-	int linear_size = 1;
+	int linear_size;
 
-	// Make the header automatically and write it
-	sprintf(cbuff, "%s~%d~%d~", stag, elem_size, num_dims);
-	for( int i = 0; i < num_dims; ++i ){
-		sprintf(bf, "%d~", dims[i]);
-		strcat(cbuff, bf);
-		linear_size = linear_size * dims[i];
-	}
-	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write header
+	linear_size = writeHeader(fbuff, stag, elem_size,num_dims, dims);// write header
+	if( linear_size < 0 ){ return linear_size; }// pass though error
 
 	elems_writ = fwrite(&LaserTable, elem_size, linear_size, fbuff);// write binary data
-
-	sprintf(cbuff, etag);
-	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write footer
 
 	if( elems_writ != linear_size ){
 		fclose(fbuff);
@@ -1353,7 +1272,7 @@ int putLaserTableToFile(FILE *fbuff)
 		return -1;
 	}
 
-	return 0;
+	return writeFooter(fbuff, etag);// write footer and pass through any errors
 }
 
 long getLaserTableFromFile(FILE *fbuff, long fpos_eof)
@@ -1411,21 +1330,12 @@ int putLaserPropsToFile(FILE *fbuff)
 	int num_dims = 1;
 	int dims[] = {(NUMBERLASERS)};// ordering is: object[dims[0]][dims[1]]...
 	int elem_size = sizeof(LaserProperties[0]);
-	int linear_size = 1;
+	int linear_size;
 
-	// Make the header automatically and write it
-	sprintf(cbuff, "%s~%d~%d~", stag, elem_size, num_dims);
-	for( int i = 0; i < num_dims; ++i ){
-		sprintf(bf, "%d~", dims[i]);
-		strcat(cbuff, bf);
-		linear_size = linear_size * dims[i];
-	}
-	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write header
+	linear_size = writeHeader(fbuff, stag, elem_size,num_dims, dims);// write header
+	if( linear_size < 0 ){ return linear_size; }// pass though error
 
 	elems_writ = fwrite(&LaserProperties, elem_size, linear_size, fbuff);// write binary data
-
-	sprintf(cbuff, etag);
-	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write footer
 
 	if( elems_writ != linear_size ){
 		fclose(fbuff);
@@ -1433,7 +1343,7 @@ int putLaserPropsToFile(FILE *fbuff)
 		return -1;
 	}
 
-	return 0;
+	return writeFooter(fbuff, etag);// write footer and pass through any errors
 }
 
 long getLaserPropsFromFile(FILE *fbuff, long fpos_eof)
@@ -1491,21 +1401,12 @@ int putAnritsuTableToFile(FILE *fbuff)// this table isn't used anymore but it mi
 	int num_dims = 2;
 	int dims[] = {(NUMBEROFCOLUMNS+1), (NUMBEROFPAGES)};// ordering is: object[dims[0]][dims[1]]...
 	int elem_size = sizeof(anritsutable[0][0]);
-	int linear_size = 1;
+	int linear_size;
 
-	// Make the header automatically and write it
-	sprintf(cbuff, "%s~%d~%d~", stag, elem_size, num_dims);
-	for( int i = 0; i < num_dims; ++i ){
-		sprintf(bf, "%d~", dims[i]);
-		strcat(cbuff, bf);
-		linear_size = linear_size * dims[i];
-	}
-	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write header
+	linear_size = writeHeader(fbuff, stag, elem_size,num_dims, dims);// write header
+	if( linear_size < 0 ){ return linear_size; }// pass though error
 
 	elems_writ = fwrite(&anritsutable, elem_size, linear_size, fbuff);// write binary data
-
-	sprintf(cbuff, etag);
-	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write footer
 
 	if( elems_writ != linear_size ){
 		fclose(fbuff);
@@ -1513,7 +1414,7 @@ int putAnritsuTableToFile(FILE *fbuff)// this table isn't used anymore but it mi
 		return -1;
 	}
 
-	return 0;
+	return writeFooter(fbuff, etag);// write footer and pass through any errors
 }
 
 long getAnritsuTableFromFile(FILE *fbuff, long fpos_eof)
@@ -1571,21 +1472,12 @@ int putAnritsuPropsToFile(FILE *fbuff)
 	int num_dims = 1;
 	int dims[] = {(NUMBEROFANRITSU)};// ordering is: object[dims[0]][dims[1]]...
 	int elem_size = sizeof(AnritsuSettingValues[0]);
-	int linear_size = 1;
+	int linear_size;
 
-	// Make the header automatically and write it
-	sprintf(cbuff, "%s~%d~%d~", stag, elem_size, num_dims);
-	for( int i = 0; i < num_dims; ++i ){
-		sprintf(bf, "%d~", dims[i]);
-		strcat(cbuff, bf);
-		linear_size = linear_size * dims[i];
-	}
-	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write header
+	linear_size = writeHeader(fbuff, stag, elem_size,num_dims, dims);// write header
+	if( linear_size < 0 ){ return linear_size; }// pass though error
 
 	elems_writ = fwrite(&AnritsuSettingValues, elem_size, linear_size, fbuff);// write binary data
-
-	sprintf(cbuff, etag);
-	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write footer
 
 	if( elems_writ != linear_size ){
 		fclose(fbuff);
@@ -1593,7 +1485,7 @@ int putAnritsuPropsToFile(FILE *fbuff)
 		return -1;
 	}
 
-	return 0;
+	return writeFooter(fbuff, etag);// write footer and pass through any errors
 }
 
 long getAnritsuPropsFromFile(FILE *fbuff, long fpos_eof)
@@ -1651,21 +1543,12 @@ int putInfoArrayToFile(FILE *fbuff)
 	int num_dims = 2;
 	int dims[] = {(NUMBEROFCOLUMNS+1), (NUMBEROFPAGES)};// ordering is: object[dims[0]][dims[1]]...
 	int elem_size = sizeof(InfoArray[0][0]);
-	int linear_size = 1;
+	int linear_size;
 
-	// Make the header automatically and write it
-	sprintf(cbuff, "%s~%d~%d~", stag, elem_size, num_dims);
-	for( int i = 0; i < num_dims; ++i ){
-		sprintf(bf, "%d~", dims[i]);
-		strcat(cbuff, bf);
-		linear_size = linear_size * dims[i];
-	}
-	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write header
+	linear_size = writeHeader(fbuff, stag, elem_size,num_dims, dims);// write header
+	if( linear_size < 0 ){ return linear_size; }// pass though error
 
 	elems_writ = fwrite(&InfoArray, elem_size, linear_size, fbuff);// write binary data
-
-	sprintf(cbuff, etag);
-	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write footer
 
 	if( elems_writ != linear_size ){
 		fclose(fbuff);
@@ -1673,7 +1556,7 @@ int putInfoArrayToFile(FILE *fbuff)
 		return -1;
 	}
 
-	return 0;
+	return writeFooter(fbuff, etag);// write footer and pass through any errors
 }
 
 long getInfoArrayFromFile(FILE *fbuff, long fpos_eof)
@@ -1746,16 +1629,10 @@ int putPageNamesToFile(FILE *fbuff)
 	int num_dims = 1;
 	int dims[] = {(NUMBEROFPAGES-1)};// ordering is: object[dims[0]][dims[1]]...
 	int elem_size = sizeof(text_buff);
-	int linear_size = 1;
+	int linear_size;
 
-	// Make the header automatically and write it
-	sprintf(cbuff, "%s~%d~%d~", stag, elem_size, num_dims);
-	for( i = 0; i < num_dims; ++i ){
-		sprintf(bf, "%d~", dims[i]);
-		strcat(cbuff, bf);
-		linear_size = linear_size * dims[i];
-	}
-	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write header
+	linear_size = writeHeader(fbuff, stag, elem_size,num_dims, dims);// write header
+	if( linear_size < 0 ){ return linear_size; }// pass though error
 
 	// Here we need to do a little more work than simply dumping the binary array to file
 	for( i = 1; i <= linear_size; ++i )
@@ -1767,8 +1644,8 @@ int putPageNamesToFile(FILE *fbuff)
 		GetCtrlAttribute(panelHandle, PANEL_TB_SHOWPHASE[i], ATTR_OFF_TEXT_LENGTH, &text_len);
 		printf("text_len: %d\n", text_len);
 		if( text_len > max_text_len ){
-			printf("The page name of page %d is too long for the save buffer\n", i);
 			fclose(fbuff);
+			printf("The page name of page %d is too long for the save buffer\n", i);
 			return -1;
 		}
 
@@ -1787,10 +1664,7 @@ int putPageNamesToFile(FILE *fbuff)
 		}
 	}
 
-	sprintf(cbuff, etag);
-	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write footer
-
-	return 0;
+	return writeFooter(fbuff, etag);// write footer and pass through any errors
 }
 
 long getPageNamesFromFile(FILE *fbuff, long fpos_eof)
@@ -1865,22 +1739,13 @@ int putPageCheckboxesToFile(FILE *fbuff)// These used to be saved in the .pan fi
 	int num_dims = 1;
 	int dims[] = {(NUMBEROFPAGES)};// ordering is: object[dims[0]][dims[1]]...
 	int elem_size = sizeof(ischecked[0]);
-	int linear_size = 1;
+	int linear_size;
 
-	// Make the header automatically and write it
-	sprintf(cbuff, "%s~%d~%d~", stag, elem_size, num_dims);
-	for( int i = 0; i < num_dims; ++i ){
-		sprintf(bf, "%d~", dims[i]);
-		strcat(cbuff, bf);
-		linear_size = linear_size * dims[i];
-	}
-	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write header
+	linear_size = writeHeader(fbuff, stag, elem_size,num_dims, dims);// write header
+	if( linear_size < 0 ){ return linear_size; }// pass though error
 
 	checkActivePages();// insure that global var ischecked is up to date
 	elems_writ = fwrite(&ischecked, elem_size, linear_size, fbuff);// write binary data
-
-	sprintf(cbuff, etag);
-	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write footer
 
 	if( elems_writ != linear_size ){
 		fclose(fbuff);
@@ -1888,7 +1753,7 @@ int putPageCheckboxesToFile(FILE *fbuff)// These used to be saved in the .pan fi
 		return -1;
 	}
 
-	return 0;
+	return writeFooter(fbuff, etag);// write footer and pass through any errors
 }
 
 long getPageCheckboxesFromFile(FILE *fbuff, long fpos_eof)
@@ -1948,22 +1813,13 @@ int putUpdatePeriodToFile(FILE *fbuff)
 	int num_dims = 1;
 	int dims[] = {(1)};// ordering is: object[dims[0]][dims[1]]...
 	int elem_size = sizeof(updatePeriod);
-	int linear_size = 1;
+	int linear_size;
 
-	// Make the header automatically and write it
-	sprintf(cbuff, "%s~%d~%d~", stag, elem_size, num_dims);
-	for( int i = 0; i < num_dims; ++i ){
-		sprintf(bf, "%d~", dims[i]);
-		strcat(cbuff, bf);
-		linear_size = linear_size * dims[i];
-	}
-	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write header
+	linear_size = writeHeader(fbuff, stag, elem_size,num_dims, dims);// write header
+	if( linear_size < 0 ){ return linear_size; }// pass though error
 
 	updatePeriod = getUpdatePeriodFromMenu();
 	elems_writ = fwrite(&updatePeriod, elem_size, linear_size, fbuff);// write binary data
-
-	sprintf(cbuff, etag);
-	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write footer
 
 	if( elems_writ != linear_size ){
 		fclose(fbuff);
@@ -1971,7 +1827,7 @@ int putUpdatePeriodToFile(FILE *fbuff)
 		return -1;
 	}
 
-	return 0;
+	return writeFooter(fbuff, etag);// write footer and pass through any errors
 }
 
 long getUpdatePeriodFromFile(FILE *fbuff, long fpos_eof)
@@ -2038,14 +1894,9 @@ And then what is left?
 Build every time check mark
 The on/off menu options in the menu bar
 
-
-
 */
 
-
-
 /*
-
 		// Update period
 		updatePer = getUpdatePeriodFromMenu();
 		fwrite(&updatePer,sizeof updatePer,1,fdata);
@@ -2086,6 +1937,56 @@ void nullCharBuff(char *buff, int max_len)// simple fn to null all elements of a
 		buff[i] = '\0';
 	}
 	return;
+}
+
+int writeHeader(FILE *fbuff, char *stag, int elem_size, int num_dims, int *dims)
+{// num_dims is the number of elements of array dims
+//	return either linear_size (positive) or <0 for error
+
+	char cbuff[512] = "";// header buffer
+	char bf[256] = "";// assembly buffer
+	int elems_writ;
+	int linear_size = 1;
+
+	// Make the header
+	sprintf(cbuff, "%s~%d~%d~", stag, elem_size, num_dims);
+	for( int i = 0; i < num_dims; ++i ){
+		sprintf(bf, "%d~", dims[i]);
+		strcat(cbuff, bf);
+		linear_size = linear_size * dims[i];
+	}
+
+	// Write the header
+	elems_writ = fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);
+
+	// Some simple error checking
+	if( elems_writ != strlen(cbuff) ){
+		fclose(fbuff);
+		printf("Failed to write correct number of chars in header for tag |%s|\n",stag);
+		return -1;
+	}
+
+	return linear_size;
+}
+
+int writeFooter(FILE *fbuff, char *etag)
+{
+	char cbuff[512] = "";// header buffer
+	int elems_writ;
+
+	// Write the Footer
+	sprintf(cbuff, etag);
+	elems_writ = fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);
+
+	// Some simple error checking
+	if( elems_writ != strlen(cbuff) ){
+		fclose(fbuff);
+		printf("Failed to write correct number of chars in footer for tag |%s|\n",etag);
+		return -1;
+	}
+
+	return 0;// return success
+	// note that by convention this value is also the successful return value of the calling function
 }
 
 long readHeader(FILE *fbuff, char *tag, int *elem_size, int *num_dims, int *dims, const int max_dims, long fpos_eof){
