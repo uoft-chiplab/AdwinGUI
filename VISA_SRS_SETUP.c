@@ -45,7 +45,7 @@ int CVICALLBACK GPIB_OK_CALLBACK (int panel, int control, int event,
 		{
 		case EVENT_COMMIT:
 			ApplyGPIBPanel();
-			GetCtrlVal(panelHandle13, SETUP_GPIB_ADDRESS,&GPIB_address);
+			//GetCtrlVal(panelHandle13, SETUP_GPIB_ADDRESS,&GPIB_address);
 			//GPIB_device = ibdev (0, GPIB_address, NO_SAD, T10s, 1, 0);
 			//GetCtrlVal(panelHandle13,SETUP_SRS_ampl,&SRS_amplitude);
 			//GetCtrlVal(panelHandle13, SETUP_SRS_offst,&SRS_offset);

@@ -326,10 +326,12 @@ ViSession VIsess;
 ViSession rmSession;
 
 // GPIB stuff
+// All are unused after switch to VISA; kept for backwards compatibility
+// Stefan's new GPIB panel I think made the SRS ones obsolete before VISA made them all obsolete
 int GPIB_device;
 int GPIB_address;
 int GPIB_ON;
-double SRS_amplitude, SRS_offset,SRS_frequency;
+double SRS_amplitude, SRS_offset, SRS_frequency;// SRS_frequency is still live in scan.c which isn't used anymore
 
 
 #define NUMBERGPIBDEV (20)			// number of programmable GPIB devices
