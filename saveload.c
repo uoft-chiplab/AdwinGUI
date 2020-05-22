@@ -348,11 +348,16 @@ int SaveSequenceV17(char* save_name, int sn_length)
 	//		Explicitly save to AnritsuSettingValues[0].offset during the put fn
 	//		And load to the PANEL_ANRITSU_OFFSET during the get fn
 	// Build every time check mark -- Done
-	//
-	//
 	// The Preferences menu, menu options
-	// reset to zero menu option? Does it do anything?
-	//	...
+	//		Use compression -- Done
+	//		Use simple timing -- Done
+	//		The rest are either not a preference or implemented or meaningful to save
+	// Reset to zero menu option? Does it do anything?
+	//		The per channel resets are stored in the respective channel properties
+	//		So for now don't try and save the menu option
+	// MultiScan
+	//		It would be nice to always load the scan that was present when the sequence was saved
+	// ... I think that's it.
 
 	FILE *fbuffer;
 	char file_buff[MAX_PATHNAME_LEN] = "";
@@ -459,6 +464,14 @@ int SaveSequenceV17(char* save_name, int sn_length)
 
 	// Write Force Build Checkbox
 	status = putForceBuildChkToFile(fbuffer);
+	if( status < 0 ){ fclose(fbuffer); return status; }
+
+	// Write Use Compression Preferences Menu option
+	status = putUseCompressionToFile(fbuffer);
+	if( status < 0 ){ fclose(fbuffer); return status; }
+
+	// Write Use Simple Timing Preferences Menu option
+	status = putUseSimpleTimingToFile(fbuffer);
 	if( status < 0 ){ fclose(fbuffer); return status; }
 
 
@@ -588,7 +601,17 @@ int LoadSequenceV17(char* load_name, int ln_length)
 
 	// Get the Force Build Checkbox
 	fpos = getForceBuildChkFromFile(fbuffer, fpos_file_end);
+	if( fpos < 0 ){ fclose(fbuffer); return -1; }// pass though error
+
+	// Get the Use Compression Preferences Menu option
+	fpos = getUseCompressionFromFile(fbuffer, fpos_file_end);
+	if( fpos < 0 ){ fclose(fbuffer); return -1; }// pass though error
+
+	// Get the Use Simple Timing Preferences Menu option
+	fpos = getUseSimpleTimingFromFile(fbuffer, fpos_file_end);
 	//if( fpos < 0 ){ fclose(fbuffer); return -1; }// pass though error
+
+
 
 
 
@@ -2193,6 +2216,158 @@ long getForceBuildChkFromFile(FILE *fbuff, long fpos_eof)
 }
 
 
+int putUseCompressionToFile(FILE *fbuff)
+{
+	int elems_writ;
+
+	// Particulars of the object to write (don't forget to change the actual data write line too)
+	// #define  MENU_PREFS                      58
+	// #define  MENU_PREFS_COMPRESSION          59	callback function: COMPRESSION_CALLBACK
+	// #define  MENU_PREFS_SIMPLETIMING         60	callback function: SIMPLETIMING_CALLBACK
+	// #define  MENU_PREFS_SHOWARRAY            61	callback function: SHOWARRAY_CALLBACK// BuildUpdateList pukes first 1000 when true
+	// #define  MENU_PREFS_DDS_OFF              62	callback function: DDS_OFF_CALLBACK// This just sets ddstable[i][j].isStop = True
+	// #define  MENU_PREFS_STREAM_SETTINGS      63	callback function: STREAM_CALLBACK// Stream (settings) was not implemented
+	char stag[] = "<UseCompression>";
+	char etag[] = "</UseCompression>";
+	int num_dims = 1;
+	int dims[] = {(1)};// ordering is: object[dims[0]][dims[1]]...
+	int useCompression;
+	int elem_size = sizeof(useCompression);
+	int linear_size;
+
+	linear_size = writeHeader(fbuff, stag, elem_size, num_dims, dims);// write header
+	if( linear_size < 0 ){ return linear_size; }// pass though error
+
+	// Get from menu and write
+	GetMenuBarAttribute( menuHandle, MENU_PREFS_COMPRESSION, ATTR_CHECKED, &useCompression );
+	elems_writ = fwrite(&useCompression, elem_size, linear_size, fbuff);// write binary data
+
+	if( elems_writ != linear_size ){
+		fclose(fbuff);
+		printf("Failed to write the correct number of elems for tag |%s|\n", stag);
+		return -1;
+	}
+
+	return writeFooter(fbuff, etag);// write footer and pass through any errors
+}
+
+long getUseCompressionFromFile(FILE *fbuff, long fpos_eof)
+{
+	// Particulars of the object to load (don't forget to change the actual data write line too)
+	char stag[] = "<UseCompression>";
+	char etag[] = "</UseCompression>";
+	int max_dims = 1;
+	int useCompression;
+
+	int elem_size;
+	int num_dims;
+	int dims[max_dims];
+	int linear_size = 1;
+	long fpos;
+	int elems_read;
+
+	fpos = readHeader(fbuff, stag, &elem_size, &num_dims, dims, max_dims, fpos_eof);
+	// Do some simple checks
+	if( fpos < 0 ){// if there was an err in readHeader (printf's in readHeader)
+		return fpos;
+	}
+	for( int i=0; i<max_dims; ++i ){ linear_size *= dims[i]; }// calculate linear_size
+	if( elem_size*linear_size != sizeof(useCompression) ){
+		printf("Binary data read from file for tag |%s| is not the correct size\n", stag);
+		return -1;
+	}
+
+	// Read option from file and set menu accordingly
+	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the binary data
+	elems_read = fread(&useCompression, elem_size, linear_size, fbuff);// load the binary data directly into the array
+	if( elems_read != linear_size ){// didn't read expected number of elements
+		printf("Expected to read more elements from file for tag |%s|\n", stag);
+		return -1;
+	}
+	SetMenuBarAttribute( menuHandle, MENU_PREFS_COMPRESSION, ATTR_CHECKED, useCompression );
+
+	fpos = checkFooter(fbuff, etag, fpos_eof);
+	if( fpos < 0 ){// pass though signal, either -1 for error or -2 for eof
+		return fpos;
+	}
+	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the next header
+
+	return fpos;
+}
+
+int putUseSimpleTimingToFile(FILE *fbuff)
+{
+	int elems_writ;
+
+	// Particulars of the object to write (don't forget to change the actual data write line too)
+	// See putUseCompressionToFile() comment for preferences menu details
+	char stag[] = "<UseSimpleTiming>";
+	char etag[] = "</UseSimpleTiming>";
+	int num_dims = 1;
+	int dims[] = {(1)};// ordering is: object[dims[0]][dims[1]]...
+	int useSimpleTiming;
+	int elem_size = sizeof(useSimpleTiming);
+	int linear_size;
+
+	linear_size = writeHeader(fbuff, stag, elem_size, num_dims, dims);// write header
+	if( linear_size < 0 ){ return linear_size; }// pass though error
+
+	// Get from menu and write
+	GetMenuBarAttribute( menuHandle, MENU_PREFS_SIMPLETIMING, ATTR_CHECKED, &useSimpleTiming );
+	elems_writ = fwrite(&useSimpleTiming, elem_size, linear_size, fbuff);// write binary data
+
+	if( elems_writ != linear_size ){
+		fclose(fbuff);
+		printf("Failed to write the correct number of elems for tag |%s|\n", stag);
+		return -1;
+	}
+
+	return writeFooter(fbuff, etag);// write footer and pass through any errors
+}
+
+long getUseSimpleTimingFromFile(FILE *fbuff, long fpos_eof)
+{
+	// Particulars of the object to load (don't forget to change the actual data write line too)
+	char stag[] = "<UseSimpleTiming>";
+	char etag[] = "</UseSimpleTiming>";
+	int max_dims = 1;
+	int useSimpleTiming;
+
+	int elem_size;
+	int num_dims;
+	int dims[max_dims];
+	int linear_size = 1;
+	long fpos;
+	int elems_read;
+
+	fpos = readHeader(fbuff, stag, &elem_size, &num_dims, dims, max_dims, fpos_eof);
+	// Do some simple checks
+	if( fpos < 0 ){// if there was an err in readHeader (printf's in readHeader)
+		return fpos;
+	}
+	for( int i=0; i<max_dims; ++i ){ linear_size *= dims[i]; }// calculate linear_size
+	if( elem_size*linear_size != sizeof(useSimpleTiming) ){
+		printf("Binary data read from file for tag |%s| is not the correct size\n", stag);
+		return -1;
+	}
+
+	// Read option from file and set menu accordingly
+	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the binary data
+	elems_read = fread(&useSimpleTiming, elem_size, linear_size, fbuff);// load the binary data directly into the array
+	if( elems_read != linear_size ){// didn't read expected number of elements
+		printf("Expected to read more elements from file for tag |%s|\n", stag);
+		return -1;
+	}
+	SetMenuBarAttribute( menuHandle, MENU_PREFS_SIMPLETIMING, ATTR_CHECKED, useSimpleTiming );
+
+	fpos = checkFooter(fbuff, etag, fpos_eof);
+	if( fpos < 0 ){// pass though signal, either -1 for error or -2 for eof
+		return fpos;
+	}
+	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the next header
+
+	return fpos;
+}
 
 
 

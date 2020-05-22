@@ -55,6 +55,10 @@ int putGpibDevsToFile(FILE *fbuff);
 long getGpibDevsFromFile(FILE *fbuff, long fpos_eof);
 int putForceBuildChkToFile(FILE *fbuff);
 long getForceBuildChkFromFile(FILE *fbuff, long fpos_eof);
+int putUseCompressionToFile(FILE *fbuff);
+long getUseCompressionFromFile(FILE *fbuff, long fpos_eof);
+int putUseSimpleTimingToFile(FILE *fbuff);
+long getUseSimpleTimingFromFile(FILE *fbuff, long fpos_eof);
 
 void nullCharBuff(char *buff, int max_len);
 int writeHeader(FILE *fbuff, char *stag, int elem_size, int num_dims, int *dims);

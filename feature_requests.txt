@@ -37,6 +37,9 @@ Move config files to a separate (sub)directory.
 
 Format the code consistently. (indentation, capitalization, spaces, et cetera)
 
+Remove ambiguity about reset to zero of channels.
+	The menu option(s) is almost not respected and lots of lines are commented out.
+
 
 
 
