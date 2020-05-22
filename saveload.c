@@ -312,14 +312,14 @@ int SaveSequenceV17(char* save_name, int sn_length)
 
 	// List all things that are saved:
 	// Sequencer version (as vars.h string)
-	// Consider explicitly stating the version of the format of the save file.
+	// Savefile version
 	// For EACH array, explicitly state the dimension, size_dim1, size_dim2, et cetera
 	// For EACH array, put ascii name before it as a demarkation and an ending marker after the array
 	// For EACH array, put the type of each element (int, double, struct ddsoptions_struct, et cetera)
 	// For arrays of structs, consider not saving the binary data but saving the elements themselves with
 	//	specific writing (and reading) functions.
 	//
-	// (Global) Arrays that are already saved in .arr file:
+	// (Global) Arrays that are already saved in .arr file: -- Done
 	// TimeArray
 	// AnalogTable
 	// DigTableValues
@@ -337,19 +337,20 @@ int SaveSequenceV17(char* save_name, int sn_length)
 	// A few global DDS settings
 	// (obsolete) srs specific gpib settings
 	//
-	// In the .gpib file is a binary dump of the GPIBDev variable
-	//
 	// Other things that need to be saved in the new file format:
-	// Titles of each page
-	// The rest of the (global) DDS settings
-	// The gpib settings (merge .gpib and .arr files)
-	//
-	//
-	//
+	// Titles of each page (button text) -- Done
+	// The rest of the (global) DDS settings (ie. DDSFreq) -- Done
+	// The gpib settings (merge .gpib and .arr files) -- Done
+	// Build every time check mark
+	// The on/off menu options in the menu bar
+	//	...
+	// End of ramps for DDS
+	//		Put and get the EORs separately from the other DDS things
+	// End of ramps for Anritsu -- Done
+	//		Explicitly save to AnritsuSettingValues[0].offset during the put fn
+	//		And load to the PANEL_ANRITSU_OFFSET during the get fn
 	//
 
-
-	// Let's try making something and seeing how it behaves
 
 	FILE *fbuffer;
 	char file_buff[MAX_PATHNAME_LEN] = "";
@@ -1571,6 +1572,10 @@ int putAnritsuPropsToFile(FILE *fbuff)
 	linear_size = writeHeader(fbuff, stag, elem_size, num_dims, dims);// write header
 	if( linear_size < 0 ){ return linear_size; }// pass though error
 
+	// Update AnritsuSettingsValues and then write to file
+	// The other settings are set in the Anritsu panel
+	// But because of the way the offset (EOR) cell is separate, it must be done manually
+	GetCtrlVal( panelHandle, PANEL_ANRITSU_OFFSET, &AnritsuSettingValues[0].offset );
 	elems_writ = fwrite(&AnritsuSettingValues, elem_size, linear_size, fbuff);// write binary data
 
 	if( elems_writ != linear_size ){
@@ -1607,12 +1612,15 @@ long getAnritsuPropsFromFile(FILE *fbuff, long fpos_eof)
 		return -1;
 	}
 
+	// Not just load into AnritsuSettingValues but also update the gui
 	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the binary data
 	elems_read = fread(&AnritsuSettingValues, elem_size, linear_size, fbuff);// load the binary data directly into the array
 	if( elems_read != linear_size ){// didn't read expected number of elements
 		printf("Expected to read more elements from file for tag |%s|\n", stag);
 		return -1;
 	}
+	LoadAnritsuSettings();// Load values into the Anritsu panel
+	SetCtrlVal( panelHandle, PANEL_ANRITSU_OFFSET, AnritsuSettingValues[0].offset );// set offset (EOR)
 
 	fpos = checkFooter(fbuff, etag, fpos_eof);
 	if( fpos < 0 ){// pass though signal, either -1 for error or -2 for eof
@@ -2058,28 +2066,8 @@ long getGpibDevsFromFile(FILE *fbuff, long fpos_eof)
 
 
 
-/*
-GPIB settings
-And then what is left?
-Build every time check mark
-The on/off menu options in the menu bar
 
-*/
 
-/*
-		strncat(buff3, savedname, csize-4);
-		strcat(buff3,".gpib");
-		if((fdata=fopen(buff3,"w"))==NULL)
-		{
-			printf("Failed to save GPIB settings.\n");
-		}
-		else
-		{
-			fwrite(&GPIBDev,(sizeof GPIBDev),1,fdata);
-			fclose(fdata);
-		}
-
-*/
 
 
 
