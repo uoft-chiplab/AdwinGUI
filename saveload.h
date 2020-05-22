@@ -33,6 +33,8 @@ int putDds3TableToFile(FILE *fbuff);
 long getDds3TableFromFile(FILE *fbuff, long fpos_eof);
 int putDdsGlobalsToFile(FILE *fbuff);
 long getDdsGlobalsFromFile(FILE *fbuff, long fpos_eof);
+int putDdsEorsToFile(FILE *fbuff);
+long getDdsEorsFromFile(FILE *fbuff, long fpos_eof);
 int putLaserTableToFile(FILE *fbuff);
 long getLaserTableFromFile(FILE *fbuff, long fpos_eof);
 int putLaserPropsToFile(FILE *fbuff);

@@ -416,6 +416,10 @@ int SaveSequenceV17(char* save_name, int sn_length)
 	status = putDdsGlobalsToFile(fbuffer);
 	if( status < 0 ){ fclose(fbuffer); return status; }
 
+	// Write DDS EOR cells
+	status = putDdsEorsToFile(fbuffer);
+	if( status < 0 ){ fclose(fbuffer); return status; }
+
 	// Write LaserTable
 	status = putLaserTableToFile(fbuffer);
 	if( status < 0 ){ fclose(fbuffer); return status; }
@@ -537,6 +541,10 @@ int LoadSequenceV17(char* load_name, int ln_length)
 	fpos = getDdsGlobalsFromFile(fbuffer, fpos_file_end);
 	if( fpos < 0 ){ fclose(fbuffer); return -1; }// pass though error
 
+	// Get the DDS EOR cells
+	fpos = getDdsEorsFromFile(fbuffer, fpos_file_end);
+	if( fpos < 0 ){ fclose(fbuffer); return -1; }// pass though error
+
 	// Get the LaserTable
 	fpos = getLaserTableFromFile(fbuffer, fpos_file_end);
 	if( fpos < 0 ){ fclose(fbuffer); return -1; }// pass though error
@@ -572,6 +580,7 @@ int LoadSequenceV17(char* load_name, int ln_length)
 	// Get the GPIB Devices Settings
 	fpos = getGpibDevsFromFile(fbuffer, fpos_file_end);
 	//if( fpos < 0 ){ fclose(fbuffer); return -1; }// pass though error
+
 
 
 
@@ -1340,6 +1349,102 @@ long getDdsGlobalsFromFile(FILE *fbuff, long fpos_eof)
 	return fpos;
 }
 
+int putDdsEorsToFile(FILE *fbuff)
+{// Lots of manual operations/customizations in this fn
+
+	char cbuff[512] = "";// header/footer buffer
+	int clen = 512;
+	char bf[256] = "";// assembly buffer
+	int elems_writ;
+
+	// Particulars of the object to write (don't forget to change the actual data write line too)
+	// PANEL_NUM_DDS_OFFSET
+	// PANEL_NUM_DDS2_OFFSET
+	// PANEL_NUM_DDS3_OFFSET
+	char stag[] = "<DdsEors>";
+	char etag[] = "</DdsEors>";
+	int num_dims = 1;
+	int dims[] = {(3)};// ordering is: object[dims[0]][dims[1]]...
+	double ddseors[num_dims];
+	int elem_size = sizeof(ddseors[0]);
+	int linear_size;
+
+	linear_size = writeHeader(fbuff, stag, elem_size, num_dims, dims);// write header
+	if( linear_size < 0 ){ return linear_size; }// pass though error
+
+	// Get each EOR and write array to file
+
+	GetCtrlVal( panelHandle, PANEL_NUM_DDS_OFFSET, ddseors );
+	GetCtrlVal( panelHandle, PANEL_NUM_DDS2_OFFSET, ddseors+1 );
+	GetCtrlVal( panelHandle, PANEL_NUM_DDS3_OFFSET, ddseors+2 );
+
+	elems_writ = fwrite(&ddseors, elem_size, linear_size, fbuff);// write binary data
+
+	if( elems_writ != linear_size ){
+		fclose(fbuff);
+		printf("Failed to write the correct number of elems for tag |%s|\n", stag);
+		return -1;
+	}
+
+	return writeFooter(fbuff, etag);// write footer and pass through any errors
+}
+
+long getDdsEorsFromFile(FILE *fbuff, long fpos_eof)
+{
+	// Particulars of the object to load (don't forget to change the actual data write line too)
+	char stag[] = "<DdsEors>";
+	char etag[] = "</DdsEors>";
+	int max_dims = 1;
+	double *ddseors;
+
+	int elem_size;
+	int num_dims;
+	int dims[max_dims];
+	int linear_size = 1;
+	long fpos;
+	int elems_read;
+
+	fpos = readHeader(fbuff, stag, &elem_size, &num_dims, dims, max_dims, fpos_eof);
+	// Do some simple checks
+	if( fpos < 0 ){// if there was an err in readHeader (printf's in readHeader)
+		return fpos;
+	}
+	for( int i=0; i<max_dims; ++i ){ linear_size *= dims[i]; }// calculate linear_size
+	if( elem_size*linear_size != sizeof(double) * 3 ){// HARDCODED
+		printf("Binary data read from file for tag |%s| is not the correct size\n", stag);
+		return -1;
+	}
+
+	printf("elem_size: %d, linear_size: %d, dims[0]:%d\n",elem_size,linear_size,dims[0]);// debug
+
+	// Allocate the temporary required amount of memory
+	ddseors = (double *) malloc( elem_size * linear_size );
+
+	printf("ddseors allocated\n");// debug
+
+	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the binary data
+	elems_read = fread(ddseors, elem_size, linear_size, fbuff);// load the binary data directly into the array
+	if( elems_read != linear_size ){// didn't read expected number of elements
+		printf("Expected to read more elements from file for tag |%s|\n", stag);
+		free(ddseors);
+		return -1;
+	}
+	// Set the dds eor cells
+	SetCtrlVal( panelHandle, PANEL_NUM_DDS_OFFSET, ddseors[0] );
+	SetCtrlVal( panelHandle, PANEL_NUM_DDS2_OFFSET, ddseors[1] );
+	SetCtrlVal( panelHandle, PANEL_NUM_DDS3_OFFSET, ddseors[2] );
+
+	fpos = checkFooter(fbuff, etag, fpos_eof);
+	if( fpos < 0 ){// pass though signal, either -1 for error or -2 for eof
+		free(ddseors);
+		return fpos;
+	}
+	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the next header
+
+	free(ddseors);
+	return fpos;
+}
+
 int putLaserTableToFile(FILE *fbuff)
 {
 	char cbuff[512] = "";// header/footer buffer
@@ -1744,7 +1849,7 @@ int putPageNamesToFile(FILE *fbuff)
 
 		// Check that the text length is less than the buffer length to prevent overflows
 		GetCtrlAttribute(panelHandle, PANEL_TB_SHOWPHASE[i], ATTR_OFF_TEXT_LENGTH, &text_len);
-		printf("text_len: %d\n", text_len);
+		//printf("text_len: %d\n", text_len);// debug
 		if( text_len > max_text_len ){
 			fclose(fbuff);
 			printf("The page name of page %d is too long for the save buffer\n", i);
@@ -1753,7 +1858,7 @@ int putPageNamesToFile(FILE *fbuff)
 
 		// Get the (off state) text of the button
 		GetCtrlAttribute(panelHandle, PANEL_TB_SHOWPHASE[i], ATTR_OFF_TEXT, text_buff);
-		printf("text_buff |%s|\n", text_buff);// debug
+		//printf("text_buff |%s|\n", text_buff);// debug
 
 		// And finally write it to the file
 		elems_writ = fwrite(&text_buff, elem_size, 1, fbuff);
@@ -1808,7 +1913,7 @@ long getPageNamesFromFile(FILE *fbuff, long fpos_eof)
 			printf("Failed to read all of char block for page name %d\n", i);
 			return -1;
 		}
-		printf("text_buff |%s|\n", text_buff);// debug
+		//printf("text_buff |%s|\n", text_buff);// debug
 		SetCtrlAttribute(panelHandle, PANEL_TB_SHOWPHASE[i], ATTR_OFF_TEXT, text_buff);
 		SetCtrlAttribute(panelHandle, PANEL_TB_SHOWPHASE[i], ATTR_ON_TEXT, text_buff);
 	}
