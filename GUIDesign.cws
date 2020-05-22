@@ -74,10 +74,10 @@ Path = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_rep
 File Type = "Include"
 Disk Date = 3673004312
 In Projects = "1,"
-Source Window State = "1,304,304,304,24,24,24,0,0,0,0,0,0,0,0,0,201,0,304,24,401,602,1,0,"
+Source Window State = "1,91,91,91,0,51,51,0,3,0,0,0,0,0,0,0,74,0,91,0,401,602,1,0,"
 Window Top = 64
 Window Left = 26
-Window Z-Order = 7
+Window Z-Order = 2
 
 [File 0004]
 Path = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/main.c"
@@ -98,7 +98,7 @@ In Projects = "1,"
 Source Window State = "1,97,97,97,9,9,9,0,0,0,0,0,0,0,0,0,80,0,97,9,315,631,1,0,"
 Window Top = 431
 Window Left = 26
-Window Z-Order = 4
+Window Z-Order = 6
 
 [File 0006]
 Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/GUIDes"
@@ -110,7 +110,7 @@ Window Top = 130
 Window Left = 15
 Window Height = 417
 Window Width = 615
-Window Z-Order = 5
+Window Z-Order = 4
 
 [File 0007]
 Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/GUIDes"
@@ -148,9 +148,9 @@ Window Z-Order = 13
 Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/savelo"
 Path Line0002 = "ad.c"
 File Type = "CSource"
-Disk Date = 3673011898
+Disk Date = 3673013163
 In Projects = "1,"
-Source Window State = "1,351,351,351,46,46,46,0,0,0,0,0,0,0,0,0,327,0,351,46,401,721,1,0,"
+Source Window State = "1,3231,3231,3231,27,27,27,0,0,0,0,0,0,0,0,0,3218,0,3231,27,401,721,1,0,"
 Window Top = 33
 Window Left = 10
 Window Z-Order = 1
@@ -164,7 +164,7 @@ In Projects = "1,"
 Source Window State = "1,56,56,56,58,58,58,0,0,0,0,0,0,0,0,0,34,0,56,58,401,721,1,0,"
 Window Top = 64
 Window Left = 26
-Window Z-Order = 2
+Window Z-Order = 5
 
 [File 0012]
 Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/multis"
@@ -175,7 +175,7 @@ In Projects = "1,"
 Source Window State = "1,587,588,588,23,75,75,0,3,0,0,0,0,0,0,0,571,0,587,23,401,721,1,0,"
 Window Top = 33
 Window Left = 10
-Window Z-Order = 6
+Window Z-Order = 7
 
 [File 0013]
 Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/DDSSet"

@@ -47,7 +47,7 @@ Feb 09, 2006   Clear the Debug box before saving. (was causing insanely large sa
 	FILE *fpini;
 	char fname[100]="",c,fsavename[500]="",buff[600]="";
 	static char defaultdir[200]="";
-	int i=0,j=0,k=0,inisize=0,status,loadonboot=0;
+	int i=0,inisize=0,status,loadonboot=0;
 	char imgsDirPath[MAX_PATHNAME_LEN];
 	char runDirPath[MAX_PATHNAME_LEN];
 	char panFileDir[MAX_PATHNAME_LEN];
@@ -181,7 +181,8 @@ void LoadSettings(int version)
 	FILE *fpini;
 	char fname[100]="",c,fsavename[500]="",buff[600];
 	static char defaultdir[200]="C:\\UserDate\\Data";
-	int i=0,j=0,k=0,inisize=0,success=0;
+	int i=0;
+	int inisize=0,success=0;
 
 	//Check if .ini file exists.  Load it if it does.
 	if(!(fpini=fopen("gui_V16.ini","r"))==NULL)
@@ -266,7 +267,7 @@ void LoadLastSettings(int check)
 	//last used settings on program startup.
 	FILE *fpini;
 	char fname[100]="",c,fsavename[500]="",loadname[100]="",buff[600];
-	int i=0,j=0,k=0,inisize=0, success;
+	int i=0,inisize=0, success;
 	//Check if .ini file exists.  Load it if it does.
 	if(!(fpini=fopen("gui.ini","r"))==NULL)
 	{
@@ -349,7 +350,8 @@ int SaveSequenceV17(char* save_name, int sn_length)
 	// Build every time check mark -- Done
 	//
 	//
-	// The on/off menu options in the menu bar
+	// The Preferences menu, menu options
+	// reset to zero menu option? Does it do anything?
 	//	...
 
 	FILE *fbuffer;
@@ -357,7 +359,6 @@ int SaveSequenceV17(char* save_name, int sn_length)
 
 	char cbuff[512] = "";
 
-	int elems_writ;
 	int status;
 
 
@@ -716,12 +717,10 @@ long getSaveVersionFromFile(FILE *fbuff, long fpos_eof, int *majorVer, int *mino
 
 int putTimeArrayToFile(FILE *fbuff)
 {
-	char cbuff[512] = "";// header/footer buffer
-	int clen = 512;
-	char bf[256] = "";// assembly buffer
 	int elems_writ;
 
 	// Particulars of the object to write (don't forget to change the actual data write line too)
+	// double TimeArray[NUMBEROFCOLUMNS+1][NUMBEROFPAGES];// vars.h line
 	char stag[] = "<TimeArray>";
 	char etag[] = "</TimeArray>";
 	int num_dims = 2;
@@ -748,7 +747,7 @@ long getTimeArrayFromFile(FILE *fbuff, long fpos_eof)
 	// Particulars of the object to load (don't forget to change the actual data write line too)
 	char stag[] = "<TimeArray>";
 	char etag[] = "</TimeArray>";
-	int max_dims = 2;// TimeArray is 2D (cols x pages)
+	int max_dims = 2;
 
 	int elem_size;
 	int num_dims;
@@ -786,10 +785,6 @@ long getTimeArrayFromFile(FILE *fbuff, long fpos_eof)
 
 int putAnalogTableToFile(FILE *fbuff)
 {
-
-	char cbuff[512] = "";// header/footer buffer
-	int clen = 512;
-	char bf[256] = "";// assembly buffer
 	int elems_writ;
 
 	// Particulars of the object to write (don't forget to change the actual data write line too)
@@ -858,9 +853,6 @@ long getAnalogTableFromFile(FILE *fbuff, long fpos_eof)
 
 int putDigitalTableToFile(FILE *fbuff)
 {
-	char cbuff[512] = "";// header/footer buffer
-	int clen = 512;
-	char bf[256] = "";// assembly buffer
 	int elems_writ;
 
 	// Particulars of the object to write (don't forget to change the actual data write line too)
@@ -929,9 +921,6 @@ long getDigitalTableFromFile(FILE *fbuff, long fpos_eof)
 
 int putAnalogChPropsToFile(FILE *fbuff)
 {
-	char cbuff[512] = "";// header/footer buffer
-	int clen = 512;
-	char bf[256] = "";// assembly buffer
 	int elems_writ;
 
 	// Particulars of the object to write (don't forget to change the actual data write line too)
@@ -1000,9 +989,6 @@ long getAnalogChPropsFromFile(FILE *fbuff, long fpos_eof)
 
 int putDigitalChPropsToFile(FILE *fbuff)
 {
-	char cbuff[512] = "";// header/footer buffer
-	int clen = 512;
-	char bf[256] = "";// assembly buffer
 	int elems_writ;
 
 	// Particulars of the object to write (don't forget to change the actual data write line too)
@@ -1071,9 +1057,6 @@ long getDigitalChPropsFromFile(FILE *fbuff, long fpos_eof)
 
 int putDds1TableToFile(FILE *fbuff)
 {
-	char cbuff[512] = "";// header/footer buffer
-	int clen = 512;
-	char bf[256] = "";// assembly buffer
 	int elems_writ;
 
 	// Particulars of the object to write (don't forget to change the actual data write line too)
@@ -1142,9 +1125,6 @@ long getDds1TableFromFile(FILE *fbuff, long fpos_eof)
 
 int putDds2TableToFile(FILE *fbuff)
 {
-	char cbuff[512] = "";// header/footer buffer
-	int clen = 512;
-	char bf[256] = "";// assembly buffer
 	int elems_writ;
 
 	// Particulars of the object to write (don't forget to change the actual data write line too)
@@ -1213,9 +1193,6 @@ long getDds2TableFromFile(FILE *fbuff, long fpos_eof)
 
 int putDds3TableToFile(FILE *fbuff)
 {
-	char cbuff[512] = "";// header/footer buffer
-	int clen = 512;
-	char bf[256] = "";// assembly buffer
 	int elems_writ;
 
 	// Particulars of the object to write (don't forget to change the actual data write line too)
@@ -1284,9 +1261,6 @@ long getDds3TableFromFile(FILE *fbuff, long fpos_eof)
 
 int putDdsGlobalsToFile(FILE *fbuff)
 {
-	char cbuff[512] = "";// header/footer buffer
-	int clen = 512;
-	char bf[256] = "";// assembly buffer
 	int elems_writ;
 
 	// Particulars of the object to write (don't forget to change the actual data write line too)
@@ -1362,9 +1336,6 @@ long getDdsGlobalsFromFile(FILE *fbuff, long fpos_eof)
 int putDdsEorsToFile(FILE *fbuff)
 {// Lots of manual operations/customizations in this fn
 
-	char cbuff[512] = "";// header/footer buffer
-	int clen = 512;
-	char bf[256] = "";// assembly buffer
 	int elems_writ;
 
 	// Particulars of the object to write (don't forget to change the actual data write line too)
@@ -1457,9 +1428,6 @@ long getDdsEorsFromFile(FILE *fbuff, long fpos_eof)
 
 int putLaserTableToFile(FILE *fbuff)
 {
-	char cbuff[512] = "";// header/footer buffer
-	int clen = 512;
-	char bf[256] = "";// assembly buffer
 	int elems_writ;
 
 	// Particulars of the object to write (don't forget to change the actual data write line too)
@@ -1528,9 +1496,6 @@ long getLaserTableFromFile(FILE *fbuff, long fpos_eof)
 
 int putLaserPropsToFile(FILE *fbuff)
 {
-	char cbuff[512] = "";// header/footer buffer
-	int clen = 512;
-	char bf[256] = "";// assembly buffer
 	int elems_writ;
 
 	// Particulars of the object to write (don't forget to change the actual data write line too)
@@ -1599,9 +1564,6 @@ long getLaserPropsFromFile(FILE *fbuff, long fpos_eof)
 
 int putAnritsuTableToFile(FILE *fbuff)// this table isn't used anymore but it might in the future so why not save it too
 {
-	char cbuff[512] = "";// header/footer buffer
-	int clen = 512;
-	char bf[256] = "";// assembly buffer
 	int elems_writ;
 
 	// Particulars of the object to write (don't forget to change the actual data write line too)
@@ -1670,9 +1632,6 @@ long getAnritsuTableFromFile(FILE *fbuff, long fpos_eof)
 
 int putAnritsuPropsToFile(FILE *fbuff)
 {
-	char cbuff[512] = "";// header/footer buffer
-	int clen = 512;
-	char bf[256] = "";// assembly buffer
 	int elems_writ;
 
 	// Particulars of the object to write (don't forget to change the actual data write line too)
@@ -1748,9 +1707,6 @@ long getAnritsuPropsFromFile(FILE *fbuff, long fpos_eof)
 
 int putInfoArrayToFile(FILE *fbuff)
 {
-	char cbuff[512] = "";// header/footer buffer
-	int clen = 512;
-	char bf[256] = "";// assembly buffer
 	int elems_writ;
 
 	// Particulars of the object to write (don't forget to change the actual data write line too)
@@ -1819,9 +1775,6 @@ long getInfoArrayFromFile(FILE *fbuff, long fpos_eof)
 
 int putPageNamesToFile(FILE *fbuff)
 {
-	char cbuff[512] = "";// header/footer buffer
-	int clen = 512;
-	char bf[256] = "";// assembly buffer
 	int elems_writ;
 	int i;
 
@@ -1939,9 +1892,6 @@ long getPageNamesFromFile(FILE *fbuff, long fpos_eof)
 
 int putPageCheckboxesToFile(FILE *fbuff)// These used to be saved in the .pan file in V16 and lower
 {
-	char cbuff[512] = "";// header/footer buffer
-	int clen = 512;
-	char bf[256] = "";// assembly buffer
 	int elems_writ;
 
 	// Particulars of the object to write (don't forget to change the actual data write line too)
@@ -2017,9 +1967,6 @@ long getPageCheckboxesFromFile(FILE *fbuff, long fpos_eof)
 
 int putUpdatePeriodToFile(FILE *fbuff)
 {
-	char cbuff[512] = "";// header/footer buffer
-	int clen = 512;
-	char bf[256] = "";// assembly buffer
 	int elems_writ;
 
 	// Particulars of the object to write (don't forget to change the actual data write line too)
@@ -2098,9 +2045,6 @@ long getUpdatePeriodFromFile(FILE *fbuff, long fpos_eof)
 
 int putGpibDevsToFile(FILE *fbuff)
 {
-	char cbuff[512] = "";// header/footer buffer
-	int clen = 512;
-	char bf[256] = "";// assembly buffer
 	int elems_writ;
 
 	// Particulars of the object to write (don't forget to change the actual data write line too)
@@ -2178,9 +2122,6 @@ long getGpibDevsFromFile(FILE *fbuff, long fpos_eof)
 
 int putForceBuildChkToFile(FILE *fbuff)
 {
-	char cbuff[512] = "";// header/footer buffer
-	int clen = 512;
-	char bf[256] = "";// assembly buffer
 	int elems_writ;
 
 	// Particulars of the object to write (don't forget to change the actual data write line too)
@@ -2483,9 +2424,9 @@ void SaveArraysV16(char savedname[500],int csize)
 	*/
 
 	FILE *fdata;
-	int i=0,j=0,k=0;
+	int i=0;
 	int xval=NUMBEROFCOLUMNS,yval=NUMBERANALOGROWS,zval=NUMBEROFPAGES-1;
-	int usupd5,usupd10,usupd15,usupd25,usupd50,usupd100,usupd1000,updatePer; //Update Period Check
+	int updatePer; //Update Period Check
 	char buff[500]="",buff2[100]="", buff3[500]="";
 	strncpy(buff,savedname,csize-4);
 	strcat(buff,".arr");
@@ -2570,7 +2511,7 @@ int LoadArraysV16(char savedname[500],int csize)
 	*/
 
 	FILE *fdata;
-	int i=0, j=0, k=0;
+	int i=0;
 	int xval=16, yval=16, zval=NUMBEROFPAGES-1, updatePer;
 	int status;
 	char buff[500]="", buff2[100]="", version[100]="", buff3[500]="";
