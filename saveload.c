@@ -1,8 +1,6 @@
 // Saving and Loading functions for panels go here.
 // Any binary dumps for debugging also go here (arrays sent to the adwin for example)
 
-// For now, do not put (Multi)Scan export functions here. They will go in the multiscan.c file eventually.
-
 // TODO:
 // Write SaveArraysV17 where V17 save file
 //		a) saves the existing variables that are saved to the .arr file with better metalanguage
@@ -13,6 +11,11 @@
 // something) and then save the panel as V17 savefile version. After we get that working then we can
 // write LoadV16intoV17 function if we want to.
 // Update default directory to look for save files
+
+// Generic format for saving one "thing" is:
+// <tag_name>~elem_size~num_dim~dim1~dim2~...~BINARY_DATA</tag_name>
+
+// possibly change to make temp variable pointer and pass it in then free memory allocated in these functions
 
 
 #include "saveload.h"
@@ -483,25 +486,10 @@ int SaveSequenceV17(char* save_name, int sn_length)
 	if( status < 0 ){ fclose(fbuffer); return status; }
 
 
-
-
-
-
-
-
-
-
-
-
 	fflush(fbuffer);// make sure the file is completely written by the time we leave this function
 	printf("Saved file successfully\n");
 	return 0;// return success
 }
-
-// Generic format for now is:
-// <tag_name>~elem_size~num_dim~dim1~dim2~...~BINARY_DATA</tag_name>
-
-// possibly change to make temp variable pointer and pass it in then free memory allocated in these functions
 
 int LoadSequenceV17(char* load_name, int ln_length)
 {
@@ -626,15 +614,6 @@ int LoadSequenceV17(char* load_name, int ln_length)
 
 	// Get the ScanBuffer
 	fpos = getScanBufferFromFile(fbuffer, fpos_file_end);
-	//if( fpos < 0 ){ fclose(fbuffer); return -1; }// pass though error
-
-
-
-
-
-
-
-
 
 
 	if( fpos < 0 && fpos != -2 ){// pass though error, but not if fpos == -2 then we have reached the end of the file as we expect.
