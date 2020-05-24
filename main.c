@@ -167,8 +167,6 @@ int main (int argc, char *argv[])
 
 	EventPeriod=DefaultEventPeriod;
 
-	//LoadLastSettings(1); //This feature is not fully implemented
-
 	//Sets the First Page as Active
 	SetCtrlVal (panelHandle,PANEL_TB_SHOWPHASE[1],1);
 	for (i=2;i<=(NUMBEROFPAGES-1);i++) // somebody set NUMBEROFPAGES to 11 -- to be quick and dirty -- no idea what that's supposed to be ... funny?

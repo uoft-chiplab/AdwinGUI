@@ -78,3 +78,47 @@ SetCtrlAttribute(panelHandle,PANEL_CANVAS_LOOPLINE,ATTR_LEFT,168);
 SetCtrlAttribute(panelHandle,PANEL_CANVAS_LOOPLINE,ATTR_TOP,140);
 SetCtrlAttribute(panelHandle,PANEL_CANVAS_LOOPLINE,ATTR_WIDTH,685);
 }
+
+
+
+// From GUIDesign.c via saveload.c
+// Never used and I don't think it's fully implemented. Always want to load something we know is good anyways.
+//
+void LoadLastSettings(int);
+void LoadLastSettings(int check)
+{
+	//If .ini exists, then open the file dialog.  Else just open the file dialog.  Add a method to load
+	//last used settings on program startup.
+	FILE *fpini;
+	char fname[100]="",c,fsavename[500]="",loadname[100]="",buff[600];
+	int i=0,inisize=0, success;
+	//Check if .ini file exists.  Load it if it does.
+	if(!(fpini=fopen("gui.ini","r"))==NULL)
+	{
+		while (fscanf(fpini,"%c",&c) != -1) fname[inisize++] = c;  //Read the contained name
+	}
+	fclose(fpini);
+
+	c=fname[inisize-1];
+	strncpy(loadname,fname,inisize-2);
+	if((check==0)||(c==49))			  // 49 is the ascii code for "1"
+	{
+		RecallPanelState(PANEL, loadname, 1); // This one can be problematic when elements have been removed from the GUI!!!
+		success = LoadArraysV16(fname,strlen( loadname));
+
+		if (success)
+		{
+			LaserSettingsInit();
+
+			i=500;
+			while(i>=0&&fsavename[i]!='\\')
+				i--;
+			strcpy(buff,SEQUENCER_VERSION);
+			strcat(buff,&fsavename[i+1]);
+			SetPanelAttribute (panelHandle, ATTR_TITLE, buff);
+		}
+
+	}
+	DrawNewTable(0);
+}
+

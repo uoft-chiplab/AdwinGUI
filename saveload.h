@@ -8,7 +8,6 @@ void SaveSettings(int);
 void LoadSettings(int);
 
 void SaveLastGuiSettings(void);
-void LoadLastSettings(int);
 
 int SaveSequenceV17(char* save_name, int sn_length);
 int LoadSequenceV17(char* load_name, int ln_length);
