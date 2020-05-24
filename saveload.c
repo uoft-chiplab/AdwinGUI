@@ -272,15 +272,11 @@ Version 17 Save and Load
 
 int SaveSequenceV17(char* save_name, int sn_length)
 {
-	// Lots of decisions to be made on how to make this new file format.
-	// Probably want to keep as close to old layout as possible.
-
 	// List all things that are saved:
 	// Sequencer version (as vars.h string)
 	// Savefile version
-	// For EACH array, explicitly state the dimension, size_dim1, size_dim2, et cetera
+	// For EACH array, explicitly state the element size, dimension, size_dim1, size_dim2, et cetera
 	// For EACH array, put ascii name before it as a demarkation and an ending marker after the array
-	// For EACH array, put the type of each element (int, double, struct ddsoptions_struct, et cetera)
 	// For arrays of structs, consider not saving the binary data but saving the elements themselves with
 	//	specific writing (and reading) functions.
 	//
@@ -312,14 +308,14 @@ int SaveSequenceV17(char* save_name, int sn_length)
 	//		Explicitly save to AnritsuSettingValues[0].offset during the put fn
 	//		And load to the PANEL_ANRITSU_OFFSET during the get fn
 	// Build every time check mark -- Done
-	// The Preferences menu, menu options
+	// The Preferences menu, menu options -- Done
 	//		Use compression -- Done
 	//		Use simple timing -- Done
 	//		The rest are either not a preference or implemented or meaningful to save
-	// Reset to zero menu option? Does it do anything?
+	// Reset to zero menu option? Does it do anything? -- No
 	//		The per channel resets are stored in the respective channel properties
 	//		So for now don't try and save the menu option
-	// MultiScan
+	// MultiScan -- Done
 	//		It would be nice to always load the scan that was present when the sequence was saved
 	// ... I think that's it.
 
