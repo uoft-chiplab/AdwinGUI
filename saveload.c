@@ -481,10 +481,6 @@ int SaveSequenceV17(char* save_name, int sn_length)
 	status = putMultiScanToFile(fbuffer);
 	if( status < 0 ){ fclose(fbuffer); return status; }
 
-	// Write ScanBuffer
-	status = putScanBufferToFile(fbuffer);
-	if( status < 0 ){ fclose(fbuffer); return status; }
-
 
 	fflush(fbuffer);// make sure the file is completely written by the time we leave this function
 	printf("Saved file successfully\n");
@@ -610,10 +606,6 @@ int LoadSequenceV17(char* load_name, int ln_length)
 
 	// Get the MultiScan object
 	fpos = getMultiScanFromFile(fbuffer, fpos_file_end);
-	if( fpos < 0 ){ fclose(fbuffer); return -1; }// pass though error
-
-	// Get the ScanBuffer
-	fpos = getScanBufferFromFile(fbuffer, fpos_file_end);
 
 
 	if( fpos < 0 && fpos != -2 ){// pass though error, but not if fpos == -2 then we have reached the end of the file as we expect.

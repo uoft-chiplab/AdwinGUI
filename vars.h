@@ -386,7 +386,7 @@ int parameterscanmode; // 0: multi-scan, 1: one-parameter, 2: two-parameter
 
 // The length of ScanBuffer used to be ScanBuffer[1000] hard coded. I want to be able to change it.
 // Nobody uses Scan2Buffer anymore so I will leave that as is.
-// I also only changed the multi-parameter scan ode that uses ScanBuffer. I didn't bother with
+// I also only changed the multi-parameter scan code that uses ScanBuffer. I didn't bother with
 // the one and two parameter scan code.
 #define SCANBUFFER_LENGTH				(3000)
 #define SCANBUFFER_TIMEBUFFER_LENGTH	(30)

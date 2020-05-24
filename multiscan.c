@@ -1420,7 +1420,6 @@ void GetNewMultiScanCommands(void)
 // the scanned parameters (page, column and row).
 // Auto-writes when scan is done to the scan directory.
 //*****************************************************************************************
-//Kenneth is changing this so that it says save .mscan to standard location?
 void AutoExportMultiScanBuffer(void)
 {
 	int i,j,status;

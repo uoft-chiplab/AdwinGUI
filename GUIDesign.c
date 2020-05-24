@@ -142,7 +142,7 @@ int CVICALLBACK CMD_SCAN_CALLBACK (int panel, int control, int event,
 				}
 			}
 
-			// In case the start of the  scan was confirmed (common to either scanmode)
+			// In case the start of the scan was confirmed (common to either scanmode)
 			if (status == 1)
 			{
 				printf("status==1\n");
