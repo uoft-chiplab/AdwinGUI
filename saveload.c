@@ -38,16 +38,9 @@
 Overall Save and Load that chooses correct version
 *************************************************************************/
 
-// From GUIDesign.c
-//
-void SaveSettings(int version)
-/* Modified:
-Feb 09, 2006   Clear the Debug box before saving. (was causing insanely large save files, and slowed down loading of old panels.)
-*/
-{
-	// Save settings:  First look for file .ini  This will be a simple 1 line file stating the name of the last file
-	//saved.  Load this up and use as the starting name in the file dialog.
 
+void SaveSettings(int version)
+{
 	char buff[200]="";
 
 	char imgsDirPath[MAX_PATHNAME_LEN];
@@ -91,7 +84,9 @@ Feb 09, 2006   Clear the Debug box before saving. (was causing insanely large sa
 			SaveArraysV16(panFilePath, strlen(panFilePath));
 			break;
 		case 17:
-			SaveSequenceV17(panFilePath, strlen(panFilePath));
+			if( SaveSequenceV17(panFilePath, strlen(panFilePath)) ){// if there was an error
+				MessagePopup("Saving Error","Error occured while saving. File not successfully saved.");
+			}
 			break;
 		default:
 			SavePanelState(PANEL, panFilePath, 1);// This one can be problematic when elements have been removed from the GUI!!!
@@ -173,72 +168,72 @@ Feb 09, 2006   Clear the Debug box before saving. (was causing insanely large sa
 
 }
 
-// From GUIDesign.c
-//
+
 void LoadSettings(int version)
 {
-	int status;
-	//If .ini exists, then open the file dialog.  Else just open the file dialog.  Add a method to load
-	//last used settings on program startup.
-	FILE *fpini;
-	char fname[100]="",c,fsavename[500]="",buff[600];
-	static char defaultdir[200]="C:\\UserDate\\Data";
-	int i=0;
-	int inisize=0,success=0;
+	char buff[600];
+	int success=0;
 
-	//Check if .ini file exists.  Load it if it does.
-	if(!(fpini=fopen("gui_V16.ini","r"))==NULL)
-	{
-		while (fscanf(fpini,"%c",&c) != -1) fname[inisize++] = c;  //Read the contained name
+	char panFilePath[MAX_PATHNAME_LEN];
+	char panFileDir[MAX_PATHNAME_LEN];
+	char panFileName[MAX_PATHNAME_LEN];
+	int panStatus;
+
+	// Get the filename
+	panStatus = FileSelectPopup("", "*.pan", "", "Save Settings", VAL_LOAD_BUTTON, 0, 0, 1, 1, panFilePath);
+	if( panStatus < 0 ){// an error
+		printf("Error while choosing save file name. Error code: %d\n", panStatus);
+		MessagePopup("Save filename Error", "An error occured while choosing the save filename.");
+		return;
 	}
-	fclose(fpini);
-
-	// prompt for a file, if selected then load the Panel and Arrays
-	status=FileSelectPopup (defaultdir, "*.pan", "", "Load Settings", VAL_LOAD_BUTTON, 0, 0, 1, 1,fsavename );
-	if(!(status==0))
-	{
-		RecallPanelState(PANEL, fsavename, 1); // This one can be problematic when elements have been removed from the GUI!!!
-
-		// Stefan Trotzky - Oct 2012: added switch for file version
-		switch (version)
-		{
-			case 13:
-				LoadArraysV13(fsavename,strlen(fsavename));
-				LoadLaserData(fsavename,strlen(fsavename));
-				success = 1; // no success evaluation before V16
-				break;
-			case 15:
-				LoadArraysV15(fsavename,strlen(fsavename));
-				LoadLaserData(fsavename,strlen(fsavename));
-				success = 1; // no success evaluation before V16
-				break;
-			case 16: // V16 saves laser data together with arrays
-				success = LoadArraysV16(fsavename,strlen(fsavename));
-				break;
-		}
-
-		if (success)
-		{
-			LaserSettingsInit();
-
-			//edit panel title
-			i=499;
-			while(i>=0&&fsavename[i]!='\\')
-				i--;
-
-			strcpy(buff,SEQUENCER_VERSION);
-			strcat(buff,&fsavename[i+1]);
-			SetPanelAttribute (panelHandle, ATTR_TITLE, buff);
-		}
-
-	}
-	else
-	{
+	else if( panStatus == VAL_NO_FILE_SELECTED ){
 		MessagePopup ("File Error", "No file was selected");
+		return;
+	}
+	else if( panStatus != VAL_EXISTING_FILE_SELECTED && panStatus != VAL_NEW_FILE_SELECTED ){// something strange happened
+		printf("Error while choosing save file name. Error code: %d\n", panStatus);
+		MessagePopup("Save filename Error", "An error occured while choosing the save filename.");
+		return;
+	}
+	// Now we have a valid filename (incl dir) in panFilePath
+
+	// Load according to the file version
+	switch (version)
+	{
+		case 13:
+			RecallPanelState(PANEL, panFilePath, 1);// This one can be problematic when elements have been removed from the GUI!!!
+			LoadArraysV13(panFilePath,strlen(panFilePath));
+			LoadLaserData(panFilePath,strlen(panFilePath));
+			success = 1; // no success evaluation before V16
+			break;
+		case 15:
+			RecallPanelState(PANEL, panFilePath, 1);// This one can be problematic when elements have been removed from the GUI!!!
+			LoadArraysV15(panFilePath,strlen(panFilePath));
+			LoadLaserData(panFilePath,strlen(panFilePath));
+			success = 1; // no success evaluation before V16
+			break;
+		case 16: // V16 saves laser data together with arrays
+			RecallPanelState(PANEL, panFilePath, 1);// This one can be problematic when elements have been removed from the GUI!!!
+			success = LoadArraysV16(panFilePath,strlen(panFilePath));
+			break;
+		case 17:
+			LoadSequenceV17(panFilePath,strlen(panFilePath));
+			break;
+	}
+
+	if (success)
+	{
+		LaserSettingsInit();
+
+		// Update the title of the sequencer
+		SplitPath(panFilePath, NULL, panFileDir, panFileName);
+		strcpy(buff, SEQUENCER_VERSION);
+		strcat(buff, panFileName);
+		SetPanelAttribute(panelHandle, ATTR_TITLE, buff);
+
 	}
 
 	DrawNewTable(0);
-	strcpy(defaultdir,"");
 
 }
 
