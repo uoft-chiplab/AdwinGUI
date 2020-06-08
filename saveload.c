@@ -54,7 +54,18 @@ void SaveSettings(int version)
 	int confirmStatus;
 
 	// Get the filename
-	panStatus = FileSelectPopup("", "*.pan", "", "Save Settings", VAL_SAVE_BUTTON, 0, 0, 1, 1, panFilePath);
+	switch( version ){
+		case 15:
+		case 16:
+		default:
+			panStatus = FileSelectPopup("", "*.pan", "", "Save Settings", VAL_SAVE_BUTTON, 0, 0, 1, 1, panFilePath);
+			break;
+		case 17:
+			panStatus = FileSelectPopup("", "*.seq", "", "Save Settings", VAL_SAVE_BUTTON, 0, 0, 1, 1, panFilePath);
+			break;
+	}
+
+	// Check for errors
 	if( panStatus < 0 ){// an error
 		printf("Error while choosing save file name. Error code: %d\n", panStatus);
 		MessagePopup("Save filename Error", "An error occured while choosing the save filename.");
@@ -180,7 +191,19 @@ void LoadSettings(int version)
 	int panStatus;
 
 	// Get the filename
-	panStatus = FileSelectPopup("", "*.pan", "", "Save Settings", VAL_LOAD_BUTTON, 0, 0, 1, 1, panFilePath);
+	switch( version ){
+		case 13:
+		case 15:
+		case 16:
+		default:
+			panStatus = FileSelectPopup("", "*.pan", "", "Save Settings", VAL_LOAD_BUTTON, 0, 0, 1, 1, panFilePath);
+			break;
+		case 17:
+			panStatus = FileSelectPopup("", "*.seq", "", "Save Settings", VAL_LOAD_BUTTON, 0, 0, 1, 1, panFilePath);
+			break;
+	}
+
+	// Check for errors
 	if( panStatus < 0 ){// an error
 		printf("Error while choosing save file name. Error code: %d\n", panStatus);
 		MessagePopup("Save filename Error", "An error occured while choosing the save filename.");
@@ -205,32 +228,42 @@ void LoadSettings(int version)
 			LoadArraysV13(panFilePath,strlen(panFilePath));
 			LoadLaserData(panFilePath,strlen(panFilePath));
 			success = 1; // no success evaluation before V16
+			LaserSettingsInit();
 			break;
 		case 15:
 			RecallPanelState(PANEL, panFilePath, 1);// This one can be problematic when elements have been removed from the GUI!!!
 			LoadArraysV15(panFilePath,strlen(panFilePath));
 			LoadLaserData(panFilePath,strlen(panFilePath));
 			success = 1; // no success evaluation before V16
+			LaserSettingsInit();
 			break;
 		case 16: // V16 saves laser data together with arrays
 			RecallPanelState(PANEL, panFilePath, 1);// This one can be problematic when elements have been removed from the GUI!!!
 			success = LoadArraysV16(panFilePath,strlen(panFilePath));
+			if( success ){
+				LaserSettingsInit();
+			}
 			break;
 		case 17:
-			LoadSequenceV17(panFilePath,strlen(panFilePath));
+			if( LoadSequenceV17(panFilePath,strlen(panFilePath)) ){// negative on error, 0 on success
+				// If we have failed to load properly, the initialize everything to the initial state as in main.c
+				// TO BE IMPLEMENTED ONCE MAIN.C IS REFACTORED.
+			}
+			else {
+				success = 1;
+				// Note that LaserSettingsInit() is called from the appropriate fn in LoadSequenceV17.
+				//  And is one of the reasons why we must reinitialize things if the load fails.
+			}
 			break;
 	}
 
 	if (success)
 	{
-		LaserSettingsInit();
-
 		// Update the title of the sequencer
 		SplitPath(panFilePath, NULL, panFileDir, panFileName);
 		strcpy(buff, SEQUENCER_VERSION);
 		strcat(buff, panFileName);
 		SetPanelAttribute(panelHandle, ATTR_TITLE, buff);
-
 	}
 
 	DrawNewTable(0);
