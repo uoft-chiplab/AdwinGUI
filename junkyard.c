@@ -122,3 +122,11 @@ void LoadLastSettings(int check)
 	DrawNewTable(0);
 }
 
+
+// A portion of SaveSettings
+	if(!(fpini=fopen("gui.ini","w"))==NULL)
+	{
+		fprintf(fpini,fsavename);
+		fprintf(fpini,"\n%d",loadonboot);
+	}
+	fclose(fpini);

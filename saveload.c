@@ -45,72 +45,103 @@ void SaveSettings(int version)
 Feb 09, 2006   Clear the Debug box before saving. (was causing insanely large save files, and slowed down loading of old panels.)
 */
 {
-	// Save settings:  First look for file .ini  This will be a simple 1 line file staating the name of the last file
+	// Save settings:  First look for file .ini  This will be a simple 1 line file stating the name of the last file
 	//saved.  Load this up and use as the starting name in the file dialog.
-	FILE *fpini;
-	char fname[100]="",c,fsavename[500]="",buff[600]="";
-	static char defaultdir[200]="";
-	int i=0,inisize=0,status,loadonboot=0;
+
+	char buff[200]="";
+
 	char imgsDirPath[MAX_PATHNAME_LEN];
 	char runDirPath[MAX_PATHNAME_LEN];
+	char panFilePath[MAX_PATHNAME_LEN];
 	char panFileDir[MAX_PATHNAME_LEN];
 	char panFileName[MAX_PATHNAME_LEN];
+	int panStatus;
 	int runDirStatus;
 	int imgsDirStatus;
 	int confirmStatus;
-	//Check if .ini file exists.  Load it if it does.
-	if(!(fpini=fopen("gui.ini","r"))==NULL)		// if "gui.ini" exists, then read it  Just contains a filename.
-	{												//If not, do nothing
-		while (fscanf(fpini,"%c",&c) != -1) fname[inisize++] = c;  //Read the contained name
+
+	// Get the filename
+	panStatus = FileSelectPopup("", "*.pan", "", "Save Settings", VAL_SAVE_BUTTON, 0, 0, 1, 1, panFilePath);
+	if( panStatus < 0 ){// an error
+		printf("Error while choosing save file name. Error code: %d\n", panStatus);
+		MessagePopup("Save filename Error", "An error occured while choosing the save filename.");
+		return;
 	}
- 	fclose(fpini);
+	else if( panStatus == VAL_NO_FILE_SELECTED ){
+		MessagePopup ("File Error", "No file was selected");
+		return;
+	}
+	else if( panStatus != VAL_EXISTING_FILE_SELECTED && panStatus != VAL_NEW_FILE_SELECTED ){// something strange happened
+		printf("Error while choosing save file name. Error code: %d\n", panStatus);
+		MessagePopup("Save filename Error", "An error occured while choosing the save filename.");
+		return;
+	}
+	// Now we have a valid filename (incl dir) in panFilePath
 
-	status=FileSelectPopup (defaultdir, "*.pan", "", "Save Settings", VAL_SAVE_BUTTON, 0, 0, 1, 1,fsavename);
-	GetMenuBarAttribute (menuHandle, MENU_FILE_BOOTLOAD, ATTR_CHECKED, &loadonboot);
-	if(!(status==0))
+	// Save according to file version requested
+	switch (version)
 	{
-		SavePanelState(PANEL, fsavename, 1);  // This one can be problematic when elements have been removed from the GUI!!!
-		if(!(fpini=fopen("gui.ini","w"))==NULL)
-		{
-			fprintf(fpini,fsavename);
-			fprintf(fpini,"\n%d",loadonboot);
+		case 15:
+			SavePanelState(PANEL, panFilePath, 1);// This one can be problematic when elements have been removed from the GUI!!!
+			SaveArraysV15(panFilePath, strlen(panFilePath));
+			SaveLaserData(panFilePath,strlen(panFilePath));
+			break;
+		case 16: // V16 saves laser data together with arrays
+			SavePanelState(PANEL, panFilePath, 1);// This one can be problematic when elements have been removed from the GUI!!!
+			SaveArraysV16(panFilePath, strlen(panFilePath));
+			break;
+		case 17:
+			SaveSequenceV17(panFilePath, strlen(panFilePath));
+			break;
+		default:
+			SavePanelState(PANEL, panFilePath, 1);// This one can be problematic when elements have been removed from the GUI!!!
+			SaveArraysV15(panFilePath, strlen(panFilePath));
+			SaveLaserData(panFilePath,strlen(panFilePath));
+			break;
+	}
+
+	// Update the title of the sequencer
+	SplitPath(panFilePath, NULL, panFileDir, panFileName);
+	strcpy(buff, SEQUENCER_VERSION);
+	strcat(buff, panFileName);
+	SetPanelAttribute(panelHandle, ATTR_TITLE, buff);
+
+	// Create the run folder
+	strcpy(buff, panFileName);
+	buff[strlen(buff)-4] = '\0';// Assume the last 4 characters of panFileName are the ".pan"
+	MakePathname(panFileDir, buff, runDirPath);
+
+	printf("runDirPath:\n>%s<\n", runDirPath);
+
+	runDirStatus = MakeDir(runDirPath);
+
+	if( runDirStatus == 0 ) // Successfully created directory
+	{
+		// Form the imgs subdirectory path and print it.
+		strcpy(buff, "imgs");
+		MakePathname(runDirPath, buff, imgsDirPath);
+		printf("imgsDirPath:\n>%s<\n", imgsDirPath);
+
+		// Attempt to create the subdirectories
+		imgsDirStatus = MakeDir(imgsDirPath);
+
+		// Check status of subdirectories
+
+		if( imgsDirStatus < 0 ){ //Error
+			printf("Error when creating images directory. Error code: %d\n", imgsDirStatus);
+			MessagePopup ("Directory Error", "An error occured while creating the images directory.");
 		}
-		fclose(fpini);
+	}
+	else if( runDirStatus == -9 ){// The directory (or file) already exists
 
-		// Stefan Trotzky - Oct 2012: added switch for file version
-		switch (version)
-		{
-			case 15:
-				SaveArraysV15(fsavename, strlen(fsavename));
-				SaveLaserData(fsavename,strlen(fsavename));
-				break;
-			case 16: // V16 saves laser data together with arrays
-				SaveArraysV16(fsavename, strlen(fsavename));
-				break;
-			default:
-				SaveArraysV15(fsavename, strlen(fsavename));
-				SaveLaserData(fsavename,strlen(fsavename));
-				break;
+		// Ask for confimation to use existing directory.
+		confirmStatus = ConfirmPopup ("Confirm use of existing directory",
+						"Warning! Use existing scan directory?");
+		if( confirmStatus == 0 ){// User selected no
 		}
-
-
-		i=499;
-		while( i>=0 && fsavename[i] != '\\' ){ i--; }
-		strcpy(buff,SEQUENCER_VERSION);
-		strcat(buff,&fsavename[i+1]);
-		SetPanelAttribute (panelHandle, ATTR_TITLE, buff);
-
-		SplitPath(fsavename, NULL, panFileDir, panFileName);
-		strcpy(buff, panFileName);
-		buff[strlen(buff)-4] = '\0';// Assume the last 4 characters of panFileName are the ".pan"
-		MakePathname(panFileDir, buff, runDirPath);
-
-		printf("runDirPath:\n>%s<\n", runDirPath);
-
-		runDirStatus = MakeDir(runDirPath);
-
-		if( runDirStatus == 0 ){// Successfully created directory
-
+		else if( confirmStatus == 1 ){// User selected yes
+			// Since the scan directory already exists the subdirectories probably also
+			// already exist so we should accept those that exist as is.
 
 			// Form the imgs subdirectory path and print it.
 			strcpy(buff, "imgs");
@@ -122,55 +153,23 @@ Feb 09, 2006   Clear the Debug box before saving. (was causing insanely large sa
 
 			// Check status of subdirectories
 
-			if( imgsDirStatus < 0 ){//Error
+			if( imgsDirStatus < 0  && imgsDirStatus != -9){//Error but not error that imgs already exists
 				printf("Error when creating images directory. Error code: %d\n", imgsDirStatus);
 				MessagePopup ("Directory Error", "An error occured while creating the images directory.");
 			}
 		}
-		else if( runDirStatus == -9 ){// The directory (or file) already exists
-
-			// Ask for confimation to use existing directory.
-			confirmStatus = ConfirmPopup ("Confirm use of existing directory",
-							"Warning! Use existing scan directory?");
-			if( confirmStatus == 0 ){// User selected no
-			}
-			else if( confirmStatus == 1 ){// User selected yes
-				// Since the scan directory already exists the subdirectories probably also
-				// already exist so we should accept those that exist as is.
-
-				// Form the imgs subdirectory path and print it.
-				strcpy(buff, "imgs");
-				MakePathname(runDirPath, buff, imgsDirPath);
-				printf("imgsDirPath:\n>%s<\n", imgsDirPath);
-
-				// Attempt to create the subdirectories
-				imgsDirStatus = MakeDir(imgsDirPath);
-
-				// Check status of subdirectories
-
-				if( imgsDirStatus < 0  && imgsDirStatus != -9){//Error but not error that imgs already exists
-					printf("Error when creating images directory. Error code: %d\n", imgsDirStatus);
-					MessagePopup ("Directory Error", "An error occured while creating the images directory.");
-				}
-			}
-			else {
-				MessagePopup ("Directory Error", "Unknown status code from MakeDir");
-			}
-		}
-		else if( runDirStatus < 0 ){// Error
-			printf("Error when creating run directory. Error code: %d\n", runDirStatus);
-			MessagePopup ("Directory Error", "An error occured while creating the run directory.");
-		}
-
 		else {
-				MessagePopup ("Directory Error", "Unknown status code from MakeDir");
-			}
+			MessagePopup ("Directory Error", "Unknown status code from MakeDir");
+		}
 	}
-	else
-	{
-		MessagePopup ("File Error", "No file was selected");
+	else if( runDirStatus < 0 ){// Error
+		printf("Error when creating run directory. Error code: %d\n", runDirStatus);
+		MessagePopup ("Directory Error", "An error occured while creating the run directory.");
 	}
-	strcpy(defaultdir,"");
+
+	else {
+			MessagePopup ("Directory Error", "Unknown status code from MakeDir");
+	}
 
 }
 
