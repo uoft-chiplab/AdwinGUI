@@ -122,47 +122,11 @@ int main (int argc, char *argv[])
 	LaserTable[2][1][1].fcn=1;
 	LaserTable[3][1][1].fcn=1;
 
-	// initialize GPIB device array
-	for (i=0;i<NUMBERGPIBDEV;i++)
-	{
-		GPIBDev[i].address = 0;
-		strcpy(GPIBDev[i].devname, "noname");
-		strcpy(GPIBDev[i].cmdmask, "");
-		strcpy(GPIBDev[i].command, "");
-		strcpy(GPIBDev[i].lastsent, "");
-		GPIBDev[i].active = FALSE;
-		for (j=0;j<NUMGPIBPROGVALS;j++)
-		{
-			GPIBDev[i].value[j] = 0.0;
-		}
 
-	}
+	initializeGpibDevArray();
 
+	initializeDdsTables();
 
-	//initialize dds_tables, don't assume anything...
-	for (i=0;i<NUMBEROFCOLUMNS;i++)
-	{
-		for (j=0;j<NUMBEROFPAGES;j++)
-		{
-			ddstable[i][j].start_frequency = 0.0;
-			ddstable[i][j].end_frequency = 0.0;
-			ddstable[i][j].amplitude = 0.0;
-			ddstable[i][j].delta_time = 0.0;
-			ddstable[i][j].is_stop = TRUE;
-
-			dds2table[i][j].start_frequency = 0.0;
-			dds2table[i][j].end_frequency = 0.0;
-			dds2table[i][j].amplitude = 0.0;
-			dds2table[i][j].delta_time = 0.0;
-			dds2table[i][j].is_stop = TRUE;
-
-			dds3table[i][j].start_frequency = 0.0;
-			dds3table[i][j].end_frequency = 0.0;
-			dds3table[i][j].amplitude = 0.0;
-			dds3table[i][j].delta_time = 0.0;
-			dds3table[i][j].is_stop = TRUE;
-		}
-	}
 	// done initializing
 
 	EventPeriod=DefaultEventPeriod;
@@ -194,6 +158,66 @@ int main (int argc, char *argv[])
 
 	return 0;
 }
+
+
+void initializeDdsTables(void){
+
+	int i,j;
+
+	//initialize dds_tables, don't assume anything...
+	for( i=0; i < NUMBEROFCOLUMNS; ++i ){
+		for( j=0; j < NUMBEROFPAGES; ++j ){
+
+			ddstable[i][j].start_frequency = 0.0;
+			ddstable[i][j].end_frequency = 0.0;
+			ddstable[i][j].amplitude = 0.0;
+			ddstable[i][j].delta_time = 0.0;
+			ddstable[i][j].is_stop = TRUE;
+
+			dds2table[i][j].start_frequency = 0.0;
+			dds2table[i][j].end_frequency = 0.0;
+			dds2table[i][j].amplitude = 0.0;
+			dds2table[i][j].delta_time = 0.0;
+			dds2table[i][j].is_stop = TRUE;
+
+			dds3table[i][j].start_frequency = 0.0;
+			dds3table[i][j].end_frequency = 0.0;
+			dds3table[i][j].amplitude = 0.0;
+			dds3table[i][j].delta_time = 0.0;
+			dds3table[i][j].is_stop = TRUE;
+		}
+	}
+}
+
+
+void initializeGpibDevArray(void){
+
+	int i,j;
+
+	// initialize GPIB device array
+	for( i=0; i < NUMBERGPIBDEV; ++i){
+		GPIBDev[i].address = 0;
+		strcpy(GPIBDev[i].devname, "noname");
+		strcpy(GPIBDev[i].cmdmask, "");
+		strcpy(GPIBDev[i].command, "");
+		strcpy(GPIBDev[i].lastsent, "");
+		GPIBDev[i].active = FALSE;
+		for( j=0; j < NUMGPIBPROGVALS; ++j ){
+			GPIBDev[i].value[j] = 0.0;
+		}
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
 
 //**********************************************************************************
 void Initialization()
@@ -437,3 +461,7 @@ void Initialization()
 	return;
 
 }
+
+
+
+

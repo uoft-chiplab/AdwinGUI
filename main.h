@@ -15,6 +15,8 @@
 #include "GPIB_SRS_SETUP.h"
 #include "GPIB_SRS_SETUP2.h"
 
+void initializeGpibDevArray(void);
+void initializeDdsTables(void);
 
 void Initialization(void);
 
