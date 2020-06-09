@@ -25,7 +25,7 @@ The file that starts everything off.
 
 int main (int argc, char *argv[])
 {
-	int i,j,k,status;
+	int i;
 	int fileHandle;
 
 	if (InitCVIRTE (0, argv, 0) == 0)
@@ -76,13 +76,14 @@ int main (int argc, char *argv[])
 	CloseFile (fileHandle);
 
 
-	// Initialize Arrays
+	// Initialize things to default values
 	initializeAnalogArrays();
 	initializeDigArray();
 	initializeInfoArray();
 	initializeLaserArrays();
 	initializeGpibDevArray();
 	initializeDdsTables();
+	initializeMultiScan();
 	// done initializing
 
 	EventPeriod=DefaultEventPeriod;
@@ -94,7 +95,19 @@ int main (int argc, char *argv[])
 		SetCtrlVal (panelHandle,PANEL_TB_SHOWPHASE[i],0);
 	}
 
-	Initialization();
+
+	//Initialize Settings Tables (with zeroes) and sets Laser Digital comm channels
+	LaserSettingsInit();
+
+
+	// Initialize debug tracker for number of GPIB writes since program start.
+	DEBUG_NUMBER_IBWRT_CALLS = 0;
+
+	// I think this was supposed to be for estimating when to start the pre-evaluation of the next sequence
+	CycleTime=-1.0;
+
+
+	initializeGUI();
 
 
 	// Scott Testing V17 saving and loading
@@ -181,6 +194,11 @@ void initializeDdsTables(void){
 
 	int i,j;
 
+	// Set some global variables
+	DDSFreq.extclock=15.36;
+	DDSFreq.PLLmult=8;
+	DDSFreq.clock=DDSFreq.extclock*(double)DDSFreq.PLLmult;
+
 	//initialize dds_tables, don't assume anything...
 	for( i=0; i < NUMBEROFCOLUMNS+1; ++i ){
 		for( j=0; j < NUMBEROFPAGES; ++j ){
@@ -225,30 +243,30 @@ void initializeGpibDevArray(void){
 }
 
 
-
-//**********************************************************************************
-void Initialization()
+void initializeMultiScan(void)
 {
-	//Changes:
-	//Mar09, 2006:  Force DDS 1 frequency settings at loadtime.
-	int i=0,cellheight=0,fontsize=0,aname_size,new_aname_size,ledleft,ledtop;
-	int j=0,x0,dx;
-	char str_list_val[5];
-	char buff[200];
+	parameterscanmode = 0;
+	MultiScan.Active = FALSE;
 
+	PScan.Analog.Scan_Step_Size=1.0;
+	PScan.Analog.Iterations_Per_Step=1;
 	PScan.Scan_Active=FALSE;
 	PScan.Use_Scan_List=FALSE;
-	MultiScan.Active = FALSE;
 	TwoParam=FALSE;
+}
 
 
 
-	DDSFreq.extclock=15.36;
-	DDSFreq.PLLmult=8;
-	DDSFreq.clock=DDSFreq.extclock*(double)DDSFreq.PLLmult;
+//**********************************************************************************
+void initializeGUI()// initialzie the GUI by setting menu's and arranging things
+{
+	int i=0;
+	int ledleft,ledtop;
+	int x0,dx;
+	char buff[200];
 
-	//Add in any extra rows (if the number of channels increases)
-	//July4, added another row for DDS2
+
+	//
 
 	// Menu setting
 	menuHandle=GetPanelMenuBar(panelHandle);
@@ -311,7 +329,7 @@ void Initialization()
 	SetAnalogChannels();
 
 	//Set default analog channel names
-	for (i=1;i<=NUMBERANALOGCHANNELS;i++)
+	for( i=1; i <= NUMBERANALOGCHANNELS; i++ )
 	{
 		SetTableCellAttribute (panelHandle, PANEL_TBL_ANAMES, MakePoint(2,i),ATTR_DATA_TYPE, VAL_UNSIGNED_INTEGER);
 		SetTableCellVal (panelHandle, PANEL_TBL_ANAMES, MakePoint(2,i), i);
@@ -437,38 +455,17 @@ void Initialization()
 	SetTableColumnAttribute (panelHandle, PANEL_TBL_ANAMES, 2,ATTR_DATA_TYPE, VAL_UNSIGNED_INTEGER);
 	SetTableColumnAttribute (panelHandle, PANEL_TBL_DIGNAMES, 2,ATTR_DATA_TYPE, VAL_UNSIGNED_INTEGER);
 
-	parameterscanmode = 0;
-	PScan.Analog.Scan_Step_Size=1.0;
-	PScan.Analog.Iterations_Per_Step=1;
-	PScan.Scan_Active=FALSE;
 
 	// set to display both analog and digital channels also changes a bunch of their shape/position properties
 	// Note the Scan table is not fixed in the source code, to change its position move it in the GUIDesign.uir file
 	SetChannelDisplayed(1);
-//
+
 	//set to graphical display
 //	SetDisplayType(VAL_CELL_NUMERIC);
-//	DrawNewTable(0);
-
-
-	//Initialize Settings Tables (with zeroes) and sets Laser Digital comm channels
-	LaserSettingsInit();
 
 	//Display Sequencer Version Number on Main Panel Title
 	strcpy (buff,SEQUENCER_VERSION);
 	strcat (buff,"untitled panel");
 	SetPanelAttribute (panelHandle, ATTR_TITLE, buff);
-	CycleTime=-1.0;
-
-
-	// Initialize debug tracker for number of GPIB writes since program start.
-	DEBUG_NUMBER_IBWRT_CALLS = 0;
-
-
-	return;
-
 }
-
-
-
 
