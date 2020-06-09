@@ -1876,8 +1876,10 @@ void CVICALLBACK MENU_CALLBACK (int menuBar, int menuItem, void *callbackData,
 {
 	switch(menuItem)
 	{
-		case MENU_FILE_SAVESET_V16: SaveSettings(16); break;
+		case MENU_FILE_LOADSET: LoadSettings(17); break;
+		case MENU_FILE_SAVESET: SaveSettings(17); break;
 		case MENU_FILE_LOADSET_V16: LoadSettings(16); break;
+		case MENU_FILE_SAVESET_V16: SaveSettings(16); break;
 		case MENU_FILE_LOADSET_V15: LoadSettings(15); break;
 		case MENU_FILE_LOADSET_V13: LoadSettings(13); break;
 	}
