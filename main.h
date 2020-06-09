@@ -15,6 +15,12 @@
 #include "GPIB_SRS_SETUP.h"
 #include "GPIB_SRS_SETUP2.h"
 
+
+
+void initializeAnalogArrays(void);
+void initializeDigArray(void);
+void initializeInfoArray(void);
+void initializeLaserArrays(void);
 void initializeGpibDevArray(void);
 void initializeDdsTables(void);
 

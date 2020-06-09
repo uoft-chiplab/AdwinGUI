@@ -76,57 +76,13 @@ int main (int argc, char *argv[])
 	CloseFile (fileHandle);
 
 
-	// Initialize arrays (to avoid undefined elements causing -99 to be written)
-	for (j=0;j<=NUMBERANALOGCHANNELS;j++)
-	{		 //ramp over # of analog chanels
-		AChName[j].tfcn=1;
-		AChName[j].tbias=0;
-		AChName[j].resettozero=1;
-		for(i=0;i<=NUMBEROFCOLUMNS;i++)// ramp over # of cells per page
-		{
-			for(k=0;k<NUMBEROFPAGES;k++)// ramp over pages
-			{
-				AnalogTable[i][j][k].fcn=1;
-				AnalogTable[i][j][k].fval=0.0;
-				AnalogTable[i][j][k].tscale=1;
-
-			}
-		}
-	}
-
-
-	for (j=0;j<=NUMBERDIGITALCHANNELS;j++)
-	{
-		for(i=0;i<=NUMBEROFCOLUMNS;i++)// ramp over # of cells per page
-		{
-			for(k=0;k<NUMBEROFPAGES;k++)// ramp over pages
-				DigTableValues[i][j][k]=0;
-		}
-	}
-
-	for(i=0;i<=NUMBEROFCOLUMNS;i++)// ramp over # of cells per page
-	{
-		for(k=0;k<NUMBEROFPAGES;k++)// ramp over pages
-		{
-			InfoArray[i][k].index = 0;
-			InfoArray[i][k].value = 0.0;
-			strcpy(InfoArray[i][k].text, "");
-		}
-	}
-
-
-
-	/* Initialize laser arrays - everything set to hold last value (default) 1st set to step */
-	LaserTable[0][1][1].fcn=1;
-	LaserTable[1][1][1].fcn=1;
-	LaserTable[2][1][1].fcn=1;
-	LaserTable[3][1][1].fcn=1;
-
-
+	// Initialize Arrays
+	initializeAnalogArrays();
+	initializeDigArray();
+	initializeInfoArray();
+	initializeLaserArrays();
 	initializeGpibDevArray();
-
 	initializeDdsTables();
-
 	// done initializing
 
 	EventPeriod=DefaultEventPeriod;
@@ -150,22 +106,83 @@ int main (int argc, char *argv[])
 
 
 
-	DisplayPanel (panelHandle);
+	DisplayPanel(panelHandle);
 
-	RunUserInterface ();  // start the GUI
+	RunUserInterface();  // start the GUI
 
-	DiscardPanel (panelHandle);  // returns here after the GUI shutsdown
+	DiscardPanel(panelHandle);  // returns here after the GUI shutsdown
 
 	return 0;
 }
 
+void initializeAnalogArrays(void){
+
+	int i,j,k;
+
+	// Initialize arrays (to avoid undefined elements causing -99 to be written)
+	for( j=0; j < NUMBERANALOGCHANNELS+1; j++ )
+	{		 //ramp over # of analog chanels
+		AChName[j].tfcn=1;
+		AChName[j].tbias=0;
+		AChName[j].resettozero=1;
+		for( i=0; i < NUMBEROFCOLUMNS+1; i++ )// ramp over # of cells per page
+		{
+			for( k=0; k < NUMBEROFPAGES; k++ )// ramp over pages
+			{
+				AnalogTable[i][j][k].fcn=1;
+				AnalogTable[i][j][k].fval=0.0;
+				AnalogTable[i][j][k].tscale=1;
+			}
+		}
+	}
+}
+
+void initializeDigArray(void){
+
+	int i,j,k;
+
+	for( j=0; j < NUMBERDIGITALCHANNELS+1; j++ )
+	{
+		for( i=0; i < NUMBEROFCOLUMNS+1; i++ )// ramp over # of cells per page
+		{
+			for( k=0; k < NUMBEROFPAGES; k++ )// ramp over pages
+			{
+				DigTableValues[i][j][k]=0;
+			}
+		}
+	}
+}
+
+void initializeInfoArray(void){
+
+	int i,j;
+
+	for( i=0; i < NUMBEROFCOLUMNS+1; i++ ) // ramp over # of cells per page
+	{
+		for( j=0; j < NUMBEROFPAGES; j++ ) // ramp over pages
+		{
+			InfoArray[i][j].index = 0;
+			InfoArray[i][j].value = 0.0;
+			strcpy(InfoArray[i][j].text, "");
+		}
+	}
+}
+
+void initializeLaserArrays(void){
+
+	// Initialize laser arrays - everything set to hold last value (default) 1st set to step
+	LaserTable[0][1][1].fcn=1;
+	LaserTable[1][1][1].fcn=1;
+	LaserTable[2][1][1].fcn=1;
+	LaserTable[3][1][1].fcn=1;
+}
 
 void initializeDdsTables(void){
 
 	int i,j;
 
 	//initialize dds_tables, don't assume anything...
-	for( i=0; i < NUMBEROFCOLUMNS; ++i ){
+	for( i=0; i < NUMBEROFCOLUMNS+1; ++i ){
 		for( j=0; j < NUMBEROFPAGES; ++j ){
 
 			ddstable[i][j].start_frequency = 0.0;
@@ -189,7 +206,6 @@ void initializeDdsTables(void){
 	}
 }
 
-
 void initializeGpibDevArray(void){
 
 	int i,j;
@@ -207,15 +223,6 @@ void initializeGpibDevArray(void){
 		}
 	}
 }
-
-
-
-
-
-
-
-
-
 
 
 
