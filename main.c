@@ -65,9 +65,9 @@ int main (int argc, char *argv[])
 	if ((panelHandleANRITSU = LoadPanel (0, "AnritsuControl.uir",PANEL)) < 0)
 		return -1;
 
-
 	panelHandle0 = panelHandle; // since panelhandle is usually used as a parameter in functions
 
+	// Load the processor default
 	fileHandle = OpenFile ("processordefault.txt",VAL_READ_ONLY,VAL_OPEN_AS_IS,VAL_BINARY );
 	ReadFile (fileHandle,procbuff, 1);
 	processorT1x = *procbuff-48;
@@ -86,25 +86,17 @@ int main (int argc, char *argv[])
 	initializeMultiScan();
 	// done initializing
 
-	EventPeriod=DefaultEventPeriod;
-
-	//Sets the First Page as Active
-	SetCtrlVal (panelHandle,PANEL_TB_SHOWPHASE[1],1);
-	for (i=2;i<=(NUMBEROFPAGES-1);i++) // somebody set NUMBEROFPAGES to 11 -- to be quick and dirty -- no idea what that's supposed to be ... funny?
-	{
-		SetCtrlVal (panelHandle,PANEL_TB_SHOWPHASE[i],0);
-	}
-
-
 	//Initialize Settings Tables (with zeroes) and sets Laser Digital comm channels
 	LaserSettingsInit();
-
 
 	// Initialize debug tracker for number of GPIB writes since program start.
 	DEBUG_NUMBER_IBWRT_CALLS = 0;
 
 	// I think this was supposed to be for estimating when to start the pre-evaluation of the next sequence
-	CycleTime=-1.0;
+	CycleTime = -1.0;
+
+	// Set the default EventPeriod (note rhs is a macro)
+	EventPeriod = DefaultEventPeriod;
 
 
 	initializeGUI();
@@ -128,136 +120,7 @@ int main (int argc, char *argv[])
 	return 0;
 }
 
-void initializeAnalogArrays(void){
 
-	int i,j,k;
-
-	// Initialize arrays (to avoid undefined elements causing -99 to be written)
-	for( j=0; j < NUMBERANALOGCHANNELS+1; j++ )
-	{		 //ramp over # of analog chanels
-		AChName[j].tfcn=1;
-		AChName[j].tbias=0;
-		AChName[j].resettozero=1;
-		for( i=0; i < NUMBEROFCOLUMNS+1; i++ )// ramp over # of cells per page
-		{
-			for( k=0; k < NUMBEROFPAGES; k++ )// ramp over pages
-			{
-				AnalogTable[i][j][k].fcn=1;
-				AnalogTable[i][j][k].fval=0.0;
-				AnalogTable[i][j][k].tscale=1;
-			}
-		}
-	}
-}
-
-void initializeDigArray(void){
-
-	int i,j,k;
-
-	for( j=0; j < NUMBERDIGITALCHANNELS+1; j++ )
-	{
-		for( i=0; i < NUMBEROFCOLUMNS+1; i++ )// ramp over # of cells per page
-		{
-			for( k=0; k < NUMBEROFPAGES; k++ )// ramp over pages
-			{
-				DigTableValues[i][j][k]=0;
-			}
-		}
-	}
-}
-
-void initializeInfoArray(void){
-
-	int i,j;
-
-	for( i=0; i < NUMBEROFCOLUMNS+1; i++ ) // ramp over # of cells per page
-	{
-		for( j=0; j < NUMBEROFPAGES; j++ ) // ramp over pages
-		{
-			InfoArray[i][j].index = 0;
-			InfoArray[i][j].value = 0.0;
-			strcpy(InfoArray[i][j].text, "");
-		}
-	}
-}
-
-void initializeLaserArrays(void){
-
-	// Initialize laser arrays - everything set to hold last value (default) 1st set to step
-	LaserTable[0][1][1].fcn=1;
-	LaserTable[1][1][1].fcn=1;
-	LaserTable[2][1][1].fcn=1;
-	LaserTable[3][1][1].fcn=1;
-}
-
-void initializeDdsTables(void){
-
-	int i,j;
-
-	// Set some global variables
-	DDSFreq.extclock=15.36;
-	DDSFreq.PLLmult=8;
-	DDSFreq.clock=DDSFreq.extclock*(double)DDSFreq.PLLmult;
-
-	//initialize dds_tables, don't assume anything...
-	for( i=0; i < NUMBEROFCOLUMNS+1; ++i ){
-		for( j=0; j < NUMBEROFPAGES; ++j ){
-
-			ddstable[i][j].start_frequency = 0.0;
-			ddstable[i][j].end_frequency = 0.0;
-			ddstable[i][j].amplitude = 0.0;
-			ddstable[i][j].delta_time = 0.0;
-			ddstable[i][j].is_stop = TRUE;
-
-			dds2table[i][j].start_frequency = 0.0;
-			dds2table[i][j].end_frequency = 0.0;
-			dds2table[i][j].amplitude = 0.0;
-			dds2table[i][j].delta_time = 0.0;
-			dds2table[i][j].is_stop = TRUE;
-
-			dds3table[i][j].start_frequency = 0.0;
-			dds3table[i][j].end_frequency = 0.0;
-			dds3table[i][j].amplitude = 0.0;
-			dds3table[i][j].delta_time = 0.0;
-			dds3table[i][j].is_stop = TRUE;
-		}
-	}
-}
-
-void initializeGpibDevArray(void){
-
-	int i,j;
-
-	// initialize GPIB device array
-	for( i=0; i < NUMBERGPIBDEV; ++i){
-		GPIBDev[i].address = 0;
-		strcpy(GPIBDev[i].devname, "noname");
-		strcpy(GPIBDev[i].cmdmask, "");
-		strcpy(GPIBDev[i].command, "");
-		strcpy(GPIBDev[i].lastsent, "");
-		GPIBDev[i].active = FALSE;
-		for( j=0; j < NUMGPIBPROGVALS; ++j ){
-			GPIBDev[i].value[j] = 0.0;
-		}
-	}
-}
-
-
-void initializeMultiScan(void)
-{
-	parameterscanmode = 0;
-	MultiScan.Active = FALSE;
-
-	PScan.Analog.Scan_Step_Size=1.0;
-	PScan.Analog.Iterations_Per_Step=1;
-	PScan.Scan_Active=FALSE;
-	PScan.Use_Scan_List=FALSE;
-	TwoParam=FALSE;
-}
-
-
-
-//**********************************************************************************
 void initializeGUI()// initialzie the GUI by setting menu's and arranging things
 {
 	int i=0;
@@ -266,7 +129,12 @@ void initializeGUI()// initialzie the GUI by setting menu's and arranging things
 	char buff[200];
 
 
-	//
+	//Sets the First Page as Active and the rest as inactive
+	SetCtrlVal(panelHandle,PANEL_TB_SHOWPHASE[1],1);
+	for( i=2; i < NUMBEROFPAGES; i++ )
+	{
+		SetCtrlVal(panelHandle,PANEL_TB_SHOWPHASE[i],0);
+	}
 
 	// Menu setting
 	menuHandle=GetPanelMenuBar(panelHandle);
@@ -469,3 +337,128 @@ void initializeGUI()// initialzie the GUI by setting menu's and arranging things
 	SetPanelAttribute (panelHandle, ATTR_TITLE, buff);
 }
 
+void initializeAnalogArrays(void){
+
+	int i,j,k;
+
+	// Initialize arrays (to avoid undefined elements causing -99 to be written)
+	for( j=0; j < NUMBERANALOGCHANNELS+1; j++ )
+	{		 //ramp over # of analog chanels
+		AChName[j].tfcn=1;
+		AChName[j].tbias=0;
+		AChName[j].resettozero=1;
+		for( i=0; i < NUMBEROFCOLUMNS+1; i++ )// ramp over # of cells per page
+		{
+			for( k=0; k < NUMBEROFPAGES; k++ )// ramp over pages
+			{
+				AnalogTable[i][j][k].fcn=1;
+				AnalogTable[i][j][k].fval=0.0;
+				AnalogTable[i][j][k].tscale=1;
+			}
+		}
+	}
+}
+
+void initializeDigArray(void){
+
+	int i,j,k;
+
+	for( j=0; j < NUMBERDIGITALCHANNELS+1; j++ )
+	{
+		for( i=0; i < NUMBEROFCOLUMNS+1; i++ )// ramp over # of cells per page
+		{
+			for( k=0; k < NUMBEROFPAGES; k++ )// ramp over pages
+			{
+				DigTableValues[i][j][k]=0;
+			}
+		}
+	}
+}
+
+void initializeInfoArray(void){
+
+	int i,j;
+
+	for( i=0; i < NUMBEROFCOLUMNS+1; i++ ) // ramp over # of cells per page
+	{
+		for( j=0; j < NUMBEROFPAGES; j++ ) // ramp over pages
+		{
+			InfoArray[i][j].index = 0;
+			InfoArray[i][j].value = 0.0;
+			strcpy(InfoArray[i][j].text, "");
+		}
+	}
+}
+
+void initializeLaserArrays(void){
+
+	// Initialize laser arrays - everything set to hold last value (default) 1st set to step
+	LaserTable[0][1][1].fcn=1;
+	LaserTable[1][1][1].fcn=1;
+	LaserTable[2][1][1].fcn=1;
+	LaserTable[3][1][1].fcn=1;
+}
+
+void initializeDdsTables(void){
+
+	int i,j;
+
+	// Set some global variables
+	DDSFreq.extclock=15.36;
+	DDSFreq.PLLmult=8;
+	DDSFreq.clock=DDSFreq.extclock*(double)DDSFreq.PLLmult;
+
+	//initialize dds_tables, don't assume anything...
+	for( i=0; i < NUMBEROFCOLUMNS+1; ++i ){
+		for( j=0; j < NUMBEROFPAGES; ++j ){
+
+			ddstable[i][j].start_frequency = 0.0;
+			ddstable[i][j].end_frequency = 0.0;
+			ddstable[i][j].amplitude = 0.0;
+			ddstable[i][j].delta_time = 0.0;
+			ddstable[i][j].is_stop = TRUE;
+
+			dds2table[i][j].start_frequency = 0.0;
+			dds2table[i][j].end_frequency = 0.0;
+			dds2table[i][j].amplitude = 0.0;
+			dds2table[i][j].delta_time = 0.0;
+			dds2table[i][j].is_stop = TRUE;
+
+			dds3table[i][j].start_frequency = 0.0;
+			dds3table[i][j].end_frequency = 0.0;
+			dds3table[i][j].amplitude = 0.0;
+			dds3table[i][j].delta_time = 0.0;
+			dds3table[i][j].is_stop = TRUE;
+		}
+	}
+}
+
+void initializeGpibDevArray(void){
+
+	int i,j;
+
+	// initialize GPIB device array
+	for( i=0; i < NUMBERGPIBDEV; ++i){
+		GPIBDev[i].address = 0;
+		strcpy(GPIBDev[i].devname, "noname");
+		strcpy(GPIBDev[i].cmdmask, "");
+		strcpy(GPIBDev[i].command, "");
+		strcpy(GPIBDev[i].lastsent, "");
+		GPIBDev[i].active = FALSE;
+		for( j=0; j < NUMGPIBPROGVALS; ++j ){
+			GPIBDev[i].value[j] = 0.0;
+		}
+	}
+}
+
+void initializeMultiScan(void)
+{
+	parameterscanmode = 0;
+	MultiScan.Active = FALSE;
+
+	PScan.Analog.Scan_Step_Size=1.0;
+	PScan.Analog.Iterations_Per_Step=1;
+	PScan.Scan_Active=FALSE;
+	PScan.Use_Scan_List=FALSE;
+	TwoParam=FALSE;
+}
