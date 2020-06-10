@@ -18,7 +18,6 @@
 
 void initializeGUI(void);
 
-
 void initializeAnalogArrays(void);
 void initializeDigArray(void);
 void initializeInfoArray(void);

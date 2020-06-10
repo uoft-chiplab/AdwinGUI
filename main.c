@@ -89,6 +89,9 @@ int main (int argc, char *argv[])
 	//Initialize Settings Tables (with zeroes) and sets Laser Digital comm channels
 	LaserSettingsInit();
 
+	// Initialize the main GUI
+	initializeGUI();
+
 	// Initialize debug tracker for number of GPIB writes since program start.
 	DEBUG_NUMBER_IBWRT_CALLS = 0;
 
@@ -99,16 +102,12 @@ int main (int argc, char *argv[])
 	EventPeriod = DefaultEventPeriod;
 
 
-	initializeGUI();
-
-
 	// Scott Testing V17 saving and loading
 	SaveSequenceV17("C:\\Users\\coldatoms\\Documents\\Lab\\LocalCode\\ADwin_sequencers\\test.woot",
 			 strlen("C:\\Users\\coldatoms\\Documents\\Lab\\LocalCode\\ADwin_sequencers\\test.woot"));
 
 	LoadSequenceV17("C:\\Users\\coldatoms\\Documents\\Lab\\LocalCode\\ADwin_sequencers\\test.woot",
 			 strlen("C:\\Users\\coldatoms\\Documents\\Lab\\LocalCode\\ADwin_sequencers\\test.woot"));
-
 
 
 	DisplayPanel(panelHandle);
