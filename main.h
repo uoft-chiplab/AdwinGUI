@@ -16,6 +16,9 @@
 #include "GPIB_SRS_SETUP2.h"
 
 
+void initializeGUI(void);
+
+
 void initializeAnalogArrays(void);
 void initializeDigArray(void);
 void initializeInfoArray(void);
@@ -23,8 +26,6 @@ void initializeLaserArrays(void);
 void initializeGpibDevArray(void);
 void initializeDdsTables(void);
 void initializeMultiScan(void);
-
-void initializeGUI(void);
 
 
 #endif

@@ -31,7 +31,7 @@
 #include "AnritsuSettings2.h"//For LoadAnritsuSettings fn
 #include "AnalogSettings2.h"//For SetAnalogChannels fn
 #include "DigitalSettings2.h"//For SetDigitalChannels fn
-
+#include "main.h"//For reinitializing after failed load
 
 
 /************************************************************************
@@ -247,7 +247,21 @@ void LoadSettings(int version)
 		case 17:
 			if( LoadSequenceV17(panFilePath,strlen(panFilePath)) ){// negative on error, 0 on success
 				// If we have failed to load properly, the initialize everything to the initial state as in main.c
-				// TO BE IMPLEMENTED ONCE MAIN.C IS REFACTORED.
+				// NOTE: this does not reset everything (such as menu options) so we still warn the user to restart the sequencer
+				initializeAnalogArrays();
+				initializeDigArray();
+				initializeInfoArray();
+				initializeLaserArrays();
+				initializeGpibDevArray();
+				initializeDdsTables();
+				initializeMultiScan();
+
+				LaserSettingsInit();
+
+				MessagePopup("Error loading sequence!",
+							 "There was an error while reading from the file and setting global variables.\n!You are strongly advised to restart the sequencer!");
+
+				success = 0;
 			}
 			else {
 				success = 1;
