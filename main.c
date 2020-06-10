@@ -121,6 +121,7 @@ int main (int argc, char *argv[])
 
 
 void initializeGUI()// initialzie the GUI by setting menu's and arranging things
+// Also includes calling the fns that put the analog and dig names beside the rows.
 {
 	int i=0;
 	int ledleft,ledtop;

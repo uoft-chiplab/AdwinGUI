@@ -616,6 +616,13 @@ int LoadSequenceV17(char* load_name, int ln_length)
 		return -1;
 	}
 
+	// These lines should go in the correct subfunction, but because SetAnalogChannels affects both analog&dds&anritsu rows,
+	//  I put them here so it happens once after all of them have been loaded.
+	LoadDDSSettings();// Enters the DDSsettings into the GUI Panel
+	LoadAnritsuSettings();// Enters the Anritsu settings into the GUI Panel
+	SetAnalogChannels();// Put the labels and units for analog (+dds&anritsu) rows
+	SetDigitalChannels();// Put labels for dig channels. And checks that none of the digital lines to dds's are accidentally in use.
+
 	// We have finally gotten to this point so close the file and return success
 	fclose(fbuffer);
 	printf("Loaded file successfully\n");
