@@ -272,12 +272,6 @@ struct LaserProps{
 }LaserProperties[NUMBERLASERS];
 
 
-//The digital channels which the Adwin triggers the rabbits for the respective lasers on
-#define LASCHAN0 (117)
-#define LASCHAN1 (118)
-#define LASCHAN2 (119)
-#define LASCHAN3 (120)
-
 #define MINRAMP_LEADOUT (0.0)   //This much time in (ms) is given to the rabbit to begin preprocessing of events following a ramp.
 #define MAX_DDS_SCANRATE (100.0) //in MHz/ms (this is actually currently limited by the max laser scan response rate
 #define MIN_DDS_FREQ (0.001) //MHz - this is a result of the minimum freq which is accepted into Hittite prescalers
