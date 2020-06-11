@@ -116,20 +116,27 @@ int CVICALLBACK LASER_TOGGLE_CALLBACK (int panel, int control, int event,
 
 
 /*************************************************************************************************************************/
+// Copies the LASER_NAMES into the appropriate label locations on the panel. Red bkgnd applied to active lasers, white
+//	for inactive lasers.
+// Also sets the name in the drop down box in LaserSettings.uir
 void SetLaserLabels(void)
-/*  Copies the LASER_NAMES into the appropriate label locations on the panel. Red bkgnd applied to active lasers, white
-	for inactive lasers. */
 {
 	int i;
-	for(i=0;i<NUMBERLASERS;i++)  {
-		SetTableCellVal (panelHandle, PANEL_TBL_ANAMES, MakePoint(1,i+NUMBERANALOGCHANNELS+NUMBERDDS+ NUMBEROFANRITSU*2+ 1), LaserProperties[i].Name);
+	// Index offset into ACh names table
+	// The cause of PhaseOMatic and Micromatic off by 2 was due to there being "+NUMBEROFANRITSU*2" in this calc.
+	int laserRowOffset = NUMBERANALOGCHANNELS+NUMBERDDS;
 
-		if (LaserProperties[i].Active ==1)
-			SetTableCellAttribute (panelHandle, PANEL_TBL_ANAMES,MakePoint(1,i+NUMBERANALOGCHANNELS+NUMBERDDS + NUMBEROFANRITSU*2 +1), ATTR_TEXT_BGCOLOR,0xFF3366L);
-		else
-			SetTableCellAttribute (panelHandle, PANEL_TBL_ANAMES,MakePoint(1,i+NUMBERANALOGCHANNELS+NUMBERDDS + NUMBEROFANRITSU*2 +1), ATTR_TEXT_BGCOLOR,VAL_WHITE);
+	for( i=0; i < NUMBERLASERS; i++)
+	{
+		SetTableCellVal(panelHandle, PANEL_TBL_ANAMES, MakePoint(1,(i+1) + laserRowOffset), LaserProperties[i].Name);
 
-		ReplaceListItem (panelHandle10,PANEL_LASER_RING,i,LaserProperties[i].Name,i);
+		if (LaserProperties[i].Active ==1){
+			SetTableCellAttribute(panelHandle, PANEL_TBL_ANAMES,MakePoint(1,(i+1) + laserRowOffset), ATTR_TEXT_BGCOLOR,0xFF3366L);
+		} else {
+			SetTableCellAttribute(panelHandle, PANEL_TBL_ANAMES,MakePoint(1,(i+1) + laserRowOffset), ATTR_TEXT_BGCOLOR,VAL_WHITE);
+		}
+
+		ReplaceListItem(panelHandle10,PANEL_LASER_RING,i,LaserProperties[i].Name,i);
 	}
 }
 
