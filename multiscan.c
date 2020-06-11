@@ -2026,6 +2026,50 @@ void ReshapeMultiScanTable( int top,int left,int height)
 
 }
 
+// Put the values that are in MultiScan.Par[j].{Page,Column,Row} back into
+//  the table PANEL_MULTISCAN_POS_TABLE.
+// Written initially for use by saveload to put the loaded MultiScan into the sequencer
+//  since 90% of the code uses the values in PANEL_MULTISCAN_POS_TABLE as opposed to the
+//  MultiScan.Par[j]. (and MultiScan.Par[j] is set each time from PANEL_MULTISCAN_POS_TABLE)
+void putMultiScanPosTable(void)
+{
+	int numCols, numColsWant;
+	int i;
+
+	// Get the current number of colunns
+	GetNumTableColumns(panelHandle, PANEL_MULTISCAN_POS_TABLE, &numCols);
+
+	// Get the number of columns we want
+	numColsWant = MultiScan.NumPars;
+	printf("numColsWAnt = %d\n",numColsWant);
+
+	// Error checking: There is something wrong since can't have less than 1 col or more than the max
+	if( numColsWant < 1 || numColsWant > NUMMAXSCANPARAMETERS){
+		printf("Error, did not load multiscan cell positions due to incorrect number of columns\n");
+		return;
+	}
+
+	// Resize the tables
+	if( numCols > numColsWant ){// delete some cols
+		DeleteTableColumns(panelHandle, PANEL_MULTISCAN_POS_TABLE, numColsWant+1, -1);
+		DeleteTableColumns(panelHandle, PANEL_MULTISCAN_VAL_TABLE, numColsWant+1, -1);
+		SetCtrlVal(panelHandle, PANEL_MULTISCAN_NUM_NUMERIC, numColsWant);
+	}
+	else if( numCols < numColsWant ){// add some cols
+		InsertTableColumns(panelHandle, PANEL_MULTISCAN_POS_TABLE, -1, numColsWant-numCols, 0);
+		InsertTableColumns(panelHandle, PANEL_MULTISCAN_VAL_TABLE, -1, numColsWant-numCols, 0);
+		SetCtrlVal(panelHandle, PANEL_MULTISCAN_NUM_NUMERIC, numColsWant);
+	}
+	// else do nothing since we have the correct number of columns
+
+	// Now just set the pages, rows, cols
+	for( i = 0; i < numColsWant; i++ ){
+		SetTableCellVal(panelHandle, PANEL_MULTISCAN_POS_TABLE, MakePoint(i+1,1), MultiScan.Par[i].Page);
+		SetTableCellVal(panelHandle, PANEL_MULTISCAN_POS_TABLE, MakePoint(i+1,2), MultiScan.Par[i].Column);
+		SetTableCellVal(panelHandle, PANEL_MULTISCAN_POS_TABLE, MakePoint(i+1,3), MultiScan.Par[i].Row);
+	}
+}
+
 
 
 
@@ -2110,7 +2154,6 @@ void CVICALLBACK MultiScan_AddAnalogCellTimeScaleToScan(int panelHandle, int con
 	}
 }
 
-
 // Add a GPIB cell to the multi scan list
 void CVICALLBACK MultiScan_AddGPIBCellToScan(int panelHandle, int controlID, int MenuItemID, void *callbackData)
 {   // Adds a column to the multiscan list to scan the current cell's value
@@ -2146,7 +2189,6 @@ void CVICALLBACK MultiScan_AddGPIBCellToScan(int panelHandle, int controlID, int
 		}
 	}
 }
-
 
 void CVICALLBACK MultiScan_Table_SetVals(int panelHandle, int controlID, int MenuItemID, void *callbackData)
 {

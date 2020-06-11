@@ -32,7 +32,7 @@
 #include "AnalogSettings2.h"//For SetAnalogChannels fn
 #include "DigitalSettings2.h"//For SetDigitalChannels fn
 #include "main.h"//For reinitializing after failed load
-
+#include "multiscan.h"// For putMultiScanPosTable fn
 
 /************************************************************************
 Overall Save and Load that chooses correct version
@@ -2420,6 +2420,7 @@ long getMultiScanFromFile(FILE *fbuff, long fpos_eof)
 		printf("Expected to read more elements from file for tag |%s|\n", stag);
 		return -1;
 	}
+	putMultiScanPosTable();
 
 	fpos = checkFooter(fbuff, etag, fpos_eof);
 	if( fpos < 0 ){// pass though signal, either -1 for error or -2 for eof
@@ -2583,7 +2584,7 @@ long readHeader(FILE *fbuff, char *tag, int *elem_size, int *num_dims, int *dims
 	long fpos, fpos_binary;
 	int elems_read;
 
-	printf("---Enter readHeader\n");
+	printf("---Enter readHeader for tag:|%s|\n", tag);
 
 	fpos = ftell(fbuff);// First save position in file
 	elems_read = fread(cbuff, sizeof(char), clen, fbuff);// read into char buffer
@@ -2603,8 +2604,8 @@ long readHeader(FILE *fbuff, char *tag, int *elem_size, int *num_dims, int *dims
 		return -1;// return negative for error (not V17 and above)
 	}
 
-	printf("cptr:|%.40s|\n", cptr);
-	printf("etag:|%s|\n", tag);
+	//printf("cptr:|%.40s|\n", cptr);// debug
+	//printf("etag:|%s|\n", tag);// debug
 	if( strncmp(cptr,tag,strlen(tag)) == 0 ){// if strs match
 		cptr += strlen(tag);// cptr now points to the first '~'
 	}
@@ -2640,8 +2641,8 @@ long readHeader(FILE *fbuff, char *tag, int *elem_size, int *num_dims, int *dims
 	fseek(fbuff, fpos, SEEK_SET);// seek back to the start of the header
 	++cptr;// increment to point at the first byte of the binary data
 	fpos_binary = fpos + (cptr-cbuff);// calculate the fpos for the binary data start
-	printf("diff %d\n", (cptr-cbuff));
-	printf("fpbi %d\n", fpos_binary);
+	//printf("diff %d\n", (cptr-cbuff));// debug
+	//printf("fpbi %d\n", fpos_binary);// debug
 	if( fpos_binary >= fpos_eof ){// if we have reached the end of the file
 		printf("Binary data is past the end of the file\n");
 		return -1;// contrary to checkFooter, having the location of the binary data be past the end of the file is an error
@@ -2660,7 +2661,7 @@ long checkFooter(FILE *fbuff, char *endtag, long fpos_eof){
 	long fpos, fpos_next;
 	int elems_read;
 
-	printf("---Enter checkFooter\n");
+	printf("---Enter checkFooter for tag:|%s|\n", endtag);
 
 	fpos = ftell(fbuff);// First save position in file
 	elems_read = fread(cbuff, sizeof(char), clen, fbuff);// read into char buffer
@@ -2675,8 +2676,8 @@ long checkFooter(FILE *fbuff, char *endtag, long fpos_eof){
 		}
 	}
 
-	printf("cptr:|%.40s|\n", cptr);
-	printf("etag:|%s|\n", endtag);
+	//printf("cptr:|%.40s|\n", cptr);// debug
+	//printf("etag:|%s|\n", endtag);// debug
 	if( strncmp(cptr,endtag,strlen(endtag)) == 0 ){// if strs match
 		cptr += strlen(endtag);// cptr now points to the char after the '>'
 	}
