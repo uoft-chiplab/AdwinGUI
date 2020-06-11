@@ -2379,6 +2379,8 @@ int putMultiScanToFile(FILE *fbuff)
 	if( linear_size < 0 ){ return linear_size; }// pass though error
 
 	printMultiScan();// debug
+	getMultiScanGuiVals();
+	printMultiScan();// debug
 
 	elems_writ = fwrite(&MultiScan, elem_size, linear_size, fbuff);// write binary data
 
@@ -2422,7 +2424,7 @@ long getMultiScanFromFile(FILE *fbuff, long fpos_eof)
 		printf("Expected to read more elements from file for tag |%s|\n", stag);
 		return -1;
 	}
-	putMultiScanPosTable();
+	setMultiScanPosTable();
 
 	fpos = checkFooter(fbuff, etag, fpos_eof);
 	if( fpos < 0 ){// pass though signal, either -1 for error or -2 for eof

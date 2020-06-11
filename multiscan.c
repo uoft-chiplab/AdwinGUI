@@ -2031,7 +2031,7 @@ void ReshapeMultiScanTable( int top,int left,int height)
 // Written initially for use by saveload to put the loaded MultiScan into the sequencer
 //  since 90% of the code uses the values in PANEL_MULTISCAN_POS_TABLE as opposed to the
 //  MultiScan.Par[j]. (and MultiScan.Par[j] is set each time from PANEL_MULTISCAN_POS_TABLE)
-void putMultiScanPosTable(void)
+void setMultiScanPosTable(void)
 {
 	int numCols, numColsWant;
 	int i;
@@ -2041,11 +2041,10 @@ void putMultiScanPosTable(void)
 
 	// Get the number of columns we want
 	numColsWant = MultiScan.NumPars;
-	printf("numColsWAnt = %d\n",numColsWant);
 
 	// Error checking: There is something wrong since can't have less than 1 col or more than the max
 	if( numColsWant < 1 || numColsWant > NUMMAXSCANPARAMETERS){
-		printf("Error, did not load multiscan cell positions due to incorrect number of columns\n");
+		printf("--- ERROR: did not load multiscan cell positions due to incorrect number of columns: %d\n", numColsWant);
 		return;
 	}
 
@@ -2069,6 +2068,37 @@ void putMultiScanPosTable(void)
 		SetTableCellVal(panelHandle, PANEL_MULTISCAN_POS_TABLE, MakePoint(i+1,3), MultiScan.Par[i].Row);
 	}
 }
+
+// Put the values that are in the gui that control MultiSCan into the MultiScan object.
+// Written initially for use by saveload to update MultiScan before saving since if the
+//  sequence was just loaded or if there was no scan run, then MultiScan is not up to date.
+// Do not update everything in MultiScan since UpdateMultiScanValues fn sets a bunch of things
+//  when a new scan is started anyways.
+void getMultiScanGuiVals(void)
+{
+	int val;
+	int i;
+
+	// Get and update the current number of colunns
+	GetNumTableColumns(panelHandle, PANEL_MULTISCAN_POS_TABLE, &val);
+	MultiScan.NumPars = val;
+
+	// Get and update the number of iterations
+	GetCtrlVal(panelHandle, PANEL_MULTISCAN_ITS_NUMERIC, &val);
+	MultiScan.Iterations = val;
+
+	// Get and update the pages, cols, rows
+	for( i = 0; i < MultiScan.NumPars; ++i )
+	{
+		GetTableCellVal(panelHandle, PANEL_MULTISCAN_POS_TABLE, MakePoint(i+1,1), &val);// page
+		MultiScan.Par[i].Page = val;
+		GetTableCellVal(panelHandle, PANEL_MULTISCAN_POS_TABLE, MakePoint(i+1,2), &val);// column
+		MultiScan.Par[i].Column = val;
+		GetTableCellVal(panelHandle, PANEL_MULTISCAN_POS_TABLE, MakePoint(i+1,3), &val);// row
+		MultiScan.Par[i].Row = val;
+	}
+}
+
 
 // Print MultiScan for debugging
 void printMultiScan(void)

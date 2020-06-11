@@ -17,7 +17,8 @@ void updateScannedCellsWithOriginalValues(void);
 void writeToScanInfoFile(void);
 void EnableScanControls(void);
 void ReshapeMultiScanTable( int top,int left,int height);
-void putMultiScanPosTable(void);
+void setMultiScanPosTable(void);
+void getMultiScanGuiVals(void);
 void printMultiScan(void);
 
 // MultiScan callbacks
