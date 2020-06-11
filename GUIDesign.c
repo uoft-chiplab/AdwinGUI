@@ -1923,7 +1923,7 @@ int CVICALLBACK ANALOGTABLE_CALLBACK (int panel, int control, int event,
 			{
 				SetLaserControlPanel(currenty-NUMBERANALOGCHANNELS-NUMBERDDS-1);
 				panel_to_display = panelHandle11;
-				printf("Fuck me\n");
+				//printf("Fuck me\n");// super special debug
 			}
 			else if ((currenty>NUMBERANALOGCHANNELS+NUMBERDDS+NUMBERLASERS)&&(currenty<=NUMBERANALOGROWS))
 			{

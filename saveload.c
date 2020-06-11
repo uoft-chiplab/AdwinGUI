@@ -1410,12 +1410,12 @@ long getDdsEorsFromFile(FILE *fbuff, long fpos_eof)
 		return -1;
 	}
 
-	printf("elem_size: %d, linear_size: %d, dims[0]:%d\n",elem_size,linear_size,dims[0]);// debug
+	//printf("elem_size: %d, linear_size: %d, dims[0]:%d\n",elem_size,linear_size,dims[0]);// debug
 
 	// Allocate the temporary required amount of memory
 	ddseors = (double *) malloc( elem_size * linear_size );
 
-	printf("ddseors allocated\n");// debug
+	//printf("ddseors allocated\n");// debug
 
 	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the binary data
 	elems_read = fread(ddseors, elem_size, linear_size, fbuff);// load the binary data directly into the array
@@ -2378,9 +2378,7 @@ int putMultiScanToFile(FILE *fbuff)
 	linear_size = writeHeader(fbuff, stag, elem_size, num_dims, dims);// write header
 	if( linear_size < 0 ){ return linear_size; }// pass though error
 
-	printMultiScan();// debug
-	getMultiScanGuiVals();
-	printMultiScan();// debug
+	getMultiScanGuiVals();// update the MultiScan variable so writing makes sense in all cases
 
 	elems_writ = fwrite(&MultiScan, elem_size, linear_size, fbuff);// write binary data
 
@@ -2588,7 +2586,7 @@ long readHeader(FILE *fbuff, char *tag, int *elem_size, int *num_dims, int *dims
 	long fpos, fpos_binary;
 	int elems_read;
 
-	printf("---Enter readHeader for tag:|%s|\n", tag);
+	//printf("---Enter readHeader for tag:|%s|\n", tag);// debug
 
 	fpos = ftell(fbuff);// First save position in file
 	elems_read = fread(cbuff, sizeof(char), clen, fbuff);// read into char buffer
@@ -2665,7 +2663,7 @@ long checkFooter(FILE *fbuff, char *endtag, long fpos_eof){
 	long fpos, fpos_next;
 	int elems_read;
 
-	printf("---Enter checkFooter for tag:|%s|\n", endtag);
+	//printf("---Enter checkFooter for tag:|%s|\n", endtag);// debug
 
 	fpos = ftell(fbuff);// First save position in file
 	elems_read = fread(cbuff, sizeof(char), clen, fbuff);// read into char buffer
