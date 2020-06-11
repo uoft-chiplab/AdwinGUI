@@ -2070,7 +2070,29 @@ void putMultiScanPosTable(void)
 	}
 }
 
+// Print MultiScan for debugging
+void printMultiScan(void)
+{
+	printf("-------\nMultiScan:\n");
+	printf("CurrentStep: %d\n", MultiScan.CurrentStep);
+	printf("CurrentIteration: %d\n", MultiScan.CurrentIteration);
+	printf("Iterations: %d\n", MultiScan.Iterations);
+	printf("NumPars: %d\n", MultiScan.NumPars);
+	printf("Counter: %d\n", MultiScan.Counter);
+	printf("NextCommandsFileNumber: %d\n", MultiScan.NextCommandsFileNumber);
+	printf("CommandsFilePath: |%s|\n", MultiScan.CommandsFilePath);
+	printf("ScanDirPath: |%s|\n", MultiScan.ScanDirPath);
+	printf("HoldingPattern: %d\n", MultiScan.HoldingPattern);
+	printf("SentinelFoundValue: %f\n", MultiScan.SentinelFoundValue);
+	printf("Done: %d\n", MultiScan.Done);
+	printf("Active: %d\n", MultiScan.Active);
+	printf("Initialized: %d\n", MultiScan.Initialized);
 
+	printf("Pars: <page> <col> <row>\n");
+	for( int i=0; i < MultiScan.NumPars; ++i ){
+		printf("%d:\t%d\t%d\t%d\n",i,MultiScan.Par[i].Page,MultiScan.Par[i].Column,MultiScan.Par[i].Row);
+	}
+}
 
 
 /************************************************************************

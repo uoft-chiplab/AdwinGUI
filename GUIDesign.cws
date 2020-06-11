@@ -62,7 +62,7 @@ Path = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_rep
 File Type = "Include"
 Disk Date = 3674753510
 In Projects = "1,"
-Source Window State = "1,362,362,362,8,28,8,0,3,0,0,0,0,0,0,0,355,0,362,28,401,602,1,0,"
+Source Window State = "1,413,429,413,2,12,2,0,3,0,0,0,0,0,0,0,397,0,429,12,401,602,1,0,"
 Window Top = 64
 Window Left = 26
 Window Z-Order = 4
@@ -134,12 +134,12 @@ Window Z-Order = 11
 Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/savelo"
 Path Line0002 = "ad.c"
 File Type = "CSource"
-Disk Date = 3674758740
+Disk Date = 3674759705
 In Projects = "1,"
-Source Window State = "1,2422,2422,2422,27,27,27,0,0,0,0,0,0,0,0,0,2317,0,2422,27,401,721,1,0,"
+Source Window State = "1,2374,2374,2374,38,38,38,0,0,0,0,0,0,0,0,0,2318,0,2374,38,401,721,1,0,"
 Window Top = 33
 Window Left = 10
-Window Z-Order = 2
+Window Z-Order = 1
 
 [File 0010]
 Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/savelo"
@@ -156,12 +156,12 @@ Window Z-Order = 12
 Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/multis"
 Path Line0002 = "can.c"
 File Type = "CSource"
-Disk Date = 3674758943
+Disk Date = 3674759661
 In Projects = "1,"
-Source Window State = "1,2081,2081,2081,0,0,0,0,0,0,0,0,0,0,0,0,2048,0,2081,0,401,721,1,0,"
+Source Window State = "1,2073,2073,2073,0,25,25,0,3,0,0,0,0,0,0,0,2067,0,2073,0,401,721,1,0,"
 Window Top = 33
 Window Left = 10
-Window Z-Order = 1
+Window Z-Order = 3
 
 [File 0012]
 Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Anrits"
@@ -177,12 +177,12 @@ Window Left = 4
 Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/multis"
 Path Line0002 = "can.h"
 File Type = "Include"
-Disk Date = 3674758316
+Disk Date = 3674759669
 In Projects = "1,"
-Source Window State = "1,19,19,19,32,32,32,0,0,0,0,0,0,0,0,0,0,0,19,32,401,721,1,0,"
+Source Window State = "1,18,18,18,10,10,10,0,0,0,0,0,0,0,0,0,0,0,18,10,401,721,1,0,"
 Window Top = 64
 Window Left = 26
-Window Z-Order = 3
+Window Z-Order = 2
 
 [File 0014]
 Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Analog"

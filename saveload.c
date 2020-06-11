@@ -196,10 +196,10 @@ void LoadSettings(int version)
 		case 15:
 		case 16:
 		default:
-			panStatus = FileSelectPopup("", "*.pan", "", "Save Settings", VAL_LOAD_BUTTON, 0, 0, 1, 1, panFilePath);
+			panStatus = FileSelectPopup("", "*.pan", "", "Load Settings", VAL_LOAD_BUTTON, 0, 0, 1, 1, panFilePath);
 			break;
 		case 17:
-			panStatus = FileSelectPopup("", "*.seq", "", "Save Settings", VAL_LOAD_BUTTON, 0, 0, 1, 1, panFilePath);
+			panStatus = FileSelectPopup("", "*.seq", "", "Load Settings", VAL_LOAD_BUTTON, 0, 0, 1, 1, panFilePath);
 			break;
 	}
 
@@ -2377,6 +2377,8 @@ int putMultiScanToFile(FILE *fbuff)
 
 	linear_size = writeHeader(fbuff, stag, elem_size, num_dims, dims);// write header
 	if( linear_size < 0 ){ return linear_size; }// pass though error
+
+	printMultiScan();// debug
 
 	elems_writ = fwrite(&MultiScan, elem_size, linear_size, fbuff);// write binary data
 
