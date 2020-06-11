@@ -163,18 +163,21 @@ void LaserSettingsInit(void)
 	Called at program startup */
 {
 	int i;
+	// Index offset into ACh names table
+	int laserRowOffset = NUMBERANALOGCHANNELS+NUMBERDDS;
 
-///	LaserProperties[0].DigitalChannel=LASCHAN0;
-///	LaserProperties[1].DigitalChannel=LASCHAN1;
-///	LaserProperties[2].DigitalChannel=LASCHAN2;
-///	LaserProperties[3].DigitalChannel=LASCHAN3;
-
-	for (i=0;i<NUMBERLASERS;i++)  {
-		SetTableCellAttribute (panelHandle, PANEL_TBL_ANAMES, MakePoint(2,i+NUMBERANALOGCHANNELS+NUMBERDDS + 2*NUMBEROFANRITSU+1), ATTR_CELL_TYPE, VAL_CELL_STRING);
-		SetTableCellVal (panelHandle, PANEL_TBL_ANAMES, MakePoint(2,i+NUMBERANALOGCHANNELS+NUMBERDDS +2*NUMBEROFANRITSU +1),"MHz");
+	// Set the second cell to show the unts instead of the analog ch number
+	for( i=0; i < NUMBERLASERS; i++ )
+	{
+		SetTableCellAttribute(panelHandle, PANEL_TBL_ANAMES, MakePoint(2,(i+1)+laserRowOffset), ATTR_CELL_TYPE, VAL_CELL_STRING);
+		SetTableCellVal(panelHandle, PANEL_TBL_ANAMES, MakePoint(2,(i+1)+laserRowOffset),"MHz");
 	}
-	SetTableCellVal (panelHandle, PANEL_TBL_ANAMES, MakePoint(2,3 + NUMBERANALOGCHANNELS+NUMBERDDS + 2*NUMBEROFANRITSU +1),"dBm");
-	SetLaserLabels();
-	FillLaserTable(0);
-	SetCtrlVal (panelHandle10,PANEL_LASER_RING, 0);
+
+	// I don't know what this line corresponds to for "dBm". Maybe was a cheap way to make Anritsu setting?
+	//SetTableCellVal(panelHandle, PANEL_TBL_ANAMES, MakePoint(2,3 + NUMBERANALOGCHANNELS+NUMBERDDS + 2*NUMBEROFANRITSU +1),"dBm");
+
+	SetLaserLabels();// set labels on the left side
+
+	FillLaserTable(0);// set the gui subpanel LaserSettings.uir
+	SetCtrlVal(panelHandle10, PANEL_LASER_RING, 0);// set the dropdown box to show first laser
 }
