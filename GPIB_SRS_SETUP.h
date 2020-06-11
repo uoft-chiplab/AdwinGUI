@@ -39,7 +39,6 @@
 int  CVICALLBACK DEVICENO_CALLBACK(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);
 int  CVICALLBACK GPIB_BUILD_CALLBACK(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);
 int  CVICALLBACK GPIB_OK_CALLBACK(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);
-void CVICALLBACK MultiScan_AddGPIBCellToScan(int panelHandle, int controlID, int MenuItemID, void *callbackData);
 
 
 #ifdef __cplusplus

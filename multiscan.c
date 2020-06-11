@@ -17,6 +17,7 @@
 #include "GUIDesign.h"// For panel handles
 #include "GUIDesign2.h"// For DrawNewTable fn
 #include "saveload.h"// For saving function
+#include "GPIB_SRS_SETUP.h"// For SETUP_GPIB_DEVICENO
 #include "ScanTableLoader.h"// For SL_PANEL_NUM_* handles
 #include "Scan.h"// For SCANPANEL_CHECK_USE_LIST handle
 
@@ -2108,6 +2109,44 @@ void CVICALLBACK MultiScan_AddAnalogCellTimeScaleToScan(int panelHandle, int con
 		}
 	}
 }
+
+
+// Add a GPIB cell to the multi scan list
+void CVICALLBACK MultiScan_AddGPIBCellToScan(int panelHandle, int controlID, int MenuItemID, void *callbackData)
+{   // Adds a column to the multiscan list to scan the current cell's value
+
+	int numCols, ccol, crow, cpage, devnum;
+	Point currentCell = {0,0};
+
+	if (parameterscanmode == 0)
+	{
+		GetNumTableColumns(panelHandle0, PANEL_MULTISCAN_VAL_TABLE, &numCols);
+		if (numCols < NUMMAXSCANPARAMETERS)
+		{
+			// Add a column to the right, step up number in numeric control
+			InsertTableColumns(panelHandle0, PANEL_MULTISCAN_POS_TABLE, -1, 1, 0);
+			InsertTableColumns(panelHandle0, PANEL_MULTISCAN_VAL_TABLE, -1, 1, 0);
+			SetCtrlVal(panelHandle0, PANEL_MULTISCAN_NUM_NUMERIC, numCols+1);
+
+			// Get coordinates of active cell & device number
+			GetActiveTableCell (panelHandle, controlID, &currentCell);
+			GetCtrlVal (panelHandle13,SETUP_GPIB_DEVICENO, &devnum);
+			ccol = currentCell.x;
+			crow = devnum + NUMGPIBSCANOFFSET;
+			cpage = 1; // no page needed for GPIB programming
+
+			// Write cell position to scan table
+			SetTableCellVal(panelHandle0, PANEL_MULTISCAN_POS_TABLE, MakePoint(numCols+1,1), cpage);
+			SetTableCellVal(panelHandle0, PANEL_MULTISCAN_POS_TABLE, MakePoint(numCols+1,2), ccol);
+			SetTableCellVal(panelHandle0, PANEL_MULTISCAN_POS_TABLE, MakePoint(numCols+1,3), crow);
+		}
+		else
+		{
+			MessagePopup("Multi scan error","Cannot add parameter to scanlist. Maximum number\nof parameters reached. Need to increase NUMMAXSCANPARAMETERS.");
+		}
+	}
+}
+
 
 void CVICALLBACK MultiScan_Table_SetVals(int panelHandle, int controlID, int MenuItemID, void *callbackData)
 {
