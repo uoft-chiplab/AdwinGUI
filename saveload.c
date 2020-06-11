@@ -1566,6 +1566,7 @@ long getLaserPropsFromFile(FILE *fbuff, long fpos_eof)
 		printf("Expected to read more elements from file for tag |%s|\n", stag);
 		return -1;
 	}
+	SetLaserLabels();// update the row labels for the lasers
 
 	fpos = checkFooter(fbuff, etag, fpos_eof);
 	if( fpos < 0 ){// pass though signal, either -1 for error or -2 for eof

@@ -76,6 +76,7 @@ int main (int argc, char *argv[])
 	CloseFile (fileHandle);
 
 
+
 	// Initialize things to default values
 	initializeAnalogArrays();
 	initializeDigArray();
@@ -86,11 +87,14 @@ int main (int argc, char *argv[])
 	initializeMultiScan();
 	// done initializing
 
-	//Initialize Settings Tables (with zeroes) and sets Laser Digital comm channels
-	LaserSettingsInit();
 
 	// Initialize the main GUI
 	initializeGUI();
+
+	// Sets the labels on the left
+	// Needs the rest of the gui to be initialized.
+	LaserSettingsInit();
+
 
 	// Initialize debug tracker for number of GPIB writes since program start.
 	DEBUG_NUMBER_IBWRT_CALLS = 0;
