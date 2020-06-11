@@ -273,8 +273,6 @@ struct LaserProps{
 
 
 //The digital channels which the Adwin triggers the rabbits for the respective lasers on
-//Colums array done in base 1  in accordance with the rest of this program
-//Note that NUMBEROFPAGES was set to 11 even though there is only 10 pages, hence NUMBEROFPAGES array is also base 1
 #define LASCHAN0 (117)
 #define LASCHAN1 (118)
 #define LASCHAN2 (119)
