@@ -997,26 +997,41 @@ long getDigitalTableFromFile(FILE *fbuff, long fpos_eof)
 int putAnalogChPropsToFile(FILE *fbuff)
 {
 	int elems_writ;
+	int i;
 
 	// Particulars of the object to write (don't forget to change the actual data write line too)
 	// AChName[MAXANALOG+NUMBERDDS];// vars.h line
+	// AChName only stores the analog channel properties and the DDS names. The laser/anritsu are separate.
+	// So we onlly want to write those rows ie. (NUMBERANALOGCHANNELS+1) for the analog channels
+	//  and NUMBERDDS for the DDSs.
 	char stag[] = "<AnalogChProps>";
 	char etag[] = "</AnalogChProps>";
 	int num_dims = 1;
-	int dims[] = {(MAXANALOG+NUMBERDDS)};// ordering is: object[dims[0]][dims[1]]...
+	int dims[] = {(NUMBERANALOGCHANNELS+1)+NUMBERDDS};// ordering is: object[dims[0]][dims[1]]...
 	int elem_size = sizeof(AChName[0]);
 	int linear_size;
+
+	printf("dims: %d\n", dims[0]);
 
 	linear_size = writeHeader(fbuff, stag, elem_size, num_dims, dims);// write header
 	if( linear_size < 0 ){ return linear_size; }// pass though error
 
-	elems_writ = fwrite(&AChName, elem_size, linear_size, fbuff);// write binary data
-
-	if( elems_writ != linear_size ){
-		fclose(fbuff);
-		printf("Failed to write the correct number of elems for tag |%s|\n", stag);
-		return -1;
+	// Only write the elements that are meaningful
+	for( i=0; i < dims[0]; ++i ){
+		elems_writ = fwrite(&AChName[i], elem_size, 1, fbuff);// write binary data
+		if( elems_writ != 1 ){
+			fclose(fbuff);
+			printf("Failed to write the correct number of elems for tag |%s|\n", stag);
+			return -1;
+		}
 	}
+
+	//elems_writ = fwrite(&AChName, elem_size, linear_size, fbuff);// write binary data
+	//if( elems_writ != linear_size ){
+	//	fclose(fbuff);
+	//	printf("Failed to write the correct number of elems for tag |%s|\n", stag);
+	//	return -1;
+	//}
 
 	return writeFooter(fbuff, etag);// write footer and pass through any errors
 }
@@ -1027,6 +1042,7 @@ long getAnalogChPropsFromFile(FILE *fbuff, long fpos_eof)
 	char stag[] = "<AnalogChProps>";
 	char etag[] = "</AnalogChProps>";
 	int max_dims = 1;
+	int ddsRowOffset = (NUMBERANALOGCHANNELS+1)+1;// 1 based index of dds1 in AChNames
 
 	int elem_size;
 	int num_dims;
@@ -1035,23 +1051,66 @@ long getAnalogChPropsFromFile(FILE *fbuff, long fpos_eof)
 	long fpos;
 	int elems_read;
 
+	int i;
+
 	fpos = readHeader(fbuff, stag, &elem_size, &num_dims, dims, max_dims, fpos_eof);
 	// Do some simple checks
 	if( fpos < 0 ){// if there was an err in readHeader (printf's in readHeader)
 		return fpos;
 	}
-	for( int i=0; i<max_dims; ++i ){ linear_size *= dims[i]; }// calculate linear_size
-	if( elem_size*linear_size != sizeof(AChName) ){
-		printf("Binary data read from file for tag |%s| is not the correct size\n", stag);
+	for( i=0; i<max_dims; ++i ){ linear_size *= dims[i]; }// calculate linear_size
+
+	// Do error checking and sanity checking
+	if( elem_size != sizeof(AChName[0]) ){
+		printf("Incorrect element size (%d), expected (%d), declared for tag |%s|\n",
+					elem_size, sizeof(AChName[0]), stag);
 		return -1;
+	}
+	if( dims[0] != (NUMBERANALOGCHANNELS+1)+NUMBERDDS ){// a different number of rows is not necessarily an error
+		if( dims[0] > (NUMBERANALOGCHANNELS+1)+NUMBERDDS ){
+			printf("Rows declared in file (%d) is larger than max (%d) declared for tag |%s|\n",
+				   dims[0], (NUMBERANALOGCHANNELS+1)+NUMBERDDS, stag);
+			return -1;
+		}
+		// now we know that the number of rows is smaller, let's also check if it's also a multiple of 8
+		//  plus 3 for the dds's.
+		if( (dims[0]-1-3)%8 != 0 ){// dims[1]-1 should be the number of actual analog channels, -3 for dds
+			printf("Analog channels implied by file (%d) is not a multiple of 8 for tag |%s|\n",
+				   dims[0]-1-3, stag);
+			return -1;
+		}
+		// so now we have an acceptable number of rows in the file
+		printf("Number of rows declared in file (%d) is acceptable for tag |%s|\n",
+				dims[0], stag);
+
+		// and since the number of rows is less than max, reinitialize them all.
+		initializeAnalogChProps();
 	}
 
 	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the binary data
-	elems_read = fread(&AChName, elem_size, linear_size, fbuff);// load the binary data directly into the array
-	if( elems_read != linear_size ){// didn't read expected number of elements
-		printf("Expected to read more elements from file for tag |%s|\n", stag);
-		return -1;
+	// Parallelling the put fn, we read only what was saved
+	// First read the analog channels
+	for( i=0; i < dims[0]-3; ++i ){// -3 to not read the 3 dds's yet
+		elems_read = fread(&AChName[i], elem_size, 1, fbuff);// read binary data
+		if( elems_read != 1 ){
+			printf("Expected to read more elements from file for tag |%s|\n", stag);
+			return -1;
+		}
 	}
+	// Now read in the DDS's to the correct row
+	for( i=0; i < 3; ++i ){
+		elems_read = fread(&AChName[ddsRowOffset+i], elem_size, 1, fbuff);// read binary data
+		if( elems_read != 1 ){
+			printf("Expected to read more elements from file for tag |%s|\n", stag);
+			return -1;
+		}
+	}
+
+	//elems_read = fread(&AChName, elem_size, linear_size, fbuff);// load the binary data directly into the array
+	//if( elems_read != linear_size ){// didn't read expected number of elements
+	//	printf("Expected to read more elements from file for tag |%s|\n", stag);
+	//	return -1;
+	//}
 
 	fpos = checkFooter(fbuff, etag, fpos_eof);
 	if( fpos < 0 ){// pass though signal, either -1 for error or -2 for eof
