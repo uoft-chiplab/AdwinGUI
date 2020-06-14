@@ -1378,9 +1378,9 @@ void OptimizeTimeLoop(int *UpdateNum,int count, int *newcount)
 	int i,j,k,m,cfcn,picmode,page,cmode,pic,thiscolor;
 	int analogtable_visible = 0;
 	int digtable_visible = 0;
- 	double vlast=0,vnow=0,vshadow=0;
+ 	double vlast=0,vnow=0,vshadow=0,anritsuPower=0.0;
  	int dimset=0,nozerofound,val;
- 	int DDSChannel1,DDSChannel2,DDSChannel3;
+ 	int DDSChannel1,DDSChannel2,DDSChannel3,anritsuOffset;
 
  	int ispicture=1,celltype=0; //celtype has 3 values.  0=Numeric, 1=String, 2=Picture
 
@@ -1397,6 +1397,8 @@ void OptimizeTimeLoop(int *UpdateNum,int count, int *newcount)
  	   ColourTable[6*i+5] = CLR_DIGITAL_LO_ALT;
  	   ColourTable[6*i+6] = CLR_DIGITAL_LO_ALT;
  	}
+
+	printf("Enter DrawNewTable\n");
 
  	// Get visibilities and page number (and then hide tables)
  	GetCtrlAttribute (panelHandle, PANEL_ANALOGTABLE, ATTR_VISIBLE, &analogtable_visible);
@@ -1444,8 +1446,9 @@ void OptimizeTimeLoop(int *UpdateNum,int count, int *newcount)
 
 
 	// Draw analog channels according to AnalogTable[][][]
-		for(j=1;j<=NUMBERANALOGROWS;j++) // scan over analog channels
-		{
+		for(j=1;j<=NUMBERANALOGCHANNELS;j++) // scan over analog channels
+		{// (used to be NUMBERANALOGROWS but the dds/laser/etc lines are set in their own parts later in this fn)
+
 			// Reading in this  cell's parameters.
 			cmode=AnalogTable[i][j][page].fcn;
 			vlast=AnalogTable[i-1][j][page].fval;
@@ -1538,6 +1541,8 @@ void OptimizeTimeLoop(int *UpdateNum,int count, int *newcount)
 
 	// DDS1
 		// Writing end-frequency to cell and un-dimming it.
+		SetTableCellAttribute(panelHandle, PANEL_ANALOGTABLE, MakePoint(i,DDSChannel1),
+				   ATTR_CELL_TYPE, VAL_CELL_NUMERIC);
 		SetTableCellVal(panelHandle, PANEL_ANALOGTABLE, MakePoint(i,DDSChannel1),
 				ddstable[i][page].end_frequency);
 		SetTableCellAttribute (panelHandle, PANEL_ANALOGTABLE, MakePoint(i,DDSChannel1),
@@ -1562,6 +1567,8 @@ void OptimizeTimeLoop(int *UpdateNum,int count, int *newcount)
 
 	// DDS2
 		// Writing end-frequency to cell and un-dimming it.
+		SetTableCellAttribute(panelHandle, PANEL_ANALOGTABLE, MakePoint(i,DDSChannel2),
+				   ATTR_CELL_TYPE, VAL_CELL_NUMERIC);
 		SetTableCellVal(panelHandle, PANEL_ANALOGTABLE, MakePoint(i,DDSChannel2),
 				dds2table[i][page].end_frequency);
 		SetTableCellAttribute (panelHandle, PANEL_ANALOGTABLE, MakePoint(i,DDSChannel2),
@@ -1586,6 +1593,8 @@ void OptimizeTimeLoop(int *UpdateNum,int count, int *newcount)
 
 	// DDS3
 		// Writing end-frequency to cell and un-dimming it.
+		SetTableCellAttribute(panelHandle, PANEL_ANALOGTABLE, MakePoint(i,DDSChannel3),
+				   ATTR_CELL_TYPE, VAL_CELL_NUMERIC);
 		SetTableCellVal(panelHandle, PANEL_ANALOGTABLE, MakePoint(i,DDSChannel3),
 				dds3table[i][page].end_frequency);
 		SetTableCellAttribute (panelHandle, PANEL_ANALOGTABLE, MakePoint(i,DDSChannel3),
@@ -1618,6 +1627,10 @@ void OptimizeTimeLoop(int *UpdateNum,int count, int *newcount)
 			vnow = LaserTable[j-(NUMBERANALOGCHANNELS+NUMBERDDS+1)][i][page].fval;
 			vshadow = findLastVal(j,i,page);
 
+			// Insure that the cell is numeric. Pressing "Stop" button does something weird and this is the simple fix.
+			SetTableCellAttribute(panelHandle, PANEL_ANALOGTABLE, MakePoint(i,j),
+									ATTR_CELL_TYPE, VAL_CELL_NUMERIC);
+
 			// Write the value into the cell
 			if(cmode!=0)
 				// write the ending value into the cell
@@ -1638,6 +1651,10 @@ void OptimizeTimeLoop(int *UpdateNum,int count, int *newcount)
 						ATTR_CTRL_VAL, vshadow);
 			}
 
+			// Undim cell
+			SetTableCellAttribute (panelHandle, PANEL_ANALOGTABLE, MakePoint(i,j),
+								ATTR_CELL_DIMMED, 0);
+
 			// Select the cell color depending on what's going on in the cell
 			switch(cmode)
 			{
@@ -1654,14 +1671,74 @@ void OptimizeTimeLoop(int *UpdateNum,int count, int *newcount)
 			case 0:		// hold previous
 				thiscolor = CLR_LASER_HOLD; break;
 			}
-			if(vnow==0.0 && (cmode!=2))
-			{	thiscolor = ColourTable[j]; }
+			if( fabs(vnow) < 0.000001 && (cmode!=2) ){// if "step to zero" then use "background" colour
+				thiscolor = ColourTable[j];
+			}
 
 			// Change the cell color
 			SetTableCellAttribute (panelHandle, PANEL_ANALOGTABLE,MakePoint(i,j),
 					ATTR_TEXT_BGCOLOR, thiscolor);
 
 		} // Done drawing laser rows
+
+		for( j=0; j < NUMBEROFANRITSU; j++ ){
+			// Assumes Anritsu rows are the last rows ie.  NUMBERANALOGROWS==NUMBERANALOGCHANNELS+NUMBERDDS+NUMBERLASERS+2*NUMBEROFANRITSU
+			// Note: I don't understand why there are two rows for each Anritsu. Maybe for Freq and dBm display or something.
+			//  Either way, I will display those here. The logic of what used to be done here has been lost to time.
+			// Also note that j starts at 0 in this loop as opposed to 1 elsewhere in this fn.
+
+			anritsuOffset = NUMBERANALOGCHANNELS+NUMBERDDS+NUMBERLASERS+1;// first row an anritsu section
+
+			vnow = anritsutable[i][page].end_frequency;// this is a little dumb since the array is only for one anritsu
+			anritsuPower = anritsutable[i][page].end_power;
+
+			// Insure that the cells are numeric. Pressing "Stop" button does something weird and this is the simple fix.
+			SetTableCellAttribute(panelHandle, PANEL_ANALOGTABLE, MakePoint(i,anritsuOffset+(2*j)),
+									ATTR_CELL_TYPE, VAL_CELL_NUMERIC);
+			SetTableCellAttribute(panelHandle, PANEL_ANALOGTABLE, MakePoint(i,anritsuOffset+(2*j)+1),
+									ATTR_CELL_TYPE, VAL_CELL_NUMERIC);
+
+			//// Write the value into the cell
+			//if(cmode!=0)
+			//	// write the ending value into the cell
+			//	SetTableCellAttribute (panelHandle, PANEL_ANALOGTABLE, MakePoint(i,j),
+			//			ATTR_CTRL_VAL, vnow);
+			//else if((cmode==0)&&(i==1)&&(page==1))
+			//{   // Give error message when attempting to copy previous to first of all columns
+			//	ConfirmPopup("User Error","Do not use \"Same as Previous\" Setting for Column 1 Page 1.\nThis results in unstable behaviour.\nResetting Cell Function to default: step");
+			//	SetTableCellAttribute (panelHandle, PANEL_ANALOGTABLE, MakePoint(i,j),
+			//			ATTR_CTRL_VAL, 0.0);
+			//	cmode=1;
+			//	LaserTable[j-(NUMBERANALOGCHANNELS+NUMBERDDS+1)][1][1].fcn=cmode;
+			//	LaserTable[j-(NUMBERANALOGCHANNELS+NUMBERDDS+1)][1][1].fval=0.0;
+			//}
+			//else
+			//{
+			//	SetTableCellAttribute (panelHandle, PANEL_ANALOGTABLE, MakePoint(i,j),
+			//			ATTR_CTRL_VAL, vshadow);
+			//}
+
+			// Write the values with no checks into the cells
+			SetTableCellAttribute(panelHandle, PANEL_ANALOGTABLE, MakePoint(i,anritsuOffset+(2*j)),
+									ATTR_CTRL_VAL, vnow);
+			SetTableCellAttribute(panelHandle, PANEL_ANALOGTABLE, MakePoint(i,anritsuOffset+(2*j)+1),
+									ATTR_CTRL_VAL, anritsuPower);
+
+			// Undim cell
+			SetTableCellAttribute (panelHandle, PANEL_ANALOGTABLE, MakePoint(i,anritsuOffset+(2*j)),
+									ATTR_CELL_DIMMED, 0);
+			SetTableCellAttribute (panelHandle, PANEL_ANALOGTABLE, MakePoint(i,anritsuOffset+(2*j)+1),
+									ATTR_CELL_DIMMED, 0);
+
+			// Just use the "background colours since I don't know what the Anritsu is capable of and
+			//  I don't want to choose new colours.
+			SetTableCellAttribute(panelHandle, PANEL_ANALOGTABLE,MakePoint(i,anritsuOffset+(2*j)),
+									ATTR_TEXT_BGCOLOR, ColourTable[anritsuOffset+(2*j)] );
+			SetTableCellAttribute(panelHandle, PANEL_ANALOGTABLE,MakePoint(i,anritsuOffset+(2*j)+1),
+									ATTR_TEXT_BGCOLOR, ColourTable[anritsuOffset+(2*j)+1] );
+
+		} // Done drawing anritsu rows
+
 	}
 
 	// So far, all columns are undimmed. Now check if we need to dim out any columns
