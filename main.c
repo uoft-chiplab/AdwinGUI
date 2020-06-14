@@ -78,7 +78,8 @@ int main (int argc, char *argv[])
 
 
 	// Initialize things to default values
-	initializeAnalogArrays();
+	initializeAnalogChProps();
+	initializeAnalogTable();
 	initializeDigArray();
 	initializeInfoArray();
 	initializeLaserArrays();
@@ -341,17 +342,36 @@ void initializeGUI()// initialzie the GUI by setting menu's and arranging things
 	SetPanelAttribute (panelHandle, ATTR_TITLE, buff);
 }
 
-void initializeAnalogArrays(void){
+// Initializes all elements of the AChName global var
+// Note: Zeros everything including the unused 0th indices and the extra rowsrows that correspond to dds/laser/anritsu
+void initializeAnalogChProps(void){
+
+	int i;
+
+	// Initialize arrays (to avoid undefined elements causing -99 to be written)
+	for( i=0; i < (MAXANALOG+NUMBERDDS); i++ )
+	{
+		AChName[i].chnum=0;// analog channels start at 1 so zero is invalid
+		AChName[i].chname[0]='\0';// set first char to null and don't worry about the rest of the string
+		AChName[i].units[0]='\0';
+		AChName[i].tfcn=1.0;
+		AChName[i].tbias=0.0;
+		AChName[i].resettozero=1;
+		AChName[i].maxvolts=1.0;// strictly this should be zero to prevent any output but I don't want to have to deal with potentially pathological code
+		AChName[i].minvolts=0.0;
+	}
+}
+
+
+// Initializes all elements of the AnalogTable global var
+// Note: Zeros everything including the unused 0th indices and the rows that correspond to dds/laser/anritsu
+void initializeAnalogTable(void){
 
 	int i,j,k;
 
-	// Initialize arrays (to avoid undefined elements causing -99 to be written)
-	for( j=0; j < NUMBERANALOGCHANNELS+1; j++ )
-	{		 //ramp over # of analog chanels
-		AChName[j].tfcn=1;
-		AChName[j].tbias=0;
-		AChName[j].resettozero=1;
-		for( i=0; i < NUMBEROFCOLUMNS+1; i++ )// ramp over # of cells per page
+	for( i=0; i < (NUMBEROFCOLUMNS+1); i++ )// ramp over cols
+	{
+		for( j=0; j < (NUMBERANALOGCHANNELS+1); j++ )// ramp over rows
 		{
 			for( k=0; k < NUMBEROFPAGES; k++ )// ramp over pages
 			{

@@ -18,7 +18,8 @@
 
 void initializeGUI(void);
 
-void initializeAnalogArrays(void);
+void initializeAnalogChProps(void);
+void initializeAnalogTable(void);
 void initializeDigArray(void);
 void initializeInfoArray(void);
 void initializeLaserArrays(void);
