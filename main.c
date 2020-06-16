@@ -179,13 +179,6 @@ int main (int argc, char *argv[])
 	Initialization();
 
 
-	// Scott Testing V17 saving and loading
-	SaveSequenceV17("C:\\Users\\coldatoms\\Documents\\Lab\\LocalCode\\ADwin_sequencers\\test.woot",
-			 strlen("C:\\Users\\coldatoms\\Documents\\Lab\\LocalCode\\ADwin_sequencers\\test.woot"));
-
-	LoadSequenceV17("C:\\Users\\coldatoms\\Documents\\Lab\\LocalCode\\ADwin_sequencers\\test.woot",
-			 strlen("C:\\Users\\coldatoms\\Documents\\Lab\\LocalCode\\ADwin_sequencers\\test.woot"));
-
 
 
 	DisplayPanel (panelHandle);
