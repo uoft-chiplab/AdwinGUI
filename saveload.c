@@ -814,7 +814,7 @@ int putAnalogTableToFile(FILE *fbuff)
 	int linear_size;
 
 	linear_size = writeHeader(fbuff, stag, elem_size, num_dims, dims);// write header
-	if( linear_size < 0 ){ return linear_size; }// pass though error
+	if( linear_size < 0 ){ return linear_size; }// pass through error
 
 	// Now for convenience when loading, we should write the array by pages first, then cols and rows
 	for( i=0; i < dims[2]; ++i ){// iterate over pages
@@ -942,13 +942,26 @@ int putDigitalTableToFile(FILE *fbuff)
 	linear_size = writeHeader(fbuff, stag, elem_size, num_dims, dims);// write header
 	if( linear_size < 0 ){ return linear_size; }// pass though error
 
-	elems_writ = fwrite(&DigTableValues, elem_size, linear_size, fbuff);// write binary data
+	// Now for convenience when loading, we should write the array by pages first, then cols and rows
+	for( i=0; i < dims[2]; ++i ){// iterate over pages
+		for( j=0; j < dims[0]; ++j ){// iterate over cols
+			for( k=0; k < dims[1]; ++k ){// iterate over rows
+				elems_writ = fwrite(&DigitalTable[j][k][i], elem_size, 1, fbuff);// write binary data
+				if( elems_writ != 1 ){
+					fclose(fbuff);
+					printf("Failed to write the correct number of elems for tag |%s|\n", stag);
+					return -1;
+				}
+			}
+		}
+	}
+	/*elems_writ = fwrite(&DigTableValues, elem_size, linear_size, fbuff);// write binary data
 
 	if( elems_writ != linear_size ){
 		fclose(fbuff);
 		printf("Failed to write the correct number of elems for tag |%s|\n", stag);
 		return -1;
-	}
+	}*/
 
 	return writeFooter(fbuff, etag);// write footer and pass through any errors
 }
@@ -973,17 +986,65 @@ long getDigitalTableFromFile(FILE *fbuff, long fpos_eof)
 		return fpos;
 	}
 	for( int i=0; i<max_dims; ++i ){ linear_size *= dims[i]; }// calculate linear_size
-	if( elem_size*linear_size != sizeof(DigTableValues) ){
-		printf("Binary data read from file for tag |%s| is not the correct size\n", stag);
+
+	// Do error checking and sanity checking
+	if( elem_size != sizeof(DigitalTableValues[0][0][0]) ){
+		printf("Incorrect element size (%d), expected (%d), declared for tag |%s|\n",
+					elem_size, sizeof(DigitalTableValues[0][0][0]), stag);
 		return -1;
 	}
+	if( dims[0] != (NUMBEROFCOLUMNS+1) ){// incorrect number of columns
+		printf("Incorrect number of columns (%d) declared for tag |%s|\n", dims[0], stag);
+		return -1;
+	}
+	if( dims[2] != (NUMBEROFPAGES) ){// incorrect number of pages
+		printf("Incorrect number of pages (%d) declared for tag |%s|\n", dims[2], stag);
+		return -1;
+	}
+	if( dims[1] != (NUMBERDIGITALCHANNELS+1) ){// a different number of rows is not necessarily an error
+		if( dims[1] > (NUMBERDIGITALCHANNELS+1) ){
+			printf("Rows declared in file (%d) is larger than max (%d) declared for tag |%s|\n",
+				   dims[1], (NUMBERDIGITALCHANNELS+1), stag);
+			return -1;
+		}
+		// now we know that the number of rows is smaller, let's also check if it's also a multiple of 32
+		if( (dims[1]-1)%32 != 0 ){// dims[1]-1 should be the number of actual digital channels
+			printf("Digital channels implied by file (%d) is not a multiple of 32 for tag |%s|\n",
+				   dims[1]-1, stag);
+			return -1;
+		}
+		// so now we have an acceptable number of rows in the file
+		printf("Number of rows declared in file (%d) is acceptable for tag |%s|\n",
+				dims[1], stag);
+
+		// and since the number of rows is less than max, reinitialize them all.
+		initializeDigitalTable();
+	}
+
+	/*if( elem_size*linear_size != sizeof(DigTableValues) ){
+		printf("Binary data read from file for tag |%s| is not the correct size\n", stag);
+		return -1;
+	}*/
 
 	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the binary data
-	elems_read = fread(&DigTableValues, elem_size, linear_size, fbuff);// load the binary data directly into the array
+	// Parallelling the put fn, we must read each element separately
+	for( i=0; i < dims[2]; ++i ){// iterate over pages
+		for( j=0; j < dims[0]; ++j ){// iterate over cols
+			for( k=0; k < dims[1]; ++k ){// iterate over rows
+				elems_read = fread(&DigitalTableValues[j][k][i], elem_size, 1, fbuff);// read binary data
+				if( elems_read != 1 ){
+					printf("Expected to read more elements from file for tag |%s|\n", stag);
+					return -1;
+				}
+			}
+		}
+	}
+
+	/*elems_read = fread(&DigTableValues, elem_size, linear_size, fbuff);// load the binary data directly into the array
 	if( elems_read != linear_size ){// didn't read expected number of elements
 		printf("Expected to read more elements from file for tag |%s|\n", stag);
 		return -1;
-	}
+	}*/
 
 	fpos = checkFooter(fbuff, etag, fpos_eof);
 	if( fpos < 0 ){// pass though signal, either -1 for error or -2 for eof
@@ -1002,7 +1063,7 @@ int putAnalogChPropsToFile(FILE *fbuff)
 	// Particulars of the object to write (don't forget to change the actual data write line too)
 	// AChName[MAXANALOG+NUMBERDDS];// vars.h line
 	// AChName only stores the analog channel properties and the DDS names. The laser/anritsu are separate.
-	// So we onlly want to write those rows ie. (NUMBERANALOGCHANNELS+1) for the analog channels
+	// So we only want to write those rows ie. (NUMBERANALOGCHANNELS+1) for the analog channels
 	//  and NUMBERDDS for the DDSs.
 	char stag[] = "<AnalogChProps>";
 	char etag[] = "</AnalogChProps>";
@@ -1137,13 +1198,23 @@ int putDigitalChPropsToFile(FILE *fbuff)
 	linear_size = writeHeader(fbuff, stag, elem_size, num_dims, dims);// write header
 	if( linear_size < 0 ){ return linear_size; }// pass though error
 
-	elems_writ = fwrite(&DChName, elem_size, linear_size, fbuff);// write binary data
+	// Only write the elements that are meaningful
+	for( i=0; i < dims[0]; ++i ){
+		elems_writ = fwrite(&DChName[i], elem_size, 1, fbuff);// write binary data
+		if( elems_writ != 1 ){
+			fclose(fbuff);
+			printf("Failed to write the correct number of elems for tag |%s|\n", stag);
+			return -1;
+		}
+	}
+
+	/*elems_writ = fwrite(&DChName, elem_size, linear_size, fbuff);// write binary data
 
 	if( elems_writ != linear_size ){
 		fclose(fbuff);
 		printf("Failed to write the correct number of elems for tag |%s|\n", stag);
 		return -1;
-	}
+	}*/
 
 	return writeFooter(fbuff, etag);// write footer and pass through any errors
 }
@@ -1168,17 +1239,52 @@ long getDigitalChPropsFromFile(FILE *fbuff, long fpos_eof)
 		return fpos;
 	}
 	for( int i=0; i<max_dims; ++i ){ linear_size *= dims[i]; }// calculate linear_size
-	if( elem_size*linear_size != sizeof(DChName) ){
-		printf("Binary data read from file for tag |%s| is not the correct size\n", stag);
+
+	// Do error checking and sanity checking
+	if( elem_size != sizeof(DChName[0]) ){
+		printf("Incorrect element size (%d), expected (%d), declared for tag |%s|\n",
+					elem_size, sizeof(DChName[0]), stag);
 		return -1;
 	}
+	if( dims[0] != (NUMBERDIGITALCHANNELS+1) ){// a different number of rows is not necessarily an error
+		if( dims[0] > (NUMBERDIGITALCHANNELS+1) ){
+			printf("Rows declared in file (%d) is larger than max (%d) declared for tag |%s|\n",
+				   dims[0], (NUMBERDIGITALCHANNELS+1), stag);
+			return -1;
+		}
+		// now we know that the number of rows is smaller, let's also check if it's also a multiple of 32
+		if( (dims[0]-1)%32 != 0 ){// dims[1]-1 should be the number of actual digital channels
+			printf("Digital channels implied by file (%d) is not a multiple of 32 for tag |%s|\n",
+				   dims[0]-1, stag);
+			return -1;
+		}
+		// so now we have an acceptable number of rows in the file
+		printf("Number of rows declared in file (%d) is acceptable for tag |%s|\n",
+				dims[0], stag);
+
+		// and since the number of rows is less than max, reinitialize them all.
+		initializDigitalChProps();
+	}
+
+	/*if( elem_size*linear_size != sizeof(DChName) ){
+		printf("Binary data read from file for tag |%s| is not the correct size\n", stag);
+		return -1;
+	}*/
 
 	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the binary data
-	elems_read = fread(&DChName, elem_size, linear_size, fbuff);// load the binary data directly into the array
+	// Parallelling the put fn, we read only what was saved
+	for( i=0; i < dims[0]; ++i ){
+		elems_read = fread(&DChName[i], elem_size, 1, fbuff);// read binary data
+		if( elems_read != 1 ){
+			printf("Expected to read more elements from file for tag |%s|\n", stag);
+			return -1;
+		}
+	}
+	/*elems_read = fread(&DChName, elem_size, linear_size, fbuff);// load the binary data directly into the array
 	if( elems_read != linear_size ){// didn't read expected number of elements
 		printf("Expected to read more elements from file for tag |%s|\n", stag);
 		return -1;
-	}
+	}*/
 
 	fpos = checkFooter(fbuff, etag, fpos_eof);
 	if( fpos < 0 ){// pass though signal, either -1 for error or -2 for eof

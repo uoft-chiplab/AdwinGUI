@@ -30,9 +30,6 @@ Fix the dds and Phaseo/Micromatic rows in the analog table.
 Minor:
 ------
 
-Change end of scan question about saving mscan list to have better default.
-Change default saving of panel (not scan) to make directory as well (as scan does).
-
 Move config files to a separate (sub)directory.
 
 Format the code consistently. (indentation, capitalization, spaces, et cetera)
@@ -40,7 +37,10 @@ Format the code consistently. (indentation, capitalization, spaces, et cetera)
 Remove ambiguity about reset to zero of channels.
 	The menu option(s) is almost not respected and lots of lines are commented out.
 
+	
+----------
+Completed:
+----------
 
-
-
-
+Change end of scan question about saving mscan list to have better default.
+Change default saving of panel (not scan) to make directory as well (as scan does).
