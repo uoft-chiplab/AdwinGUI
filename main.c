@@ -80,6 +80,7 @@ int main (int argc, char *argv[])
 	// Initialize things to default values
 	initializeAnalogChProps();
 	initializeAnalogTable();
+	initializeDigChProps();
 	initializeDigArray();
 	initializeInfoArray();
 	initializeLaserArrays();
@@ -362,6 +363,21 @@ void initializeAnalogChProps(void){
 	}
 }
 
+// Initializes all elements of the DChName global var
+// Note: Zeros everything including the unused 0th indices and the extra rowsrows that correspond to dds/laser/anritsu
+void initializeDigChProps(void){
+
+	int i;
+
+	// Initialize arrays (to avoid undefined elements causing -99 to be written)
+	for( i=0; i < (MAXDIGITAL); i++ )
+	{
+		DChName[i].chnum=0;		// digital line to control
+		DChName[i].chname[0]='\0';	// name of the channel on the panel
+		DChName[i].resettolow=1;
+	}
+}
+
 
 // Initializes all elements of the AnalogTable global var
 // Note: Zeros everything including the unused 0th indices and the rows that correspond to dds/laser/anritsu
@@ -387,7 +403,7 @@ void initializeDigArray(void){
 
 	int i,j,k;
 
-	for( j=0; j < NUMBERDIGITALCHANNELS+1; j++ )
+	for( j=0; j < MAXDIGITAL; j++ )
 	{
 		for( i=0; i < NUMBEROFCOLUMNS+1; i++ )// ramp over # of cells per page
 		{

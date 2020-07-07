@@ -935,9 +935,11 @@ int putDigitalTableToFile(FILE *fbuff)
 	char stag[] = "<DigitalTable>";
 	char etag[] = "</DigitalTable>";
 	int num_dims = 3;
-	int dims[] = {(NUMBEROFCOLUMNS+1), (MAXDIGITAL), (NUMBEROFPAGES)};// ordering is: object[dims[0]][dims[1]]...
+	int dims[] = {(NUMBEROFCOLUMNS+1), (NUMBERDIGITALCHANNELS+1), (NUMBEROFPAGES)};// ordering is: object[dims[0]][dims[1]]...
 	int elem_size = sizeof(DigTableValues[0][0][0]);
 	int linear_size;
+
+	int i,j,k;
 
 	linear_size = writeHeader(fbuff, stag, elem_size, num_dims, dims);// write header
 	if( linear_size < 0 ){ return linear_size; }// pass though error
@@ -946,7 +948,7 @@ int putDigitalTableToFile(FILE *fbuff)
 	for( i=0; i < dims[2]; ++i ){// iterate over pages
 		for( j=0; j < dims[0]; ++j ){// iterate over cols
 			for( k=0; k < dims[1]; ++k ){// iterate over rows
-				elems_writ = fwrite(&DigitalTable[j][k][i], elem_size, 1, fbuff);// write binary data
+				elems_writ = fwrite(&DigTableValues[j][k][i], elem_size, 1, fbuff);// write binary data
 				if( elems_writ != 1 ){
 					fclose(fbuff);
 					printf("Failed to write the correct number of elems for tag |%s|\n", stag);
@@ -980,17 +982,19 @@ long getDigitalTableFromFile(FILE *fbuff, long fpos_eof)
 	long fpos;
 	int elems_read;
 
+	int i,j,k;
+
 	fpos = readHeader(fbuff, stag, &elem_size, &num_dims, dims, max_dims, fpos_eof);
 	// Do some simple checks
 	if( fpos < 0 ){// if there was an err in readHeader (printf's in readHeader)
 		return fpos;
 	}
-	for( int i=0; i<max_dims; ++i ){ linear_size *= dims[i]; }// calculate linear_size
+	for( i=0; i<max_dims; ++i ){ linear_size *= dims[i]; }// calculate linear_size
 
 	// Do error checking and sanity checking
-	if( elem_size != sizeof(DigitalTableValues[0][0][0]) ){
+	if( elem_size != sizeof(DigTableValues[0][0][0]) ){
 		printf("Incorrect element size (%d), expected (%d), declared for tag |%s|\n",
-					elem_size, sizeof(DigitalTableValues[0][0][0]), stag);
+					elem_size, sizeof(DigTableValues[0][0][0]), stag);
 		return -1;
 	}
 	if( dims[0] != (NUMBEROFCOLUMNS+1) ){// incorrect number of columns
@@ -1007,9 +1011,9 @@ long getDigitalTableFromFile(FILE *fbuff, long fpos_eof)
 				   dims[1], (NUMBERDIGITALCHANNELS+1), stag);
 			return -1;
 		}
-		// now we know that the number of rows is smaller, let's also check if it's also a multiple of 32
-		if( (dims[1]-1)%32 != 0 ){// dims[1]-1 should be the number of actual digital channels
-			printf("Digital channels implied by file (%d) is not a multiple of 32 for tag |%s|\n",
+		// now we know that the number of rows is smaller, let's also check if it's also a multiple of 8
+		if( (dims[1]-1)%8 != 0 ){// dims[1]-1 should be the number of actual digital channels
+			printf("Digital channels implied by file (%d) is not a multiple of 8 for tag |%s|\n",
 				   dims[1]-1, stag);
 			return -1;
 		}
@@ -1018,7 +1022,7 @@ long getDigitalTableFromFile(FILE *fbuff, long fpos_eof)
 				dims[1], stag);
 
 		// and since the number of rows is less than max, reinitialize them all.
-		initializeDigitalTable();
+		initializeDigArray();
 	}
 
 	/*if( elem_size*linear_size != sizeof(DigTableValues) ){
@@ -1031,7 +1035,7 @@ long getDigitalTableFromFile(FILE *fbuff, long fpos_eof)
 	for( i=0; i < dims[2]; ++i ){// iterate over pages
 		for( j=0; j < dims[0]; ++j ){// iterate over cols
 			for( k=0; k < dims[1]; ++k ){// iterate over rows
-				elems_read = fread(&DigitalTableValues[j][k][i], elem_size, 1, fbuff);// read binary data
+				elems_read = fread(&DigTableValues[j][k][i], elem_size, 1, fbuff);// read binary data
 				if( elems_read != 1 ){
 					printf("Expected to read more elements from file for tag |%s|\n", stag);
 					return -1;
@@ -1191,7 +1195,7 @@ int putDigitalChPropsToFile(FILE *fbuff)
 	char stag[] = "<DigitalChProps>";
 	char etag[] = "</DigitalChProps>";
 	int num_dims = 1;
-	int dims[] = {(MAXDIGITAL)};// ordering is: object[dims[0]][dims[1]]...
+	int dims[] = {(NUMBERDIGITALCHANNELS+1)};// ordering is: object[dims[0]][dims[1]]...
 	int elem_size = sizeof(DChName[0]);
 	int linear_size;
 
@@ -1199,7 +1203,7 @@ int putDigitalChPropsToFile(FILE *fbuff)
 	if( linear_size < 0 ){ return linear_size; }// pass though error
 
 	// Only write the elements that are meaningful
-	for( i=0; i < dims[0]; ++i ){
+	for( int i=0; i < dims[0]; ++i ){
 		elems_writ = fwrite(&DChName[i], elem_size, 1, fbuff);// write binary data
 		if( elems_writ != 1 ){
 			fclose(fbuff);
@@ -1252,9 +1256,9 @@ long getDigitalChPropsFromFile(FILE *fbuff, long fpos_eof)
 				   dims[0], (NUMBERDIGITALCHANNELS+1), stag);
 			return -1;
 		}
-		// now we know that the number of rows is smaller, let's also check if it's also a multiple of 32
-		if( (dims[0]-1)%32 != 0 ){// dims[1]-1 should be the number of actual digital channels
-			printf("Digital channels implied by file (%d) is not a multiple of 32 for tag |%s|\n",
+		// now we know that the number of rows is smaller, let's also check if it's also a multiple of 8
+		if( (dims[0]-1)%8 != 0 ){// dims[0]-1 should be the number of actual digital channels
+			printf("Digital channels implied by file (%d) is not a multiple of 8 for tag |%s|\n",
 				   dims[0]-1, stag);
 			return -1;
 		}
@@ -1263,7 +1267,7 @@ long getDigitalChPropsFromFile(FILE *fbuff, long fpos_eof)
 				dims[0], stag);
 
 		// and since the number of rows is less than max, reinitialize them all.
-		initializDigitalChProps();
+		initializeDigChProps();
 	}
 
 	/*if( elem_size*linear_size != sizeof(DChName) ){

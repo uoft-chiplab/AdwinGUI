@@ -60,7 +60,7 @@ Analog and Digital Channels (and laser table and necessary parts of dds and anri
 
 
 // Channel stuff
-#define NUMBERANALOGCHANNELS (48)   // Number of analog Channels available for control
+#define NUMBERANALOGCHANNELS (40)   // Number of analog Channels available for control
 #define NUMBERDIGITALCHANNELS (48) 	// number of digital channels DISPLAYED!!!
 									// some are not user controlled, e.g. DDS lines
 									// 32 in total.  5 used for DDS1

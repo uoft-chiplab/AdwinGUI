@@ -20,6 +20,7 @@ void initializeGUI(void);
 
 void initializeAnalogChProps(void);
 void initializeAnalogTable(void);
+void initializeDigChProps(void);
 void initializeDigArray(void);
 void initializeInfoArray(void);
 void initializeLaserArrays(void);
