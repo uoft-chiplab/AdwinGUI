@@ -4,31 +4,24 @@ Feature Requests
 Major:
 ------
 
-Move all saving functions to their own c file.
-
-Decouple saving a sequence from the gui itself. Now, there are things saved in the .pan file that get lost if loading with a changed gui version.
-
-Move (Multi)Scan functions to their own c file.
-
-Broadly, clean up (duplicate and misplaced) function definitions.
-
-Refactor code into appropriate files.
-	Clean up #include statements in each file.
-
 Improve DDS user interface (both in analog table and in DDS settings)
 
 Add capability for another analog and digital card.
+	- ADbasic code
+	- in main.c set width and position of cells to accomodate new channels
+	- second monitor?
 
 Stop the sequence based on condition
 	Writing to a communication file as interlock.
 	Check things are okay before starting a new cycle.
-
-Fix the dds and Phaseo/Micromatic rows in the analog table.
-
-
+	
 ------
 Minor:
 ------
+
+Refactor code into appropriate files.
+	Clean up #include statements in each file.
+	Broadly, clean up (duplicate and misplaced) function definitions.
 
 Move config files to a separate (sub)directory.
 
@@ -37,6 +30,9 @@ Format the code consistently. (indentation, capitalization, spaces, et cetera)
 Remove ambiguity about reset to zero of channels.
 	The menu option(s) is almost not respected and lots of lines are commented out.
 
+Make the red X (close) button work, i.e. close the GUI.
+
+Decouple multiscan max scan params from saved GUI (and some other substructs)
 	
 ----------
 Completed:
@@ -44,3 +40,8 @@ Completed:
 
 Change end of scan question about saving mscan list to have better default.
 Change default saving of panel (not scan) to make directory as well (as scan does).
+Move all saving functions to their own c file.
+Move (Multi)Scan functions to their own c file.
+Decouple saving a sequence from the gui itself. Now, there are things saved in the .pan file that get lost if loading with a changed gui version. 
+Fix the dds and PhaseO/Micromatic rows in the analog table.
+
