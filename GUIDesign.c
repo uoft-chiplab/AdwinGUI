@@ -644,10 +644,6 @@ void BuildUpdateList(double TMatrix[],
 	*/
 
 
-
-
-
-
 	BOOL UseCompression,ArraysToDebug,StreamSettings;
 
 	FILE *fp;
@@ -694,15 +690,10 @@ void BuildUpdateList(double TMatrix[],
 	static float *ChVal = NULL;
 	static int timesum = 0;
 
-
-
-
 	double timeStart, timeEnd;
 	double timeStartProcess, timeEndProcess;
 
 	timeStart = Timer();
-
-
 
 	//Change run button appearance while operating
 	SetCtrlAttribute (panelHandle, PANEL_CMD_RUN,ATTR_CMD_BUTTON_COLOR, VAL_GREEN);
@@ -724,8 +715,6 @@ void BuildUpdateList(double TMatrix[],
 	}
 
 	GlobalDelay=EventPeriod/AdwinTick; // AdwintTick=0.000025ms=AW clock cycle (Gives #of clock cycles/update)
-
-
 
 
 	// V16.1.6: Check each time if UpdateNum, ChNum, and ChVal need to be extended.
@@ -772,9 +761,6 @@ void BuildUpdateList(double TMatrix[],
 	timesum = temp_timesum;
 
 
-
-
-
 	cycletime=(double)timesum/(double)timemult/1000;	// Total duration of the cycle, in seconds
 
 	sprintf(buff,"timesum %d",timesum);					// Print more debug info
@@ -814,8 +800,6 @@ void BuildUpdateList(double TMatrix[],
     	/*dds_cmd_seq = create_ad9852_cmd_sequence(DDS3Array, numtimes,DDSFreq.PLLmult,
 		DDSFreq.extclock,EventPeriod/1000);
    	    */
-
-
 
 		//Go through for each column that needs to be updated
 
@@ -951,8 +935,6 @@ void BuildUpdateList(double TMatrix[],
 					nuptotal++;
 					ChNum[nuptotal] = 51; //DDS1 dummy channel
 					ChVal[nuptotal] = tmp_dds;
-
-
 				}
 
 		/*		tmp_dds = get_dds_cmd(dds_cmd_seq_AD9858, count-1-start_offset);  //dds translator(zero base) runs 1 behind this counter
@@ -1160,18 +1142,12 @@ void BuildUpdateList(double TMatrix[],
 		SetData_Long(4,ResetToZeroAtEnd,1,NUMBERANALOGCHANNELS);
 		SetPar(5,digval);
 		SetPar(6,digval2);
+		//SetPar(7,digval3);
 
 		// done evaluating channels that are reset to  zero (low)
 		ChangedVals = FALSE;
 
 	}
-
-
-
-
-
-
-
 
 
 	// more debug info

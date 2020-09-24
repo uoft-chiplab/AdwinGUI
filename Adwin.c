@@ -222,7 +222,7 @@ FunctionNotFoundError:
 /*****************************************/
 
 
-/* Down-loads the operating system (BTL-file) to the ADwin-System */
+/* Downloads the operating system (BTL-file) to the ADwin-System */
 /* ============================================================================== */
 long Iserv(char my_FAR *Filename, long Memsize)
 {
@@ -233,7 +233,7 @@ long Iserv(char my_FAR *Filename, long Memsize)
     return (*Boot_Ptr)(Filename, DeviceNo, Memsize, message);	/* Boot the ADwin card */
 }
 
-/* Down-loads the operating system (BTL-file) to the ADwin-System */
+/* Downloads the operating system (BTL-file) to the ADwin-System */
 /* ============================================================================== */
 long Boot(char my_FAR *Filename, long Memsize)
 {

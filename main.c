@@ -249,8 +249,6 @@ void initializeGUI()// initialzie the GUI by setting menu's and arranging things
 	SetCtrlAttribute (panelHandle, PANEL_ANALOGTABLE, ATTR_NUM_VISIBLE_ROWS, NUMBERANALOGROWS);
 	SetCtrlAttribute (panelHandle, PANEL_DIGTABLE, ATTR_NUM_VISIBLE_ROWS, NUMBERDIGITALCHANNELS);
 
-
-
 	SetCtrlAttribute (panelHandle, PANEL_INFOTABLE, ATTR_LEFT, 165);
 	SetCtrlAttribute (panelHandle, PANEL_INFOTABLE, ATTR_TOP, 88);
 	SetCtrlAttribute (panelHandle, PANEL_INFOTABLE, ATTR_VISIBLE, 1);
@@ -303,16 +301,15 @@ void initializeGUI()// initialzie the GUI by setting menu's and arranging things
 		SetCtrlAttribute (panelHandle,PANEL_CHKBOX[i],ATTR_LEFT,x0 + i*dx);
 	}
 
-
 	// Force number of GPIB devices to obey NUMBERGPIBDEV (the number of devices in vars.h)
 	SetCtrlAttribute(panelHandle13, SETUP_GPIB_DEVICENO, ATTR_MIN_VALUE, 1);
 	SetCtrlAttribute(panelHandle13, SETUP_GPIB_DEVICENO, ATTR_MAX_VALUE, NUMBERGPIBDEV);
 	SetCtrlAttribute(panelHandle13, SETUP_GPIB_LASTNO, ATTR_MIN_VALUE, 1);
 	SetCtrlAttribute(panelHandle13, SETUP_GPIB_LASTNO, ATTR_MAX_VALUE, NUMBERGPIBDEV);
+
 	// Allow for other VISA devices besides GPIB by allowing GPIB ADDRESS to be larger than 30.
 	SetCtrlAttribute(panelHandle13, SETUP_GPIB_ADDRESS, ATTR_MIN_VALUE, 0);
 	SetCtrlAttribute(panelHandle13, SETUP_GPIB_ADDRESS, ATTR_MAX_VALUE, MAXVISAADDR);   //we are missing panel handle
-
 
 	// A traffic light to indicate certain things for debugging
 	GetCtrlAttribute (panelHandle,PANEL_LED_RED,ATTR_LEFT,&ledleft);
@@ -322,13 +319,11 @@ void initializeGUI()// initialzie the GUI by setting menu's and arranging things
 	SetCtrlAttribute (panelHandle,PANEL_LED_GRE,ATTR_LEFT,ledleft);
 	SetCtrlAttribute (panelHandle,PANEL_LED_GRE,ATTR_TOP,ledtop+50);
 
-
 	// Scan display
 	SetCtrlAttribute (panelHandle_sub2,SUBPANEL2,ATTR_VISIBLE,0);
 
 	SetTableColumnAttribute (panelHandle, PANEL_TBL_ANAMES, 2,ATTR_DATA_TYPE, VAL_UNSIGNED_INTEGER);
 	SetTableColumnAttribute (panelHandle, PANEL_TBL_DIGNAMES, 2,ATTR_DATA_TYPE, VAL_UNSIGNED_INTEGER);
-
 
 	// set to display both analog and digital channels also changes a bunch of their shape/position properties
 	// Note the Scan table is not fixed in the source code, to change its position move it in the GUIDesign.uir file
