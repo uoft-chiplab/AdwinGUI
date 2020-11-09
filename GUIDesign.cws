@@ -52,10 +52,10 @@ Path Line0002 = "/GUIDesign.c"
 File Type = "CSource"
 Disk Date = 3687546476
 In Projects = "1,"
-Source Window State = "1,1311,1311,1311,0,0,0,0,0,0,0,0,0,0,0,0,1057,0,1311,0,401,490,1,0,"
+Source Window State = "1,1311,1311,1311,0,0,0,0,0,0,0,0,0,0,0,0,1034,0,1311,0,401,490,1,0,"
 Window Top = 33
 Window Left = 10
-Window Z-Order = 2
+Window Z-Order = 1
 
 [File 0002]
 Path Line0001 = "//fermium/users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo"
@@ -127,12 +127,12 @@ Window Z-Order = 8
 Path Line0001 = "//fermium/users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo"
 Path Line0002 = "/vars.h"
 File Type = "Include"
-Disk Date = 3687780341
+Disk Date = 3687780922
 In Projects = "1,"
-Source Window State = "1,28,28,28,0,0,0,0,0,0,0,0,0,0,0,0,16,0,28,0,401,602,1,0,"
+Source Window State = "1,62,62,62,42,42,42,0,0,0,0,0,0,0,0,0,36,0,62,42,401,602,1,0,"
 Window Top = 64
 Window Left = 26
-Window Z-Order = 1
+Window Z-Order = 2
 
 [File 0009]
 Path Line0001 = "//fermium/users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo"
