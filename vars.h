@@ -75,7 +75,7 @@ Analog and Digital Channels (and laser table and necessary parts of dds and anri
 
 //Explicitly make extra space in analog and digital arrays
 #define MAXANALOG (50)				// Need 40 lines, leave room for 48
-#define MAXDIGITAL (100)			// need 3x32 lines, leave some leeway
+#define MAXDIGITAL (70)			// need 3x32 lines, leave some leeway
 
 //total number of different analog channels (Adwin and otherwise) that we care about
 #define NUMBERANALOGROWS NUMBERANALOGCHANNELS+NUMBERDDS+NUMBERLASERS+2*NUMBEROFANRITSU
