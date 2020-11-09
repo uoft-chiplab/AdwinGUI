@@ -15,10 +15,16 @@
 #include Adwpdio.inc
 #include adwinpro.inc
 
+'Sept 24/2020
+' DDS channel asignment understood. Digital channel numbers
+' in sequencer GUI are ADwin code channel number +1
+' Commented out DDS2 code and channel assignment, and ioreset for DDS1
+' added some clarifying comments
+
 'Sept 04/2020
-'Added analog channels for new analog card
-'Confused by DDS channel numbering scheme, don't understand DDS channel assignment
-'Perhaps digital module 1 is the transistor output card
+' Added 8 analog channels for new analog card, assumed new card will be module 6
+' Confused by DDS channel numbering scheme, don't understand DDS channel assignment
+' Perhaps digital module 1 is the transistor output card
   
 'Description:
 'expecting 3 arrays.
@@ -47,7 +53,7 @@ dim data_4[100] as long     ' a list of which channels are reset to zero on comp
 ' 6 master Reset
 ' 7 (maybe) RF switch  
 dim dataline,clock, ioupdate,ioreset,masterreset as long
-dim dataline9858,clock9858,ioupdate9858,ioreset9858,masterreset9858 as long
+' dim dataline9858,clock9858,ioupdate9858,ioreset9858,masterreset9858 as long
 
 dim i,j,k,lightcount,litup,eventcount,delaymultinuse as long
 dim value as float
@@ -78,15 +84,15 @@ INIT:
   dataline=31         ' data line
   clock=30        ' data clock
   ioupdate=29      ' update line.  transfers data from buffer into registers
-  ioreset=28      ' resets input buffers
+  'ioreset=28      ' resets input buffers
   masterreset=27
 
   'DDS2 digital lines (base 0)
-  dataline9858=21
-  clock9858=22
-  ioupdate9858=19
-  ioreset9858=23
-  masterreset9858=18
+  '  dataline9858=21
+  '  clock9858=22
+  '  ioupdate9858=19
+  '  ioreset9858=23
+  '  masterreset9858=18
 
   'initialize modules, 65535 -> all 16 channels set to 1 (output)
   DigProg1(1,65535)
@@ -97,10 +103,12 @@ INIT:
   DigProg2(3,65535)
   
   'Configure cards for synchronous output
+  ' digital: 1 is transistor output, not used, 2 and 3 are digital outs
   SYNCENABLE(1,dio,1)
   SYNCENABLE(2,dio,1)
   SYNCENABLE(3,dio,1)
 
+  ' analog: 6 analog cards
   SYNCENABLE(1,da,1)
   SYNCENABLE(2,da,1)
   SYNCENABLE(3,da,1)
@@ -119,7 +127,7 @@ INIT:
   ' Make sure the DDS lines are low. 0 resets channel
   DIGOUT_F(2,clock,0)
   DIGOUT_F(2,dataline,0)
-  DIGOUT_F(2,ioreset,0)
+  'DIGOUT_F(2,ioreset,0)
   DIGOUT_F(2,ioupdate,0)
   DIGOUT_F(2,masterreset,0)
 
@@ -163,7 +171,8 @@ EVENT:
       updates=updates+1
       ch=Data_2[updates]
 
-      '*****************Analog outs***********************      
+      '*****************Analog outs**********************   
+      ' currently 6 analog cards
       if((ch>=1) and (ch<=48)) then
         AnalogWrite(ch,Data_3[updates])
       endif
@@ -173,11 +182,11 @@ EVENT:
         DDS1Write(Data_3[updates])
       endif      
     
-      if(ch=52) then  'BB: is ch=52, then write 2 bits to the DDS2
-        DDS2Write(Data_3[updates])
-      ENDIF  'end BB
+      '      if(ch=52) then  'BB: is ch=52, then write 2 bits to the DDS2
+      '        DDS2Write(Data_3[updates])
+      '      ENDIF  'end BB
 
-      '***********************Digital outs**********
+      '***********************Digital outs***************
       if(ch=101) then
         val_lower=Data_3[updates]
         DIG_WRITELATCH32(2,val_lower) 'Writes Digital Channels 1-32
@@ -188,7 +197,7 @@ EVENT:
         DIG_WRITELATCH32(3,val_upper) 'Writes Digital Channels 101-132
       endif
       
-      'if(ch=103) then
+      'if(ch=103) then 'for 3rd digital card
       '  val_upper=Data_3[updates]
       '  DIG_WRITELATCH32(4,val_upper) 'Writes Digital Channels 133-164
       'endif
@@ -203,7 +212,7 @@ FINISH:
   Par_3=counts
   Par_4=maxcount
 
-  'If (Data_4[27]=0) then
+  'if Data_4[j]=0, i.e. channel should be set to zero, then set to zero
   For i= 1 to 8
     if(Data_4[i]=1) then
       WRITEDAC(1,i,V(0))   
@@ -227,16 +236,13 @@ FINISH:
 
   DIG_WRITELATCH32(2,PAR_5) 
   DIG_WRITELATCH32(3,PAR_6)
-  'DIG_WRITELATCH32(4,PAR_7)
+  'DIG_WRITELATCH32(4,PAR_7) 'for 3rd digital card
   
-  'set line 28 high... forget why...
-  'DIG_WRITELATCH32(2,2^28)
-  'ENDIF
-
   SYNCALL()
 
   '***************************************************
 SUB AnalogWrite(achannel, avalue) 
+  ' if statement for each module i.e. analog card
   if((achannel>=1)and(achannel<=8)) then
     writedac(1,achannel,V(avalue))
   endif
@@ -269,7 +275,7 @@ SUB DDS1Write(digvalue)
   dataline=31         ' data line
   clock=30        ' data clock
   ioupdate=29      ' update line.  transfers data from buffer into registers
-  ioreset=28      ' resets input buffers
+  'ioreset=28      ' resets input buffers - 2020-09-24 commented out, not used
   masterreset=27
   if(digvalue<=3) then  ' write 2 bits to the data line of the DDS
     tempval = digvalue 'have to convert to long first
@@ -304,40 +310,43 @@ SUB DDS1Write(digvalue)
   endif
 ENDSUB
 '***************************************************
-SUB DDS2WRITE(dvalue)
-  dim tempval as long
-  dim dataline9858,clock9858,ioupdate9858,ioreset9858,masterreset9858 as long
-  'DDS2 digital lines (base 0)
-  dataline9858=21
-  clock9858=22
-  ioupdate9858=19
-  'ioreset9858=23
-  masterreset9858=18
-  if(dvalue<=3) then  ' write 2 bits to the data line of the DDS
-    tempval = dvalue 'have to convert to long first
-    DIGOUT_F(2,dataline9858,SHIFT_RIGHT((tempval and 2),1))
-    DIGOUT_F(2,clock9858,1)
-    DIGOUT_F(2,clock9858,0)
-    DIGOUT_F(2,dataline9858,(tempval and 1))
-    DIGOUT_F(2,clock9858,1)
-    DIGOUT_F(2,clock9858,0)
-  ELSE 
-    IF(dvalue=4) then 'write to the i/o update pin to transfer to registers
-      'DIGOUT_F(2,ioreset9858,1)
-      'DIGOUT_F(2,ioreset9858,0)
-    Else 
-      IF(dvalue=5) then
-        DIGOUT_F(2,ioupdate9858,1)
-        DIGOUT_F(2,ioupdate9858,0)
-      Else 
-        IF(dvalue=6) then
-          DIGOUT_F(2,masterreset9858,1)
-          DIGOUT_F(2,masterreset9858,0)                  
-        ENDIF
-      endif
-    endif
-  endif
-ENDSUB
+' Commented out 2020-09-24, havne't used DDS2 for a long time, want
+' to leave digital channels open for use
+' -------------------------------------------
+'SUB DDS2WRITE(dvalue)
+'  dim tempval as long
+'  dim dataline9858,clock9858,ioupdate9858,ioreset9858,masterreset9858 as long
+'  'DDS2 digital lines (base 0)
+'  dataline9858=21
+'  clock9858=22
+'  ioupdate9858=19
+'  'ioreset9858=23
+'  masterreset9858=18
+'  if(dvalue<=3) then  ' write 2 bits to the data line of the DDS
+'    tempval = dvalue 'have to convert to long first
+'    DIGOUT_F(2,dataline9858,SHIFT_RIGHT((tempval and 2),1))
+'    DIGOUT_F(2,clock9858,1)
+'    DIGOUT_F(2,clock9858,0)
+'    DIGOUT_F(2,dataline9858,(tempval and 1))
+'    DIGOUT_F(2,clock9858,1)
+'    DIGOUT_F(2,clock9858,0)
+'  ELSE 
+'    IF(dvalue=4) then 'write to the i/o update pin to transfer to registers
+'      'DIGOUT_F(2,ioreset9858,1)
+'      'DIGOUT_F(2,ioreset9858,0)
+'    Else 
+'      IF(dvalue=5) then
+'        DIGOUT_F(2,ioupdate9858,1)
+'        DIGOUT_F(2,ioupdate9858,0)
+'      Else 
+'        IF(dvalue=6) then
+'          DIGOUT_F(2,masterreset9858,1)
+'          DIGOUT_F(2,masterreset9858,0)                  
+'        ENDIF
+'      endif
+'    endif
+'  endif
+'ENDSUB
 
 'Flashing LEDs -> running cycle/pretty colours
 SUB Light_LED(lit) as  

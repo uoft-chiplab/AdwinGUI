@@ -107,15 +107,6 @@ int main (int argc, char *argv[])
 	// Set the default EventPeriod (note rhs is a macro)
 	EventPeriod = DefaultEventPeriod;
 
-
-	// Scott Testing V17 saving and loading
-	SaveSequenceV17("C:\\Users\\coldatoms\\Documents\\Lab\\LocalCode\\ADwin_sequencers\\test_sequences\\test.woot",
-			 strlen("C:\\Users\\coldatoms\\Documents\\Lab\\LocalCode\\ADwin_sequencers\\test_sequences\\test.woot"));
-
-	LoadSequenceV17("C:\\Users\\coldatoms\\Documents\\Lab\\LocalCode\\ADwin_sequencers\\test_sequences\\test.woot",
-			 strlen("C:\\Users\\coldatoms\\Documents\\Lab\\LocalCode\\ADwin_sequencers\\test_sequences\\test.woot"));
-
-
 	DisplayPanel(panelHandle);
 
 	RunUserInterface();  // start the GUI

@@ -1374,7 +1374,7 @@ void OptimizeTimeLoop(int *UpdateNum,int count, int *newcount)
  	   ColourTable[6*i+6] = CLR_DIGITAL_LO_ALT;
  	}
 
-	printf("Enter DrawNewTable\n");
+	// printf("Enter DrawNewTable\n");
 
  	// Get visibilities and page number (and then hide tables)
  	GetCtrlAttribute (panelHandle, PANEL_ANALOGTABLE, ATTR_VISIBLE, &analogtable_visible);
@@ -3001,7 +3001,6 @@ void ReshapeAnalogTable( int top,int left,int height)
 	}
 	for (j=1;j<=NUMBERANALOGCHANNELS;j++)
 	{
-
 		SetTableRowAttribute (panelHandle, PANEL_TBL_ANALOGUNITS, j,ATTR_SIZE_MODE, VAL_USE_EXPLICIT_SIZE);
 		SetTableRowAttribute (panelHandle, PANEL_TBL_ANALOGUNITS, j, ATTR_ROW_HEIGHT, rowheight);
 	}
