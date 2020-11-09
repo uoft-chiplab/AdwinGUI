@@ -14,8 +14,6 @@
 //March 9:  Reorder the routines to more closely match the order in which they are executed.
 //          Applies to the 'engine' but not the cosmetic/table handling routnes
 
-
-
 #include <utility.h>
 #include <string.h>
 #include "Scan.h"
@@ -61,8 +59,6 @@ struct LaserTableClip{
 extern int Active_DDS_PANEL;
 
 // Needed some prototypes. Something is fishy about this. Not bothering right now, though (S. Trotzky, 2012-10-07)
-
-
 
 
 //***************************************************************************************************
@@ -2991,6 +2987,7 @@ void ReshapeAnalogTable( int top,int left,int height)
 	int modheight;
 
 	rowheight = (height)/(NUMBERANALOGCHANNELS+NUMBERDDS);
+	printf("rowheight is %d", rowheight);
 
 	for (j=1;j<=NUMBERANALOGROWS;j++)
 	{
@@ -3005,7 +3002,8 @@ void ReshapeAnalogTable( int top,int left,int height)
 		SetTableRowAttribute (panelHandle, PANEL_TBL_ANALOGUNITS, j, ATTR_ROW_HEIGHT, rowheight);
 	}
 
-	modheight=(NUMBERANALOGROWS)*(int)((height)/(NUMBERANALOGCHANNELS+NUMBERDDS))+3;
+	modheight=(NUMBERANALOGROWS)*(int)((height)/(NUMBERANALOGCHANNELS+NUMBERDDS))+6;
+	printf("\nmodheight is %d", modheight);
 
 	//resize the analog table and all it's related list boxes
   	SetCtrlAttribute (panelHandle, PANEL_ANALOGTABLE, ATTR_HEIGHT, modheight);
@@ -3071,7 +3069,6 @@ void ReshapeDigitalTable( int top,int left,int height)
 		SetTableRowAttribute (panelHandle, PANEL_DIGTABLE, j, ATTR_SIZE_MODE, VAL_USE_EXPLICIT_SIZE);
 		SetTableRowAttribute (panelHandle, PANEL_DIGTABLE, j, ATTR_ROW_HEIGHT, (height)/(NUMBERDIGITALCHANNELS));
 		SetTableRowAttribute (panelHandle, PANEL_TBL_DIGNAMES, j, ATTR_SIZE_MODE, VAL_USE_EXPLICIT_SIZE);
-
 		SetTableRowAttribute (panelHandle, PANEL_TBL_DIGNAMES, j, ATTR_ROW_HEIGHT, (height)/(NUMBERDIGITALCHANNELS));
 	}
 
@@ -3094,7 +3091,6 @@ VAL_CELL_PICTURE : numeric
 *************************************************************************/
 void SetDisplayType(int display_setting)
 {
-
 	int i,j;
 
 	//set button status
@@ -3146,13 +3142,13 @@ void SetChannelDisplayed(int display_setting)
 	SetCtrlAttribute (panelHandle, PANEL_TBL_DIGNAMES, ATTR_VISIBLE, 0);
 	//ATTR_LABEL_VISIBLE
 
-	heightpos1=695;
+	heightpos1=695+114;
 	heightpos2=582;
 	heightpos3=240;
 	toppos1=140;
 	leftpos=170;
-	toppos2=toppos1+heightpos1;
-	toppos3=toppos2+heightpos2+15;
+	toppos2=toppos1+heightpos1+60;
+	toppos3=toppos2+heightpos2+10;
 
 	// Reshape Timetable
 	GetCtrlAttribute (panelHandle, PANEL_ANALOGTABLE, ATTR_WIDTH, &width);
@@ -3166,13 +3162,12 @@ void SetChannelDisplayed(int display_setting)
 	SetCtrlAttribute (panelHandle, PANEL_INFOTABLE, ATTR_WIDTH, width);
 	SetCtrlAttribute (panelHandle, PANEL_INFOTABLE, ATTR_VISIBLE, FALSE); // hide for now
 
-
 	switch (display_setting)
 		{
 		case 1:		// both
 			ReshapeAnalogTable(toppos1,leftpos,heightpos1);   //passed top, left and height
-			ReshapeDigitalTable(toppos2+100,leftpos,heightpos2);
-			ReshapeMultiScanTable(toppos3+100,leftpos,heightpos3);
+			ReshapeDigitalTable(toppos2,leftpos,heightpos2);
+			ReshapeMultiScanTable(toppos3,leftpos,heightpos3);
 
 			SetCtrlAttribute (panelHandle, PANEL_DIGTABLE, ATTR_VISIBLE, 1);
 			SetCtrlAttribute (panelHandle, PANEL_ANALOGTABLE, ATTR_VISIBLE, 1);
@@ -3184,8 +3179,8 @@ void SetChannelDisplayed(int display_setting)
 
 		case 2:		// analog tableonly
 
-			ReshapeAnalogTable(toppos1,170,heightpos1);   //passed top, left and height
-			ReshapeMultiScanTable(toppos2+105,leftpos,heightpos3);
+			ReshapeAnalogTable(toppos1,leftpos,heightpos1);   //passed top, left and height
+			ReshapeMultiScanTable(toppos2+5,leftpos,heightpos3);
 
 			SetCtrlAttribute (panelHandle, PANEL_ANALOGTABLE, ATTR_VISIBLE, 1);
 			SetCtrlAttribute (panelHandle, PANEL_TBL_ANAMES, ATTR_VISIBLE, 1);
@@ -3193,13 +3188,12 @@ void SetChannelDisplayed(int display_setting)
 			break;
 
 		case 3:		 // digital table only
-			ReshapeDigitalTable(toppos1,170,heightpos2);
+			ReshapeDigitalTable(toppos1,leftpos,heightpos2);
 			ReshapeMultiScanTable(toppos1+heightpos2+25,leftpos,heightpos3);
 
 			SetCtrlAttribute (panelHandle, PANEL_DIGTABLE, ATTR_VISIBLE, 1);
 			SetCtrlAttribute (panelHandle, PANEL_TBL_DIGNAMES, ATTR_VISIBLE, 1);
 			break;
-
 		}
 
 		SetCtrlVal(panelHandle, PANEL_DISPLAYDIAL, display_setting);

@@ -300,8 +300,7 @@ void SaveLastGuiSettings(void)
 	int i;
 
 	SavePanelState(PANEL, fname, 1);
-	SaveArraysV16(fname, strlen(fname));
-
+	SaveSequenceV17(fname, strlen(fname)); //I'm here hellooo
 }
 
 
@@ -2926,11 +2925,6 @@ long checkFooter(FILE *fbuff, char *endtag, long fpos_eof){
 	}
 	return fpos_next;
 }
-
-
-
-
-
 
 
 

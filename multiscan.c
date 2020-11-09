@@ -21,14 +21,13 @@
 #include "ScanTableLoader.h"// For SL_PANEL_NUM_* handles
 #include "Scan.h"// For SCANPANEL_CHECK_USE_LIST handle
 
-
-
 /************************************************************************
 MultiScan functions
 *************************************************************************/
 
-
 //*********************************************************************
+// 2020-11-09 --- Colin Dale --- Started for version 16.9.1
+// Updated to save using new V17 format '.seq'
 // 2016_09_19 --- Scott Smale --- Started in Version 16.1.E
 // For scans, save the sequencer files and also create the run directory
 // and commands directory. Sets MultiScan.CommandsFilePath to the
@@ -37,7 +36,6 @@ MultiScan functions
 // Returns -1 otherwise.
 //*********************************************************************
 int SetupScanFiles(int version, char *outputCmdsDirPath){
-
 
 	FILE *fpini;
 	char c;
@@ -79,8 +77,8 @@ int SetupScanFiles(int version, char *outputCmdsDirPath){
 
  	printf("iniFilename:\n>%s<\n", iniFilename);
 
-	// Select file name for the .pan, .gpib, and .arr files
-	panStatus = FileSelectPopup ("", "*.pan", "", "Save Settings", VAL_SAVE_BUTTON, 0, 0, 1, 1, panFilePath);
+	// Select file name for the .seq file #.pan, .gpib, and .arr files
+	panStatus = FileSelectPopup ("", "*.seq", "", "Save Settings", VAL_SAVE_BUTTON, 0, 0, 1, 1, panFilePath);
 	// Return value of FileSelectPopup is
 	// 		negative on error
 	//		0	VAL_NO_FILE_SELECTED
@@ -100,12 +98,6 @@ int SetupScanFiles(int version, char *outputCmdsDirPath){
 
 		printf("panFilePath:\n>%s<\n", panFilePath);
 
-		// First write the panel gui file (.pan)
-		// This one can be problematic when elements have been removed from the GUI!!!
-		// The third argument to SavePanelState is a unique state index so that you can save multiple
-		// panel states in the same file. Here it is arbitrarily set to 1.
-		SavePanelState(PANEL, panFilePath, 1);
-
 		// Next write the .ini file in the GUI progam directory
 		GetMenuBarAttribute (menuHandle, MENU_FILE_BOOTLOAD, ATTR_CHECKED, &loadonboot);
 		if(!(fpini=fopen("gui.ini","w"))==NULL)
@@ -115,27 +107,25 @@ int SetupScanFiles(int version, char *outputCmdsDirPath){
 		}
 		fclose(fpini);
 
-		// Save the arrays and the laser data together ie. V16 not V15.
-		panFilePathLength = strlen(panFilePath);
-		SaveArraysV16(panFilePath, panFilePathLength);
+		// Save using V17
+		SaveSequenceV17(panFilePath, strlen(panFilePath));
 
-		// Add the name of the .pan file to the program header
+		// Add the name of the .seq file to the program header
 		SplitPath(panFilePath, NULL, panFileDir, panFileName);
 		strcpy(buff, SEQUENCER_VERSION);
 		strcat(buff, panFileName);
 		SetPanelAttribute(panelHandle, ATTR_TITLE, buff);
 
 		// Now we have saved everything that used to be saved.
-		// Now want to create folder with same name as .pan file (minus .pan)
+		// Now want to create folder with same name as .seq file (minus .seq)
 		//	and to create the commands folder inside it.
 
 		// Try creating the run folder
 		strcpy(buff, panFileName);
-		buff[strlen(buff)-4] = '\0';// Assume the last 4 characters of panFileName are the ".pan"
+		buff[strlen(buff)-4] = '\0';// Assume the last 4 characters of panFileName are the ".seq"
 		MakePathname(panFileDir, buff, runDirPath);
 
 		printf("runDirPath:\n>%s<\n", runDirPath);
-
 
 		runDirStatus = MakeDir(runDirPath);
 
@@ -192,7 +182,7 @@ int SetupScanFiles(int version, char *outputCmdsDirPath){
 					strcpy(outputCmdsDirPath, commandsDirPath);
 					// Create the mscan file name and path and save it in the MultiScan struct.
 					strcpy(buff, panFileName);
-					buffPtr = buff+strlen(buff)-3;//Set buffPtr to point to 'p' in ".pan"
+					buffPtr = buff+strlen(buff)-3;//Set buffPtr to point to 's' in ".seq"
 					strcpy(buffPtr, "mscan\0");
 					MakePathname(runDirPath, buff, mscanFileDirPath);
 					//printf("mscanFileDirPath:\n>%s<\n", mscanFileDirPath);
@@ -275,7 +265,7 @@ int SetupScanFiles(int version, char *outputCmdsDirPath){
 						strcpy(outputCmdsDirPath, commandsDirPath);
 						// Create the mscan file name and path and save it in the MultiScan struct.
 						strcpy(buff, panFileName);
-						buffPtr = buff+strlen(buff)-3;//Set buffPtr to point to 'p' in ".pan"
+						buffPtr = buff+strlen(buff)-3;//Set buffPtr to point to 's' in ".seq"
 						strcpy(buffPtr, "mscan\0");
 						MakePathname(runDirPath, buff, mscanFileDirPath);
 						//printf("mscanFileDirPath:\n>%s<\n", mscanFileDirPath);
