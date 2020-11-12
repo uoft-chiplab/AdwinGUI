@@ -39,7 +39,7 @@ dim data_3[5000000] as float 'A list of values for the channels
 'data_4 is the enactment of the reset to zero function in the sequencer code
 dim data_4[100] as long     ' a list of which channels are reset to zero on completion
 
-'Channels 1-32 refer to Analog output lines
+'Channels 1-48 refer to Analog output lines
 'Channel 101,102 refers to Digital output lines (32 bit words each)
 ' (at one point, 101 and 102 were each 16 bit, perhaps when using a T9 processor)
 'channel 51-53 refers to digital output lines controlling the DDS

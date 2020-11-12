@@ -74,7 +74,7 @@ Analog and Digital Channels (and laser table and necessary parts of dds and anri
 #define NUMBEROFANRITSU (1) 	 	// Number of microwave generators (on the off chance we get more than one)
 
 //Explicitly make extra space in analog and digital arrays
-#define MAXANALOG (50)				// Need 40 lines, leave room for 48
+#define MAXANALOG (60)				// Need 40 lines, leave room for 48
 #define MAXDIGITAL (100)			// need 3x32 lines, leave some leeway
 
 //total number of different analog channels (Adwin and otherwise) that we care about
@@ -111,7 +111,7 @@ struct AnalogTableValues AnalogTable[NUMBEROFCOLUMNS+1][NUMBERANALOGROWS+1][NUMB
 	// the structure is the values/elements contained at each point in the
 	// analog panel.  The array aval, is set up as [x][y][page]
 
-int DigTableValues[NUMBEROFCOLUMNS+1][MAXDIGITAL][NUMBEROFPAGES];
+int DigTableValues[NUMBEROFCOLUMNS+1][MAXDIGITAL][NUMBEROFPAGES]; // I think we want to change MAXDIGITAL to NUMBERDIGITALCHANNELS
 
 // Channel properties structs
 struct AnalogChannelProperties{

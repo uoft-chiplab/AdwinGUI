@@ -627,7 +627,7 @@ void BuildUpdateList(double TMatrix[],
 	ChNum - 	An array that contains the channel number to be updated. Synchronous with ChVal.  	   Channels listed below
 	ChVal -		An array that contains the value to be written to a channel. Synchronous with ChVal.
 
-	ChNum -     Value 1-48:  Analog lines, 6 cards with 8 lines each.  ChVal is -10V to 10V
+	ChNum -     Value 1-32:  Analog lines, 4 cards with 8 lines each.  ChVal is -10V to 10V
 				Value 51:	 DDS1 line.   ChVal is either a 2-bit value (0-3) to write, or (4-7) a reset signal
 				Value 52:	 DDS2 line.   ChVal is either a 2-bit value (0-3) to write, or (4-7) a reset signal
 				Value 101, 102  First 16 and last 16 lines on the first DIO card.  ChVal is a 16 bit integer
@@ -783,7 +783,9 @@ void BuildUpdateList(double TMatrix[],
 			DDS2Array[m].end_frequency=DDS2Array[m].end_frequency+DDS2offset;
 		///	DDS3Array[m].start_frequency=DDS3Array[m].start_frequency+DDS3offset;
 		///	DDS3Array[m].end_frequency=DDS3Array[m].end_frequency+DDS3offset;
+
 		}
+
 
 		dds_cmd_seq = create_ad9852_cmd_sequence(DDSArray, numtimes,DDSFreq.PLLmult,
 		DDSFreq.extclock,EventPeriod/1000);

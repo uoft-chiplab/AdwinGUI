@@ -398,5 +398,8 @@ SUB Light_LED(lit) as
       SETLED(3,dio,1)
     CASE 17
       SETLED(3,dio,0)
+      'SETLET(6,da,1)
+      'CASE 18
+      'SETLED(6,da,0)
   ENDSELECT
 ENDSUB
