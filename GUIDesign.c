@@ -1027,6 +1027,7 @@ void BuildUpdateList(double TMatrix[],
 			if (didprocess==FALSE) // is the ADwin process already loaded?
 			{
 				processnum=Load_Process("TransferData.TA1");
+				printf("TransferData.TA1 loaded");
 				didprocess=1;
 			}
 		}
