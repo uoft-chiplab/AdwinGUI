@@ -8,10 +8,10 @@ void SaveSettings(int);
 void LoadSettings(int);
 
 void SaveLastGuiSettings(void);
-void LoadLastSettings(int);
 
 int SaveSequenceV17(char* save_name, int sn_length);
 int LoadSequenceV17(char* load_name, int ln_length);
+
 int checkVersionFromFile(FILE *fbuff, long fpos_eof);
 long getSaveVersionFromFile(FILE *fbuff, long fpos_eof, int *majorVer, int *minorVer);
 int putTimeArrayToFile(FILE *fbuff);
@@ -30,6 +30,10 @@ int putDds2TableToFile(FILE *fbuff);
 long getDds2TableFromFile(FILE *fbuff, long fpos_eof);
 int putDds3TableToFile(FILE *fbuff);
 long getDds3TableFromFile(FILE *fbuff, long fpos_eof);
+int putDdsGlobalsToFile(FILE *fbuff);
+long getDdsGlobalsFromFile(FILE *fbuff, long fpos_eof);
+int putDdsEorsToFile(FILE *fbuff);
+long getDdsEorsFromFile(FILE *fbuff, long fpos_eof);
 int putLaserTableToFile(FILE *fbuff);
 long getLaserTableFromFile(FILE *fbuff, long fpos_eof);
 int putLaserPropsToFile(FILE *fbuff);
@@ -46,7 +50,22 @@ int putPageCheckboxesToFile(FILE *fbuff);
 long getPageCheckboxesFromFile(FILE *fbuff, long fpos_eof);
 int putUpdatePeriodToFile(FILE *fbuff);
 long getUpdatePeriodFromFile(FILE *fbuff, long fpos_eof);
+int putGpibDevsToFile(FILE *fbuff);
+long getGpibDevsFromFile(FILE *fbuff, long fpos_eof);
+int putForceBuildChkToFile(FILE *fbuff);
+long getForceBuildChkFromFile(FILE *fbuff, long fpos_eof);
+int putUseCompressionToFile(FILE *fbuff);
+long getUseCompressionFromFile(FILE *fbuff, long fpos_eof);
+int putUseSimpleTimingToFile(FILE *fbuff);
+long getUseSimpleTimingFromFile(FILE *fbuff, long fpos_eof);
+int putMultiScanToFile(FILE *fbuff);
+long getMultiScanFromFile(FILE *fbuff, long fpos_eof);
+int putScanBufferToFile(FILE *fbuff);
+long getScanBufferFromFile(FILE *fbuff, long fpos_eof);
+
 void nullCharBuff(char *buff, int max_len);
+int writeHeader(FILE *fbuff, char *stag, int elem_size, int num_dims, int *dims);
+int writeFooter(FILE *fbuff, char *etag);
 long readHeader(FILE *fbuff, char *tag, int *elem_size, int *num_dims, int *dims, const int max_dims, long fpos_eof);
 long checkFooter(FILE *fbuff, char *endtag, long fpos_eof);
 

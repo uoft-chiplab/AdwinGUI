@@ -16,7 +16,17 @@
 #include "GPIB_SRS_SETUP2.h"
 
 
-void Initialization(void);
+void initializeGUI(void);
+
+void initializeAnalogChProps(void);
+void initializeAnalogTable(void);
+void initializeDigChProps(void);
+void initializeDigArray(void);
+void initializeInfoArray(void);
+void initializeLaserArrays(void);
+void initializeGpibDevArray(void);
+void initializeDdsTables(void);
+void initializeMultiScan(void);
 
 
 #endif

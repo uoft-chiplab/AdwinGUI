@@ -116,18 +116,19 @@ void SetAnalogChannels()
 {
 	int i=0, j=0, k=0, line=0;
 	char numbuff[20]="";
-	for(i=1; i<=NUMBERANALOGCHANNELS; i++)  {
+
+	for( i=1; i < NUMBERANALOGCHANNELS+1; i++ ){
 		SetTableCellVal (panelHandle, PANEL_TBL_ANAMES,      MakePoint(1,i), AChName[i].chname);
 		SetTableCellVal (panelHandle, PANEL_TBL_ANAMES,      MakePoint(2,i), AChName[i].chnum);
 		SetTableCellVal (panelHandle, PANEL_TBL_ANALOGUNITS, MakePoint(1,i), AChName[i].units);
 	}
-	for (i=1; i<=NUMBERDDS; i++)  {
+	for( i=1; i < NUMBERDDS+1; i++ ){
 		sprintf(AChName[i+NUMBERANALOGCHANNELS].chname, "DDS%d",i);
 		SetTableCellVal (panelHandle, PANEL_TBL_ANAMES, MakePoint(1,i+NUMBERANALOGCHANNELS), AChName[i+NUMBERANALOGCHANNELS].chname);
 	}
 	// Scott 2016-10-18: Why the hell is this repeated but for NUMBEROFANRITSU times instead
 	//		of NUMBERDDS times?
-	for (i=1; i<=NUMBEROFANRITSU; i++)  {
+	for( i=1; i < NUMBEROFANRITSU+1; i++ ){
 		sprintf(AChName[i+NUMBERANALOGCHANNELS].chname, "DDS%d",i);
 		SetTableCellVal (panelHandle, PANEL_TBL_ANAMES, MakePoint(1,i+NUMBERANALOGCHANNELS), AChName[i+NUMBERANALOGCHANNELS].chname);
 	}

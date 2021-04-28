@@ -116,20 +116,27 @@ int CVICALLBACK LASER_TOGGLE_CALLBACK (int panel, int control, int event,
 
 
 /*************************************************************************************************************************/
+// Copies the LASER_NAMES into the appropriate label locations on the panel. Red bkgnd applied to active lasers, white
+//	for inactive lasers.
+// Also sets the name in the drop down box in LaserSettings.uir
 void SetLaserLabels(void)
-/*  Copies the LASER_NAMES into the appropriate label locations on the panel. Red bkgnd applied to active lasers, white
-	for inactive lasers. */
 {
 	int i;
-	for(i=0;i<NUMBERLASERS;i++)  {
-		SetTableCellVal (panelHandle, PANEL_TBL_ANAMES, MakePoint(1,i+NUMBERANALOGCHANNELS+NUMBERDDS+ NUMBEROFANRITSU*2+ 1), LaserProperties[i].Name);
+	// Index offset into ACh names table
+	// The cause of PhaseOMatic and Micromatic off by 2 was due to there being "+NUMBEROFANRITSU*2" in this calc.
+	int laserRowOffset = NUMBERANALOGCHANNELS+NUMBERDDS;
 
-		if (LaserProperties[i].Active ==1)
-			SetTableCellAttribute (panelHandle, PANEL_TBL_ANAMES,MakePoint(1,i+NUMBERANALOGCHANNELS+NUMBERDDS + NUMBEROFANRITSU*2 +1), ATTR_TEXT_BGCOLOR,0xFF3366L);
-		else
-			SetTableCellAttribute (panelHandle, PANEL_TBL_ANAMES,MakePoint(1,i+NUMBERANALOGCHANNELS+NUMBERDDS + NUMBEROFANRITSU*2 +1), ATTR_TEXT_BGCOLOR,VAL_WHITE);
+	for( i=0; i < NUMBERLASERS; i++)
+	{
+		SetTableCellVal(panelHandle, PANEL_TBL_ANAMES, MakePoint(1,(i+1) + laserRowOffset), LaserProperties[i].Name);
 
-		ReplaceListItem (panelHandle10,PANEL_LASER_RING,i,LaserProperties[i].Name,i);
+		if (LaserProperties[i].Active ==1){
+			SetTableCellAttribute(panelHandle, PANEL_TBL_ANAMES,MakePoint(1,(i+1) + laserRowOffset), ATTR_TEXT_BGCOLOR,0xFF3366L);
+		} else {
+			SetTableCellAttribute(panelHandle, PANEL_TBL_ANAMES,MakePoint(1,(i+1) + laserRowOffset), ATTR_TEXT_BGCOLOR,VAL_WHITE);
+		}
+
+		ReplaceListItem(panelHandle10,PANEL_LASER_RING,i,LaserProperties[i].Name,i);
 	}
 }
 
@@ -156,18 +163,21 @@ void LaserSettingsInit(void)
 	Called at program startup */
 {
 	int i;
+	// Index offset into ACh names table
+	int laserRowOffset = NUMBERANALOGCHANNELS+NUMBERDDS;
 
-///	LaserProperties[0].DigitalChannel=LASCHAN0;
-///	LaserProperties[1].DigitalChannel=LASCHAN1;
-///	LaserProperties[2].DigitalChannel=LASCHAN2;
-///	LaserProperties[3].DigitalChannel=LASCHAN3;
-
-	for (i=0;i<NUMBERLASERS;i++)  {
-		SetTableCellAttribute (panelHandle, PANEL_TBL_ANAMES, MakePoint(2,i+NUMBERANALOGCHANNELS+NUMBERDDS + 2*NUMBEROFANRITSU+1), ATTR_CELL_TYPE, VAL_CELL_STRING);
-		SetTableCellVal (panelHandle, PANEL_TBL_ANAMES, MakePoint(2,i+NUMBERANALOGCHANNELS+NUMBERDDS +2*NUMBEROFANRITSU +1),"MHz");
+	// Set the second cell to show the unts instead of the analog ch number
+	for( i=0; i < NUMBERLASERS; i++ )
+	{
+		SetTableCellAttribute(panelHandle, PANEL_TBL_ANAMES, MakePoint(2,(i+1)+laserRowOffset), ATTR_CELL_TYPE, VAL_CELL_STRING);
+		SetTableCellVal(panelHandle, PANEL_TBL_ANAMES, MakePoint(2,(i+1)+laserRowOffset),"MHz");
 	}
-	SetTableCellVal (panelHandle, PANEL_TBL_ANAMES, MakePoint(2,3 + NUMBERANALOGCHANNELS+NUMBERDDS + 2*NUMBEROFANRITSU +1),"dBm");
-	SetLaserLabels();
-	FillLaserTable(0);
-	SetCtrlVal (panelHandle10,PANEL_LASER_RING, 0);
+
+	// I don't know what this line corresponds to for "dBm". Maybe was a cheap way to make Anritsu setting?
+	//SetTableCellVal(panelHandle, PANEL_TBL_ANAMES, MakePoint(2,3 + NUMBERANALOGCHANNELS+NUMBERDDS + 2*NUMBEROFANRITSU +1),"dBm");
+
+	SetLaserLabels();// set labels on the left side
+
+	FillLaserTable(0);// set the gui subpanel LaserSettings.uir
+	SetCtrlVal(panelHandle10, PANEL_LASER_RING, 0);// set the dropdown box to show first laser
 }

@@ -14,8 +14,6 @@
 //March 9:  Reorder the routines to more closely match the order in which they are executed.
 //          Applies to the 'engine' but not the cosmetic/table handling routnes
 
-
-
 #include <utility.h>
 #include <string.h>
 #include "Scan.h"
@@ -61,8 +59,6 @@ struct LaserTableClip{
 extern int Active_DDS_PANEL;
 
 // Needed some prototypes. Something is fishy about this. Not bothering right now, though (S. Trotzky, 2012-10-07)
-
-
 
 
 //***************************************************************************************************
@@ -142,7 +138,7 @@ int CVICALLBACK CMD_SCAN_CALLBACK (int panel, int control, int event,
 				}
 			}
 
-			// In case the start of the  scan was confirmed (common to either scanmode)
+			// In case the start of the scan was confirmed (common to either scanmode)
 			if (status == 1)
 			{
 				printf("status==1\n");
@@ -631,7 +627,7 @@ void BuildUpdateList(double TMatrix[],
 	ChNum - 	An array that contains the channel number to be updated. Synchronous with ChVal.  	   Channels listed below
 	ChVal -		An array that contains the value to be written to a channel. Synchronous with ChVal.
 
-	ChNum -     Value 1-32:  Analog lines, 4 cards with 8 lines each.  ChVal is -10V to 10V
+	ChNum -     Value 1-48:  Analog lines, 6 cards with 8 lines each.  ChVal is -10V to 10V
 				Value 51:	 DDS1 line.   ChVal is either a 2-bit value (0-3) to write, or (4-7) a reset signal
 				Value 52:	 DDS2 line.   ChVal is either a 2-bit value (0-3) to write, or (4-7) a reset signal
 				Value 101, 102  First 16 and last 16 lines on the first DIO card.  ChVal is a 16 bit integer
@@ -642,10 +638,6 @@ void BuildUpdateList(double TMatrix[],
 	dds_cmd_seq List of dds commands, parsed into 2-bit sections, or reset lines to be written
 				Commands are listed along with the time they should occur at.
 	*/
-
-
-
-
 
 
 	BOOL UseCompression,ArraysToDebug,StreamSettings;
@@ -694,15 +686,10 @@ void BuildUpdateList(double TMatrix[],
 	static float *ChVal = NULL;
 	static int timesum = 0;
 
-
-
-
 	double timeStart, timeEnd;
 	double timeStartProcess, timeEndProcess;
 
 	timeStart = Timer();
-
-
 
 	//Change run button appearance while operating
 	SetCtrlAttribute (panelHandle, PANEL_CMD_RUN,ATTR_CMD_BUTTON_COLOR, VAL_GREEN);
@@ -724,8 +711,6 @@ void BuildUpdateList(double TMatrix[],
 	}
 
 	GlobalDelay=EventPeriod/AdwinTick; // AdwintTick=0.000025ms=AW clock cycle (Gives #of clock cycles/update)
-
-
 
 
 	// V16.1.6: Check each time if UpdateNum, ChNum, and ChVal need to be extended.
@@ -772,9 +757,6 @@ void BuildUpdateList(double TMatrix[],
 	timesum = temp_timesum;
 
 
-
-
-
 	cycletime=(double)timesum/(double)timemult/1000;	// Total duration of the cycle, in seconds
 
 	sprintf(buff,"timesum %d",timesum);					// Print more debug info
@@ -801,9 +783,7 @@ void BuildUpdateList(double TMatrix[],
 			DDS2Array[m].end_frequency=DDS2Array[m].end_frequency+DDS2offset;
 		///	DDS3Array[m].start_frequency=DDS3Array[m].start_frequency+DDS3offset;
 		///	DDS3Array[m].end_frequency=DDS3Array[m].end_frequency+DDS3offset;
-
 		}
-
 
 		dds_cmd_seq = create_ad9852_cmd_sequence(DDSArray, numtimes,DDSFreq.PLLmult,
 		DDSFreq.extclock,EventPeriod/1000);
@@ -814,8 +794,6 @@ void BuildUpdateList(double TMatrix[],
     	/*dds_cmd_seq = create_ad9852_cmd_sequence(DDS3Array, numtimes,DDSFreq.PLLmult,
 		DDSFreq.extclock,EventPeriod/1000);
    	    */
-
-
 
 		//Go through for each column that needs to be updated
 
@@ -951,8 +929,6 @@ void BuildUpdateList(double TMatrix[],
 					nuptotal++;
 					ChNum[nuptotal] = 51; //DDS1 dummy channel
 					ChVal[nuptotal] = tmp_dds;
-
-
 				}
 
 		/*		tmp_dds = get_dds_cmd(dds_cmd_seq_AD9858, count-1-start_offset);  //dds translator(zero base) runs 1 behind this counter
@@ -1051,6 +1027,7 @@ void BuildUpdateList(double TMatrix[],
 			if (didprocess==FALSE) // is the ADwin process already loaded?
 			{
 				processnum=Load_Process("TransferData.TA1");
+				printf("TransferData.TA1 loaded");
 				didprocess=1;
 			}
 		}
@@ -1160,18 +1137,12 @@ void BuildUpdateList(double TMatrix[],
 		SetData_Long(4,ResetToZeroAtEnd,1,NUMBERANALOGCHANNELS);
 		SetPar(5,digval);
 		SetPar(6,digval2);
+		//SetPar(7,digval3);
 
 		// done evaluating channels that are reset to  zero (low)
 		ChangedVals = FALSE;
 
 	}
-
-
-
-
-
-
-
 
 
 	// more debug info
@@ -1378,9 +1349,9 @@ void OptimizeTimeLoop(int *UpdateNum,int count, int *newcount)
 	int i,j,k,m,cfcn,picmode,page,cmode,pic,thiscolor;
 	int analogtable_visible = 0;
 	int digtable_visible = 0;
- 	double vlast=0,vnow=0,vshadow=0;
+ 	double vlast=0,vnow=0,vshadow=0,anritsuPower=0.0;
  	int dimset=0,nozerofound,val;
- 	int DDSChannel1,DDSChannel2,DDSChannel3;
+ 	int DDSChannel1,DDSChannel2,DDSChannel3,anritsuOffset;
 
  	int ispicture=1,celltype=0; //celtype has 3 values.  0=Numeric, 1=String, 2=Picture
 
@@ -1397,6 +1368,8 @@ void OptimizeTimeLoop(int *UpdateNum,int count, int *newcount)
  	   ColourTable[6*i+5] = CLR_DIGITAL_LO_ALT;
  	   ColourTable[6*i+6] = CLR_DIGITAL_LO_ALT;
  	}
+
+	// printf("Enter DrawNewTable\n");
 
  	// Get visibilities and page number (and then hide tables)
  	GetCtrlAttribute (panelHandle, PANEL_ANALOGTABLE, ATTR_VISIBLE, &analogtable_visible);
@@ -1444,8 +1417,9 @@ void OptimizeTimeLoop(int *UpdateNum,int count, int *newcount)
 
 
 	// Draw analog channels according to AnalogTable[][][]
-		for(j=1;j<=NUMBERANALOGROWS;j++) // scan over analog channels
-		{
+		for(j=1;j<=NUMBERANALOGCHANNELS;j++) // scan over analog channels
+		{// (used to be NUMBERANALOGROWS but the dds/laser/etc lines are set in their own parts later in this fn)
+
 			// Reading in this  cell's parameters.
 			cmode=AnalogTable[i][j][page].fcn;
 			vlast=AnalogTable[i-1][j][page].fval;
@@ -1538,6 +1512,8 @@ void OptimizeTimeLoop(int *UpdateNum,int count, int *newcount)
 
 	// DDS1
 		// Writing end-frequency to cell and un-dimming it.
+		SetTableCellAttribute(panelHandle, PANEL_ANALOGTABLE, MakePoint(i,DDSChannel1),
+				   ATTR_CELL_TYPE, VAL_CELL_NUMERIC);
 		SetTableCellVal(panelHandle, PANEL_ANALOGTABLE, MakePoint(i,DDSChannel1),
 				ddstable[i][page].end_frequency);
 		SetTableCellAttribute (panelHandle, PANEL_ANALOGTABLE, MakePoint(i,DDSChannel1),
@@ -1562,6 +1538,8 @@ void OptimizeTimeLoop(int *UpdateNum,int count, int *newcount)
 
 	// DDS2
 		// Writing end-frequency to cell and un-dimming it.
+		SetTableCellAttribute(panelHandle, PANEL_ANALOGTABLE, MakePoint(i,DDSChannel2),
+				   ATTR_CELL_TYPE, VAL_CELL_NUMERIC);
 		SetTableCellVal(panelHandle, PANEL_ANALOGTABLE, MakePoint(i,DDSChannel2),
 				dds2table[i][page].end_frequency);
 		SetTableCellAttribute (panelHandle, PANEL_ANALOGTABLE, MakePoint(i,DDSChannel2),
@@ -1586,6 +1564,8 @@ void OptimizeTimeLoop(int *UpdateNum,int count, int *newcount)
 
 	// DDS3
 		// Writing end-frequency to cell and un-dimming it.
+		SetTableCellAttribute(panelHandle, PANEL_ANALOGTABLE, MakePoint(i,DDSChannel3),
+				   ATTR_CELL_TYPE, VAL_CELL_NUMERIC);
 		SetTableCellVal(panelHandle, PANEL_ANALOGTABLE, MakePoint(i,DDSChannel3),
 				dds3table[i][page].end_frequency);
 		SetTableCellAttribute (panelHandle, PANEL_ANALOGTABLE, MakePoint(i,DDSChannel3),
@@ -1618,6 +1598,10 @@ void OptimizeTimeLoop(int *UpdateNum,int count, int *newcount)
 			vnow = LaserTable[j-(NUMBERANALOGCHANNELS+NUMBERDDS+1)][i][page].fval;
 			vshadow = findLastVal(j,i,page);
 
+			// Insure that the cell is numeric. Pressing "Stop" button does something weird and this is the simple fix.
+			SetTableCellAttribute(panelHandle, PANEL_ANALOGTABLE, MakePoint(i,j),
+									ATTR_CELL_TYPE, VAL_CELL_NUMERIC);
+
 			// Write the value into the cell
 			if(cmode!=0)
 				// write the ending value into the cell
@@ -1638,6 +1622,10 @@ void OptimizeTimeLoop(int *UpdateNum,int count, int *newcount)
 						ATTR_CTRL_VAL, vshadow);
 			}
 
+			// Undim cell
+			SetTableCellAttribute (panelHandle, PANEL_ANALOGTABLE, MakePoint(i,j),
+								ATTR_CELL_DIMMED, 0);
+
 			// Select the cell color depending on what's going on in the cell
 			switch(cmode)
 			{
@@ -1654,14 +1642,74 @@ void OptimizeTimeLoop(int *UpdateNum,int count, int *newcount)
 			case 0:		// hold previous
 				thiscolor = CLR_LASER_HOLD; break;
 			}
-			if(vnow==0.0 && (cmode!=2))
-			{	thiscolor = ColourTable[j]; }
+			if( fabs(vnow) < 0.000001 && (cmode!=2) ){// if "step to zero" then use "background" colour
+				thiscolor = ColourTable[j];
+			}
 
 			// Change the cell color
 			SetTableCellAttribute (panelHandle, PANEL_ANALOGTABLE,MakePoint(i,j),
 					ATTR_TEXT_BGCOLOR, thiscolor);
 
 		} // Done drawing laser rows
+
+		for( j=0; j < NUMBEROFANRITSU; j++ ){
+			// Assumes Anritsu rows are the last rows ie.  NUMBERANALOGROWS==NUMBERANALOGCHANNELS+NUMBERDDS+NUMBERLASERS+2*NUMBEROFANRITSU
+			// Note: I don't understand why there are two rows for each Anritsu. Maybe for Freq and dBm display or something.
+			//  Either way, I will display those here. The logic of what used to be done here has been lost to time.
+			// Also note that j starts at 0 in this loop as opposed to 1 elsewhere in this fn.
+
+			anritsuOffset = NUMBERANALOGCHANNELS+NUMBERDDS+NUMBERLASERS+1;// first row an anritsu section
+
+			vnow = anritsutable[i][page].end_frequency;// this is a little dumb since the array is only for one anritsu
+			anritsuPower = anritsutable[i][page].end_power;
+
+			// Insure that the cells are numeric. Pressing "Stop" button does something weird and this is the simple fix.
+			SetTableCellAttribute(panelHandle, PANEL_ANALOGTABLE, MakePoint(i,anritsuOffset+(2*j)),
+									ATTR_CELL_TYPE, VAL_CELL_NUMERIC);
+			SetTableCellAttribute(panelHandle, PANEL_ANALOGTABLE, MakePoint(i,anritsuOffset+(2*j)+1),
+									ATTR_CELL_TYPE, VAL_CELL_NUMERIC);
+
+			//// Write the value into the cell
+			//if(cmode!=0)
+			//	// write the ending value into the cell
+			//	SetTableCellAttribute (panelHandle, PANEL_ANALOGTABLE, MakePoint(i,j),
+			//			ATTR_CTRL_VAL, vnow);
+			//else if((cmode==0)&&(i==1)&&(page==1))
+			//{   // Give error message when attempting to copy previous to first of all columns
+			//	ConfirmPopup("User Error","Do not use \"Same as Previous\" Setting for Column 1 Page 1.\nThis results in unstable behaviour.\nResetting Cell Function to default: step");
+			//	SetTableCellAttribute (panelHandle, PANEL_ANALOGTABLE, MakePoint(i,j),
+			//			ATTR_CTRL_VAL, 0.0);
+			//	cmode=1;
+			//	LaserTable[j-(NUMBERANALOGCHANNELS+NUMBERDDS+1)][1][1].fcn=cmode;
+			//	LaserTable[j-(NUMBERANALOGCHANNELS+NUMBERDDS+1)][1][1].fval=0.0;
+			//}
+			//else
+			//{
+			//	SetTableCellAttribute (panelHandle, PANEL_ANALOGTABLE, MakePoint(i,j),
+			//			ATTR_CTRL_VAL, vshadow);
+			//}
+
+			// Write the values with no checks into the cells
+			SetTableCellAttribute(panelHandle, PANEL_ANALOGTABLE, MakePoint(i,anritsuOffset+(2*j)),
+									ATTR_CTRL_VAL, vnow);
+			SetTableCellAttribute(panelHandle, PANEL_ANALOGTABLE, MakePoint(i,anritsuOffset+(2*j)+1),
+									ATTR_CTRL_VAL, anritsuPower);
+
+			// Undim cell
+			SetTableCellAttribute (panelHandle, PANEL_ANALOGTABLE, MakePoint(i,anritsuOffset+(2*j)),
+									ATTR_CELL_DIMMED, 0);
+			SetTableCellAttribute (panelHandle, PANEL_ANALOGTABLE, MakePoint(i,anritsuOffset+(2*j)+1),
+									ATTR_CELL_DIMMED, 0);
+
+			// Just use the "background colours since I don't know what the Anritsu is capable of and
+			//  I don't want to choose new colours.
+			SetTableCellAttribute(panelHandle, PANEL_ANALOGTABLE,MakePoint(i,anritsuOffset+(2*j)),
+									ATTR_TEXT_BGCOLOR, ColourTable[anritsuOffset+(2*j)] );
+			SetTableCellAttribute(panelHandle, PANEL_ANALOGTABLE,MakePoint(i,anritsuOffset+(2*j)+1),
+									ATTR_TEXT_BGCOLOR, ColourTable[anritsuOffset+(2*j)+1] );
+
+		} // Done drawing anritsu rows
+
 	}
 
 	// So far, all columns are undimmed. Now check if we need to dim out any columns
@@ -1876,8 +1924,10 @@ void CVICALLBACK MENU_CALLBACK (int menuBar, int menuItem, void *callbackData,
 {
 	switch(menuItem)
 	{
-		case MENU_FILE_SAVESET_V16: SaveSettings(16); break;
+		case MENU_FILE_LOADSET: LoadSettings(17); break;
+		case MENU_FILE_SAVESET: SaveSettings(17); break;
 		case MENU_FILE_LOADSET_V16: LoadSettings(16); break;
+		case MENU_FILE_SAVESET_V16: SaveSettings(16); break;
 		case MENU_FILE_LOADSET_V15: LoadSettings(15); break;
 		case MENU_FILE_LOADSET_V13: LoadSettings(13); break;
 	}
@@ -1921,7 +1971,7 @@ int CVICALLBACK ANALOGTABLE_CALLBACK (int panel, int control, int event,
 			{
 				SetLaserControlPanel(currenty-NUMBERANALOGCHANNELS-NUMBERDDS-1);
 				panel_to_display = panelHandle11;
-				printf("Fuck me\n");
+				//printf("Fuck me\n");// super special debug
 			}
 			else if ((currenty>NUMBERANALOGCHANNELS+NUMBERDDS+NUMBERLASERS)&&(currenty<=NUMBERANALOGROWS))
 			{
@@ -2936,6 +2986,7 @@ void ReshapeAnalogTable( int top,int left,int height)
 	int modheight;
 
 	rowheight = (height)/(NUMBERANALOGCHANNELS+NUMBERDDS);
+	printf("rowheight is %d", rowheight);
 
 	for (j=1;j<=NUMBERANALOGROWS;j++)
 	{
@@ -2946,12 +2997,12 @@ void ReshapeAnalogTable( int top,int left,int height)
 	}
 	for (j=1;j<=NUMBERANALOGCHANNELS;j++)
 	{
-
 		SetTableRowAttribute (panelHandle, PANEL_TBL_ANALOGUNITS, j,ATTR_SIZE_MODE, VAL_USE_EXPLICIT_SIZE);
 		SetTableRowAttribute (panelHandle, PANEL_TBL_ANALOGUNITS, j, ATTR_ROW_HEIGHT, rowheight);
 	}
 
-	modheight=(NUMBERANALOGROWS)*(int)((height)/(NUMBERANALOGCHANNELS+NUMBERDDS))+3;
+	modheight=(NUMBERANALOGROWS)*(int)((height)/(NUMBERANALOGCHANNELS+NUMBERDDS))+6;
+	printf("\nmodheight is %d", modheight);
 
 	//resize the analog table and all it's related list boxes
   	SetCtrlAttribute (panelHandle, PANEL_ANALOGTABLE, ATTR_HEIGHT, modheight);
@@ -3017,7 +3068,6 @@ void ReshapeDigitalTable( int top,int left,int height)
 		SetTableRowAttribute (panelHandle, PANEL_DIGTABLE, j, ATTR_SIZE_MODE, VAL_USE_EXPLICIT_SIZE);
 		SetTableRowAttribute (panelHandle, PANEL_DIGTABLE, j, ATTR_ROW_HEIGHT, (height)/(NUMBERDIGITALCHANNELS));
 		SetTableRowAttribute (panelHandle, PANEL_TBL_DIGNAMES, j, ATTR_SIZE_MODE, VAL_USE_EXPLICIT_SIZE);
-
 		SetTableRowAttribute (panelHandle, PANEL_TBL_DIGNAMES, j, ATTR_ROW_HEIGHT, (height)/(NUMBERDIGITALCHANNELS));
 	}
 
@@ -3040,7 +3090,6 @@ VAL_CELL_PICTURE : numeric
 *************************************************************************/
 void SetDisplayType(int display_setting)
 {
-
 	int i,j;
 
 	//set button status
@@ -3092,13 +3141,13 @@ void SetChannelDisplayed(int display_setting)
 	SetCtrlAttribute (panelHandle, PANEL_TBL_DIGNAMES, ATTR_VISIBLE, 0);
 	//ATTR_LABEL_VISIBLE
 
-	heightpos1=695;
+	heightpos1=695+114;
 	heightpos2=582;
 	heightpos3=240;
 	toppos1=140;
 	leftpos=170;
-	toppos2=toppos1+heightpos1;
-	toppos3=toppos2+heightpos2+15;
+	toppos2=toppos1+heightpos1+60;
+	toppos3=toppos2+heightpos2+10;
 
 	// Reshape Timetable
 	GetCtrlAttribute (panelHandle, PANEL_ANALOGTABLE, ATTR_WIDTH, &width);
@@ -3112,13 +3161,12 @@ void SetChannelDisplayed(int display_setting)
 	SetCtrlAttribute (panelHandle, PANEL_INFOTABLE, ATTR_WIDTH, width);
 	SetCtrlAttribute (panelHandle, PANEL_INFOTABLE, ATTR_VISIBLE, FALSE); // hide for now
 
-
 	switch (display_setting)
 		{
 		case 1:		// both
 			ReshapeAnalogTable(toppos1,leftpos,heightpos1);   //passed top, left and height
-			ReshapeDigitalTable(toppos2+100,leftpos,heightpos2);
-			ReshapeMultiScanTable(toppos3+100,leftpos,heightpos3);
+			ReshapeDigitalTable(toppos2,leftpos,heightpos2);
+			ReshapeMultiScanTable(toppos3,leftpos,heightpos3);
 
 			SetCtrlAttribute (panelHandle, PANEL_DIGTABLE, ATTR_VISIBLE, 1);
 			SetCtrlAttribute (panelHandle, PANEL_ANALOGTABLE, ATTR_VISIBLE, 1);
@@ -3130,8 +3178,8 @@ void SetChannelDisplayed(int display_setting)
 
 		case 2:		// analog tableonly
 
-			ReshapeAnalogTable(toppos1,170,heightpos1);   //passed top, left and height
-			ReshapeMultiScanTable(toppos2+105,leftpos,heightpos3);
+			ReshapeAnalogTable(toppos1,leftpos,heightpos1);   //passed top, left and height
+			ReshapeMultiScanTable(toppos2+5,leftpos,heightpos3);
 
 			SetCtrlAttribute (panelHandle, PANEL_ANALOGTABLE, ATTR_VISIBLE, 1);
 			SetCtrlAttribute (panelHandle, PANEL_TBL_ANAMES, ATTR_VISIBLE, 1);
@@ -3139,13 +3187,12 @@ void SetChannelDisplayed(int display_setting)
 			break;
 
 		case 3:		 // digital table only
-			ReshapeDigitalTable(toppos1,170,heightpos2);
+			ReshapeDigitalTable(toppos1,leftpos,heightpos2);
 			ReshapeMultiScanTable(toppos1+heightpos2+25,leftpos,heightpos3);
 
 			SetCtrlAttribute (panelHandle, PANEL_DIGTABLE, ATTR_VISIBLE, 1);
 			SetCtrlAttribute (panelHandle, PANEL_TBL_DIGNAMES, ATTR_VISIBLE, 1);
 			break;
-
 		}
 
 		SetCtrlVal(panelHandle, PANEL_DISPLAYDIAL, display_setting);

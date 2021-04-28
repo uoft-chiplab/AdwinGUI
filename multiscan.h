@@ -17,10 +17,14 @@ void updateScannedCellsWithOriginalValues(void);
 void writeToScanInfoFile(void);
 void EnableScanControls(void);
 void ReshapeMultiScanTable( int top,int left,int height);
+void setMultiScanPosTable(void);
+void getMultiScanGuiVals(void);
+void printMultiScan(void);
 
 // MultiScan callbacks
 void CVICALLBACK MultiScan_AddCellToScan(int panelHandle, int controlID, int MenuItemID, void *callbackData);
 void CVICALLBACK MultiScan_AddAnalogCellTimeScaleToScan(int panelHandle, int controlID, int MenuItemID, void *callbackData);
+void CVICALLBACK MultiScan_AddGPIBCellToScan(int panelHandle, int controlID, int MenuItemID, void *callbackData);
 void CVICALLBACK MultiScan_Table_SetVals(int panelHandle, int controlID, int MenuItemID, void *callbackData);
 void CVICALLBACK MultiScan_Table_DeleteColumn(int panelHandle, int controlID, int MenuItemID, void *callbackData);
 void CVICALLBACK MultiScan_Table_Shuffle(int panelHandle, int controlID, int MenuItemID, void *callbackData);

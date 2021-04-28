@@ -45,7 +45,7 @@ int CVICALLBACK GPIB_OK_CALLBACK (int panel, int control, int event,
 		{
 		case EVENT_COMMIT:
 			ApplyGPIBPanel();
-			GetCtrlVal(panelHandle13, SETUP_GPIB_ADDRESS,&GPIB_address);
+			//GetCtrlVal(panelHandle13, SETUP_GPIB_ADDRESS,&GPIB_address);
 			//GPIB_device = ibdev (0, GPIB_address, NO_SAD, T10s, 1, 0);
 			//GetCtrlVal(panelHandle13,SETUP_SRS_ampl,&SRS_amplitude);
 			//GetCtrlVal(panelHandle13, SETUP_SRS_offst,&SRS_offset);
@@ -1359,41 +1359,4 @@ int CVICALLBACK DEVICENO_CALLBACK (int panel, int control, int event,
 	SetGPIBPanel();
 
 	return 0;
-}
-
-
-// Add a GPIB cell to the multi scan list
-void CVICALLBACK MultiScan_AddGPIBCellToScan(int panelHandle, int controlID, int MenuItemID, void *callbackData)
-{   // Adds a column to the multiscan list to scan the current cell's value
-
-	int numCols, ccol, crow, cpage, devnum;
-	Point currentCell = {0,0};
-
-	if (parameterscanmode == 0)
-	{
-		GetNumTableColumns(panelHandle0, PANEL_MULTISCAN_VAL_TABLE, &numCols);
-		if (numCols < NUMMAXSCANPARAMETERS)
-		{
-			// Add a column to the right, step up number in numeric control
-			InsertTableColumns(panelHandle0, PANEL_MULTISCAN_POS_TABLE, -1, 1, 0);
-			InsertTableColumns(panelHandle0, PANEL_MULTISCAN_VAL_TABLE, -1, 1, 0);
-			SetCtrlVal(panelHandle0, PANEL_MULTISCAN_NUM_NUMERIC, numCols+1);
-
-			// Get coordinates of active cell & device number
-			GetActiveTableCell (panelHandle, controlID, &currentCell);
-			GetCtrlVal (panelHandle13,SETUP_GPIB_DEVICENO, &devnum);
-			ccol = currentCell.x;
-			crow = devnum + NUMGPIBSCANOFFSET;
-			cpage = 1; // no page needed for GPIB programming
-
-			// Write cell position to scan table
-			SetTableCellVal(panelHandle0, PANEL_MULTISCAN_POS_TABLE, MakePoint(numCols+1,1), cpage);
-			SetTableCellVal(panelHandle0, PANEL_MULTISCAN_POS_TABLE, MakePoint(numCols+1,2), ccol);
-			SetTableCellVal(panelHandle0, PANEL_MULTISCAN_POS_TABLE, MakePoint(numCols+1,3), crow);
-		}
-		else
-		{
-			MessagePopup("Multi scan error","Cannot add parameter to scanlist. Maximum number\nof parameters reached. Need to increase NUMMAXSCANPARAMETERS.");
-		}
-	}
 }

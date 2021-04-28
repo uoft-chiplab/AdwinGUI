@@ -1,10 +1,17 @@
 This documents the changes to the ADwin Sequencer program over the years. This file was created 2019-10-01 so knowledge of all previous versions comes from labbooks and notes in the code itself.
 
+-----------------------
+ADwin Sequencer V16.4.8
+Status: Done
+In Use: 2019-10-01 to 20??-??-??
+Changes:
+1) Saving panel now creates directory [panel name]/imgs/ (like a scan does)
+2) Changed end of scan question about saving mscan list to have more intuitive default.
 
 -----------------------
 ADwin Sequencer V16.4.7
 Status: Done
-In Use: 2019-10-01 to 20yy-yy-yy
+In Use: 2019-10-01 to 2020-06-14
 Changes:
 1) Sequencer version after transfer to new computer. Did not have to change any of the code. All configuration was done external to Sequencer program.
 2) Added this change_log.txt file.

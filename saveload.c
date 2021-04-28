@@ -1,8 +1,6 @@
 // Saving and Loading functions for panels go here.
 // Any binary dumps for debugging also go here (arrays sent to the adwin for example)
 
-// For now, do not put (Multi)Scan export functions here. They will go in the multiscan.c file eventually.
-
 // TODO:
 // Write SaveArraysV17 where V17 save file
 //		a) saves the existing variables that are saved to the .arr file with better metalanguage
@@ -13,6 +11,11 @@
 // something) and then save the panel as V17 savefile version. After we get that working then we can
 // write LoadV16intoV17 function if we want to.
 // Update default directory to look for save files
+
+// Generic format for saving one "thing" is:
+// <tag_name>~elem_size~num_dim~dim1~dim2~...~BINARY_DATA</tag_name>
+
+// possibly change to make temp variable pointer and pass it in then free memory allocated in these functions
 
 
 #include "saveload.h"
@@ -28,86 +31,123 @@
 #include "AnritsuSettings2.h"//For LoadAnritsuSettings fn
 #include "AnalogSettings2.h"//For SetAnalogChannels fn
 #include "DigitalSettings2.h"//For SetDigitalChannels fn
-
-
+#include "main.h"//For reinitializing after failed load
+#include "multiscan.h"// For putMultiScanPosTable fn
 
 /************************************************************************
 Overall Save and Load that chooses correct version
 *************************************************************************/
 
-// From GUIDesign.c
-//
+
 void SaveSettings(int version)
-/* Modified:
-Feb 09, 2006   Clear the Debug box before saving. (was causing insanely large save files, and slowed down loading of old panels.)
-*/
 {
-	// Save settings:  First look for file .ini  This will be a simple 1 line file staating the name of the last file
-	//saved.  Load this up and use as the starting name in the file dialog.
-	FILE *fpini;
-	char fname[100]="",c,fsavename[500]="",buff[600]="";
-	static char defaultdir[200]="";
-	int i=0,j=0,k=0,inisize=0,status,loadonboot=0;
+	char buff[200]="";
+
 	char imgsDirPath[MAX_PATHNAME_LEN];
 	char runDirPath[MAX_PATHNAME_LEN];
+	char panFilePath[MAX_PATHNAME_LEN];
 	char panFileDir[MAX_PATHNAME_LEN];
 	char panFileName[MAX_PATHNAME_LEN];
+	int panStatus;
 	int runDirStatus;
 	int imgsDirStatus;
 	int confirmStatus;
-	//Check if .ini file exists.  Load it if it does.
-	if(!(fpini=fopen("gui.ini","r"))==NULL)		// if "gui.ini" exists, then read it  Just contains a filename.
-	{												//If not, do nothing
-		while (fscanf(fpini,"%c",&c) != -1) fname[inisize++] = c;  //Read the contained name
+
+	// Get the filename
+	switch( version ){
+		case 15:
+		case 16:
+		default:
+			panStatus = FileSelectPopup("", "*.pan", "", "Save Settings", VAL_SAVE_BUTTON, 0, 0, 1, 1, panFilePath);
+			break;
+		case 17:
+			panStatus = FileSelectPopup("", "*.seq", "", "Save Settings", VAL_SAVE_BUTTON, 0, 0, 1, 1, panFilePath);
+			break;
 	}
- 	fclose(fpini);
 
-	status=FileSelectPopup (defaultdir, "*.pan", "", "Save Settings", VAL_SAVE_BUTTON, 0, 0, 1, 1,fsavename);
-	GetMenuBarAttribute (menuHandle, MENU_FILE_BOOTLOAD, ATTR_CHECKED, &loadonboot);
-	if(!(status==0))
+	// Check for errors
+	if( panStatus < 0 ){// an error
+		printf("Error while choosing save file name. Error code: %d\n", panStatus);
+		MessagePopup("Save filename Error", "An error occured while choosing the save filename.");
+		return;
+	}
+	else if( panStatus == VAL_NO_FILE_SELECTED ){
+		MessagePopup ("File Error", "No file was selected");
+		return;
+	}
+	else if( panStatus != VAL_EXISTING_FILE_SELECTED && panStatus != VAL_NEW_FILE_SELECTED ){// something strange happened
+		printf("Error while choosing save file name. Error code: %d\n", panStatus);
+		MessagePopup("Save filename Error", "An error occured while choosing the save filename.");
+		return;
+	}
+	// Now we have a valid filename (incl dir) in panFilePath
+
+	// Save according to file version requested
+	switch (version)
 	{
-		SavePanelState(PANEL, fsavename, 1);  // This one can be problematic when elements have been removed from the GUI!!!
-		if(!(fpini=fopen("gui.ini","w"))==NULL)
-		{
-			fprintf(fpini,fsavename);
-			fprintf(fpini,"\n%d",loadonboot);
+		case 15:
+			SavePanelState(PANEL, panFilePath, 1);// This one can be problematic when elements have been removed from the GUI!!!
+			SaveArraysV15(panFilePath, strlen(panFilePath));
+			SaveLaserData(panFilePath,strlen(panFilePath));
+			break;
+		case 16: // V16 saves laser data together with arrays
+			SavePanelState(PANEL, panFilePath, 1);// This one can be problematic when elements have been removed from the GUI!!!
+			SaveArraysV16(panFilePath, strlen(panFilePath));
+			break;
+		case 17:
+			if( SaveSequenceV17(panFilePath, strlen(panFilePath)) ){// if there was an error
+				MessagePopup("Saving Error","Error occured while saving. File not successfully saved.");
+			}
+			break;
+		default:
+			SavePanelState(PANEL, panFilePath, 1);// This one can be problematic when elements have been removed from the GUI!!!
+			SaveArraysV15(panFilePath, strlen(panFilePath));
+			SaveLaserData(panFilePath,strlen(panFilePath));
+			break;
+	}
+
+	// Update the title of the sequencer
+	SplitPath(panFilePath, NULL, panFileDir, panFileName);
+	strcpy(buff, SEQUENCER_VERSION);
+	strcat(buff, panFileName);
+	SetPanelAttribute(panelHandle, ATTR_TITLE, buff);
+
+	// Create the run folder
+	strcpy(buff, panFileName);
+	buff[strlen(buff)-4] = '\0';// Assume the last 4 characters of panFileName are the ".pan"
+	MakePathname(panFileDir, buff, runDirPath);
+
+	printf("runDirPath:\n>%s<\n", runDirPath);
+
+	runDirStatus = MakeDir(runDirPath);
+
+	if( runDirStatus == 0 ) // Successfully created directory
+	{
+		// Form the imgs subdirectory path and print it.
+		strcpy(buff, "imgs");
+		MakePathname(runDirPath, buff, imgsDirPath);
+		printf("imgsDirPath:\n>%s<\n", imgsDirPath);
+
+		// Attempt to create the subdirectories
+		imgsDirStatus = MakeDir(imgsDirPath);
+
+		// Check status of subdirectories
+
+		if( imgsDirStatus < 0 ){ //Error
+			printf("Error when creating images directory. Error code: %d\n", imgsDirStatus);
+			MessagePopup ("Directory Error", "An error occured while creating the images directory.");
 		}
-		fclose(fpini);
+	}
+	else if( runDirStatus == -9 ){// The directory (or file) already exists
 
-		// Stefan Trotzky - Oct 2012: added switch for file version
-		switch (version)
-		{
-			case 15:
-				SaveArraysV15(fsavename, strlen(fsavename));
-				SaveLaserData(fsavename,strlen(fsavename));
-				break;
-			case 16: // V16 saves laser data together with arrays
-				SaveArraysV16(fsavename, strlen(fsavename));
-				break;
-			default:
-				SaveArraysV15(fsavename, strlen(fsavename));
-				SaveLaserData(fsavename,strlen(fsavename));
-				break;
+		// Ask for confimation to use existing directory.
+		confirmStatus = ConfirmPopup ("Confirm use of existing directory",
+						"Warning! Use existing scan directory?");
+		if( confirmStatus == 0 ){// User selected no
 		}
-
-
-		i=499;
-		while( i>=0 && fsavename[i] != '\\' ){ i--; }
-		strcpy(buff,SEQUENCER_VERSION);
-		strcat(buff,&fsavename[i+1]);
-		SetPanelAttribute (panelHandle, ATTR_TITLE, buff);
-
-		SplitPath(fsavename, NULL, panFileDir, panFileName);
-		strcpy(buff, panFileName);
-		buff[strlen(buff)-4] = '\0';// Assume the last 4 characters of panFileName are the ".pan"
-		MakePathname(panFileDir, buff, runDirPath);
-
-		printf("runDirPath:\n>%s<\n", runDirPath);
-
-		runDirStatus = MakeDir(runDirPath);
-
-		if( runDirStatus == 0 ){// Successfully created directory
-
+		else if( confirmStatus == 1 ){// User selected yes
+			// Since the scan directory already exists the subdirectories probably also
+			// already exist so we should accept those that exist as is.
 
 			// Form the imgs subdirectory path and print it.
 			strcpy(buff, "imgs");
@@ -119,124 +159,129 @@ Feb 09, 2006   Clear the Debug box before saving. (was causing insanely large sa
 
 			// Check status of subdirectories
 
-			if( imgsDirStatus < 0 ){//Error
+			if( imgsDirStatus < 0  && imgsDirStatus != -9){//Error but not error that imgs already exists
 				printf("Error when creating images directory. Error code: %d\n", imgsDirStatus);
 				MessagePopup ("Directory Error", "An error occured while creating the images directory.");
 			}
 		}
-		else if( runDirStatus == -9 ){// The directory (or file) already exists
-
-			// Ask for confimation to use existing directory.
-			confirmStatus = ConfirmPopup ("Confirm use of existing directory",
-							"Warning! Use existing scan directory?");
-			if( confirmStatus == 0 ){// User selected no
-			}
-			else if( confirmStatus == 1 ){// User selected yes
-				// Since the scan directory already exists the subdirectories probably also
-				// already exist so we should accept those that exist as is.
-
-				// Form the imgs subdirectory path and print it.
-				strcpy(buff, "imgs");
-				MakePathname(runDirPath, buff, imgsDirPath);
-				printf("imgsDirPath:\n>%s<\n", imgsDirPath);
-
-				// Attempt to create the subdirectories
-				imgsDirStatus = MakeDir(imgsDirPath);
-
-				// Check status of subdirectories
-
-				if( imgsDirStatus < 0  && imgsDirStatus != -9){//Error but not error that imgs already exists
-					printf("Error when creating images directory. Error code: %d\n", imgsDirStatus);
-					MessagePopup ("Directory Error", "An error occured while creating the images directory.");
-				}
-			}
-			else {
-				MessagePopup ("Directory Error", "Unknown status code from MakeDir");
-			}
-		}
-		else if( runDirStatus < 0 ){// Error
-			printf("Error when creating run directory. Error code: %d\n", runDirStatus);
-			MessagePopup ("Directory Error", "An error occured while creating the run directory.");
-		}
-
 		else {
-				MessagePopup ("Directory Error", "Unknown status code from MakeDir");
-			}
+			MessagePopup ("Directory Error", "Unknown status code from MakeDir");
+		}
 	}
-	else
-	{
-		MessagePopup ("File Error", "No file was selected");
+	else if( runDirStatus < 0 ){// Error
+		printf("Error when creating run directory. Error code: %d\n", runDirStatus);
+		MessagePopup ("Directory Error", "An error occured while creating the run directory.");
 	}
-	strcpy(defaultdir,"");
+
+	else {
+			MessagePopup ("Directory Error", "Unknown status code from MakeDir");
+	}
 
 }
 
-// From GUIDesign.c
-//
+
 void LoadSettings(int version)
 {
-	int status;
-	//If .ini exists, then open the file dialog.  Else just open the file dialog.  Add a method to load
-	//last used settings on program startup.
-	FILE *fpini;
-	char fname[100]="",c,fsavename[500]="",buff[600];
-	static char defaultdir[200]="C:\\UserDate\\Data";
-	int i=0,j=0,k=0,inisize=0,success=0;
+	char buff[600];
+	int success=0;
 
-	//Check if .ini file exists.  Load it if it does.
-	if(!(fpini=fopen("gui_V16.ini","r"))==NULL)
-	{
-		while (fscanf(fpini,"%c",&c) != -1) fname[inisize++] = c;  //Read the contained name
+	char panFilePath[MAX_PATHNAME_LEN];
+	char panFileDir[MAX_PATHNAME_LEN];
+	char panFileName[MAX_PATHNAME_LEN];
+	int panStatus;
+
+	// Get the filename
+	switch( version ){
+		case 13:
+		case 15:
+		case 16:
+		default:
+			panStatus = FileSelectPopup("", "*.pan", "", "Load Settings", VAL_LOAD_BUTTON, 0, 0, 1, 1, panFilePath);
+			break;
+		case 17:
+			panStatus = FileSelectPopup("", "*.seq", "", "Load Settings", VAL_LOAD_BUTTON, 0, 0, 1, 1, panFilePath);
+			break;
 	}
-	fclose(fpini);
 
-	// prompt for a file, if selected then load the Panel and Arrays
-	status=FileSelectPopup (defaultdir, "*.pan", "", "Load Settings", VAL_LOAD_BUTTON, 0, 0, 1, 1,fsavename );
-	if(!(status==0))
-	{
-		RecallPanelState(PANEL, fsavename, 1); // This one can be problematic when elements have been removed from the GUI!!!
-
-		// Stefan Trotzky - Oct 2012: added switch for file version
-		switch (version)
-		{
-			case 13:
-				LoadArraysV13(fsavename,strlen(fsavename));
-				LoadLaserData(fsavename,strlen(fsavename));
-				success = 1; // no success evaluation before V16
-				break;
-			case 15:
-				LoadArraysV15(fsavename,strlen(fsavename));
-				LoadLaserData(fsavename,strlen(fsavename));
-				success = 1; // no success evaluation before V16
-				break;
-			case 16: // V16 saves laser data together with arrays
-				success = LoadArraysV16(fsavename,strlen(fsavename));
-				break;
-		}
-
-		if (success)
-		{
-			LaserSettingsInit();
-
-			//edit panel title
-			i=499;
-			while(i>=0&&fsavename[i]!='\\')
-				i--;
-
-			strcpy(buff,SEQUENCER_VERSION);
-			strcat(buff,&fsavename[i+1]);
-			SetPanelAttribute (panelHandle, ATTR_TITLE, buff);
-		}
-
+	// Check for errors
+	if( panStatus < 0 ){// an error
+		printf("Error while choosing save file name. Error code: %d\n", panStatus);
+		MessagePopup("Save filename Error", "An error occured while choosing the save filename.");
+		return;
 	}
-	else
-	{
+	else if( panStatus == VAL_NO_FILE_SELECTED ){
 		MessagePopup ("File Error", "No file was selected");
+		return;
+	}
+	else if( panStatus != VAL_EXISTING_FILE_SELECTED && panStatus != VAL_NEW_FILE_SELECTED ){// something strange happened
+		printf("Error while choosing save file name. Error code: %d\n", panStatus);
+		MessagePopup("Save filename Error", "An error occured while choosing the save filename.");
+		return;
+	}
+	// Now we have a valid filename (incl dir) in panFilePath
+
+	// Load according to the file version
+	switch (version)
+	{
+		case 13:
+			RecallPanelState(PANEL, panFilePath, 1);// This one can be problematic when elements have been removed from the GUI!!!
+			LoadArraysV13(panFilePath,strlen(panFilePath));
+			LoadLaserData(panFilePath,strlen(panFilePath));
+			success = 1; // no success evaluation before V16
+			LaserSettingsInit();
+			break;
+		case 15:
+			RecallPanelState(PANEL, panFilePath, 1);// This one can be problematic when elements have been removed from the GUI!!!
+			LoadArraysV15(panFilePath,strlen(panFilePath));
+			LoadLaserData(panFilePath,strlen(panFilePath));
+			success = 1; // no success evaluation before V16
+			LaserSettingsInit();
+			break;
+		case 16: // V16 saves laser data together with arrays
+			RecallPanelState(PANEL, panFilePath, 1);// This one can be problematic when elements have been removed from the GUI!!!
+			success = LoadArraysV16(panFilePath,strlen(panFilePath));
+			if( success ){
+				LaserSettingsInit();
+			}
+			break;
+		case 17:
+			if( LoadSequenceV17(panFilePath,strlen(panFilePath)) ){// negative on error, 0 on success
+				// If we have failed to load properly, the initialize everything to the initial state as in main.c
+				// NOTE: this does not reset everything (such as menu options) so we still warn the user to restart the sequencer
+				initializeAnalogChProps();
+				initializeAnalogTable();
+				initializeDigArray();
+				initializeInfoArray();
+				initializeLaserArrays();
+				initializeGpibDevArray();
+				initializeDdsTables();
+				initializeMultiScan();
+
+				LaserSettingsInit();
+
+				MessagePopup("Error loading sequence!",
+							 "There was an error while reading from the file and setting global variables.\n!You are strongly advised to restart the sequencer!");
+
+				success = 0;
+			}
+			else {
+				success = 1;
+				// Note that LaserSettingsInit() is called from the appropriate fn in LoadSequenceV17.
+				//  And is one of the reasons why we must reinitialize things if the load fails.
+			}
+			break;
+	}
+
+	if (success)
+	{
+		// Update the title of the sequencer
+		SplitPath(panFilePath, NULL, panFileDir, panFileName);
+		strcpy(buff, SEQUENCER_VERSION);
+		strcat(buff, panFileName);
+		SetPanelAttribute(panelHandle, ATTR_TITLE, buff);
 	}
 
 	DrawNewTable(0);
-	strcpy(defaultdir,"");
-
 }
 
 /************************************************************************
@@ -254,47 +299,7 @@ void SaveLastGuiSettings(void)
 	int i;
 
 	SavePanelState(PANEL, fname, 1);
-	SaveArraysV16(fname, strlen(fname));
-
-}
-
-// From GUIDesign.c
-//
-void LoadLastSettings(int check)
-{
-	//If .ini exists, then open the file dialog.  Else just open the file dialog.  Add a method to load
-	//last used settings on program startup.
-	FILE *fpini;
-	char fname[100]="",c,fsavename[500]="",loadname[100]="",buff[600];
-	int i=0,j=0,k=0,inisize=0, success;
-	//Check if .ini file exists.  Load it if it does.
-	if(!(fpini=fopen("gui.ini","r"))==NULL)
-	{
-		while (fscanf(fpini,"%c",&c) != -1) fname[inisize++] = c;  //Read the contained name
-	}
-	fclose(fpini);
-
-	c=fname[inisize-1];
-	strncpy(loadname,fname,inisize-2);
-	if((check==0)||(c==49))			  // 49 is the ascii code for "1"
-	{
-		RecallPanelState(PANEL, loadname, 1); // This one can be problematic when elements have been removed from the GUI!!!
-		success = LoadArraysV16(fname,strlen( loadname));
-
-		if (success)
-		{
-			LaserSettingsInit();
-
-			i=500;
-			while(i>=0&&fsavename[i]!='\\')
-				i--;
-			strcpy(buff,SEQUENCER_VERSION);
-			strcat(buff,&fsavename[i+1]);
-			SetPanelAttribute (panelHandle, ATTR_TITLE, buff);
-		}
-
-	}
-	DrawNewTable(0);
+	SaveSequenceV17(fname, strlen(fname)); //I'm here hellooo
 }
 
 
@@ -307,19 +312,15 @@ Version 17 Save and Load
 
 int SaveSequenceV17(char* save_name, int sn_length)
 {
-	// Lots of decisions to be made on how to make this new file format.
-	// Probably want to keep as close to old layout as possible.
-
 	// List all things that are saved:
 	// Sequencer version (as vars.h string)
-	// Consider explicitly stating the version of the format of the save file.
-	// For EACH array, explicitly state the dimension, size_dim1, size_dim2, et cetera
+	// Savefile version
+	// For EACH array, explicitly state the element size, dimension, size_dim1, size_dim2, et cetera
 	// For EACH array, put ascii name before it as a demarkation and an ending marker after the array
-	// For EACH array, put the type of each element (int, double, struct ddsoptions_struct, et cetera)
 	// For arrays of structs, consider not saving the binary data but saving the elements themselves with
 	//	specific writing (and reading) functions.
 	//
-	// (Global) Arrays that are already saved in .arr file:
+	// (Global) Arrays that are already saved in .arr file: -- Done
 	// TimeArray
 	// AnalogTable
 	// DigTableValues
@@ -337,26 +338,32 @@ int SaveSequenceV17(char* save_name, int sn_length)
 	// A few global DDS settings
 	// (obsolete) srs specific gpib settings
 	//
-	// In the .gpib file is a binary dump of the GPIBDev variable
-	//
 	// Other things that need to be saved in the new file format:
-	// Titles of each page
-	// The rest of the (global) DDS settings
-	// The gpib settings (merge .gpib and .arr files)
-	//
-	//
-	//
-	//
-
-
-	// Let's try making something and seeing how it behaves
+	// Titles of each page (button text) -- Done
+	// The rest of the (global) DDS settings (ie. DDSFreq) -- Done
+	// The gpib settings (merge .gpib and .arr files) -- Done
+	// End of ramps for DDS -- Done
+	//		Put and get the EORs separately from the other DDS things
+	// End of ramps for Anritsu -- Done
+	//		Explicitly save to AnritsuSettingValues[0].offset during the put fn
+	//		And load to the PANEL_ANRITSU_OFFSET during the get fn
+	// Build every time check mark -- Done
+	// The Preferences menu, menu options -- Done
+	//		Use compression -- Done
+	//		Use simple timing -- Done
+	//		The rest are either not a preference or implemented or meaningful to save
+	// Reset to zero menu option? Does it do anything? -- No
+	//		The per channel resets are stored in the respective channel properties
+	//		So for now don't try and save the menu option
+	// MultiScan -- Done
+	//		It would be nice to always load the scan that was present when the sequence was saved
+	// ... I think that's it.
 
 	FILE *fbuffer;
 	char file_buff[MAX_PATHNAME_LEN] = "";
 
 	char cbuff[512] = "";
 
-	int elems_writ;
 	int status;
 
 
@@ -411,6 +418,14 @@ int SaveSequenceV17(char* save_name, int sn_length)
 	status = putDds3TableToFile(fbuffer);
 	if( status < 0 ){ fclose(fbuffer); return status; }
 
+	// Write DDS Globals
+	status = putDdsGlobalsToFile(fbuffer);
+	if( status < 0 ){ fclose(fbuffer); return status; }
+
+	// Write DDS EOR cells
+	status = putDdsEorsToFile(fbuffer);
+	if( status < 0 ){ fclose(fbuffer); return status; }
+
 	// Write LaserTable
 	status = putLaserTableToFile(fbuffer);
 	if( status < 0 ){ fclose(fbuffer); return status; }
@@ -435,33 +450,39 @@ int SaveSequenceV17(char* save_name, int sn_length)
 	status = putPageNamesToFile(fbuffer);
 	if( status < 0 ){ fclose(fbuffer); return status; }
 
-	// Write Page Names (text on buttons)
+	// Write Page Checkboxes
 	status = putPageCheckboxesToFile(fbuffer);
 	if( status < 0 ){ fclose(fbuffer); return status; }
 
-	// Write Page Names (text on buttons)
+	// Write Update Period
 	status = putUpdatePeriodToFile(fbuffer);
 	if( status < 0 ){ fclose(fbuffer); return status; }
 
+	// Write GPIB Devices Settings
+	status = putGpibDevsToFile(fbuffer);
+	if( status < 0 ){ fclose(fbuffer); return status; }
 
+	// Write Force Build Checkbox
+	status = putForceBuildChkToFile(fbuffer);
+	if( status < 0 ){ fclose(fbuffer); return status; }
 
+	// Write Use Compression Preferences Menu option
+	status = putUseCompressionToFile(fbuffer);
+	if( status < 0 ){ fclose(fbuffer); return status; }
 
+	// Write Use Simple Timing Preferences Menu option
+	status = putUseSimpleTimingToFile(fbuffer);
+	if( status < 0 ){ fclose(fbuffer); return status; }
 
-
-
-
-
+	// Write MultiScan object
+	status = putMultiScanToFile(fbuffer);
+	if( status < 0 ){ fclose(fbuffer); return status; }
 
 
 	fflush(fbuffer);// make sure the file is completely written by the time we leave this function
 	printf("Saved file successfully\n");
 	return 0;// return success
 }
-
-// Generic format for now is:
-// <tag_name>~elem_size~num_dim~dim1~dim2~...~BINARY_DATA</tag_name>
-
-// possibly change to make temp variable pointer and pass it in then free memory allocated in these functions
 
 int LoadSequenceV17(char* load_name, int ln_length)
 {
@@ -524,6 +545,14 @@ int LoadSequenceV17(char* load_name, int ln_length)
 	fpos = getDds3TableFromFile(fbuffer, fpos_file_end);
 	if( fpos < 0 ){ fclose(fbuffer); return -1; }// pass though error
 
+	// Get the DDS Globals
+	fpos = getDdsGlobalsFromFile(fbuffer, fpos_file_end);
+	if( fpos < 0 ){ fclose(fbuffer); return -1; }// pass though error
+
+	// Get the DDS EOR cells
+	fpos = getDdsEorsFromFile(fbuffer, fpos_file_end);
+	if( fpos < 0 ){ fclose(fbuffer); return -1; }// pass though error
+
 	// Get the LaserTable
 	fpos = getLaserTableFromFile(fbuffer, fpos_file_end);
 	if( fpos < 0 ){ fclose(fbuffer); return -1; }// pass though error
@@ -548,17 +577,32 @@ int LoadSequenceV17(char* load_name, int ln_length)
 	fpos = getPageNamesFromFile(fbuffer, fpos_file_end);
 	if( fpos < 0 ){ fclose(fbuffer); return -1; }// pass though error
 
-	// Get the Page Names (text on buttons)
+	// Get the Page Checkboxes
 	fpos = getPageCheckboxesFromFile(fbuffer, fpos_file_end);
 	if( fpos < 0 ){ fclose(fbuffer); return -1; }// pass though error
 
-	// Get the Page Names (text on buttons)
+	// Get the Update Period
 	fpos = getUpdatePeriodFromFile(fbuffer, fpos_file_end);
-	//if( fpos < 0 ){ fclose(fbuffer); return -1; }// pass though error
+	if( fpos < 0 ){ fclose(fbuffer); return -1; }// pass though error
 
+	// Get the GPIB Devices Settings
+	fpos = getGpibDevsFromFile(fbuffer, fpos_file_end);
+	if( fpos < 0 ){ fclose(fbuffer); return -1; }// pass though error
 
+	// Get the Force Build Checkbox
+	fpos = getForceBuildChkFromFile(fbuffer, fpos_file_end);
+	if( fpos < 0 ){ fclose(fbuffer); return -1; }// pass though error
 
+	// Get the Use Compression Preferences Menu option
+	fpos = getUseCompressionFromFile(fbuffer, fpos_file_end);
+	if( fpos < 0 ){ fclose(fbuffer); return -1; }// pass though error
 
+	// Get the Use Simple Timing Preferences Menu option
+	fpos = getUseSimpleTimingFromFile(fbuffer, fpos_file_end);
+	if( fpos < 0 ){ fclose(fbuffer); return -1; }// pass though error
+
+	// Get the MultiScan object
+	fpos = getMultiScanFromFile(fbuffer, fpos_file_end);
 
 
 	if( fpos < 0 && fpos != -2 ){// pass though error, but not if fpos == -2 then we have reached the end of the file as we expect.
@@ -570,6 +614,13 @@ int LoadSequenceV17(char* load_name, int ln_length)
 		fclose(fbuffer);
 		return -1;
 	}
+
+	// These lines should go in the correct subfunction, but because SetAnalogChannels affects both analog&dds&anritsu rows,
+	//  I put them here so it happens once after all of them have been loaded.
+	LoadDDSSettings();// Enters the DDSsettings into the GUI Panel
+	LoadAnritsuSettings();// Enters the Anritsu settings into the GUI Panel
+	SetAnalogChannels();// Put the labels and units for analog (+dds&anritsu) rows
+	SetDigitalChannels();// Put labels for dig channels. And checks that none of the digital lines to dds's are accidentally in use.
 
 	// We have finally gotten to this point so close the file and return success
 	fclose(fbuffer);
@@ -679,32 +730,21 @@ long getSaveVersionFromFile(FILE *fbuff, long fpos_eof, int *majorVer, int *mino
 
 int putTimeArrayToFile(FILE *fbuff)
 {
-	char cbuff[512] = "";// header/footer buffer
-	int clen = 512;
-	char bf[256] = "";// assembly buffer
 	int elems_writ;
 
 	// Particulars of the object to write (don't forget to change the actual data write line too)
+	// double TimeArray[NUMBEROFCOLUMNS+1][NUMBEROFPAGES];// vars.h line
 	char stag[] = "<TimeArray>";
 	char etag[] = "</TimeArray>";
 	int num_dims = 2;
 	int dims[] = {(NUMBEROFCOLUMNS+1), (NUMBEROFPAGES)};// ordering is: object[dims[0]][dims[1]]...
 	int elem_size = sizeof(TimeArray[0][0]);
-	int linear_size = 1;
+	int linear_size;
 
-	// Make the header automatically and write it
-	sprintf(cbuff, "%s~%d~%d~", stag, elem_size, num_dims);
-	for( int i = 0; i < num_dims; ++i ){
-		sprintf(bf, "%d~", dims[i]);
-		strcat(cbuff, bf);
-		linear_size = linear_size * dims[i];
-	}
-	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write header
+	linear_size = writeHeader(fbuff, stag, elem_size, num_dims, dims);// write header
+	if( linear_size < 0 ){ return linear_size; }// pass though error
 
 	elems_writ = fwrite(&TimeArray, elem_size, linear_size, fbuff);// write binary data
-
-	sprintf(cbuff, etag);
-	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write footer
 
 	if( elems_writ != linear_size ){
 		fclose(fbuff);
@@ -712,7 +752,7 @@ int putTimeArrayToFile(FILE *fbuff)
 		return -1;
 	}
 
-	return 0;
+	return writeFooter(fbuff, etag);// write footer and pass through any errors
 }
 
 long getTimeArrayFromFile(FILE *fbuff, long fpos_eof)
@@ -720,7 +760,7 @@ long getTimeArrayFromFile(FILE *fbuff, long fpos_eof)
 	// Particulars of the object to load (don't forget to change the actual data write line too)
 	char stag[] = "<TimeArray>";
 	char etag[] = "</TimeArray>";
-	int max_dims = 2;// TimeArray is 2D (cols x pages)
+	int max_dims = 2;
 
 	int elem_size;
 	int num_dims;
@@ -758,42 +798,44 @@ long getTimeArrayFromFile(FILE *fbuff, long fpos_eof)
 
 int putAnalogTableToFile(FILE *fbuff)
 {
-
-	char cbuff[512] = "";// header/footer buffer
-	int clen = 512;
-	char bf[256] = "";// assembly buffer
 	int elems_writ;
+	int i,j,k;
 
 	// Particulars of the object to write (don't forget to change the actual data write line too)
 	// struct AnalogTableValues AnalogTable[NUMBEROFCOLUMNS+1][NUMBERANALOGROWS+1][NUMBEROFPAGES];// vars.h line
+	// But, we only want to write the analog channels to this tag ie. the first (NUMBERANALOGCHANNELS+1) rows.
 	char stag[] = "<AnalogTable>";
 	char etag[] = "</AnalogTable>";
 	int num_dims = 3;
-	int dims[] = {(NUMBEROFCOLUMNS+1), (NUMBERANALOGROWS+1), (NUMBEROFPAGES)};// ordering is: object[dims[0]][dims[1]]...
+	int dims[] = {(NUMBEROFCOLUMNS+1), (NUMBERANALOGCHANNELS+1), (NUMBEROFPAGES)};// ordering is: object[dims[0]][dims[1]]...
 	int elem_size = sizeof(AnalogTable[0][0][0]);
-	int linear_size = 1;
+	int linear_size;
 
-	// Make the header automatically and write it
-	sprintf(cbuff, "%s~%d~%d~", stag, elem_size, num_dims);
-	for( int i = 0; i < num_dims; ++i ){
-		sprintf(bf, "%d~", dims[i]);
-		strcat(cbuff, bf);
-		linear_size = linear_size * dims[i];
-	}
-	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write header
+	linear_size = writeHeader(fbuff, stag, elem_size, num_dims, dims);// write header
+	if( linear_size < 0 ){ return linear_size; }// pass through error
 
-	elems_writ = fwrite(&AnalogTable, elem_size, linear_size, fbuff);// write binary data
-
-	sprintf(cbuff, etag);
-	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write footer
-
-	if( elems_writ != linear_size ){
-		fclose(fbuff);
-		printf("Failed to write the correct number of elems for tag |%s|\n", stag);
-		return -1;
+	// Now for convenience when loading, we should write the array by pages first, then cols and rows
+	for( i=0; i < dims[2]; ++i ){// iterate over pages
+		for( j=0; j < dims[0]; ++j ){// iterate over cols
+			for( k=0; k < dims[1]; ++k ){// iterate over rows
+				elems_writ = fwrite(&AnalogTable[j][k][i], elem_size, 1, fbuff);// write binary data
+				if( elems_writ != 1 ){
+					fclose(fbuff);
+					printf("Failed to write the correct number of elems for tag |%s|\n", stag);
+					return -1;
+				}
+			}
+		}
 	}
 
-	return 0;
+	//elems_writ = fwrite(&AnalogTable, elem_size, linear_size, fbuff);// write binary data
+	//if( elems_writ != linear_size ){
+	//	fclose(fbuff);
+	//	printf("Failed to write the correct number of elems for tag |%s|\n", stag);
+	//	return -1;
+	//}
+
+	return writeFooter(fbuff, etag);// write footer and pass through any errors
 }
 
 long getAnalogTableFromFile(FILE *fbuff, long fpos_eof)
@@ -810,23 +852,68 @@ long getAnalogTableFromFile(FILE *fbuff, long fpos_eof)
 	long fpos;
 	int elems_read;
 
+	int i,j,k;
+
 	fpos = readHeader(fbuff, stag, &elem_size, &num_dims, dims, max_dims, fpos_eof);
 	// Do some simple checks
 	if( fpos < 0 ){// if there was an err in readHeader (printf's in readHeader)
 		return fpos;
 	}
-	for( int i=0; i<max_dims; ++i ){ linear_size *= dims[i]; }// calculate linear_size
-	if( elem_size*linear_size != sizeof(AnalogTable) ){
-		printf("Binary data read from file for tag |%s| is not the correct size\n", stag);
+	for( i=0; i<max_dims; ++i ){ linear_size *= dims[i]; }// calculate linear_size
+
+	// Do error checking and sanity checking
+	if( elem_size != sizeof(AnalogTable[0][0][0]) ){
+		printf("Incorrect element size (%d), expected (%d), declared for tag |%s|\n",
+					elem_size, sizeof(AnalogTable[0][0][0]), stag);
 		return -1;
+	}
+	if( dims[0] != (NUMBEROFCOLUMNS+1) ){// incorrect number of columns
+		printf("Incorrect number of columns (%d) declared for tag |%s|\n", dims[0], stag);
+		return -1;
+	}
+	if( dims[2] != (NUMBEROFPAGES) ){// incorrect number of pages
+		printf("Incorrect number of pages (%d) declared for tag |%s|\n", dims[2], stag);
+		return -1;
+	}
+	if( dims[1] != (NUMBERANALOGCHANNELS+1) ){// a different number of rows is not necessarily an error
+		if( dims[1] > (NUMBERANALOGCHANNELS+1) ){
+			printf("Rows declared in file (%d) is larger than max (%d) declared for tag |%s|\n",
+				   dims[1], (NUMBERANALOGCHANNELS+1), stag);
+			return -1;
+		}
+		// now we know that the number of rows is smaller, let's also check if it's also a multiple of 8
+		if( (dims[1]-1)%8 != 0 ){// dims[1]-1 should be the number of actual analog channels
+			printf("Analog channels implied by file (%d) is not a multiple of 8 for tag |%s|\n",
+				   dims[1]-1, stag);
+			return -1;
+		}
+		// so now we have an acceptable number of rows in the file
+		printf("Number of rows declared in file (%d) is acceptable for tag |%s|\n",
+				dims[1], stag);
+
+		// and since the number of rows is less than max, reinitialize them all.
+		initializeAnalogTable();
 	}
 
 	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the binary data
-	elems_read = fread(&AnalogTable, elem_size, linear_size, fbuff);// load the binary data directly into the array
-	if( elems_read != linear_size ){// didn't read expected number of elements
-		printf("Expected to read more elements from file for tag |%s|\n", stag);
-		return -1;
+	// Parallelling the put fn, we must read each element separately
+	for( i=0; i < dims[2]; ++i ){// iterate over pages
+		for( j=0; j < dims[0]; ++j ){// iterate over cols
+			for( k=0; k < dims[1]; ++k ){// iterate over rows
+				elems_read = fread(&AnalogTable[j][k][i], elem_size, 1, fbuff);// read binary data
+				if( elems_read != 1 ){
+					printf("Expected to read more elements from file for tag |%s|\n", stag);
+					return -1;
+				}
+			}
+		}
 	}
+
+	//elems_read = fread(&AnalogTable, elem_size, linear_size, fbuff);// load the binary data directly into the array
+	//if( elems_read != linear_size ){// didn't read expected number of elements
+	//	printf("Expected to read more elements from file for tag |%s|\n", stag);
+	//	return -1;
+	//}
 
 	fpos = checkFooter(fbuff, etag, fpos_eof);
 	if( fpos < 0 ){// pass though signal, either -1 for error or -2 for eof
@@ -839,9 +926,6 @@ long getAnalogTableFromFile(FILE *fbuff, long fpos_eof)
 
 int putDigitalTableToFile(FILE *fbuff)
 {
-	char cbuff[512] = "";// header/footer buffer
-	int clen = 512;
-	char bf[256] = "";// assembly buffer
 	int elems_writ;
 
 	// Particulars of the object to write (don't forget to change the actual data write line too)
@@ -849,31 +933,37 @@ int putDigitalTableToFile(FILE *fbuff)
 	char stag[] = "<DigitalTable>";
 	char etag[] = "</DigitalTable>";
 	int num_dims = 3;
-	int dims[] = {(NUMBEROFCOLUMNS+1), (MAXDIGITAL), (NUMBEROFPAGES)};// ordering is: object[dims[0]][dims[1]]...
+	int dims[] = {(NUMBEROFCOLUMNS+1), (NUMBERDIGITALCHANNELS+1), (NUMBEROFPAGES)};// ordering is: object[dims[0]][dims[1]]...
 	int elem_size = sizeof(DigTableValues[0][0][0]);
-	int linear_size = 1;
+	int linear_size;
 
-	// Make the header automatically and write it
-	sprintf(cbuff, "%s~%d~%d~", stag, elem_size, num_dims);
-	for( int i = 0; i < num_dims; ++i ){
-		sprintf(bf, "%d~", dims[i]);
-		strcat(cbuff, bf);
-		linear_size = linear_size * dims[i];
+	int i,j,k;
+
+	linear_size = writeHeader(fbuff, stag, elem_size, num_dims, dims);// write header
+	if( linear_size < 0 ){ return linear_size; }// pass though error
+
+	// Now for convenience when loading, we should write the array by pages first, then cols and rows
+	for( i=0; i < dims[2]; ++i ){// iterate over pages
+		for( j=0; j < dims[0]; ++j ){// iterate over cols
+			for( k=0; k < dims[1]; ++k ){// iterate over rows
+				elems_writ = fwrite(&DigTableValues[j][k][i], elem_size, 1, fbuff);// write binary data
+				if( elems_writ != 1 ){
+					fclose(fbuff);
+					printf("Failed to write the correct number of elems for tag |%s|\n", stag);
+					return -1;
+				}
+			}
+		}
 	}
-	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write header
-
-	elems_writ = fwrite(&DigTableValues, elem_size, linear_size, fbuff);// write binary data
-
-	sprintf(cbuff, etag);
-	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write footer
+	/*elems_writ = fwrite(&DigTableValues, elem_size, linear_size, fbuff);// write binary data
 
 	if( elems_writ != linear_size ){
 		fclose(fbuff);
 		printf("Failed to write the correct number of elems for tag |%s|\n", stag);
 		return -1;
-	}
+	}*/
 
-	return 0;
+	return writeFooter(fbuff, etag);// write footer and pass through any errors
 }
 
 long getDigitalTableFromFile(FILE *fbuff, long fpos_eof)
@@ -890,23 +980,73 @@ long getDigitalTableFromFile(FILE *fbuff, long fpos_eof)
 	long fpos;
 	int elems_read;
 
+	int i,j,k;
+
 	fpos = readHeader(fbuff, stag, &elem_size, &num_dims, dims, max_dims, fpos_eof);
 	// Do some simple checks
 	if( fpos < 0 ){// if there was an err in readHeader (printf's in readHeader)
 		return fpos;
 	}
-	for( int i=0; i<max_dims; ++i ){ linear_size *= dims[i]; }// calculate linear_size
-	if( elem_size*linear_size != sizeof(DigTableValues) ){
-		printf("Binary data read from file for tag |%s| is not the correct size\n", stag);
+	for( i=0; i<max_dims; ++i ){ linear_size *= dims[i]; }// calculate linear_size
+
+	// Do error checking and sanity checking
+	if( elem_size != sizeof(DigTableValues[0][0][0]) ){
+		printf("Incorrect element size (%d), expected (%d), declared for tag |%s|\n",
+					elem_size, sizeof(DigTableValues[0][0][0]), stag);
 		return -1;
 	}
+	if( dims[0] != (NUMBEROFCOLUMNS+1) ){// incorrect number of columns
+		printf("Incorrect number of columns (%d) declared for tag |%s|\n", dims[0], stag);
+		return -1;
+	}
+	if( dims[2] != (NUMBEROFPAGES) ){// incorrect number of pages
+		printf("Incorrect number of pages (%d) declared for tag |%s|\n", dims[2], stag);
+		return -1;
+	}
+	if( dims[1] != (NUMBERDIGITALCHANNELS+1) ){// a different number of rows is not necessarily an error
+		if( dims[1] > (NUMBERDIGITALCHANNELS+1) ){
+			printf("Rows declared in file (%d) is larger than max (%d) declared for tag |%s|\n",
+				   dims[1], (NUMBERDIGITALCHANNELS+1), stag);
+			return -1;
+		}
+		// now we know that the number of rows is smaller, let's also check if it's also a multiple of 8
+		if( (dims[1]-1)%8 != 0 ){// dims[1]-1 should be the number of actual digital channels
+			printf("Digital channels implied by file (%d) is not a multiple of 8 for tag |%s|\n",
+				   dims[1]-1, stag);
+			return -1;
+		}
+		// so now we have an acceptable number of rows in the file
+		printf("Number of rows declared in file (%d) is acceptable for tag |%s|\n",
+				dims[1], stag);
+
+		// and since the number of rows is less than max, reinitialize them all.
+		initializeDigArray();
+	}
+
+	/*if( elem_size*linear_size != sizeof(DigTableValues) ){
+		printf("Binary data read from file for tag |%s| is not the correct size\n", stag);
+		return -1;
+	}*/
 
 	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the binary data
-	elems_read = fread(&DigTableValues, elem_size, linear_size, fbuff);// load the binary data directly into the array
+	// Parallelling the put fn, we must read each element separately
+	for( i=0; i < dims[2]; ++i ){// iterate over pages
+		for( j=0; j < dims[0]; ++j ){// iterate over cols
+			for( k=0; k < dims[1]; ++k ){// iterate over rows
+				elems_read = fread(&DigTableValues[j][k][i], elem_size, 1, fbuff);// read binary data
+				if( elems_read != 1 ){
+					printf("Expected to read more elements from file for tag |%s|\n", stag);
+					return -1;
+				}
+			}
+		}
+	}
+
+	/*elems_read = fread(&DigTableValues, elem_size, linear_size, fbuff);// load the binary data directly into the array
 	if( elems_read != linear_size ){// didn't read expected number of elements
 		printf("Expected to read more elements from file for tag |%s|\n", stag);
 		return -1;
-	}
+	}*/
 
 	fpos = checkFooter(fbuff, etag, fpos_eof);
 	if( fpos < 0 ){// pass though signal, either -1 for error or -2 for eof
@@ -919,41 +1059,44 @@ long getDigitalTableFromFile(FILE *fbuff, long fpos_eof)
 
 int putAnalogChPropsToFile(FILE *fbuff)
 {
-	char cbuff[512] = "";// header/footer buffer
-	int clen = 512;
-	char bf[256] = "";// assembly buffer
 	int elems_writ;
+	int i;
 
 	// Particulars of the object to write (don't forget to change the actual data write line too)
 	// AChName[MAXANALOG+NUMBERDDS];// vars.h line
+	// AChName only stores the analog channel properties and the DDS names. The laser/anritsu are separate.
+	// So we only want to write those rows ie. (NUMBERANALOGCHANNELS+1) for the analog channels
+	//  and NUMBERDDS for the DDSs.
 	char stag[] = "<AnalogChProps>";
 	char etag[] = "</AnalogChProps>";
 	int num_dims = 1;
-	int dims[] = {(MAXANALOG+NUMBERDDS)};// ordering is: object[dims[0]][dims[1]]...
+	int dims[] = {(NUMBERANALOGCHANNELS+1)+NUMBERDDS};// ordering is: object[dims[0]][dims[1]]...
 	int elem_size = sizeof(AChName[0]);
-	int linear_size = 1;
+	int linear_size;
 
-	// Make the header automatically and write it
-	sprintf(cbuff, "%s~%d~%d~", stag, elem_size, num_dims);
-	for( int i = 0; i < num_dims; ++i ){
-		sprintf(bf, "%d~", dims[i]);
-		strcat(cbuff, bf);
-		linear_size = linear_size * dims[i];
-	}
-	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write header
+	printf("dims: %d\n", dims[0]);
 
-	elems_writ = fwrite(&AChName, elem_size, linear_size, fbuff);// write binary data
+	linear_size = writeHeader(fbuff, stag, elem_size, num_dims, dims);// write header
+	if( linear_size < 0 ){ return linear_size; }// pass though error
 
-	sprintf(cbuff, etag);
-	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write footer
-
-	if( elems_writ != linear_size ){
-		fclose(fbuff);
-		printf("Failed to write the correct number of elems for tag |%s|\n", stag);
-		return -1;
+	// Only write the elements that are meaningful
+	for( i=0; i < dims[0]; ++i ){
+		elems_writ = fwrite(&AChName[i], elem_size, 1, fbuff);// write binary data
+		if( elems_writ != 1 ){
+			fclose(fbuff);
+			printf("Failed to write the correct number of elems for tag |%s|\n", stag);
+			return -1;
+		}
 	}
 
-	return 0;
+	//elems_writ = fwrite(&AChName, elem_size, linear_size, fbuff);// write binary data
+	//if( elems_writ != linear_size ){
+	//	fclose(fbuff);
+	//	printf("Failed to write the correct number of elems for tag |%s|\n", stag);
+	//	return -1;
+	//}
+
+	return writeFooter(fbuff, etag);// write footer and pass through any errors
 }
 
 long getAnalogChPropsFromFile(FILE *fbuff, long fpos_eof)
@@ -962,6 +1105,7 @@ long getAnalogChPropsFromFile(FILE *fbuff, long fpos_eof)
 	char stag[] = "<AnalogChProps>";
 	char etag[] = "</AnalogChProps>";
 	int max_dims = 1;
+	int ddsRowOffset = (NUMBERANALOGCHANNELS+1)+1;// 1 based index of dds1 in AChNames
 
 	int elem_size;
 	int num_dims;
@@ -970,23 +1114,66 @@ long getAnalogChPropsFromFile(FILE *fbuff, long fpos_eof)
 	long fpos;
 	int elems_read;
 
+	int i;
+
 	fpos = readHeader(fbuff, stag, &elem_size, &num_dims, dims, max_dims, fpos_eof);
 	// Do some simple checks
 	if( fpos < 0 ){// if there was an err in readHeader (printf's in readHeader)
 		return fpos;
 	}
-	for( int i=0; i<max_dims; ++i ){ linear_size *= dims[i]; }// calculate linear_size
-	if( elem_size*linear_size != sizeof(AChName) ){
-		printf("Binary data read from file for tag |%s| is not the correct size\n", stag);
+	for( i=0; i<max_dims; ++i ){ linear_size *= dims[i]; }// calculate linear_size
+
+	// Do error checking and sanity checking
+	if( elem_size != sizeof(AChName[0]) ){
+		printf("Incorrect element size (%d), expected (%d), declared for tag |%s|\n",
+					elem_size, sizeof(AChName[0]), stag);
 		return -1;
+	}
+	if( dims[0] != (NUMBERANALOGCHANNELS+1)+NUMBERDDS ){// a different number of rows is not necessarily an error
+		if( dims[0] > (NUMBERANALOGCHANNELS+1)+NUMBERDDS ){
+			printf("Rows declared in file (%d) is larger than max (%d) declared for tag |%s|\n",
+				   dims[0], (NUMBERANALOGCHANNELS+1)+NUMBERDDS, stag);
+			return -1;
+		}
+		// now we know that the number of rows is smaller, let's also check if it's also a multiple of 8
+		//  plus 3 for the dds's.
+		if( (dims[0]-1-3)%8 != 0 ){// dims[1]-1 should be the number of actual analog channels, -3 for dds
+			printf("Analog channels implied by file (%d) is not a multiple of 8 for tag |%s|\n",
+				   dims[0]-1-3, stag);
+			return -1;
+		}
+		// so now we have an acceptable number of rows in the file
+		printf("Number of rows declared in file (%d) is acceptable for tag |%s|\n",
+				dims[0], stag);
+
+		// and since the number of rows is less than max, reinitialize them all.
+		initializeAnalogChProps();
 	}
 
 	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the binary data
-	elems_read = fread(&AChName, elem_size, linear_size, fbuff);// load the binary data directly into the array
-	if( elems_read != linear_size ){// didn't read expected number of elements
-		printf("Expected to read more elements from file for tag |%s|\n", stag);
-		return -1;
+	// Parallelling the put fn, we read only what was saved
+	// First read the analog channels
+	for( i=0; i < dims[0]-3; ++i ){// -3 to not read the 3 dds's yet
+		elems_read = fread(&AChName[i], elem_size, 1, fbuff);// read binary data
+		if( elems_read != 1 ){
+			printf("Expected to read more elements from file for tag |%s|\n", stag);
+			return -1;
+		}
 	}
+	// Now read in the DDS's to the correct row
+	for( i=0; i < 3; ++i ){
+		elems_read = fread(&AChName[ddsRowOffset+i], elem_size, 1, fbuff);// read binary data
+		if( elems_read != 1 ){
+			printf("Expected to read more elements from file for tag |%s|\n", stag);
+			return -1;
+		}
+	}
+
+	//elems_read = fread(&AChName, elem_size, linear_size, fbuff);// load the binary data directly into the array
+	//if( elems_read != linear_size ){// didn't read expected number of elements
+	//	printf("Expected to read more elements from file for tag |%s|\n", stag);
+	//	return -1;
+	//}
 
 	fpos = checkFooter(fbuff, etag, fpos_eof);
 	if( fpos < 0 ){// pass though signal, either -1 for error or -2 for eof
@@ -999,9 +1186,6 @@ long getAnalogChPropsFromFile(FILE *fbuff, long fpos_eof)
 
 int putDigitalChPropsToFile(FILE *fbuff)
 {
-	char cbuff[512] = "";// header/footer buffer
-	int clen = 512;
-	char bf[256] = "";// assembly buffer
 	int elems_writ;
 
 	// Particulars of the object to write (don't forget to change the actual data write line too)
@@ -1009,31 +1193,32 @@ int putDigitalChPropsToFile(FILE *fbuff)
 	char stag[] = "<DigitalChProps>";
 	char etag[] = "</DigitalChProps>";
 	int num_dims = 1;
-	int dims[] = {(MAXDIGITAL)};// ordering is: object[dims[0]][dims[1]]...
+	int dims[] = {(NUMBERDIGITALCHANNELS+1)};// ordering is: object[dims[0]][dims[1]]...
 	int elem_size = sizeof(DChName[0]);
-	int linear_size = 1;
+	int linear_size;
 
-	// Make the header automatically and write it
-	sprintf(cbuff, "%s~%d~%d~", stag, elem_size, num_dims);
-	for( int i = 0; i < num_dims; ++i ){
-		sprintf(bf, "%d~", dims[i]);
-		strcat(cbuff, bf);
-		linear_size = linear_size * dims[i];
+	linear_size = writeHeader(fbuff, stag, elem_size, num_dims, dims);// write header
+	if( linear_size < 0 ){ return linear_size; }// pass though error
+
+	// Only write the elements that are meaningful
+	for( int i=0; i < dims[0]; ++i ){
+		elems_writ = fwrite(&DChName[i], elem_size, 1, fbuff);// write binary data
+		if( elems_writ != 1 ){
+			fclose(fbuff);
+			printf("Failed to write the correct number of elems for tag |%s|\n", stag);
+			return -1;
+		}
 	}
-	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write header
 
-	elems_writ = fwrite(&DChName, elem_size, linear_size, fbuff);// write binary data
-
-	sprintf(cbuff, etag);
-	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write footer
+	/*elems_writ = fwrite(&DChName, elem_size, linear_size, fbuff);// write binary data
 
 	if( elems_writ != linear_size ){
 		fclose(fbuff);
 		printf("Failed to write the correct number of elems for tag |%s|\n", stag);
 		return -1;
-	}
+	}*/
 
-	return 0;
+	return writeFooter(fbuff, etag);// write footer and pass through any errors
 }
 
 long getDigitalChPropsFromFile(FILE *fbuff, long fpos_eof)
@@ -1056,17 +1241,52 @@ long getDigitalChPropsFromFile(FILE *fbuff, long fpos_eof)
 		return fpos;
 	}
 	for( int i=0; i<max_dims; ++i ){ linear_size *= dims[i]; }// calculate linear_size
-	if( elem_size*linear_size != sizeof(DChName) ){
-		printf("Binary data read from file for tag |%s| is not the correct size\n", stag);
+
+	// Do error checking and sanity checking
+	if( elem_size != sizeof(DChName[0]) ){
+		printf("Incorrect element size (%d), expected (%d), declared for tag |%s|\n",
+					elem_size, sizeof(DChName[0]), stag);
 		return -1;
 	}
+	if( dims[0] != (NUMBERDIGITALCHANNELS+1) ){// a different number of rows is not necessarily an error
+		if( dims[0] > (NUMBERDIGITALCHANNELS+1) ){
+			printf("Rows declared in file (%d) is larger than max (%d) declared for tag |%s|\n",
+				   dims[0], (NUMBERDIGITALCHANNELS+1), stag);
+			return -1;
+		}
+		// now we know that the number of rows is smaller, let's also check if it's also a multiple of 8
+		if( (dims[0]-1)%8 != 0 ){// dims[0]-1 should be the number of actual digital channels
+			printf("Digital channels implied by file (%d) is not a multiple of 8 for tag |%s|\n",
+				   dims[0]-1, stag);
+			return -1;
+		}
+		// so now we have an acceptable number of rows in the file
+		printf("Number of rows declared in file (%d) is acceptable for tag |%s|\n",
+				dims[0], stag);
+
+		// and since the number of rows is less than max, reinitialize them all.
+		initializeDigChProps();
+	}
+
+	/*if( elem_size*linear_size != sizeof(DChName) ){
+		printf("Binary data read from file for tag |%s| is not the correct size\n", stag);
+		return -1;
+	}*/
 
 	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the binary data
-	elems_read = fread(&DChName, elem_size, linear_size, fbuff);// load the binary data directly into the array
+	// Parallelling the put fn, we read only what was saved
+	for( i=0; i < dims[0]; ++i ){
+		elems_read = fread(&DChName[i], elem_size, 1, fbuff);// read binary data
+		if( elems_read != 1 ){
+			printf("Expected to read more elements from file for tag |%s|\n", stag);
+			return -1;
+		}
+	}
+	/*elems_read = fread(&DChName, elem_size, linear_size, fbuff);// load the binary data directly into the array
 	if( elems_read != linear_size ){// didn't read expected number of elements
 		printf("Expected to read more elements from file for tag |%s|\n", stag);
 		return -1;
-	}
+	}*/
 
 	fpos = checkFooter(fbuff, etag, fpos_eof);
 	if( fpos < 0 ){// pass though signal, either -1 for error or -2 for eof
@@ -1079,9 +1299,6 @@ long getDigitalChPropsFromFile(FILE *fbuff, long fpos_eof)
 
 int putDds1TableToFile(FILE *fbuff)
 {
-	char cbuff[512] = "";// header/footer buffer
-	int clen = 512;
-	char bf[256] = "";// assembly buffer
 	int elems_writ;
 
 	// Particulars of the object to write (don't forget to change the actual data write line too)
@@ -1091,21 +1308,12 @@ int putDds1TableToFile(FILE *fbuff)
 	int num_dims = 2;
 	int dims[] = {(NUMBEROFCOLUMNS+1), (NUMBEROFPAGES)};// ordering is: object[dims[0]][dims[1]]...
 	int elem_size = sizeof(ddstable[0][0]);
-	int linear_size = 1;
+	int linear_size;
 
-	// Make the header automatically and write it
-	sprintf(cbuff, "%s~%d~%d~", stag, elem_size, num_dims);
-	for( int i = 0; i < num_dims; ++i ){
-		sprintf(bf, "%d~", dims[i]);
-		strcat(cbuff, bf);
-		linear_size = linear_size * dims[i];
-	}
-	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write header
+	linear_size = writeHeader(fbuff, stag, elem_size, num_dims, dims);// write header
+	if( linear_size < 0 ){ return linear_size; }// pass though error
 
 	elems_writ = fwrite(&ddstable, elem_size, linear_size, fbuff);// write binary data
-
-	sprintf(cbuff, etag);
-	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write footer
 
 	if( elems_writ != linear_size ){
 		fclose(fbuff);
@@ -1113,7 +1321,7 @@ int putDds1TableToFile(FILE *fbuff)
 		return -1;
 	}
 
-	return 0;
+	return writeFooter(fbuff, etag);// write footer and pass through any errors
 }
 
 long getDds1TableFromFile(FILE *fbuff, long fpos_eof)
@@ -1159,9 +1367,6 @@ long getDds1TableFromFile(FILE *fbuff, long fpos_eof)
 
 int putDds2TableToFile(FILE *fbuff)
 {
-	char cbuff[512] = "";// header/footer buffer
-	int clen = 512;
-	char bf[256] = "";// assembly buffer
 	int elems_writ;
 
 	// Particulars of the object to write (don't forget to change the actual data write line too)
@@ -1171,21 +1376,12 @@ int putDds2TableToFile(FILE *fbuff)
 	int num_dims = 2;
 	int dims[] = {(NUMBEROFCOLUMNS+1), (NUMBEROFPAGES)};// ordering is: object[dims[0]][dims[1]]...
 	int elem_size = sizeof(dds2table[0][0]);
-	int linear_size = 1;
+	int linear_size;
 
-	// Make the header automatically and write it
-	sprintf(cbuff, "%s~%d~%d~", stag, elem_size, num_dims);
-	for( int i = 0; i < num_dims; ++i ){
-		sprintf(bf, "%d~", dims[i]);
-		strcat(cbuff, bf);
-		linear_size = linear_size * dims[i];
-	}
-	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write header
+	linear_size = writeHeader(fbuff, stag, elem_size, num_dims, dims);// write header
+	if( linear_size < 0 ){ return linear_size; }// pass though error
 
 	elems_writ = fwrite(&dds2table, elem_size, linear_size, fbuff);// write binary data
-
-	sprintf(cbuff, etag);
-	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write footer
 
 	if( elems_writ != linear_size ){
 		fclose(fbuff);
@@ -1193,7 +1389,7 @@ int putDds2TableToFile(FILE *fbuff)
 		return -1;
 	}
 
-	return 0;
+	return writeFooter(fbuff, etag);// write footer and pass through any errors
 }
 
 long getDds2TableFromFile(FILE *fbuff, long fpos_eof)
@@ -1239,9 +1435,6 @@ long getDds2TableFromFile(FILE *fbuff, long fpos_eof)
 
 int putDds3TableToFile(FILE *fbuff)
 {
-	char cbuff[512] = "";// header/footer buffer
-	int clen = 512;
-	char bf[256] = "";// assembly buffer
 	int elems_writ;
 
 	// Particulars of the object to write (don't forget to change the actual data write line too)
@@ -1251,21 +1444,12 @@ int putDds3TableToFile(FILE *fbuff)
 	int num_dims = 2;
 	int dims[] = {(NUMBEROFCOLUMNS+1), (NUMBEROFPAGES)};// ordering is: object[dims[0]][dims[1]]...
 	int elem_size = sizeof(dds3table[0][0]);
-	int linear_size = 1;
+	int linear_size;
 
-	// Make the header automatically and write it
-	sprintf(cbuff, "%s~%d~%d~", stag, elem_size, num_dims);
-	for( int i = 0; i < num_dims; ++i ){
-		sprintf(bf, "%d~", dims[i]);
-		strcat(cbuff, bf);
-		linear_size = linear_size * dims[i];
-	}
-	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write header
+	linear_size = writeHeader(fbuff, stag, elem_size, num_dims, dims);// write header
+	if( linear_size < 0 ){ return linear_size; }// pass though error
 
 	elems_writ = fwrite(&dds3table, elem_size, linear_size, fbuff);// write binary data
-
-	sprintf(cbuff, etag);
-	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write footer
 
 	if( elems_writ != linear_size ){
 		fclose(fbuff);
@@ -1273,7 +1457,7 @@ int putDds3TableToFile(FILE *fbuff)
 		return -1;
 	}
 
-	return 0;
+	return writeFooter(fbuff, etag);// write footer and pass through any errors
 }
 
 long getDds3TableFromFile(FILE *fbuff, long fpos_eof)
@@ -1317,11 +1501,175 @@ long getDds3TableFromFile(FILE *fbuff, long fpos_eof)
 	return fpos;
 }
 
+int putDdsGlobalsToFile(FILE *fbuff)
+{
+	int elems_writ;
+
+	// Particulars of the object to write (don't forget to change the actual data write line too)
+	//struct DDSClock{// vars.h line
+	//		double	extclock;
+	//		int 	PLLmult;
+	//		double	clock;// clock is a derived quantity from extclock and PLLmult
+	//}	DDSFreq;
+	char stag[] = "<DdsGlobals>";
+	char etag[] = "</DdsGlobals>";
+	int num_dims = 1;
+	int dims[] = {(1)};// ordering is: object[dims[0]][dims[1]]...
+	int elem_size = sizeof(DDSFreq);
+	int linear_size;
+
+	linear_size = writeHeader(fbuff, stag, elem_size, num_dims, dims);// write header
+	if( linear_size < 0 ){ return linear_size; }// pass though error
+
+	elems_writ = fwrite(&DDSFreq, elem_size, linear_size, fbuff);// write binary data
+
+	if( elems_writ != linear_size ){
+		fclose(fbuff);
+		printf("Failed to write the correct number of elems for tag |%s|\n", stag);
+		return -1;
+	}
+
+	return writeFooter(fbuff, etag);// write footer and pass through any errors
+}
+
+long getDdsGlobalsFromFile(FILE *fbuff, long fpos_eof)
+{
+	// Particulars of the object to load (don't forget to change the actual data write line too)
+	char stag[] = "<DdsGlobals>";
+	char etag[] = "</DdsGlobals>";
+	int max_dims = 1;
+
+	int elem_size;
+	int num_dims;
+	int dims[max_dims];
+	int linear_size = 1;
+	long fpos;
+	int elems_read;
+
+	fpos = readHeader(fbuff, stag, &elem_size, &num_dims, dims, max_dims, fpos_eof);
+	// Do some simple checks
+	if( fpos < 0 ){// if there was an err in readHeader (printf's in readHeader)
+		return fpos;
+	}
+	for( int i=0; i<max_dims; ++i ){ linear_size *= dims[i]; }// calculate linear_size
+	if( elem_size*linear_size != sizeof(DDSFreq) ){
+		printf("Binary data read from file for tag |%s| is not the correct size\n", stag);
+		return -1;
+	}
+
+	// Read the data into DDSFreq and also set the DDSsettings panel
+	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the binary data
+	elems_read = fread(&DDSFreq, elem_size, linear_size, fbuff);// load the binary data directly into the array
+	if( elems_read != linear_size ){// didn't read expected number of elements
+		printf("Expected to read more elements from file for tag |%s|\n", stag);
+		return -1;
+	}
+	LoadDDSSettings();// load DDSFreq global var into ddssettings panel
+
+	fpos = checkFooter(fbuff, etag, fpos_eof);
+	if( fpos < 0 ){// pass though signal, either -1 for error or -2 for eof
+		return fpos;
+	}
+	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the next header
+
+	return fpos;
+}
+
+int putDdsEorsToFile(FILE *fbuff)
+{// Lots of manual operations/customizations in this fn
+
+	int elems_writ;
+
+	// Particulars of the object to write (don't forget to change the actual data write line too)
+	// PANEL_NUM_DDS_OFFSET
+	// PANEL_NUM_DDS2_OFFSET
+	// PANEL_NUM_DDS3_OFFSET
+	char stag[] = "<DdsEors>";
+	char etag[] = "</DdsEors>";
+	int num_dims = 1;
+	int dims[] = {(3)};// ordering is: object[dims[0]][dims[1]]...
+	double ddseors[dims[0]];
+	int elem_size = sizeof(ddseors[0]);
+	int linear_size;
+
+	linear_size = writeHeader(fbuff, stag, elem_size, num_dims, dims);// write header
+	if( linear_size < 0 ){ return linear_size; }// pass though error
+
+	// Get each EOR and write array to file
+
+	GetCtrlVal( panelHandle, PANEL_NUM_DDS_OFFSET,  &(ddseors[0]) );
+	GetCtrlVal( panelHandle, PANEL_NUM_DDS2_OFFSET, &(ddseors[1]) );
+	GetCtrlVal( panelHandle, PANEL_NUM_DDS3_OFFSET, &(ddseors[2]) );
+
+	elems_writ = fwrite(&ddseors, elem_size, linear_size, fbuff);// write binary data
+
+	if( elems_writ != linear_size ){
+		fclose(fbuff);
+		printf("Failed to write the correct number of elems for tag |%s|\n", stag);
+		return -1;
+	}
+
+	return writeFooter(fbuff, etag);// write footer and pass through any errors
+}
+
+long getDdsEorsFromFile(FILE *fbuff, long fpos_eof)
+{
+	// Particulars of the object to load (don't forget to change the actual data write line too)
+	char stag[] = "<DdsEors>";
+	char etag[] = "</DdsEors>";
+	int max_dims = 1;
+	double *ddseors;
+
+	int elem_size;
+	int num_dims;
+	int dims[max_dims];
+	int linear_size = 1;
+	long fpos;
+	int elems_read;
+
+	fpos = readHeader(fbuff, stag, &elem_size, &num_dims, dims, max_dims, fpos_eof);
+	// Do some simple checks
+	if( fpos < 0 ){// if there was an err in readHeader (printf's in readHeader)
+		return fpos;
+	}
+	for( int i=0; i<max_dims; ++i ){ linear_size *= dims[i]; }// calculate linear_size
+	if( elem_size*linear_size != sizeof(double) * 3 ){// HARDCODED
+		printf("Binary data read from file for tag |%s| is not the correct size\n", stag);
+		return -1;
+	}
+
+	//printf("elem_size: %d, linear_size: %d, dims[0]:%d\n",elem_size,linear_size,dims[0]);// debug
+
+	// Allocate the temporary required amount of memory
+	ddseors = (double *) malloc( elem_size * linear_size );
+
+	//printf("ddseors allocated\n");// debug
+
+	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the binary data
+	elems_read = fread(ddseors, elem_size, linear_size, fbuff);// load the binary data directly into the array
+	if( elems_read != linear_size ){// didn't read expected number of elements
+		printf("Expected to read more elements from file for tag |%s|\n", stag);
+		free(ddseors);
+		return -1;
+	}
+	// Set the dds eor cells
+	SetCtrlVal( panelHandle, PANEL_NUM_DDS_OFFSET, ddseors[0] );
+	SetCtrlVal( panelHandle, PANEL_NUM_DDS2_OFFSET, ddseors[1] );
+	SetCtrlVal( panelHandle, PANEL_NUM_DDS3_OFFSET, ddseors[2] );
+
+	fpos = checkFooter(fbuff, etag, fpos_eof);
+	if( fpos < 0 ){// pass though signal, either -1 for error or -2 for eof
+		free(ddseors);
+		return fpos;
+	}
+	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the next header
+
+	free(ddseors);
+	return fpos;
+}
+
 int putLaserTableToFile(FILE *fbuff)
 {
-	char cbuff[512] = "";// header/footer buffer
-	int clen = 512;
-	char bf[256] = "";// assembly buffer
 	int elems_writ;
 
 	// Particulars of the object to write (don't forget to change the actual data write line too)
@@ -1331,21 +1679,12 @@ int putLaserTableToFile(FILE *fbuff)
 	int num_dims = 3;
 	int dims[] = {(NUMBERLASERS), (NUMBEROFCOLUMNS+1), (NUMBEROFPAGES)};// ordering is: object[dims[0]][dims[1]]...
 	int elem_size = sizeof(LaserTable[0][0][0]);
-	int linear_size = 1;
+	int linear_size;
 
-	// Make the header automatically and write it
-	sprintf(cbuff, "%s~%d~%d~", stag, elem_size, num_dims);
-	for( int i = 0; i < num_dims; ++i ){
-		sprintf(bf, "%d~", dims[i]);
-		strcat(cbuff, bf);
-		linear_size = linear_size * dims[i];
-	}
-	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write header
+	linear_size = writeHeader(fbuff, stag, elem_size, num_dims, dims);// write header
+	if( linear_size < 0 ){ return linear_size; }// pass though error
 
 	elems_writ = fwrite(&LaserTable, elem_size, linear_size, fbuff);// write binary data
-
-	sprintf(cbuff, etag);
-	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write footer
 
 	if( elems_writ != linear_size ){
 		fclose(fbuff);
@@ -1353,7 +1692,7 @@ int putLaserTableToFile(FILE *fbuff)
 		return -1;
 	}
 
-	return 0;
+	return writeFooter(fbuff, etag);// write footer and pass through any errors
 }
 
 long getLaserTableFromFile(FILE *fbuff, long fpos_eof)
@@ -1399,9 +1738,6 @@ long getLaserTableFromFile(FILE *fbuff, long fpos_eof)
 
 int putLaserPropsToFile(FILE *fbuff)
 {
-	char cbuff[512] = "";// header/footer buffer
-	int clen = 512;
-	char bf[256] = "";// assembly buffer
 	int elems_writ;
 
 	// Particulars of the object to write (don't forget to change the actual data write line too)
@@ -1411,21 +1747,12 @@ int putLaserPropsToFile(FILE *fbuff)
 	int num_dims = 1;
 	int dims[] = {(NUMBERLASERS)};// ordering is: object[dims[0]][dims[1]]...
 	int elem_size = sizeof(LaserProperties[0]);
-	int linear_size = 1;
+	int linear_size;
 
-	// Make the header automatically and write it
-	sprintf(cbuff, "%s~%d~%d~", stag, elem_size, num_dims);
-	for( int i = 0; i < num_dims; ++i ){
-		sprintf(bf, "%d~", dims[i]);
-		strcat(cbuff, bf);
-		linear_size = linear_size * dims[i];
-	}
-	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write header
+	linear_size = writeHeader(fbuff, stag, elem_size, num_dims, dims);// write header
+	if( linear_size < 0 ){ return linear_size; }// pass though error
 
 	elems_writ = fwrite(&LaserProperties, elem_size, linear_size, fbuff);// write binary data
-
-	sprintf(cbuff, etag);
-	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write footer
 
 	if( elems_writ != linear_size ){
 		fclose(fbuff);
@@ -1433,7 +1760,7 @@ int putLaserPropsToFile(FILE *fbuff)
 		return -1;
 	}
 
-	return 0;
+	return writeFooter(fbuff, etag);// write footer and pass through any errors
 }
 
 long getLaserPropsFromFile(FILE *fbuff, long fpos_eof)
@@ -1467,6 +1794,7 @@ long getLaserPropsFromFile(FILE *fbuff, long fpos_eof)
 		printf("Expected to read more elements from file for tag |%s|\n", stag);
 		return -1;
 	}
+	SetLaserLabels();// update the row labels for the lasers
 
 	fpos = checkFooter(fbuff, etag, fpos_eof);
 	if( fpos < 0 ){// pass though signal, either -1 for error or -2 for eof
@@ -1479,9 +1807,6 @@ long getLaserPropsFromFile(FILE *fbuff, long fpos_eof)
 
 int putAnritsuTableToFile(FILE *fbuff)// this table isn't used anymore but it might in the future so why not save it too
 {
-	char cbuff[512] = "";// header/footer buffer
-	int clen = 512;
-	char bf[256] = "";// assembly buffer
 	int elems_writ;
 
 	// Particulars of the object to write (don't forget to change the actual data write line too)
@@ -1491,21 +1816,12 @@ int putAnritsuTableToFile(FILE *fbuff)// this table isn't used anymore but it mi
 	int num_dims = 2;
 	int dims[] = {(NUMBEROFCOLUMNS+1), (NUMBEROFPAGES)};// ordering is: object[dims[0]][dims[1]]...
 	int elem_size = sizeof(anritsutable[0][0]);
-	int linear_size = 1;
+	int linear_size;
 
-	// Make the header automatically and write it
-	sprintf(cbuff, "%s~%d~%d~", stag, elem_size, num_dims);
-	for( int i = 0; i < num_dims; ++i ){
-		sprintf(bf, "%d~", dims[i]);
-		strcat(cbuff, bf);
-		linear_size = linear_size * dims[i];
-	}
-	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write header
+	linear_size = writeHeader(fbuff, stag, elem_size, num_dims, dims);// write header
+	if( linear_size < 0 ){ return linear_size; }// pass though error
 
 	elems_writ = fwrite(&anritsutable, elem_size, linear_size, fbuff);// write binary data
-
-	sprintf(cbuff, etag);
-	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write footer
 
 	if( elems_writ != linear_size ){
 		fclose(fbuff);
@@ -1513,7 +1829,7 @@ int putAnritsuTableToFile(FILE *fbuff)// this table isn't used anymore but it mi
 		return -1;
 	}
 
-	return 0;
+	return writeFooter(fbuff, etag);// write footer and pass through any errors
 }
 
 long getAnritsuTableFromFile(FILE *fbuff, long fpos_eof)
@@ -1559,9 +1875,6 @@ long getAnritsuTableFromFile(FILE *fbuff, long fpos_eof)
 
 int putAnritsuPropsToFile(FILE *fbuff)
 {
-	char cbuff[512] = "";// header/footer buffer
-	int clen = 512;
-	char bf[256] = "";// assembly buffer
 	int elems_writ;
 
 	// Particulars of the object to write (don't forget to change the actual data write line too)
@@ -1571,21 +1884,16 @@ int putAnritsuPropsToFile(FILE *fbuff)
 	int num_dims = 1;
 	int dims[] = {(NUMBEROFANRITSU)};// ordering is: object[dims[0]][dims[1]]...
 	int elem_size = sizeof(AnritsuSettingValues[0]);
-	int linear_size = 1;
+	int linear_size;
 
-	// Make the header automatically and write it
-	sprintf(cbuff, "%s~%d~%d~", stag, elem_size, num_dims);
-	for( int i = 0; i < num_dims; ++i ){
-		sprintf(bf, "%d~", dims[i]);
-		strcat(cbuff, bf);
-		linear_size = linear_size * dims[i];
-	}
-	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write header
+	linear_size = writeHeader(fbuff, stag, elem_size, num_dims, dims);// write header
+	if( linear_size < 0 ){ return linear_size; }// pass though error
 
+	// Update AnritsuSettingsValues and then write to file
+	// The other settings are set in the Anritsu panel
+	// But because of the way the offset (EOR) cell is separate, it must be done manually
+	GetCtrlVal( panelHandle, PANEL_ANRITSU_OFFSET, &AnritsuSettingValues[0].offset );
 	elems_writ = fwrite(&AnritsuSettingValues, elem_size, linear_size, fbuff);// write binary data
-
-	sprintf(cbuff, etag);
-	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write footer
 
 	if( elems_writ != linear_size ){
 		fclose(fbuff);
@@ -1593,7 +1901,7 @@ int putAnritsuPropsToFile(FILE *fbuff)
 		return -1;
 	}
 
-	return 0;
+	return writeFooter(fbuff, etag);// write footer and pass through any errors
 }
 
 long getAnritsuPropsFromFile(FILE *fbuff, long fpos_eof)
@@ -1621,12 +1929,15 @@ long getAnritsuPropsFromFile(FILE *fbuff, long fpos_eof)
 		return -1;
 	}
 
+	// Not just load into AnritsuSettingValues but also update the gui
 	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the binary data
 	elems_read = fread(&AnritsuSettingValues, elem_size, linear_size, fbuff);// load the binary data directly into the array
 	if( elems_read != linear_size ){// didn't read expected number of elements
 		printf("Expected to read more elements from file for tag |%s|\n", stag);
 		return -1;
 	}
+	LoadAnritsuSettings();// Load values into the Anritsu panel
+	SetCtrlVal( panelHandle, PANEL_ANRITSU_OFFSET, AnritsuSettingValues[0].offset );// set offset (EOR)
 
 	fpos = checkFooter(fbuff, etag, fpos_eof);
 	if( fpos < 0 ){// pass though signal, either -1 for error or -2 for eof
@@ -1639,9 +1950,6 @@ long getAnritsuPropsFromFile(FILE *fbuff, long fpos_eof)
 
 int putInfoArrayToFile(FILE *fbuff)
 {
-	char cbuff[512] = "";// header/footer buffer
-	int clen = 512;
-	char bf[256] = "";// assembly buffer
 	int elems_writ;
 
 	// Particulars of the object to write (don't forget to change the actual data write line too)
@@ -1651,21 +1959,12 @@ int putInfoArrayToFile(FILE *fbuff)
 	int num_dims = 2;
 	int dims[] = {(NUMBEROFCOLUMNS+1), (NUMBEROFPAGES)};// ordering is: object[dims[0]][dims[1]]...
 	int elem_size = sizeof(InfoArray[0][0]);
-	int linear_size = 1;
+	int linear_size;
 
-	// Make the header automatically and write it
-	sprintf(cbuff, "%s~%d~%d~", stag, elem_size, num_dims);
-	for( int i = 0; i < num_dims; ++i ){
-		sprintf(bf, "%d~", dims[i]);
-		strcat(cbuff, bf);
-		linear_size = linear_size * dims[i];
-	}
-	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write header
+	linear_size = writeHeader(fbuff, stag, elem_size, num_dims, dims);// write header
+	if( linear_size < 0 ){ return linear_size; }// pass though error
 
 	elems_writ = fwrite(&InfoArray, elem_size, linear_size, fbuff);// write binary data
-
-	sprintf(cbuff, etag);
-	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write footer
 
 	if( elems_writ != linear_size ){
 		fclose(fbuff);
@@ -1673,7 +1972,7 @@ int putInfoArrayToFile(FILE *fbuff)
 		return -1;
 	}
 
-	return 0;
+	return writeFooter(fbuff, etag);// write footer and pass through any errors
 }
 
 long getInfoArrayFromFile(FILE *fbuff, long fpos_eof)
@@ -1719,9 +2018,6 @@ long getInfoArrayFromFile(FILE *fbuff, long fpos_eof)
 
 int putPageNamesToFile(FILE *fbuff)
 {
-	char cbuff[512] = "";// header/footer buffer
-	int clen = 512;
-	char bf[256] = "";// assembly buffer
 	int elems_writ;
 	int i;
 
@@ -1746,16 +2042,10 @@ int putPageNamesToFile(FILE *fbuff)
 	int num_dims = 1;
 	int dims[] = {(NUMBEROFPAGES-1)};// ordering is: object[dims[0]][dims[1]]...
 	int elem_size = sizeof(text_buff);
-	int linear_size = 1;
+	int linear_size;
 
-	// Make the header automatically and write it
-	sprintf(cbuff, "%s~%d~%d~", stag, elem_size, num_dims);
-	for( i = 0; i < num_dims; ++i ){
-		sprintf(bf, "%d~", dims[i]);
-		strcat(cbuff, bf);
-		linear_size = linear_size * dims[i];
-	}
-	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write header
+	linear_size = writeHeader(fbuff, stag, elem_size, num_dims, dims);// write header
+	if( linear_size < 0 ){ return linear_size; }// pass though error
 
 	// Here we need to do a little more work than simply dumping the binary array to file
 	for( i = 1; i <= linear_size; ++i )
@@ -1765,16 +2055,16 @@ int putPageNamesToFile(FILE *fbuff)
 
 		// Check that the text length is less than the buffer length to prevent overflows
 		GetCtrlAttribute(panelHandle, PANEL_TB_SHOWPHASE[i], ATTR_OFF_TEXT_LENGTH, &text_len);
-		printf("text_len: %d\n", text_len);
+		//printf("text_len: %d\n", text_len);// debug
 		if( text_len > max_text_len ){
-			printf("The page name of page %d is too long for the save buffer\n", i);
 			fclose(fbuff);
+			printf("The page name of page %d is too long for the save buffer\n", i);
 			return -1;
 		}
 
 		// Get the (off state) text of the button
 		GetCtrlAttribute(panelHandle, PANEL_TB_SHOWPHASE[i], ATTR_OFF_TEXT, text_buff);
-		printf("text_buff |%s|\n", text_buff);// debug
+		//printf("text_buff |%s|\n", text_buff);// debug
 
 		// And finally write it to the file
 		elems_writ = fwrite(&text_buff, elem_size, 1, fbuff);
@@ -1787,10 +2077,7 @@ int putPageNamesToFile(FILE *fbuff)
 		}
 	}
 
-	sprintf(cbuff, etag);
-	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write footer
-
-	return 0;
+	return writeFooter(fbuff, etag);// write footer and pass through any errors
 }
 
 long getPageNamesFromFile(FILE *fbuff, long fpos_eof)
@@ -1826,13 +2113,13 @@ long getPageNamesFromFile(FILE *fbuff, long fpos_eof)
 	}
 
 	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the binary data
-	for( i = 0; i < linear_size; ++i ){
+	for( i = 1; i <= linear_size; ++i ){
 		elems_read = fread(&text_buff, elem_size, 1, fbuff);// load chars into buffer
 		if( elems_read != 1 ){
 			printf("Failed to read all of char block for page name %d\n", i);
 			return -1;
 		}
-		printf("text_buff |%s|\n", text_buff);// debug
+		//printf("text_buff |%s|\n", text_buff);// debug
 		SetCtrlAttribute(panelHandle, PANEL_TB_SHOWPHASE[i], ATTR_OFF_TEXT, text_buff);
 		SetCtrlAttribute(panelHandle, PANEL_TB_SHOWPHASE[i], ATTR_ON_TEXT, text_buff);
 	}
@@ -1848,9 +2135,6 @@ long getPageNamesFromFile(FILE *fbuff, long fpos_eof)
 
 int putPageCheckboxesToFile(FILE *fbuff)// These used to be saved in the .pan file in V16 and lower
 {
-	char cbuff[512] = "";// header/footer buffer
-	int clen = 512;
-	char bf[256] = "";// assembly buffer
 	int elems_writ;
 
 	// Particulars of the object to write (don't forget to change the actual data write line too)
@@ -1865,22 +2149,13 @@ int putPageCheckboxesToFile(FILE *fbuff)// These used to be saved in the .pan fi
 	int num_dims = 1;
 	int dims[] = {(NUMBEROFPAGES)};// ordering is: object[dims[0]][dims[1]]...
 	int elem_size = sizeof(ischecked[0]);
-	int linear_size = 1;
+	int linear_size;
 
-	// Make the header automatically and write it
-	sprintf(cbuff, "%s~%d~%d~", stag, elem_size, num_dims);
-	for( int i = 0; i < num_dims; ++i ){
-		sprintf(bf, "%d~", dims[i]);
-		strcat(cbuff, bf);
-		linear_size = linear_size * dims[i];
-	}
-	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write header
+	linear_size = writeHeader(fbuff, stag, elem_size, num_dims, dims);// write header
+	if( linear_size < 0 ){ return linear_size; }// pass though error
 
 	checkActivePages();// insure that global var ischecked is up to date
 	elems_writ = fwrite(&ischecked, elem_size, linear_size, fbuff);// write binary data
-
-	sprintf(cbuff, etag);
-	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write footer
 
 	if( elems_writ != linear_size ){
 		fclose(fbuff);
@@ -1888,7 +2163,7 @@ int putPageCheckboxesToFile(FILE *fbuff)// These used to be saved in the .pan fi
 		return -1;
 	}
 
-	return 0;
+	return writeFooter(fbuff, etag);// write footer and pass through any errors
 }
 
 long getPageCheckboxesFromFile(FILE *fbuff, long fpos_eof)
@@ -1935,9 +2210,6 @@ long getPageCheckboxesFromFile(FILE *fbuff, long fpos_eof)
 
 int putUpdatePeriodToFile(FILE *fbuff)
 {
-	char cbuff[512] = "";// header/footer buffer
-	int clen = 512;
-	char bf[256] = "";// assembly buffer
 	int elems_writ;
 
 	// Particulars of the object to write (don't forget to change the actual data write line too)
@@ -1948,22 +2220,13 @@ int putUpdatePeriodToFile(FILE *fbuff)
 	int num_dims = 1;
 	int dims[] = {(1)};// ordering is: object[dims[0]][dims[1]]...
 	int elem_size = sizeof(updatePeriod);
-	int linear_size = 1;
+	int linear_size;
 
-	// Make the header automatically and write it
-	sprintf(cbuff, "%s~%d~%d~", stag, elem_size, num_dims);
-	for( int i = 0; i < num_dims; ++i ){
-		sprintf(bf, "%d~", dims[i]);
-		strcat(cbuff, bf);
-		linear_size = linear_size * dims[i];
-	}
-	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write header
+	linear_size = writeHeader(fbuff, stag, elem_size, num_dims, dims);// write header
+	if( linear_size < 0 ){ return linear_size; }// pass though error
 
 	updatePeriod = getUpdatePeriodFromMenu();
 	elems_writ = fwrite(&updatePeriod, elem_size, linear_size, fbuff);// write binary data
-
-	sprintf(cbuff, etag);
-	fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);// write footer
 
 	if( elems_writ != linear_size ){
 		fclose(fbuff);
@@ -1971,7 +2234,7 @@ int putUpdatePeriodToFile(FILE *fbuff)
 		return -1;
 	}
 
-	return 0;
+	return writeFooter(fbuff, etag);// write footer and pass through any errors
 }
 
 long getUpdatePeriodFromFile(FILE *fbuff, long fpos_eof)
@@ -2023,60 +2286,459 @@ long getUpdatePeriodFromFile(FILE *fbuff, long fpos_eof)
 	return fpos;
 }
 
+int putGpibDevsToFile(FILE *fbuff)
+{
+	int elems_writ;
+
+	// Particulars of the object to write (don't forget to change the actual data write line too)
+	//	struct GPIBDDeviceProperties{// vars.h line
+	//	int		address;	// GPIB address (1..32), 0 means: not initialized
+	//	char    devname[50]; // name of the device
+	//	char	cmdmask[1024];
+	//	char	command[1024];
+	//	char	lastsent[1024];
+	//	double	value[20];
+	//	BOOL	active;
+	//	} GPIBDev[NUMBERGPIBDEV];
+	char stag[] = "<GpibDevs>";
+	char etag[] = "</GpibDevs>";
+	int num_dims = 1;
+	int dims[] = {(NUMBERGPIBDEV)};// ordering is: object[dims[0]][dims[1]]...
+	int elem_size = sizeof(GPIBDev[0]);
+	int linear_size;
+
+	linear_size = writeHeader(fbuff, stag, elem_size, num_dims, dims);// write header
+	if( linear_size < 0 ){ return linear_size; }// pass though error
+
+	elems_writ = fwrite(&GPIBDev, elem_size, linear_size, fbuff);// write binary data
+
+	if( elems_writ != linear_size ){
+		fclose(fbuff);
+		printf("Failed to write the correct number of elems for tag |%s|\n", stag);
+		return -1;
+	}
+
+	return writeFooter(fbuff, etag);// write footer and pass through any errors
+}
+
+long getGpibDevsFromFile(FILE *fbuff, long fpos_eof)
+{
+	// Particulars of the object to load (don't forget to change the actual data write line too)
+	char stag[] = "<GpibDevs>";
+	char etag[] = "</GpibDevs>";
+	int max_dims = 1;
+
+	int elem_size;
+	int num_dims;
+	int dims[max_dims];
+	int linear_size = 1;
+	long fpos;
+	int elems_read;
+
+	fpos = readHeader(fbuff, stag, &elem_size, &num_dims, dims, max_dims, fpos_eof);
+	// Do some simple checks
+	if( fpos < 0 ){// if there was an err in readHeader (printf's in readHeader)
+		return fpos;
+	}
+	for( int i=0; i<max_dims; ++i ){ linear_size *= dims[i]; }// calculate linear_size
+	if( elem_size*linear_size != sizeof(GPIBDev) ){
+		printf("Binary data read from file for tag |%s| is not the correct size\n", stag);
+		return -1;
+	}
+
+	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the binary data
+	elems_read = fread(&GPIBDev, elem_size, linear_size, fbuff);// load the binary data directly into the array
+	if( elems_read != linear_size ){// didn't read expected number of elements
+		printf("Expected to read more elements from file for tag |%s|\n", stag);
+		return -1;
+	}
+
+	fpos = checkFooter(fbuff, etag, fpos_eof);
+	if( fpos < 0 ){// pass though signal, either -1 for error or -2 for eof
+		return fpos;
+	}
+	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the next header
+
+	return fpos;
+}
+
+int putForceBuildChkToFile(FILE *fbuff)
+{
+	int elems_writ;
+
+	// Particulars of the object to write (don't forget to change the actual data write line too)
+	// GetCtrlVal(panelHandle, PANEL_FORCE_BUILD_CHK, &forceBuild);
+	char stag[] = "<ForceBuildCheckbox>";
+	char etag[] = "</ForceBuildCheckbox>";
+	int num_dims = 1;
+	int dims[] = {(1)};// ordering is: object[dims[0]][dims[1]]...
+	int forceBuild;
+	int elem_size = sizeof(forceBuild);
+	int linear_size;
+
+	linear_size = writeHeader(fbuff, stag, elem_size, num_dims, dims);// write header
+	if( linear_size < 0 ){ return linear_size; }// pass though error
+
+	// Get the status of the Force build checkbox and write to file
+	GetCtrlVal(panelHandle, PANEL_FORCE_BUILD_CHK, &forceBuild);
+	elems_writ = fwrite(&forceBuild, elem_size, linear_size, fbuff);// write binary data
+
+	if( elems_writ != linear_size ){
+		fclose(fbuff);
+		printf("Failed to write the correct number of elems for tag |%s|\n", stag);
+		return -1;
+	}
+
+	return writeFooter(fbuff, etag);// write footer and pass through any errors
+}
+
+long getForceBuildChkFromFile(FILE *fbuff, long fpos_eof)
+{
+	// Particulars of the object to load (don't forget to change the actual data write line too)
+	char stag[] = "<ForceBuildCheckbox>";
+	char etag[] = "</ForceBuildCheckbox>";
+	int max_dims = 1;
+	int forceBuild;
+
+	int elem_size;
+	int num_dims;
+	int dims[max_dims];
+	int linear_size = 1;
+	long fpos;
+	int elems_read;
+
+	fpos = readHeader(fbuff, stag, &elem_size, &num_dims, dims, max_dims, fpos_eof);
+	// Do some simple checks
+	if( fpos < 0 ){// if there was an err in readHeader (printf's in readHeader)
+		return fpos;
+	}
+	for( int i=0; i<max_dims; ++i ){ linear_size *= dims[i]; }// calculate linear_size
+	if( elem_size*linear_size != sizeof(forceBuild) ){
+		printf("Binary data read from file for tag |%s| is not the correct size\n", stag);
+		return -1;
+	}
+
+	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the binary data
+	elems_read = fread(&forceBuild, elem_size, linear_size, fbuff);// load the binary data directly into the array
+	if( elems_read != linear_size ){// didn't read expected number of elements
+		printf("Expected to read more elements from file for tag |%s|\n", stag);
+		return -1;
+	}
+	SetCtrlVal(panelHandle, PANEL_FORCE_BUILD_CHK, forceBuild);// set the checkbox
+
+	fpos = checkFooter(fbuff, etag, fpos_eof);
+	if( fpos < 0 ){// pass though signal, either -1 for error or -2 for eof
+		return fpos;
+	}
+	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the next header
+
+	return fpos;
+}
+
+int putUseCompressionToFile(FILE *fbuff)
+{
+	int elems_writ;
+
+	// Particulars of the object to write (don't forget to change the actual data write line too)
+	// #define  MENU_PREFS                      58
+	// #define  MENU_PREFS_COMPRESSION          59	callback function: COMPRESSION_CALLBACK
+	// #define  MENU_PREFS_SIMPLETIMING         60	callback function: SIMPLETIMING_CALLBACK
+	// #define  MENU_PREFS_SHOWARRAY            61	callback function: SHOWARRAY_CALLBACK// BuildUpdateList pukes first 1000 when true
+	// #define  MENU_PREFS_DDS_OFF              62	callback function: DDS_OFF_CALLBACK// This just sets ddstable[i][j].isStop = True
+	// #define  MENU_PREFS_STREAM_SETTINGS      63	callback function: STREAM_CALLBACK// Stream (settings) was not implemented
+	char stag[] = "<UseCompression>";
+	char etag[] = "</UseCompression>";
+	int num_dims = 1;
+	int dims[] = {(1)};// ordering is: object[dims[0]][dims[1]]...
+	int useCompression;
+	int elem_size = sizeof(useCompression);
+	int linear_size;
+
+	linear_size = writeHeader(fbuff, stag, elem_size, num_dims, dims);// write header
+	if( linear_size < 0 ){ return linear_size; }// pass though error
+
+	// Get from menu and write
+	GetMenuBarAttribute( menuHandle, MENU_PREFS_COMPRESSION, ATTR_CHECKED, &useCompression );
+	elems_writ = fwrite(&useCompression, elem_size, linear_size, fbuff);// write binary data
+
+	if( elems_writ != linear_size ){
+		fclose(fbuff);
+		printf("Failed to write the correct number of elems for tag |%s|\n", stag);
+		return -1;
+	}
+
+	return writeFooter(fbuff, etag);// write footer and pass through any errors
+}
+
+long getUseCompressionFromFile(FILE *fbuff, long fpos_eof)
+{
+	// Particulars of the object to load (don't forget to change the actual data write line too)
+	char stag[] = "<UseCompression>";
+	char etag[] = "</UseCompression>";
+	int max_dims = 1;
+	int useCompression;
+
+	int elem_size;
+	int num_dims;
+	int dims[max_dims];
+	int linear_size = 1;
+	long fpos;
+	int elems_read;
+
+	fpos = readHeader(fbuff, stag, &elem_size, &num_dims, dims, max_dims, fpos_eof);
+	// Do some simple checks
+	if( fpos < 0 ){// if there was an err in readHeader (printf's in readHeader)
+		return fpos;
+	}
+	for( int i=0; i<max_dims; ++i ){ linear_size *= dims[i]; }// calculate linear_size
+	if( elem_size*linear_size != sizeof(useCompression) ){
+		printf("Binary data read from file for tag |%s| is not the correct size\n", stag);
+		return -1;
+	}
+
+	// Read option from file and set menu accordingly
+	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the binary data
+	elems_read = fread(&useCompression, elem_size, linear_size, fbuff);// load the binary data directly into the array
+	if( elems_read != linear_size ){// didn't read expected number of elements
+		printf("Expected to read more elements from file for tag |%s|\n", stag);
+		return -1;
+	}
+	SetMenuBarAttribute( menuHandle, MENU_PREFS_COMPRESSION, ATTR_CHECKED, useCompression );
+
+	fpos = checkFooter(fbuff, etag, fpos_eof);
+	if( fpos < 0 ){// pass though signal, either -1 for error or -2 for eof
+		return fpos;
+	}
+	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the next header
+
+	return fpos;
+}
+
+int putUseSimpleTimingToFile(FILE *fbuff)
+{
+	int elems_writ;
+
+	// Particulars of the object to write (don't forget to change the actual data write line too)
+	// See putUseCompressionToFile() comment for preferences menu details
+	char stag[] = "<UseSimpleTiming>";
+	char etag[] = "</UseSimpleTiming>";
+	int num_dims = 1;
+	int dims[] = {(1)};// ordering is: object[dims[0]][dims[1]]...
+	int useSimpleTiming;
+	int elem_size = sizeof(useSimpleTiming);
+	int linear_size;
+
+	linear_size = writeHeader(fbuff, stag, elem_size, num_dims, dims);// write header
+	if( linear_size < 0 ){ return linear_size; }// pass though error
+
+	// Get from menu and write
+	GetMenuBarAttribute( menuHandle, MENU_PREFS_SIMPLETIMING, ATTR_CHECKED, &useSimpleTiming );
+	elems_writ = fwrite(&useSimpleTiming, elem_size, linear_size, fbuff);// write binary data
+
+	if( elems_writ != linear_size ){
+		fclose(fbuff);
+		printf("Failed to write the correct number of elems for tag |%s|\n", stag);
+		return -1;
+	}
+
+	return writeFooter(fbuff, etag);// write footer and pass through any errors
+}
+
+long getUseSimpleTimingFromFile(FILE *fbuff, long fpos_eof)
+{
+	// Particulars of the object to load (don't forget to change the actual data write line too)
+	char stag[] = "<UseSimpleTiming>";
+	char etag[] = "</UseSimpleTiming>";
+	int max_dims = 1;
+	int useSimpleTiming;
+
+	int elem_size;
+	int num_dims;
+	int dims[max_dims];
+	int linear_size = 1;
+	long fpos;
+	int elems_read;
+
+	fpos = readHeader(fbuff, stag, &elem_size, &num_dims, dims, max_dims, fpos_eof);
+	// Do some simple checks
+	if( fpos < 0 ){// if there was an err in readHeader (printf's in readHeader)
+		return fpos;
+	}
+	for( int i=0; i<max_dims; ++i ){ linear_size *= dims[i]; }// calculate linear_size
+	if( elem_size*linear_size != sizeof(useSimpleTiming) ){
+		printf("Binary data read from file for tag |%s| is not the correct size\n", stag);
+		return -1;
+	}
+
+	// Read option from file and set menu accordingly
+	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the binary data
+	elems_read = fread(&useSimpleTiming, elem_size, linear_size, fbuff);// load the binary data directly into the array
+	if( elems_read != linear_size ){// didn't read expected number of elements
+		printf("Expected to read more elements from file for tag |%s|\n", stag);
+		return -1;
+	}
+	SetMenuBarAttribute( menuHandle, MENU_PREFS_SIMPLETIMING, ATTR_CHECKED, useSimpleTiming );
+
+	fpos = checkFooter(fbuff, etag, fpos_eof);
+	if( fpos < 0 ){// pass though signal, either -1 for error or -2 for eof
+		return fpos;
+	}
+	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the next header
+
+	return fpos;
+}
+
+int putMultiScanToFile(FILE *fbuff)
+{
+	int elems_writ;
+
+	// Particulars of the object to write (don't forget to change the actual data write line too)
+	// struct MultiScanValues{...; struct MultiScanParameters Par[NUMMAXSCANPARAMETERS]; } MultiScan;// vars.h line
+	// Note that if NUMMAXSCANPARAMETERS changes then loading a version with an old num will fail.
+	// Could change the code to have the parameters struct be a pointer to another global variable.
+	char stag[] = "<MultiScan>";
+	char etag[] = "</MultiScan>";
+	int num_dims = 1;
+	int dims[] = {(1)};// ordering is: object[dims[0]][dims[1]]...
+	int elem_size = sizeof(MultiScan);
+	int linear_size;
+
+	linear_size = writeHeader(fbuff, stag, elem_size, num_dims, dims);// write header
+	if( linear_size < 0 ){ return linear_size; }// pass though error
+
+	getMultiScanGuiVals();// update the MultiScan variable so writing makes sense in all cases
+
+	elems_writ = fwrite(&MultiScan, elem_size, linear_size, fbuff);// write binary data
+
+	if( elems_writ != linear_size ){
+		fclose(fbuff);
+		printf("Failed to write the correct number of elems for tag |%s|\n", stag);
+		return -1;
+	}
+
+	return writeFooter(fbuff, etag);// write footer and pass through any errors
+}
+
+long getMultiScanFromFile(FILE *fbuff, long fpos_eof)
+{
+	// Particulars of the object to load (don't forget to change the actual data write line too)
+	char stag[] = "<MultiScan>";
+	char etag[] = "</MultiScan>";
+	int max_dims = 1;
+
+	int elem_size;
+	int num_dims;
+	int dims[max_dims];
+	int linear_size = 1;
+	long fpos;
+	int elems_read;
+
+	fpos = readHeader(fbuff, stag, &elem_size, &num_dims, dims, max_dims, fpos_eof);
+	// Do some simple checks
+	if( fpos < 0 ){// if there was an err in readHeader (printf's in readHeader)
+		return fpos;
+	}
+	for( int i=0; i<max_dims; ++i ){ linear_size *= dims[i]; }// calculate linear_size
+	if( elem_size*linear_size != sizeof(MultiScan) ){
+		printf("Binary data read from file for tag |%s| is not the correct size\n", stag);
+		return -1;
+	}
+
+	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the binary data
+	elems_read = fread(&MultiScan, elem_size, linear_size, fbuff);// load the binary data directly into the array
+	if( elems_read != linear_size ){// didn't read expected number of elements
+		printf("Expected to read more elements from file for tag |%s|\n", stag);
+		return -1;
+	}
+	setMultiScanPosTable();
+
+	fpos = checkFooter(fbuff, etag, fpos_eof);
+	if( fpos < 0 ){// pass though signal, either -1 for error or -2 for eof
+		return fpos;
+	}
+	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the next header
+
+	return fpos;
+}
+
+
+int putScanBufferToFile(FILE *fbuff)
+{
+	int elems_writ;
+
+	// Particulars of the object to write (don't forget to change the actual data write line too)
+	// struct ScanBuff{ // Needing a scan buffer to watch scan, since list can be updated during scan
+	// int Iteration;
+	// int Step;
+	// double Value;
+	// double MultiScanValue[NUMMAXSCANPARAMETERS]; // Added for MultiScans, not interferring with other scans
+	// char Time[SCANBUFFER_TIMEBUFFER_LENGTH];
+	// int BufferSize;
+	//} ScanBuffer[SCANBUFFER_LENGTH];
+	char stag[] = "<ScanBuffer>";
+	char etag[] = "</ScanBuffer>";
+	int num_dims = 1;
+	int dims[] = {(SCANBUFFER_LENGTH)};// ordering is: object[dims[0]][dims[1]]...
+	int elem_size = sizeof(ScanBuffer[0]);
+	int linear_size;
+
+	linear_size = writeHeader(fbuff, stag, elem_size, num_dims, dims);// write header
+	if( linear_size < 0 ){ return linear_size; }// pass though error
+
+	elems_writ = fwrite(&ScanBuffer, elem_size, linear_size, fbuff);// write binary data
+
+	if( elems_writ != linear_size ){
+		fclose(fbuff);
+		printf("Failed to write the correct number of elems for tag |%s|\n", stag);
+		return -1;
+	}
+
+	return writeFooter(fbuff, etag);// write footer and pass through any errors
+}
+
+long getScanBufferFromFile(FILE *fbuff, long fpos_eof)
+{
+	// Particulars of the object to load (don't forget to change the actual data write line too)
+	char stag[] = "<ScanBuffer>";
+	char etag[] = "</ScanBuffer>";
+	int max_dims = 1;
+
+	int elem_size;
+	int num_dims;
+	int dims[max_dims];
+	int linear_size = 1;
+	long fpos;
+	int elems_read;
+
+	fpos = readHeader(fbuff, stag, &elem_size, &num_dims, dims, max_dims, fpos_eof);
+	// Do some simple checks
+	if( fpos < 0 ){// if there was an err in readHeader (printf's in readHeader)
+		return fpos;
+	}
+	for( int i=0; i<max_dims; ++i ){ linear_size *= dims[i]; }// calculate linear_size
+	if( elem_size*linear_size != sizeof(ScanBuffer) ){
+		printf("Binary data read from file for tag |%s| is not the correct size\n", stag);
+		return -1;
+	}
+
+	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the binary data
+	elems_read = fread(&ScanBuffer, elem_size, linear_size, fbuff);// load the binary data directly into the array
+	if( elems_read != linear_size ){// didn't read expected number of elements
+		printf("Expected to read more elements from file for tag |%s|\n", stag);
+		return -1;
+	}
+
+	fpos = checkFooter(fbuff, etag, fpos_eof);
+	if( fpos < 0 ){// pass though signal, either -1 for error or -2 for eof
+		return fpos;
+	}
+	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the next header
+
+	return fpos;
+}
 
 
 
-
-
-
-
-/*
-global DDS settings; are these used anymore? Yes, save only extclock and PLLmult and compute clock by multiplication on load; also set DDSsettings
-Don't save obsolete SRS settings; double check they are not used anywhere
-GPIB settings
-And then what is left?
-Build every time check mark
-The on/off menu options in the menu bar
-
-
-
-*/
-
-
-
-/*
-
-		// Update period
-		updatePer = getUpdatePeriodFromMenu();
-		fwrite(&updatePer,sizeof updatePer,1,fdata);
-
-		// global DDS settings
-		fwrite(&DDSFreq.extclock,sizeof DDSFreq.extclock,1,fdata);
-		fwrite(&DDSFreq.PLLmult,sizeof DDSFreq.PLLmult,1,fdata);
-
-		// Save SRS settings (obsolete with new GPIB feature -- 2013-01 -- to
-		// be removed at a convenient point in time)
-		fwrite(&GPIB_address,sizeof GPIB_address,1,fdata);
-		fwrite(&SRS_amplitude,sizeof SRS_amplitude,1,fdata);
-		fwrite(&SRS_offset,sizeof SRS_offset,1,fdata);
-		fwrite(&SRS_frequency,sizeof SRS_frequency,1,fdata);
-		fwrite(&GPIB_ON,sizeof GPIB_ON,1,fdata);
-
-		fclose(fdata);
-
-		strncat(buff3, savedname, csize-4);
-		strcat(buff3,".gpib");
-		if((fdata=fopen(buff3,"w"))==NULL)
-		{
-			printf("Failed to save GPIB settings.\n");
-		}
-		else
-		{
-			fwrite(&GPIBDev,(sizeof GPIBDev),1,fdata);
-			fclose(fdata);
-		}
-
-*/
 
 
 
@@ -2088,9 +2750,61 @@ void nullCharBuff(char *buff, int max_len)// simple fn to null all elements of a
 	return;
 }
 
+int writeHeader(FILE *fbuff, char *stag, int elem_size, int num_dims, int *dims){
+	// num_dims is the number of elements of array dims
+	// return either linear_size (positive) or <0 for error
+	// assumes tag is properly '\0' terminated
+
+	char cbuff[512] = "";// header buffer
+	char bf[256] = "";// assembly buffer
+	int elems_writ;
+	int linear_size = 1;
+
+	// Make the header
+	sprintf(cbuff, "%s~%d~%d~", stag, elem_size, num_dims);
+	for( int i = 0; i < num_dims; ++i ){
+		sprintf(bf, "%d~", dims[i]);
+		strcat(cbuff, bf);
+		linear_size = linear_size * dims[i];
+	}
+
+	// Write the header
+	elems_writ = fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);
+
+	// Some simple error checking
+	if( elems_writ != strlen(cbuff) ){
+		fclose(fbuff);
+		printf("Failed to write correct number of chars in header for tag |%s|\n",stag);
+		return -1;
+	}
+
+	return linear_size;
+}
+
+int writeFooter(FILE *fbuff, char *etag){
+	// assumes tag is properly '\0' terminated
+
+	char cbuff[512] = "";// header buffer
+	int elems_writ;
+
+	// Write the Footer
+	sprintf(cbuff, etag);
+	elems_writ = fwrite(cbuff, sizeof(char), strlen(cbuff), fbuff);
+
+	// Some simple error checking
+	if( elems_writ != strlen(cbuff) ){
+		fclose(fbuff);
+		printf("Failed to write correct number of chars in footer for tag |%s|\n",etag);
+		return -1;
+	}
+
+	return 0;// return success
+	// note that by convention this value is also the successful return value of the calling function
+}
+
 long readHeader(FILE *fbuff, char *tag, int *elem_size, int *num_dims, int *dims, const int max_dims, long fpos_eof){
 	// fbuff's file pointer should be pointing at the start of the header ie. '<'
-	//returns ftell at start of binary data that is to be read
+	// returns ftell at start of binary data that is to be read
 	// assumes tag is properly '\0' terminated
 
 	char cbuff[512] = "";
@@ -2100,7 +2814,7 @@ long readHeader(FILE *fbuff, char *tag, int *elem_size, int *num_dims, int *dims
 	long fpos, fpos_binary;
 	int elems_read;
 
-	printf("---Enter readHeader\n");
+	//printf("---Enter readHeader for tag:|%s|\n", tag);// debug
 
 	fpos = ftell(fbuff);// First save position in file
 	elems_read = fread(cbuff, sizeof(char), clen, fbuff);// read into char buffer
@@ -2120,8 +2834,8 @@ long readHeader(FILE *fbuff, char *tag, int *elem_size, int *num_dims, int *dims
 		return -1;// return negative for error (not V17 and above)
 	}
 
-	printf("cptr:|%.40s|\n", cptr);
-	printf("etag:|%s|\n", tag);
+	//printf("cptr:|%.40s|\n", cptr);// debug
+	//printf("etag:|%s|\n", tag);// debug
 	if( strncmp(cptr,tag,strlen(tag)) == 0 ){// if strs match
 		cptr += strlen(tag);// cptr now points to the first '~'
 	}
@@ -2157,8 +2871,8 @@ long readHeader(FILE *fbuff, char *tag, int *elem_size, int *num_dims, int *dims
 	fseek(fbuff, fpos, SEEK_SET);// seek back to the start of the header
 	++cptr;// increment to point at the first byte of the binary data
 	fpos_binary = fpos + (cptr-cbuff);// calculate the fpos for the binary data start
-	printf("diff %d\n", (cptr-cbuff));
-	printf("fpbi %d\n", fpos_binary);
+	//printf("diff %d\n", (cptr-cbuff));// debug
+	//printf("fpbi %d\n", fpos_binary);// debug
 	if( fpos_binary >= fpos_eof ){// if we have reached the end of the file
 		printf("Binary data is past the end of the file\n");
 		return -1;// contrary to checkFooter, having the location of the binary data be past the end of the file is an error
@@ -2177,7 +2891,7 @@ long checkFooter(FILE *fbuff, char *endtag, long fpos_eof){
 	long fpos, fpos_next;
 	int elems_read;
 
-	printf("---Enter checkFooter\n");
+	//printf("---Enter checkFooter for tag:|%s|\n", endtag);// debug
 
 	fpos = ftell(fbuff);// First save position in file
 	elems_read = fread(cbuff, sizeof(char), clen, fbuff);// read into char buffer
@@ -2192,8 +2906,8 @@ long checkFooter(FILE *fbuff, char *endtag, long fpos_eof){
 		}
 	}
 
-	printf("cptr:|%.40s|\n", cptr);
-	printf("etag:|%s|\n", endtag);
+	//printf("cptr:|%.40s|\n", cptr);// debug
+	//printf("etag:|%s|\n", endtag);// debug
 	if( strncmp(cptr,endtag,strlen(endtag)) == 0 ){// if strs match
 		cptr += strlen(endtag);// cptr now points to the char after the '>'
 	}
@@ -2210,11 +2924,6 @@ long checkFooter(FILE *fbuff, char *endtag, long fpos_eof){
 	}
 	return fpos_next;
 }
-
-
-
-
-
 
 
 
@@ -2250,9 +2959,9 @@ void SaveArraysV16(char savedname[500],int csize)
 	*/
 
 	FILE *fdata;
-	int i=0,j=0,k=0;
+	int i=0;
 	int xval=NUMBEROFCOLUMNS,yval=NUMBERANALOGROWS,zval=NUMBEROFPAGES-1;
-	int usupd5,usupd10,usupd15,usupd25,usupd50,usupd100,usupd1000,updatePer; //Update Period Check
+	int updatePer; //Update Period Check
 	char buff[500]="",buff2[100]="", buff3[500]="";
 	strncpy(buff,savedname,csize-4);
 	strcat(buff,".arr");
@@ -2337,7 +3046,7 @@ int LoadArraysV16(char savedname[500],int csize)
 	*/
 
 	FILE *fdata;
-	int i=0, j=0, k=0;
+	int i=0;
 	int xval=16, yval=16, zval=NUMBEROFPAGES-1, updatePer;
 	int status;
 	char buff[500]="", buff2[100]="", version[100]="", buff3[500]="";

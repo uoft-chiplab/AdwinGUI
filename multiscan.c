@@ -17,17 +17,17 @@
 #include "GUIDesign.h"// For panel handles
 #include "GUIDesign2.h"// For DrawNewTable fn
 #include "saveload.h"// For saving function
+#include "GPIB_SRS_SETUP.h"// For SETUP_GPIB_DEVICENO
 #include "ScanTableLoader.h"// For SL_PANEL_NUM_* handles
 #include "Scan.h"// For SCANPANEL_CHECK_USE_LIST handle
-
-
 
 /************************************************************************
 MultiScan functions
 *************************************************************************/
 
-
 //*********************************************************************
+// 2020-11-09 --- Colin Dale --- Started for version 16.9.1
+// Updated to save using new V17 format '.seq'
 // 2016_09_19 --- Scott Smale --- Started in Version 16.1.E
 // For scans, save the sequencer files and also create the run directory
 // and commands directory. Sets MultiScan.CommandsFilePath to the
@@ -36,7 +36,6 @@ MultiScan functions
 // Returns -1 otherwise.
 //*********************************************************************
 int SetupScanFiles(int version, char *outputCmdsDirPath){
-
 
 	FILE *fpini;
 	char c;
@@ -78,8 +77,8 @@ int SetupScanFiles(int version, char *outputCmdsDirPath){
 
  	printf("iniFilename:\n>%s<\n", iniFilename);
 
-	// Select file name for the .pan, .gpib, and .arr files
-	panStatus = FileSelectPopup ("", "*.pan", "", "Save Settings", VAL_SAVE_BUTTON, 0, 0, 1, 1, panFilePath);
+	// Select file name for the .seq file #.pan, .gpib, and .arr files
+	panStatus = FileSelectPopup ("", "*.seq", "", "Save Settings", VAL_SAVE_BUTTON, 0, 0, 1, 1, panFilePath);
 	// Return value of FileSelectPopup is
 	// 		negative on error
 	//		0	VAL_NO_FILE_SELECTED
@@ -99,12 +98,6 @@ int SetupScanFiles(int version, char *outputCmdsDirPath){
 
 		printf("panFilePath:\n>%s<\n", panFilePath);
 
-		// First write the panel gui file (.pan)
-		// This one can be problematic when elements have been removed from the GUI!!!
-		// The third argument to SavePanelState is a unique state index so that you can save multiple
-		// panel states in the same file. Here it is arbitrarily set to 1.
-		SavePanelState(PANEL, panFilePath, 1);
-
 		// Next write the .ini file in the GUI progam directory
 		GetMenuBarAttribute (menuHandle, MENU_FILE_BOOTLOAD, ATTR_CHECKED, &loadonboot);
 		if(!(fpini=fopen("gui.ini","w"))==NULL)
@@ -114,27 +107,25 @@ int SetupScanFiles(int version, char *outputCmdsDirPath){
 		}
 		fclose(fpini);
 
-		// Save the arrays and the laser data together ie. V16 not V15.
-		panFilePathLength = strlen(panFilePath);
-		SaveArraysV16(panFilePath, panFilePathLength);
+		// Save using V17
+		SaveSequenceV17(panFilePath, strlen(panFilePath));
 
-		// Add the name of the .pan file to the program header
+		// Add the name of the .seq file to the program header
 		SplitPath(panFilePath, NULL, panFileDir, panFileName);
 		strcpy(buff, SEQUENCER_VERSION);
 		strcat(buff, panFileName);
 		SetPanelAttribute(panelHandle, ATTR_TITLE, buff);
 
 		// Now we have saved everything that used to be saved.
-		// Now want to create folder with same name as .pan file (minus .pan)
+		// Now want to create folder with same name as .seq file (minus .seq)
 		//	and to create the commands folder inside it.
 
 		// Try creating the run folder
 		strcpy(buff, panFileName);
-		buff[strlen(buff)-4] = '\0';// Assume the last 4 characters of panFileName are the ".pan"
+		buff[strlen(buff)-4] = '\0';// Assume the last 4 characters of panFileName are the ".seq"
 		MakePathname(panFileDir, buff, runDirPath);
 
 		printf("runDirPath:\n>%s<\n", runDirPath);
-
 
 		runDirStatus = MakeDir(runDirPath);
 
@@ -191,7 +182,7 @@ int SetupScanFiles(int version, char *outputCmdsDirPath){
 					strcpy(outputCmdsDirPath, commandsDirPath);
 					// Create the mscan file name and path and save it in the MultiScan struct.
 					strcpy(buff, panFileName);
-					buffPtr = buff+strlen(buff)-3;//Set buffPtr to point to 'p' in ".pan"
+					buffPtr = buff+strlen(buff)-3;//Set buffPtr to point to 's' in ".seq"
 					strcpy(buffPtr, "mscan\0");
 					MakePathname(runDirPath, buff, mscanFileDirPath);
 					//printf("mscanFileDirPath:\n>%s<\n", mscanFileDirPath);
@@ -274,7 +265,7 @@ int SetupScanFiles(int version, char *outputCmdsDirPath){
 						strcpy(outputCmdsDirPath, commandsDirPath);
 						// Create the mscan file name and path and save it in the MultiScan struct.
 						strcpy(buff, panFileName);
-						buffPtr = buff+strlen(buff)-3;//Set buffPtr to point to 'p' in ".pan"
+						buffPtr = buff+strlen(buff)-3;//Set buffPtr to point to 's' in ".seq"
 						strcpy(buffPtr, "mscan\0");
 						MakePathname(runDirPath, buff, mscanFileDirPath);
 						//printf("mscanFileDirPath:\n>%s<\n", mscanFileDirPath);
@@ -1420,7 +1411,6 @@ void GetNewMultiScanCommands(void)
 // the scanned parameters (page, column and row).
 // Auto-writes when scan is done to the scan directory.
 //*****************************************************************************************
-//Kenneth is changing this so that it says save .mscan to standard location?
 void AutoExportMultiScanBuffer(void)
 {
 	int i,j,status;
@@ -2026,7 +2016,103 @@ void ReshapeMultiScanTable( int top,int left,int height)
 
 }
 
+// Put the values that are in MultiScan.Par[j].{Page,Column,Row} back into
+//  the table PANEL_MULTISCAN_POS_TABLE.
+// Written initially for use by saveload to put the loaded MultiScan into the sequencer
+//  since 90% of the code uses the values in PANEL_MULTISCAN_POS_TABLE as opposed to the
+//  MultiScan.Par[j]. (and MultiScan.Par[j] is set each time from PANEL_MULTISCAN_POS_TABLE)
+void setMultiScanPosTable(void)
+{
+	int numCols, numColsWant;
+	int i;
 
+	// Get the current number of colunns
+	GetNumTableColumns(panelHandle, PANEL_MULTISCAN_POS_TABLE, &numCols);
+
+	// Get the number of columns we want
+	numColsWant = MultiScan.NumPars;
+
+	// Error checking: There is something wrong since can't have less than 1 col or more than the max
+	if( numColsWant < 1 || numColsWant > NUMMAXSCANPARAMETERS){
+		printf("--- ERROR: did not load multiscan cell positions due to incorrect number of columns: %d\n", numColsWant);
+		return;
+	}
+
+	// Resize the tables
+	if( numCols > numColsWant ){// delete some cols
+		DeleteTableColumns(panelHandle, PANEL_MULTISCAN_POS_TABLE, numColsWant+1, -1);
+		DeleteTableColumns(panelHandle, PANEL_MULTISCAN_VAL_TABLE, numColsWant+1, -1);
+		SetCtrlVal(panelHandle, PANEL_MULTISCAN_NUM_NUMERIC, numColsWant);
+	}
+	else if( numCols < numColsWant ){// add some cols
+		InsertTableColumns(panelHandle, PANEL_MULTISCAN_POS_TABLE, -1, numColsWant-numCols, 0);
+		InsertTableColumns(panelHandle, PANEL_MULTISCAN_VAL_TABLE, -1, numColsWant-numCols, 0);
+		SetCtrlVal(panelHandle, PANEL_MULTISCAN_NUM_NUMERIC, numColsWant);
+	}
+	// else do nothing since we have the correct number of columns
+
+	// Now just set the pages, rows, cols
+	for( i = 0; i < numColsWant; i++ ){
+		SetTableCellVal(panelHandle, PANEL_MULTISCAN_POS_TABLE, MakePoint(i+1,1), MultiScan.Par[i].Page);
+		SetTableCellVal(panelHandle, PANEL_MULTISCAN_POS_TABLE, MakePoint(i+1,2), MultiScan.Par[i].Column);
+		SetTableCellVal(panelHandle, PANEL_MULTISCAN_POS_TABLE, MakePoint(i+1,3), MultiScan.Par[i].Row);
+	}
+}
+
+// Put the values that are in the gui that control MultiSCan into the MultiScan object.
+// Written initially for use by saveload to update MultiScan before saving since if the
+//  sequence was just loaded or if there was no scan run, then MultiScan is not up to date.
+// Do not update everything in MultiScan since UpdateMultiScanValues fn sets a bunch of things
+//  when a new scan is started anyways.
+void getMultiScanGuiVals(void)
+{
+	int val;
+	int i;
+
+	// Get and update the current number of colunns
+	GetNumTableColumns(panelHandle, PANEL_MULTISCAN_POS_TABLE, &val);
+	MultiScan.NumPars = val;
+
+	// Get and update the number of iterations
+	GetCtrlVal(panelHandle, PANEL_MULTISCAN_ITS_NUMERIC, &val);
+	MultiScan.Iterations = val;
+
+	// Get and update the pages, cols, rows
+	for( i = 0; i < MultiScan.NumPars; ++i )
+	{
+		GetTableCellVal(panelHandle, PANEL_MULTISCAN_POS_TABLE, MakePoint(i+1,1), &val);// page
+		MultiScan.Par[i].Page = val;
+		GetTableCellVal(panelHandle, PANEL_MULTISCAN_POS_TABLE, MakePoint(i+1,2), &val);// column
+		MultiScan.Par[i].Column = val;
+		GetTableCellVal(panelHandle, PANEL_MULTISCAN_POS_TABLE, MakePoint(i+1,3), &val);// row
+		MultiScan.Par[i].Row = val;
+	}
+}
+
+
+// Print MultiScan for debugging
+void printMultiScan(void)
+{
+	printf("-------\nMultiScan:\n");
+	printf("CurrentStep: %d\n", MultiScan.CurrentStep);
+	printf("CurrentIteration: %d\n", MultiScan.CurrentIteration);
+	printf("Iterations: %d\n", MultiScan.Iterations);
+	printf("NumPars: %d\n", MultiScan.NumPars);
+	printf("Counter: %d\n", MultiScan.Counter);
+	printf("NextCommandsFileNumber: %d\n", MultiScan.NextCommandsFileNumber);
+	printf("CommandsFilePath: |%s|\n", MultiScan.CommandsFilePath);
+	printf("ScanDirPath: |%s|\n", MultiScan.ScanDirPath);
+	printf("HoldingPattern: %d\n", MultiScan.HoldingPattern);
+	printf("SentinelFoundValue: %f\n", MultiScan.SentinelFoundValue);
+	printf("Done: %d\n", MultiScan.Done);
+	printf("Active: %d\n", MultiScan.Active);
+	printf("Initialized: %d\n", MultiScan.Initialized);
+
+	printf("Pars: <page> <col> <row>\n");
+	for( int i=0; i < MultiScan.NumPars; ++i ){
+		printf("%d:\t%d\t%d\t%d\n",i,MultiScan.Par[i].Page,MultiScan.Par[i].Column,MultiScan.Par[i].Row);
+	}
+}
 
 
 /************************************************************************
@@ -2102,6 +2188,42 @@ void CVICALLBACK MultiScan_AddAnalogCellTimeScaleToScan(int panelHandle, int con
 			SetTableCellVal(panelHandle, PANEL_MULTISCAN_POS_TABLE, MakePoint(numCols+1,1), cpage);
 			SetTableCellVal(panelHandle, PANEL_MULTISCAN_POS_TABLE, MakePoint(numCols+1,2), ccol);
 			SetTableCellVal(panelHandle, PANEL_MULTISCAN_POS_TABLE, MakePoint(numCols+1,3), crow);
+		}
+		else
+		{
+			MessagePopup("Multi scan error","Cannot add parameter to scanlist. Maximum number\nof parameters reached. Need to increase NUMMAXSCANPARAMETERS.");
+		}
+	}
+}
+
+// Add a GPIB cell to the multi scan list
+void CVICALLBACK MultiScan_AddGPIBCellToScan(int panelHandle, int controlID, int MenuItemID, void *callbackData)
+{   // Adds a column to the multiscan list to scan the current cell's value
+
+	int numCols, ccol, crow, cpage, devnum;
+	Point currentCell = {0,0};
+
+	if (parameterscanmode == 0)
+	{
+		GetNumTableColumns(panelHandle0, PANEL_MULTISCAN_VAL_TABLE, &numCols);
+		if (numCols < NUMMAXSCANPARAMETERS)
+		{
+			// Add a column to the right, step up number in numeric control
+			InsertTableColumns(panelHandle0, PANEL_MULTISCAN_POS_TABLE, -1, 1, 0);
+			InsertTableColumns(panelHandle0, PANEL_MULTISCAN_VAL_TABLE, -1, 1, 0);
+			SetCtrlVal(panelHandle0, PANEL_MULTISCAN_NUM_NUMERIC, numCols+1);
+
+			// Get coordinates of active cell & device number
+			GetActiveTableCell (panelHandle, controlID, &currentCell);
+			GetCtrlVal (panelHandle13,SETUP_GPIB_DEVICENO, &devnum);
+			ccol = currentCell.x;
+			crow = devnum + NUMGPIBSCANOFFSET;
+			cpage = 1; // no page needed for GPIB programming
+
+			// Write cell position to scan table
+			SetTableCellVal(panelHandle0, PANEL_MULTISCAN_POS_TABLE, MakePoint(numCols+1,1), cpage);
+			SetTableCellVal(panelHandle0, PANEL_MULTISCAN_POS_TABLE, MakePoint(numCols+1,2), ccol);
+			SetTableCellVal(panelHandle0, PANEL_MULTISCAN_POS_TABLE, MakePoint(numCols+1,3), crow);
 		}
 		else
 		{

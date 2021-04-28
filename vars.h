@@ -20,7 +20,7 @@ typedef int BOOL;
 ADwin Variables and GUI things
 *************************************************************************/
 
-#define SEQUENCER_VERSION "ADwin Sequencer V16.4.8 - "
+#define SEQUENCER_VERSION "ADwin Sequencer V17.0.0 - "
 
 // ADwin info
 #define DefaultEventPeriod (0.100)   // in milliseconds
@@ -48,7 +48,6 @@ static int SeqErrorCount;
 static char procbuff[1];
 
 
-
 /************************************************************************
 Analog and Digital Channels (and laser table and necessary parts of dds and anritsu)
 *************************************************************************/
@@ -60,7 +59,7 @@ Analog and Digital Channels (and laser table and necessary parts of dds and anri
 
 
 // Channel stuff
-#define NUMBERANALOGCHANNELS (40)   // Number of analog Channels available for control
+#define NUMBERANALOGCHANNELS (48)   // Number of analog Channels available for control
 #define NUMBERDIGITALCHANNELS (48) 	// number of digital channels DISPLAYED!!!
 									// some are not user controlled, e.g. DDS lines
 									// 32 in total.  5 used for DDS1
@@ -75,8 +74,8 @@ Analog and Digital Channels (and laser table and necessary parts of dds and anri
 #define NUMBEROFANRITSU (1) 	 	// Number of microwave generators (on the off chance we get more than one)
 
 //Explicitly make extra space in analog and digital arrays
-#define MAXANALOG (50)				// Need 40 lines, leave room for 48
-#define MAXDIGITAL (70)				// need 64 lines, leave some leeway
+#define MAXANALOG (60)				// Need 40 lines, leave room for 48
+#define MAXDIGITAL (100)			// need 3x32 lines, leave some leeway
 
 //total number of different analog channels (Adwin and otherwise) that we care about
 #define NUMBERANALOGROWS NUMBERANALOGCHANNELS+NUMBERDDS+NUMBERLASERS+2*NUMBEROFANRITSU
@@ -100,7 +99,6 @@ struct InfoArrayValues{
 struct InfoArrayValues InfoArray[NUMBEROFCOLUMNS+1][NUMBEROFPAGES];
 
 
-
 // Table cell structs
 struct AnalogTableValues{
 	int		fcn;		//fcn is an integer refering to a function to use.
@@ -113,7 +111,7 @@ struct AnalogTableValues AnalogTable[NUMBEROFCOLUMNS+1][NUMBERANALOGROWS+1][NUMB
 	// the structure is the values/elements contained at each point in the
 	// analog panel.  The array aval, is set up as [x][y][page]
 
-int DigTableValues[NUMBEROFCOLUMNS+1][MAXDIGITAL][NUMBEROFPAGES];
+int DigTableValues[NUMBEROFCOLUMNS+1][MAXDIGITAL][NUMBEROFPAGES]; // I think we want to change MAXDIGITAL to NUMBERDIGITALCHANNELS
 
 // Channel properties structs
 struct AnalogChannelProperties{
@@ -272,14 +270,6 @@ struct LaserProps{
 }LaserProperties[NUMBERLASERS];
 
 
-//The digital channels which the Adwin triggers the rabbits for the respective lasers on
-//Colums array done in base 1  in accordance with the rest of this program
-//Note that NUMBEROFPAGES was set to 11 even though there is only 10 pages, hence NUMBEROFPAGES array is also base 1
-#define LASCHAN0 (117)
-#define LASCHAN1 (118)
-#define LASCHAN2 (119)
-#define LASCHAN3 (120)
-
 #define MINRAMP_LEADOUT (0.0)   //This much time in (ms) is given to the rabbit to begin preprocessing of events following a ramp.
 #define MAX_DDS_SCANRATE (100.0) //in MHz/ms (this is actually currently limited by the max laser scan response rate
 #define MIN_DDS_FREQ (0.001) //MHz - this is a result of the minimum freq which is accepted into Hittite prescalers
@@ -326,10 +316,12 @@ ViSession VIsess;
 ViSession rmSession;
 
 // GPIB stuff
+// All are unused after switch to VISA; kept for backwards compatibility
+// Stefan's new GPIB panel I think made the SRS ones obsolete before VISA made them all obsolete
 int GPIB_device;
 int GPIB_address;
 int GPIB_ON;
-double SRS_amplitude, SRS_offset,SRS_frequency;
+double SRS_amplitude, SRS_offset, SRS_frequency;// SRS_frequency is still live in scan.c which isn't used anymore
 
 
 #define NUMBERGPIBDEV (20)			// number of programmable GPIB devices
@@ -357,9 +349,6 @@ struct GPIBDDeviceProperties{
 
 
 
-
-
-
 /************************************************************************
 MultiScan
 *************************************************************************/
@@ -384,7 +373,7 @@ int parameterscanmode; // 0: multi-scan, 1: one-parameter, 2: two-parameter
 
 // The length of ScanBuffer used to be ScanBuffer[1000] hard coded. I want to be able to change it.
 // Nobody uses Scan2Buffer anymore so I will leave that as is.
-// I also only changed the multi-parameter scan ode that uses ScanBuffer. I didn't bother with
+// I also only changed the multi-parameter scan code that uses ScanBuffer. I didn't bother with
 // the one and two parameter scan code.
 #define SCANBUFFER_LENGTH				(3000)
 #define SCANBUFFER_TIMEBUFFER_LENGTH	(30)
