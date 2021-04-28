@@ -13,10 +13,10 @@ Number of Projects = 1
 Active Project = 1
 Project 0001 = "GUIDesign.prj"
 Drag Bar Left = 210
-Window Top = 23
-Window Left = 0
-Window Bottom = 1040
-Window Right = 960
+Window Top = 31
+Window Left = 728
+Window Bottom = 1018
+Window Right = 1881
 Maximized = True
 Maximized Children = True
 Max32 Number Of Errors = 20
@@ -30,7 +30,7 @@ Save Changes Before Compiling = "Always"
 Hide Windows = False
 Break At First Statement = False
 Sort Type = "File Name"
-Number of Opened Files = 4
+Number of Opened Files = 5
 Window Confinement Region Enabled = True
 MainColumnWidth = 193
 FileDateColumnWidth = 70
@@ -118,12 +118,12 @@ Window Left = 216
 [File 0009]
 Path = "/f/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/GUIDesign.c"
 File Type = "CSource"
-Disk Date = 3702467501
+Disk Date = 3702479309
 In Projects = "1,"
-Source Window State = "1,3168,3168,3168,12,33,12,0,3,0,0,0,0,0,0,0,3137,0,3168,33,401,490,1,0,"
+Source Window State = "1,3002,3002,3002,84,84,84,0,0,0,0,0,0,0,0,0,2951,0,3002,84,401,490,1,0,"
 Window Top = 33
 Window Left = 10
-Window Z-Order = 2
+Window Z-Order = 3
 
 [File 0010]
 Path = "/f/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/LaserControl.c"
@@ -160,17 +160,17 @@ In Projects = "1,"
 Source Window State = "1,76,76,76,0,0,0,0,0,0,0,0,0,0,0,0,0,0,76,0,349,700,1,0,"
 Window Top = 32
 Window Left = 6
-Window Z-Order = 4
+Window Z-Order = 5
 
 [File 0014]
 Path = "/f/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/multiscan.c"
 File Type = "CSource"
-Disk Date = 3702467502
+Disk Date = 3702472525
 In Projects = "1,"
-Source Window State = "1,1967,1967,1967,14,14,14,0,0,0,0,0,0,0,0,0,1798,0,1967,14,401,721,1,0,"
+Source Window State = "1,1999,1999,1999,46,46,46,0,0,0,0,0,0,0,0,0,1637,0,1999,46,401,721,1,0,"
 Window Top = 33
 Window Left = 10
-Window Z-Order = 1
+Window Z-Order = 2
 
 [File 0015]
 Path = "/f/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/NumSet.c"
@@ -391,7 +391,7 @@ Window Left = 534
 [File 0039]
 Path = "/f/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/GUIDesign.h"
 File Type = "Include"
-Disk Date = 3702468314
+Disk Date = 3702471029
 In Projects = "1,"
 Source Window State = "1,37,37,37,9,26,9,0,3,0,0,0,0,0,0,0,199,0,37,26,386,630,1,0,"
 Window Top = 95
@@ -463,9 +463,9 @@ Window Left = 159
 [File 0047]
 Path = "/f/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/multiscan.h"
 File Type = "Include"
-Disk Date = 3702467502
+Disk Date = 3702469441
 In Projects = "1,"
-Source Window State = "1,21,21,21,26,26,26,0,0,0,0,0,0,0,0,0,0,0,21,26,401,721,1,0,"
+Source Window State = "1,18,18,18,35,35,35,0,0,0,0,0,0,0,0,0,4,0,18,35,401,721,1,0,"
 Window Top = 64
 Window Left = 26
 
@@ -544,11 +544,12 @@ Window Left = 322
 [File 0056]
 Path = "/f/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/vars.h"
 File Type = "Include"
-Disk Date = 3702467923
+Disk Date = 3702479464
 In Projects = "1,"
-Source Window State = "1,18,18,18,67,67,67,0,0,0,0,0,0,0,0,0,9,0,18,67,401,630,1,0,"
+Source Window State = "1,53,53,53,0,0,0,0,0,0,0,0,0,0,0,0,39,0,53,0,401,630,1,0,"
 Window Top = 33
 Window Left = 10
+Window Z-Order = 1
 
 [File 0057]
 Path = "/f/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/AnalogControl.uir"
@@ -633,13 +634,13 @@ Window Width = 124
 [File 0065]
 Path = "/f/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/GUIDesign.uir"
 File Type = "User Interface Resource"
-Disk Date = 3702468527
+Disk Date = 3702472417
 In Projects = "1,"
 Window Top = 33
 Window Left = 10
 Window Height = 401
 Window Width = 511
-Window Z-Order = 3
+Window Z-Order = 4
 
 [File 0066]
 Path = "/f/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/LaserControl.uir"
@@ -706,6 +707,7 @@ Tab 0001 = "/f/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/main.c"
 Tab 0002 = "/f/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/GUIDesign.c"
 Tab 0003 = "/f/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/GUIDesign.uir"
 Tab 0004 = "/f/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/multiscan.c"
+Tab 0005 = "/f/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/vars.h"
 
 [Default Build Config 0001 Debug]
 Generate Browse Info = True

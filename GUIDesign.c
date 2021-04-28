@@ -2986,7 +2986,6 @@ void ReshapeAnalogTable( int top,int left,int height)
 	int modheight;
 
 	rowheight = (height)/(NUMBERANALOGCHANNELS+NUMBERDDS);
-	printf("rowheight is %d", rowheight);
 
 	for (j=1;j<=NUMBERANALOGROWS;j++)
 	{
@@ -3002,7 +3001,6 @@ void ReshapeAnalogTable( int top,int left,int height)
 	}
 
 	modheight=(NUMBERANALOGROWS)*(int)((height)/(NUMBERANALOGCHANNELS+NUMBERDDS))+6;
-	printf("\nmodheight is %d", modheight);
 
 	//resize the analog table and all it's related list boxes
   	SetCtrlAttribute (panelHandle, PANEL_ANALOGTABLE, ATTR_HEIGHT, modheight);
@@ -3019,7 +3017,7 @@ void ReshapeAnalogTable( int top,int left,int height)
 
    	// move the DDS offsets
    	// V16.1.3: Don't set the left hand side of the DDS offsets here. Let GUIDesign.uir do it.
-   	ddsrowtop = height * NUMBERANALOGCHANNELS/NUMBERANALOGROWS + 2*NUMBERANALOGCHANNELS;
+   	ddsrowtop = height * NUMBERANALOGCHANNELS/NUMBERANALOGROWS + 2*NUMBERANALOGCHANNELS -50;
 	SetCtrlAttribute (panelHandle, PANEL_NUM_DDS_OFFSET,ATTR_TOP,ddsrowtop);
 	//SetCtrlAttribute (panelHandle, PANEL_NUM_DDS_OFFSET,ATTR_LEFT,877);
 	SetCtrlAttribute (panelHandle, PANEL_NUM_DDS2_OFFSET,ATTR_TOP,ddsrowtop+rowheight);
@@ -3034,7 +3032,7 @@ void ReshapeAnalogTable( int top,int left,int height)
 
 	// move the ANRITSU offset
 	// V16.1.3: Don't set the left hand side of the ANRITSU offset here. Let GUIDesign.uir do it.
-	SetCtrlAttribute (panelHandle, PANEL_ANRITSU_OFFSET,ATTR_TOP,ddsrowtop+rowheight*(NUMBERDDS+NUMBERLASERS));
+	SetCtrlAttribute (panelHandle, PANEL_ANRITSU_OFFSET,ATTR_TOP,ddsrowtop+rowheight*(NUMBERDDS+NUMBERLASERS)-10);
 	//SetCtrlAttribute (panelHandle, PANEL_ANRITSU_OFFSET,ATTR_LEFT,877);
 
 }
@@ -3143,11 +3141,10 @@ void SetChannelDisplayed(int display_setting)
 
 	heightpos1=695+114;
 	heightpos2=582;
-	heightpos3=240;
+	heightpos3=240+100;
 	toppos1=140;
 	leftpos=170;
 	toppos2=toppos1+heightpos1+60;
-	toppos3=toppos2+heightpos2+10;
 
 	// Reshape Timetable
 	GetCtrlAttribute (panelHandle, PANEL_ANALOGTABLE, ATTR_WIDTH, &width);
@@ -3166,7 +3163,7 @@ void SetChannelDisplayed(int display_setting)
 		case 1:		// both
 			ReshapeAnalogTable(toppos1,leftpos,heightpos1);   //passed top, left and height
 			ReshapeDigitalTable(toppos2,leftpos,heightpos2);
-			ReshapeMultiScanTable(toppos3,leftpos,heightpos3);
+			ReshapeMultiScanTable(toppos2,heightpos3);
 
 			SetCtrlAttribute (panelHandle, PANEL_DIGTABLE, ATTR_VISIBLE, 1);
 			SetCtrlAttribute (panelHandle, PANEL_ANALOGTABLE, ATTR_VISIBLE, 1);
@@ -3179,7 +3176,7 @@ void SetChannelDisplayed(int display_setting)
 		case 2:		// analog tableonly
 
 			ReshapeAnalogTable(toppos1,leftpos,heightpos1);   //passed top, left and height
-			ReshapeMultiScanTable(toppos2+5,leftpos,heightpos3);
+			ReshapeMultiScanTable(toppos2+5,heightpos3);
 
 			SetCtrlAttribute (panelHandle, PANEL_ANALOGTABLE, ATTR_VISIBLE, 1);
 			SetCtrlAttribute (panelHandle, PANEL_TBL_ANAMES, ATTR_VISIBLE, 1);
@@ -3188,7 +3185,7 @@ void SetChannelDisplayed(int display_setting)
 
 		case 3:		 // digital table only
 			ReshapeDigitalTable(toppos1,leftpos,heightpos2);
-			ReshapeMultiScanTable(toppos1+heightpos2+25,leftpos,heightpos3);
+			ReshapeMultiScanTable(toppos1+heightpos2+25,heightpos3);
 
 			SetCtrlAttribute (panelHandle, PANEL_DIGTABLE, ATTR_VISIBLE, 1);
 			SetCtrlAttribute (panelHandle, PANEL_TBL_DIGNAMES, ATTR_VISIBLE, 1);

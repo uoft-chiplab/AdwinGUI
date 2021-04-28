@@ -16,7 +16,7 @@ void updateScannedCellsWithScanTableLine(int);
 void updateScannedCellsWithOriginalValues(void);
 void writeToScanInfoFile(void);
 void EnableScanControls(void);
-void ReshapeMultiScanTable( int top,int left,int height);
+void ReshapeMultiScanTable( int top,int height);
 void setMultiScanPosTable(void);
 void getMultiScanGuiVals(void);
 void printMultiScan(void);
