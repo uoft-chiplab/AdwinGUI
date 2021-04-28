@@ -1,11 +1,46 @@
+Last edited 2021-04-28
+
 This documents the changes to the ADwin Sequencer program over the years. This file was created 2019-10-01 so knowledge of all previous versions comes from labbooks and notes in the code itself.
+
+-----------------------
+ADwin Sequencer V17.0.1
+Status: In progress
+In Use: 2021 to ?
+Changes:
+1) Added 8 new digital channels.
+2) Moved scan list to side, decreasing the number of visible scan parameters
+	but increasing the number of scan cells visible. Also makes room for more digital 
+	channels .
+
+-----------------------
+ADwin Sequencer V17.0.0
+Status: Done
+In Use: 2020-11-13 to 2021-
+Changes:
+1) Added 8 new analog channels.
+2) Increased table size.
+3) Scan now saves .seq files.
+
+-----------------------
+ADwin Sequencer V16.4.9
+Status: Done
+In Use: 2020-11-09 to 2020-11-13
+Notes: This is the compatability version for V17 of the GUI and previous versions. It can
+load <V17 .pan files, and save as the new .seq files.
+Changes:
+1) Impliments saveload changes:
+	a) panel files are now one file .seq
+	b) values that fill panel are properly stored and assigned to be backwards compatible
+		if we ever add more analog or digital channels
+	c) can save <V16 .pan files as .seq files
+	d) has the same nubmer of analog and digital channels as V16 so it can save V16 panels
 
 -----------------------
 ADwin Sequencer V16.4.8
 Status: Done
-In Use: 2019-10-01 to 20??-??-??
+In Use: 2020-06-16 to 2020-11-09
 Changes:
-1) Saving panel now creates directory [panel name]/imgs/ (like a scan does)
+1) Saving panel now creates directory [panel name]/imgs/ (like a scan does).
 2) Changed end of scan question about saving mscan list to have more intuitive default.
 
 -----------------------
