@@ -76,7 +76,6 @@ int main (int argc, char *argv[])
 	CloseFile (fileHandle);
 
 
-
 	// Initialize things to default values
 	initializeAnalogChProps();
 	initializeAnalogTable();
