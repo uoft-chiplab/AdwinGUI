@@ -2002,17 +2002,17 @@ void ReshapeMultiScanTable( int top, int height)
   	SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_VAL_TABLE, ATTR_WIDTH, 3*60);
 
   	SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_NUM_ROWS, ATTR_TOP, top+315+height);
-  	SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_NUM_ROWS, ATTR_LEFT, left+35);
+  	SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_NUM_ROWS, ATTR_LEFT, left);
 
-  	SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_DECORATION, ATTR_TOP, top+348+height);
+  	SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_DECORATION, ATTR_TOP, 30);
   	SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_DECORATION, ATTR_LEFT, left);
   	SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_DECORATION, ATTR_WIDTH, 140);
   	SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_DECORATION, ATTR_HEIGHT, 55);
 
-  	SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_LED1, ATTR_TOP, top+355+height);
+  	SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_LED1, ATTR_TOP, 37);
   	SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_LED1, ATTR_LEFT, left+20);
 
-  	SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_LED2, ATTR_TOP, top+375+height);
+  	SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_LED2, ATTR_TOP, 57);
   	SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_LED2, ATTR_LEFT, left+20);
 
   	EnableScanControls();

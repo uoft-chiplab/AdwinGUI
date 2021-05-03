@@ -2910,31 +2910,6 @@ void CVICALLBACK PASTECOLUMN_CALLBACK (int menuBar, int menuItem, void *callback
 		ConfirmPopup("Copy Column","No Column Selected");
 }
 
-//**********************************************************************************
-int CVICALLBACK TGLNUMERIC_CALLBACK (int panel, int control, int event,
-		void *callbackData, int eventData1, int eventData2)
-{
-	int val=0;
-	switch (event)
-		{
-		case EVENT_COMMIT:
-			// find out if the button is pressed or not
-			// change buttons to appropriate mode and draw new table
-			GetCtrlVal(panelHandle, PANEL_TGL_NUMERICTABLE,&val);
-			if(val==0)
-			{
-				SetDisplayType(VAL_CELL_NUMERIC);
-			}
-			else
-			{
-				SetDisplayType(VAL_CELL_PICTURE);
-			}
-
-
-			break;
-		}
-	return 0;
-}
 
 //**********************************************************************************
 void CVICALLBACK DDSSETUP_CALLBACK (int menuBar, int menuItem, void *callbackData,
@@ -2952,24 +2927,7 @@ void CVICALLBACK LASERSET_CALLBACK(int menubar, int menuItem, void *callbackData
 	SetPanelPos (panelHandle10, VAL_AUTO_CENTER, VAL_AUTO_CENTER);
 }
 
-//********************************************************************************************
-int CVICALLBACK DISPLAYDIAL_CALLBACK (int panel, int control, int event,
-		void *callbackData, int eventData1, int eventData2)
-{
-	int dialval=0;
-	switch (event)
-		{
-		case EVENT_COMMIT:
-			GetCtrlVal (panelHandle, PANEL_DISPLAYDIAL, &dialval);
-			// Now change the size of the tables depending on the dial value.
 
-
-			SetChannelDisplayed(dialval);
-
-			break;
-		}
-	return 0;
-}
 /************************************************************************
 Author: Stefan
 -------
@@ -3144,7 +3102,7 @@ void SetChannelDisplayed(int display_setting)
 
 	heightpos1=695+114;
 	heightpos2=832+6;
-	heightpos3=240+125+65;
+	heightpos3=240+125+65+65;
 	toppos1=140;
 	leftpos=170;
 	toppos2=toppos1+heightpos1+60;
@@ -3457,6 +3415,49 @@ int CVICALLBACK MULTISCAN_NUMROWS_CALLBACK (int panel, int control, int event,
 
 
 
+
+//**********************************************************************************
+int CVICALLBACK TGLNUMERIC_CALLBACK (int panel, int control, int event,
+		void *callbackData, int eventData1, int eventData2)
+{
+	int val=0;
+	switch (event)
+		{
+		case EVENT_COMMIT:
+			// find out if the button is pressed or not
+			// change buttons to appropriate mode and draw new table
+			GetCtrlVal(panelHandle, PANEL_TGL_NUMERICTABLE,&val);
+			if(val==0)
+			{
+				SetDisplayType(VAL_CELL_NUMERIC);
+			}
+			else
+			{
+				SetDisplayType(VAL_CELL_PICTURE);
+			}
+
+
+			break;
+		}
+	return 0;
+}
+//********************************************************************************************
+int CVICALLBACK DISPLAYDIAL_CALLBACK (int panel, int control, int event,
+		void *callbackData, int eventData1, int eventData2)
+{
+	int dialval=0;
+	switch (event)
+		{
+		case EVENT_COMMIT:
+			GetCtrlVal (panelHandle, PANEL_DISPLAYDIAL, &dialval);
+			// Now change the size of the tables depending on the dial value.
+
+			SetChannelDisplayed(dialval);
+
+			break;
+		}
+	return 0;
+}
 
 
 
