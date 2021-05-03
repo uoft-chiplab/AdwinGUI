@@ -3140,7 +3140,7 @@ void SetChannelDisplayed(int display_setting)
 	//ATTR_LABEL_VISIBLE
 
 	heightpos1=695+114;
-	heightpos2=582;
+	heightpos2=582+194;
 	heightpos3=240+100;
 	toppos1=140;
 	leftpos=170;
