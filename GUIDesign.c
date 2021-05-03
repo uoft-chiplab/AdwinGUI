@@ -3013,7 +3013,7 @@ void ReshapeAnalogTable( int top,int left,int height)
 
 	SetCtrlAttribute (panelHandle, PANEL_TBL_ANALOGUNITS, ATTR_HEIGHT,modheight);
 	SetCtrlAttribute (panelHandle, PANEL_TBL_ANALOGUNITS, ATTR_TOP, top);
-	SetCtrlAttribute (panelHandle, PANEL_TBL_ANALOGUNITS, ATTR_LEFT, left+705);
+	SetCtrlAttribute (panelHandle, PANEL_TBL_ANALOGUNITS, ATTR_LEFT, left+690);
 
    	// move the DDS offsets
    	// V16.1.3: Don't set the left hand side of the DDS offsets here. Let GUIDesign.uir do it.
@@ -3140,8 +3140,8 @@ void SetChannelDisplayed(int display_setting)
 	//ATTR_LABEL_VISIBLE
 
 	heightpos1=695+114;
-	heightpos2=582+194;
-	heightpos3=240+100;
+	heightpos2=832+6;
+	heightpos3=240+125+65;
 	toppos1=140;
 	leftpos=170;
 	toppos2=toppos1+heightpos1+60;

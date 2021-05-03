@@ -1967,10 +1967,9 @@ void EnableScanControls(void)
 //****************************************************************************
 void ReshapeMultiScanTable( int top, int height)
 {
-	int j,istext=0,celltype=0,width,left;
+	int j,istext=0,celltype=0,left;
 
 	// Get width of analogunits table to match
-	GetCtrlAttribute (panelHandle, PANEL_TBL_ANALOGUNITS, ATTR_WIDTH, &width);
 	GetCtrlAttribute (panelHandle, PANEL_TBL_ANALOGUNITS, ATTR_LEFT, &left);
 
 	//resize and move the multiscan table table and all it's related list boxes
@@ -1979,35 +1978,35 @@ void ReshapeMultiScanTable( int top, int height)
 
   	SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_ITS_NUMERIC, ATTR_TOP, top+70);
   	SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_ITS_NUMERIC, ATTR_LEFT, left);
-  	
+
   	SetCtrlAttribute (panelHandle, PANEL_SCAN_KEEPRUNNING_CHK, ATTR_TOP, top+100);
   	SetCtrlAttribute (panelHandle, PANEL_SCAN_KEEPRUNNING_CHK, ATTR_LEFT, left);
-	
+
 	SetCtrlAttribute (panelHandle, PANEL_LBL_DIGIOFFSET, ATTR_TOP, top+120);
   	SetCtrlAttribute (panelHandle, PANEL_LBL_DIGIOFFSET, ATTR_LEFT, left);
   	SetCtrlAttribute (panelHandle, PANEL_LBL_GPIBOFFSET, ATTR_TOP, top+140);
   	SetCtrlAttribute (panelHandle, PANEL_LBL_GPIBOFFSET, ATTR_LEFT, left);
-	
+
   	SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_NAMES_TABLE, ATTR_TOP, top+160);
   	SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_NAMES_TABLE, ATTR_LEFT, left);
-	SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_NAMES_TABLE, ATTR_WIDTH, 2*width);
-	
+	SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_NAMES_TABLE, ATTR_WIDTH, 3*60);
+
 	SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_POS_TABLE, ATTR_HEIGHT, 70);
 	SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_POS_TABLE, ATTR_TOP, top+215);
   	SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_POS_TABLE, ATTR_LEFT, left);
-  	SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_POS_TABLE, ATTR_WIDTH, 2*width);
+  	SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_POS_TABLE, ATTR_WIDTH, 3*60);
 
 	SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_VAL_TABLE, ATTR_HEIGHT, height);
   	SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_VAL_TABLE, ATTR_TOP, top+290);
   	SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_VAL_TABLE, ATTR_LEFT, left);
-  	SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_VAL_TABLE, ATTR_WIDTH, 2*width);
-	
+  	SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_VAL_TABLE, ATTR_WIDTH, 3*60);
+
   	SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_NUM_ROWS, ATTR_TOP, top+315+height);
-  	SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_NUM_ROWS, ATTR_LEFT, left+width/2);
-	
+  	SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_NUM_ROWS, ATTR_LEFT, left+35);
+
   	SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_DECORATION, ATTR_TOP, top+348+height);
   	SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_DECORATION, ATTR_LEFT, left);
-  	SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_DECORATION, ATTR_WIDTH, 130);
+  	SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_DECORATION, ATTR_WIDTH, 140);
   	SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_DECORATION, ATTR_HEIGHT, 55);
 
   	SetCtrlAttribute (panelHandle, PANEL_MULTISCAN_LED1, ATTR_TOP, top+355+height);
