@@ -1333,7 +1333,6 @@ void OptimizeTimeLoop(int *UpdateNum,int count, int *newcount)
 }
 
 
-
 //*********************************************************************
  void DrawNewTable(int isdimmed)
 // if isdimmed=0/FALSE  Draw everything, editing mode
@@ -1736,8 +1735,12 @@ void OptimizeTimeLoop(int *UpdateNum,int count, int *newcount)
 			for(j=1;j<=NUMBERANALOGROWS;j++)
 			{
 				SetTableCellAttribute (panelHandle, PANEL_ANALOGTABLE, MakePoint(i,j),ATTR_CELL_DIMMED, dimset);
-				SetTableCellAttribute (panelHandle, PANEL_DIGTABLE, MakePoint(i,j),ATTR_CELL_DIMMED, dimset);
 				SetTableCellAttribute (panelHandle, PANEL_ANALOGTABLE, MakePoint(i,j),ATTR_CELL_TYPE,picmode);
+			}
+			
+			for(j=1;j<=NUMBERDIGITALCHANNELS;j++)
+			{
+				SetTableCellAttribute (panelHandle, PANEL_DIGTABLE, MakePoint(i,j),ATTR_CELL_DIMMED, dimset);
 			}
 		}
 	}
