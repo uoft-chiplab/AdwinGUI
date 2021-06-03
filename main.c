@@ -60,6 +60,8 @@ int main (int argc, char *argv[])
 		return -1;
 	if ((panelHandle13 = LoadPanel (0, "GPIB_SRS_SETUP.uir", SETUP)) < 0)
 		return -1;
+	if ((panelHandle14 = LoadPanel (0, "TimingVisualizer.uir", TV_PANEL)) < 0)
+		return -1;
 	if ((panelHandleANRITSUSETTINGS = LoadPanel (0, "AnritsuSettings.uir",PANEL)) < 0)
 		return -1;
 	if ((panelHandleANRITSU = LoadPanel (0, "AnritsuControl.uir",PANEL)) < 0)

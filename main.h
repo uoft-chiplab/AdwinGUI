@@ -14,7 +14,7 @@
 #include "math.h"
 #include "GPIB_SRS_SETUP.h"
 #include "GPIB_SRS_SETUP2.h"
-
+#include "TimingVisualizer.h"
 
 void initializeGUI(void);
 

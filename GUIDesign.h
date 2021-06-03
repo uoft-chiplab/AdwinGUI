@@ -95,7 +95,8 @@
 #define  PANEL_MULTISCAN_DECORATION       80      /* control type: deco, callback function: (none) */
 #define  PANEL_LBL_DIGIOFFSET             81      /* control type: textMsg, callback function: (none) */
 #define  PANEL_FORCE_BUILD_CHK            82      /* control type: radioButton, callback function: (none) */
-#define  PANEL_LBL_GPIBOFFSET             83      /* control type: textMsg, callback function: (none) */
+#define  PANEL_TIMEVISUAL                 83      /* control type: pictButton, callback function: VisualizeTimingCallback */
+#define  PANEL_LBL_GPIBOFFSET             84      /* control type: textMsg, callback function: (none) */
 
 #define  SUBPANEL1                        2
 #define  SUBPANEL1_TEXTBOX                2       /* control type: textBox, callback function: (none) */
@@ -246,6 +247,7 @@ void CVICALLBACK TITLE9_CALLBACK(int menubar, int menuItem, void *callbackData, 
 void CVICALLBACK TITLEX_CALLBACK(int menubar, int menuItem, void *callbackData, int panel);
 int  CVICALLBACK TOGGLE_ALL_CALLBACK(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);
 int  CVICALLBACK VALS_CHANGED_CALLBACK(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);
+int  CVICALLBACK VisualizeTimingCallback(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);
 
 
 #ifdef __cplusplus

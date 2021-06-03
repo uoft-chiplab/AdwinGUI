@@ -31,6 +31,7 @@
 #include "Processor.h"
 #include "GPIB_SRS_SETUP.h"
 #include "GPIB_SRS_SETUP2.h"
+#include "TimingVisualizer.h"
 #include "vars.h"
 #include "formatio.h"
 
@@ -3983,4 +3984,18 @@ void CVICALLBACK GPIB_SRS_CALLBACK (int menuBar, int menuItem, void *callbackDat
 
 /**************************************************************************************/
 
-
+int CVICALLBACK VisualizeTimingCallback (int panel, int control, int event,
+		void *callbackData, int eventData1, int eventData2)
+{
+	switch (event)
+	{
+		case EVENT_COMMIT:
+			DeleteGraphPlot (panelHandle14, TV_PANEL_GRAPH, -1, VAL_IMMEDIATE_DRAW);
+			SetCtrlAttribute (panelHandle14, TV_PANEL_GRAPH, ATTR_ENABLE_ZOOM_AND_PAN, 1);
+			SetCtrlAttribute (panelHandle14, TV_PANEL_GRAPH, ATTR_ZOOM_STYLE, VAL_ZOOM_TO_RECT);
+			SetCtrlAttribute (panelHandle14, TV_PANEL_GRAPH, ATTR_LEGEND_INTERACTIVE, 1);
+			DisplayPanel(panelHandle14);	
+			break;
+	}
+	return 0;
+}

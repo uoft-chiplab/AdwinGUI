@@ -186,10 +186,11 @@ int PANEL_OLD_LABEL[NUMBEROFPAGES];   	// Old column labels; superceded by InfoA
 
 // Various panels
 //panelHandles: 8: ScanTableLoader  9:NumSet  10:LaserSettings  11:LaserControl
+// 14: TimingVisualizer
 int panelHandle0;
 int panelHandle,panelHandle2,panelHandle3,panelHandle4,panelHandle5;
 int panelHandle6,panelHandle7,panelHandle8,panelHandle9,panelHandle10;
-int panelHandle11,panelHandle12,panelHandle13;
+int panelHandle11,panelHandle12,panelHandle13,panelHandle14;
 int panelHandleANRITSU, panelHandleANRITSUSETTINGS;
 int panelHandle_sub1,panelHandle_sub2;
 int menuHandle;
