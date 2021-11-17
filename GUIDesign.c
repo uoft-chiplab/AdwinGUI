@@ -1334,7 +1334,6 @@ void OptimizeTimeLoop(int *UpdateNum,int count, int *newcount)
 }
 
 
-
 //*********************************************************************
  void DrawNewTable(int isdimmed)
 // if isdimmed=0/FALSE  Draw everything, editing mode
@@ -1737,8 +1736,12 @@ void OptimizeTimeLoop(int *UpdateNum,int count, int *newcount)
 			for(j=1;j<=NUMBERANALOGROWS;j++)
 			{
 				SetTableCellAttribute (panelHandle, PANEL_ANALOGTABLE, MakePoint(i,j),ATTR_CELL_DIMMED, dimset);
-				SetTableCellAttribute (panelHandle, PANEL_DIGTABLE, MakePoint(i,j),ATTR_CELL_DIMMED, dimset);
 				SetTableCellAttribute (panelHandle, PANEL_ANALOGTABLE, MakePoint(i,j),ATTR_CELL_TYPE,picmode);
+			}
+			
+			for(j=1;j<=NUMBERDIGITALCHANNELS;j++)
+			{
+				SetTableCellAttribute (panelHandle, PANEL_DIGTABLE, MakePoint(i,j),ATTR_CELL_DIMMED, dimset);
 			}
 		}
 	}
@@ -2908,31 +2911,6 @@ void CVICALLBACK PASTECOLUMN_CALLBACK (int menuBar, int menuItem, void *callback
 		ConfirmPopup("Copy Column","No Column Selected");
 }
 
-//**********************************************************************************
-int CVICALLBACK TGLNUMERIC_CALLBACK (int panel, int control, int event,
-		void *callbackData, int eventData1, int eventData2)
-{
-	int val=0;
-	switch (event)
-		{
-		case EVENT_COMMIT:
-			// find out if the button is pressed or not
-			// change buttons to appropriate mode and draw new table
-			GetCtrlVal(panelHandle, PANEL_TGL_NUMERICTABLE,&val);
-			if(val==0)
-			{
-				SetDisplayType(VAL_CELL_NUMERIC);
-			}
-			else
-			{
-				SetDisplayType(VAL_CELL_PICTURE);
-			}
-
-
-			break;
-		}
-	return 0;
-}
 
 //**********************************************************************************
 void CVICALLBACK DDSSETUP_CALLBACK (int menuBar, int menuItem, void *callbackData,
@@ -2950,24 +2928,7 @@ void CVICALLBACK LASERSET_CALLBACK(int menubar, int menuItem, void *callbackData
 	SetPanelPos (panelHandle10, VAL_AUTO_CENTER, VAL_AUTO_CENTER);
 }
 
-//********************************************************************************************
-int CVICALLBACK DISPLAYDIAL_CALLBACK (int panel, int control, int event,
-		void *callbackData, int eventData1, int eventData2)
-{
-	int dialval=0;
-	switch (event)
-		{
-		case EVENT_COMMIT:
-			GetCtrlVal (panelHandle, PANEL_DISPLAYDIAL, &dialval);
-			// Now change the size of the tables depending on the dial value.
 
-
-			SetChannelDisplayed(dialval);
-
-			break;
-		}
-	return 0;
-}
 /************************************************************************
 Author: Stefan
 -------
@@ -2987,7 +2948,6 @@ void ReshapeAnalogTable( int top,int left,int height)
 	int modheight;
 
 	rowheight = (height)/(NUMBERANALOGCHANNELS+NUMBERDDS);
-	printf("rowheight is %d", rowheight);
 
 	for (j=1;j<=NUMBERANALOGROWS;j++)
 	{
@@ -3003,7 +2963,6 @@ void ReshapeAnalogTable( int top,int left,int height)
 	}
 
 	modheight=(NUMBERANALOGROWS)*(int)((height)/(NUMBERANALOGCHANNELS+NUMBERDDS))+6;
-	printf("\nmodheight is %d", modheight);
 
 	//resize the analog table and all it's related list boxes
   	SetCtrlAttribute (panelHandle, PANEL_ANALOGTABLE, ATTR_HEIGHT, modheight);
@@ -3016,11 +2975,11 @@ void ReshapeAnalogTable( int top,int left,int height)
 
 	SetCtrlAttribute (panelHandle, PANEL_TBL_ANALOGUNITS, ATTR_HEIGHT,modheight);
 	SetCtrlAttribute (panelHandle, PANEL_TBL_ANALOGUNITS, ATTR_TOP, top);
-	SetCtrlAttribute (panelHandle, PANEL_TBL_ANALOGUNITS, ATTR_LEFT, left+705);
+	SetCtrlAttribute (panelHandle, PANEL_TBL_ANALOGUNITS, ATTR_LEFT, left+690);
 
    	// move the DDS offsets
    	// V16.1.3: Don't set the left hand side of the DDS offsets here. Let GUIDesign.uir do it.
-   	ddsrowtop = height * NUMBERANALOGCHANNELS/NUMBERANALOGROWS + 2*NUMBERANALOGCHANNELS;
+   	ddsrowtop = height * NUMBERANALOGCHANNELS/NUMBERANALOGROWS + 2*NUMBERANALOGCHANNELS -50;
 	SetCtrlAttribute (panelHandle, PANEL_NUM_DDS_OFFSET,ATTR_TOP,ddsrowtop);
 	//SetCtrlAttribute (panelHandle, PANEL_NUM_DDS_OFFSET,ATTR_LEFT,877);
 	SetCtrlAttribute (panelHandle, PANEL_NUM_DDS2_OFFSET,ATTR_TOP,ddsrowtop+rowheight);
@@ -3035,7 +2994,7 @@ void ReshapeAnalogTable( int top,int left,int height)
 
 	// move the ANRITSU offset
 	// V16.1.3: Don't set the left hand side of the ANRITSU offset here. Let GUIDesign.uir do it.
-	SetCtrlAttribute (panelHandle, PANEL_ANRITSU_OFFSET,ATTR_TOP,ddsrowtop+rowheight*(NUMBERDDS+NUMBERLASERS));
+	SetCtrlAttribute (panelHandle, PANEL_ANRITSU_OFFSET,ATTR_TOP,ddsrowtop+rowheight*(NUMBERDDS+NUMBERLASERS)-10);
 	//SetCtrlAttribute (panelHandle, PANEL_ANRITSU_OFFSET,ATTR_LEFT,877);
 
 }
@@ -3143,12 +3102,11 @@ void SetChannelDisplayed(int display_setting)
 	//ATTR_LABEL_VISIBLE
 
 	heightpos1=695+114;
-	heightpos2=582;
-	heightpos3=240;
+	heightpos2=832+6;
+	heightpos3=240+125+65+65;
 	toppos1=140;
 	leftpos=170;
 	toppos2=toppos1+heightpos1+60;
-	toppos3=toppos2+heightpos2+10;
 
 	// Reshape Timetable
 	GetCtrlAttribute (panelHandle, PANEL_ANALOGTABLE, ATTR_WIDTH, &width);
@@ -3167,7 +3125,7 @@ void SetChannelDisplayed(int display_setting)
 		case 1:		// both
 			ReshapeAnalogTable(toppos1,leftpos,heightpos1);   //passed top, left and height
 			ReshapeDigitalTable(toppos2,leftpos,heightpos2);
-			ReshapeMultiScanTable(toppos3,leftpos,heightpos3);
+			ReshapeMultiScanTable(toppos2,heightpos3);
 
 			SetCtrlAttribute (panelHandle, PANEL_DIGTABLE, ATTR_VISIBLE, 1);
 			SetCtrlAttribute (panelHandle, PANEL_ANALOGTABLE, ATTR_VISIBLE, 1);
@@ -3180,7 +3138,7 @@ void SetChannelDisplayed(int display_setting)
 		case 2:		// analog tableonly
 
 			ReshapeAnalogTable(toppos1,leftpos,heightpos1);   //passed top, left and height
-			ReshapeMultiScanTable(toppos2+5,leftpos,heightpos3);
+			ReshapeMultiScanTable(toppos2+5,heightpos3);
 
 			SetCtrlAttribute (panelHandle, PANEL_ANALOGTABLE, ATTR_VISIBLE, 1);
 			SetCtrlAttribute (panelHandle, PANEL_TBL_ANAMES, ATTR_VISIBLE, 1);
@@ -3189,7 +3147,7 @@ void SetChannelDisplayed(int display_setting)
 
 		case 3:		 // digital table only
 			ReshapeDigitalTable(toppos1,leftpos,heightpos2);
-			ReshapeMultiScanTable(toppos1+heightpos2+25,leftpos,heightpos3);
+			ReshapeMultiScanTable(toppos1+heightpos2+25,heightpos3);
 
 			SetCtrlAttribute (panelHandle, PANEL_DIGTABLE, ATTR_VISIBLE, 1);
 			SetCtrlAttribute (panelHandle, PANEL_TBL_DIGNAMES, ATTR_VISIBLE, 1);
@@ -3458,6 +3416,49 @@ int CVICALLBACK MULTISCAN_NUMROWS_CALLBACK (int panel, int control, int event,
 
 
 
+
+//**********************************************************************************
+int CVICALLBACK TGLNUMERIC_CALLBACK (int panel, int control, int event,
+		void *callbackData, int eventData1, int eventData2)
+{
+	int val=0;
+	switch (event)
+		{
+		case EVENT_COMMIT:
+			// find out if the button is pressed or not
+			// change buttons to appropriate mode and draw new table
+			GetCtrlVal(panelHandle, PANEL_TGL_NUMERICTABLE,&val);
+			if(val==0)
+			{
+				SetDisplayType(VAL_CELL_NUMERIC);
+			}
+			else
+			{
+				SetDisplayType(VAL_CELL_PICTURE);
+			}
+
+
+			break;
+		}
+	return 0;
+}
+//********************************************************************************************
+int CVICALLBACK DISPLAYDIAL_CALLBACK (int panel, int control, int event,
+		void *callbackData, int eventData1, int eventData2)
+{
+	int dialval=0;
+	switch (event)
+		{
+		case EVENT_COMMIT:
+			GetCtrlVal (panelHandle, PANEL_DISPLAYDIAL, &dialval);
+			// Now change the size of the tables depending on the dial value.
+
+			SetChannelDisplayed(dialval);
+
+			break;
+		}
+	return 0;
+}
 
 
 

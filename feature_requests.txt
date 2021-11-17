@@ -33,6 +33,8 @@ Remove ambiguity about reset to zero of channels.
 Make the red X (close) button work, i.e. close the GUI.
 
 Decouple multiscan max scan params from saved GUI (and some other substructs)
+
+int ColorTable has hardcoded number of digital channels, change to match macro
 	
 ----------
 Completed:
