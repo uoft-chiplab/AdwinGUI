@@ -20,7 +20,7 @@ typedef int BOOL;
 ADwin Variables and GUI things
 *************************************************************************/
 
-#define SEQUENCER_VERSION "ADwin Sequencer V17.0.0 - "
+#define SEQUENCER_VERSION "ADwin Sequencer V17.0.2 - "
 
 // ADwin info
 #define DefaultEventPeriod (0.100)   // in milliseconds
@@ -335,6 +335,9 @@ double SRS_amplitude, SRS_offset, SRS_frequency;// SRS_frequency is still live i
 
 #define RIGOL_DG4162_NAME ("Rigol_DG4162")// VISA resouce name or alias of the Rigol DG4162
 #define RIGOL_DG4162_ADDR (101)	// pseudo-address of the Rigol DG4162
+
+#define RIGOL_2021_NAME ("Rigol_2021")// VISA resouce name or alias of the Rigol 2021 for FM mod
+#define RIGOL_2021_ADDR (102)	// pseudo-address of the Rigol 2021 for FM mod
 
 
 
