@@ -849,7 +849,12 @@ void BuildUpdateList(double TMatrix[],
 				{
 					digval2=digval2+DMat[k][i]*int_power(2,(DChName[k].chnum-100)-1);
 				}
-
+				/* DG3flag
+				if((digchannel>=201)&&(digchannel<=232))
+				{
+					digval3=digval3+DMat[k][i]*int_power(2,(DChName[k].chnum-200)-1);
+				}
+				*/
 			}// finished computing current digital data
 
 			if(digval!=LastDVal)
@@ -862,6 +867,7 @@ void BuildUpdateList(double TMatrix[],
 			LastDVal=digval;
 
 			/*** Check if any Lasers need triggering */
+			/* Lasers are on digital card 2 */
 			lasTrigVal=0;
 			for(k=0;k<NUMBERLASERS;k++)
 			{
@@ -880,15 +886,18 @@ void BuildUpdateList(double TMatrix[],
 				LastDVal2=digval2;
 			}
 
-
-/*			if(!(digval3==LastDVal3))
+			/* DG3flag
+			if(!(digval3==LastDVal3))
 			{
 				nupcurrent++;
 				nuptotal++;
 				ChNum[nuptotal]=103;
 				ChVal[nuptotal]=digval3;
+				LastDVal3=digval3;
 			}
-			LastDVal3=digval3;
+			*/
+
+			/*
 			if(!(digval4==LastDVal4))
 			{
 				nupcurrent++;
@@ -897,7 +906,7 @@ void BuildUpdateList(double TMatrix[],
 				ChVal[nuptotal]=digval4;
 			}
 			LastDVal4=digval4;
-*/
+			*/
 
 			count++;
 			UpdateNum[count]=nupcurrent;
@@ -1105,7 +1114,7 @@ void BuildUpdateList(double TMatrix[],
 
 		digval=0;
 		digval2=0;
-
+		//digval3=0
 		for(k=1;k<=NUMBERDIGITALCHANNELS;k++)
 			{
 				digchannel=DChName[k].chnum;
@@ -1119,6 +1128,11 @@ void BuildUpdateList(double TMatrix[],
 				{
 					digval2=digval2+DChName[k].resettolow*int_power(2,(DChName[k].chnum-100)-1);
 				}
+
+				//if((digchannel>=201)&&(digchannel<=232))
+				//{
+				//	digval3=digval3+DChName[k].resettolow*int_power(2,(DChName[k].chnum-200)-1);
+				//}
 	//			printf("DChName[%d].chnum %d,DChName[k].resettolow %d, digval %x, digval2 %x \n",k,DChName[k].chnum,DChName[k].resettolow,digval,digval2);
 			}// finished computing current digital data
 
@@ -1738,7 +1752,7 @@ void OptimizeTimeLoop(int *UpdateNum,int count, int *newcount)
 				SetTableCellAttribute (panelHandle, PANEL_ANALOGTABLE, MakePoint(i,j),ATTR_CELL_DIMMED, dimset);
 				SetTableCellAttribute (panelHandle, PANEL_ANALOGTABLE, MakePoint(i,j),ATTR_CELL_TYPE,picmode);
 			}
-			
+
 			for(j=1;j<=NUMBERDIGITALCHANNELS;j++)
 			{
 				SetTableCellAttribute (panelHandle, PANEL_DIGTABLE, MakePoint(i,j),ATTR_CELL_DIMMED, dimset);
@@ -3995,7 +4009,7 @@ int CVICALLBACK VisualizeTimingCallback (int panel, int control, int event,
 			SetCtrlAttribute (panelHandle14, TV_PANEL_GRAPH, ATTR_ENABLE_ZOOM_AND_PAN, 1);
 			SetCtrlAttribute (panelHandle14, TV_PANEL_GRAPH, ATTR_ZOOM_STYLE, VAL_ZOOM_TO_RECT);
 			SetCtrlAttribute (panelHandle14, TV_PANEL_GRAPH, ATTR_LEGEND_INTERACTIVE, 1);
-			DisplayPanel(panelHandle14);	
+			DisplayPanel(panelHandle14);
 			break;
 	}
 	return 0;
