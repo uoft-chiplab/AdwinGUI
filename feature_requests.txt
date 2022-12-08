@@ -6,11 +6,6 @@ Major:
 
 Improve DDS user interface (both in analog table and in DDS settings)
 
-Add capability for another analog and digital card.
-	- ADbasic code
-	- in main.c set width and position of cells to accomodate new channels
-	- second monitor?
-
 Stop the sequence based on condition
 	Writing to a communication file as interlock.
 	Check things are okay before starting a new cycle.
@@ -39,7 +34,10 @@ int ColorTable has hardcoded number of digital channels, change to match macro
 ----------
 Completed:
 ----------
-
+Added capability for 6th analog and 3rd digital card.
+	- ADbasic code
+	- in main.c set width and position of cells to accomodate new channels
+	- second monitor
 Change end of scan question about saving mscan list to have better default.
 Change default saving of panel (not scan) to make directory as well (as scan does).
 Move all saving functions to their own c file.
