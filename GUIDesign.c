@@ -609,7 +609,6 @@ void BuildUpdateList(double TMatrix[],
 					 int numtimes,
 					 int forceBuild){
 	/*
-
 	TMatrix[update period#] -- stores the interval time of each column
 	AMat[channel#][update period#] -- stores info located in the analog table
 	DMat[channel#][update period#] --
@@ -631,15 +630,15 @@ void BuildUpdateList(double TMatrix[],
 	ChNum -     Value 1-48:  Analog lines, 6 cards with 8 lines each.  ChVal is -10V to 10V
 				Value 51:	 DDS1 line.   ChVal is either a 2-bit value (0-3) to write, or (4-7) a reset signal
 				Value 52:	 DDS2 line.   ChVal is either a 2-bit value (0-3) to write, or (4-7) a reset signal
-				Value 101, 102  First 16 and last 16 lines on the first DIO card.  ChVal is a 16 bit integer
-				Value 103, 104	First 16 and last 16 lines on the second DIO card. ChVal is a 16 bit integer
+				Value 101, 102, 103  32 lines on the DIO cards 1, 2 and 3.  ChVal is a 16 bit integer
 
     Mar 09_2006:Added ChNum 201,202   These  are codes to enable/disable looping.
                 Corresponding ChVal is the number of loops.
+	Dec 08_2022:Changed description of ChNum 101-103 to reflect T10 processor and new digital card.
+
 	dds_cmd_seq List of dds commands, parsed into 2-bit sections, or reset lines to be written
 				Commands are listed along with the time they should occur at.
 	*/
-
 
 	BOOL UseCompression,ArraysToDebug,StreamSettings;
 
@@ -648,7 +647,7 @@ void BuildUpdateList(double TMatrix[],
 	int i=0,j=0,k=0,m=0,n=0,tau=0,p=0,imax;
 	int nupcurrent=0,nuptotal=0,checkresettozero=0;
 	int usefcn=0,digchannel;  //Bool
-	unsigned int digval,digval2,digval3,digval4,LastDVal=0,LastDVal2=0,LastDVal3=0,LastDVal4=0,lasTrigVal=0;
+	unsigned int digval,digval2,digval3,LastDVal=0,LastDVal2=0,LastDVal3=0,lasTrigVal=0;
 	int UsingFcns[NUMBERANALOGCHANNELS+1]={0},count=0,ucounter=0,counter,channel;
 	double LastAval[NUMBERANALOGCHANNELS+1]={0},NewAval,TempChVal,TempChVal2;
 	int ResetToZeroAtEnd[110]; //1-24 for analog, ...but for now, if [1]=1 then all zero, else no change
@@ -835,7 +834,6 @@ void BuildUpdateList(double TMatrix[],
 			digval=0;
 			digval2=0;
 			digval3=0;
-			digval4=0;
 			for(k=1;k<=NUMBERDIGITALCHANNELS;k++)
 			{
 				digchannel=DChName[k].chnum;
@@ -895,17 +893,6 @@ void BuildUpdateList(double TMatrix[],
 				ChVal[nuptotal]=digval3;
 				LastDVal3=digval3;
 			}
-			*/
-
-			/*
-			if(!(digval4==LastDVal4))
-			{
-				nupcurrent++;
-				nuptotal++;
-				ChNum[nuptotal]=104;
-				ChVal[nuptotal]=digval4;
-			}
-			LastDVal4=digval4;
 			*/
 
 			count++;
@@ -1026,7 +1013,7 @@ void BuildUpdateList(double TMatrix[],
 
 		tstop=clock();
 
-
+		// Boot and load transfer file
 		if(processorT1x==0)
 		{
 			if(didboot==FALSE) // is the ADwin booted?  if not, then boot
@@ -1071,13 +1058,6 @@ void BuildUpdateList(double TMatrix[],
 			SetData_Long(1,UpdateNum,1,count+1);
 		}
 
-
-	//	printf("\nbegin at: %s \n", TimeStr());
-	//	timestamp = Timer();
-
-	//	size1 = sizeof(ChNum)*(nuptotal+1);
-	//	size2 = sizeof(ChVal)*(nuptotal+1);
-
 	// Send the Array to the AdWin Sequencer
 // ------------------------------------------------------------------------------------------------------------------
 		SetPar(2,GlobalDelay);
@@ -1109,12 +1089,11 @@ void BuildUpdateList(double TMatrix[],
 				ResetToZeroAtEnd[AChName[i].chnum-1]=AChName[i].resettozero;
 			}
 			//printf("Line = %d, Channel = %d, Reset-to-zero = %d \n", i, AChName[i].chnum, ResetToZeroAtEnd[i-1]);
-
 		}
 
 		digval=0;
 		digval2=0;
-		//digval3=0
+		//digval3=0 //DG3flag
 		for(k=1;k<=NUMBERDIGITALCHANNELS;k++)
 			{
 				digchannel=DChName[k].chnum;
@@ -1128,20 +1107,20 @@ void BuildUpdateList(double TMatrix[],
 				{
 					digval2=digval2+DChName[k].resettolow*int_power(2,(DChName[k].chnum-100)-1);
 				}
+				/*
+				if((digchannel>=201)&&(digchannel<=232))
+				{
+					digval3=digval3+DChName[k].resettolow*int_power(2,(DChName[k].chnum-200)-1);
+				}
+				*/
 
-				//if((digchannel>=201)&&(digchannel<=232))
-				//{
-				//	digval3=digval3+DChName[k].resettolow*int_power(2,(DChName[k].chnum-200)-1);
-				//}
 	//			printf("DChName[%d].chnum %d,DChName[k].resettolow %d, digval %x, digval2 %x \n",k,DChName[k].chnum,DChName[k].resettolow,digval,digval2);
 			}// finished computing current digital data
 
 
 		//	printf("digval %x, digval %x \n",digval,digval2);
 
-
 		//ResetToZeroAtEndDig[1]=digval;// 1-32
-
 		//ResetToZeroAtEndDig[2]=digval2;// 101-132
 
 		//ResetToZeroAtEnd[25]=0;// lower 16 digital channels
@@ -1152,13 +1131,11 @@ void BuildUpdateList(double TMatrix[],
 		SetData_Long(4,ResetToZeroAtEnd,1,NUMBERANALOGCHANNELS);
 		SetPar(5,digval);
 		SetPar(6,digval2);
-		//SetPar(7,digval3);
+		//SetPar(7,digval3); //DG3flag
 
 		// done evaluating channels that are reset to  zero (low)
 		ChangedVals = FALSE;
-
 	}
-
 
 	// more debug info
 	//tstop=clock();
@@ -1171,12 +1148,10 @@ void BuildUpdateList(double TMatrix[],
 	//tstop=clock();
 	//sprintf(buff,"Time to transfer and start ADwin:   %d",timeused);
 
-
 	GetMenuBarAttribute (menuHandle, MENU_PREFS_STREAM_SETTINGS, ATTR_CHECKED,&StreamSettings);
 	if(StreamSettings==TRUE)
 	{
 		//Fill IN
-
 	}
 
 	SetCtrlAttribute (panelHandle, PANEL_CMD_RUN,ATTR_CMD_BUTTON_COLOR, 0x00B0B0B0);
@@ -1202,11 +1177,9 @@ void BuildUpdateList(double TMatrix[],
 //	SetCtrlVal(panelHandle, PANEL_LED_YEL, 0);
 //	SetCtrlVal(panelHandle, PANEL_LED_GRE, 1);
 
-
 	timeEnd = Timer();
 	//printf("BuildUpdateTable: EndProcess-StartProcess: %f seconds.\n", timeEndProcess-timeStartProcess);
 	//printf("BuildUpdateTable: End-Start: %f seconds.\n", timeEnd-timeStart);
-
 }
 
 //*****************************************************************************************
