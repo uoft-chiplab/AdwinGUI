@@ -20,7 +20,7 @@ typedef int BOOL;
 ADwin Variables and GUI things
 *************************************************************************/
 
-#define SEQUENCER_VERSION "ADwin Sequencer V17.0.3 - "
+#define SEQUENCER_VERSION "ADwin Sequencer V17.0.4 - "
 
 // ADwin info
 #define DefaultEventPeriod (0.100)   // in milliseconds
@@ -62,11 +62,12 @@ Analog and Digital Channels (and laser table and necessary parts of dds and anri
 #define NUMBERANALOGCHANNELS (48)   // Number of analog Channels available for control
 #define NUMBERDIGITALCHANNELS (64) 	// number of digital channels DISPLAYED!!!
 									// some are not user controlled, e.g. DDS lines
-									// 32 in total.  5 used for DDS1
+									// 96 in total.  5 used for DDS1
 									// 5 for DD2 (K40 evap)
 									// reserved for DDS1
 									// reserved for DDS2
-									// reserved for DDS3				  NU
+									// reserved for DDS3
+									// 2 for Micro and PhaseO triggers
 #define NUMBERDDS (3)				// Number of DDS's
 #define DDS2_CLOCK (983.04)			// clock speed of DDS 2 in MHz
 #define DDS3CLOCK (300.0)			// clock speed of DDS 2 in MHz

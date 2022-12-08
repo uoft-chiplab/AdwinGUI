@@ -1092,7 +1092,7 @@ void BuildUpdateList(double TMatrix[],
 
 		digval=0;
 		digval2=0;
-		digval3=0 //DG3flag
+		digval3=0; //DG3flag
 		for(k=1;k<=NUMBERDIGITALCHANNELS;k++)
 			{
 				digchannel=DChName[k].chnum;
