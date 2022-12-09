@@ -5,7 +5,7 @@
 /*
 Configure the digital lines.
 For each line we configure
- 			chnum: 		channel number (1-32 on first card, 101-132 on second card)
+ 			chnum: 		channel number (1-32 on first card, 101-132 on second card, 133-164 on third card)
             chname:     name of the channel.
 			resettolow:	Define
 

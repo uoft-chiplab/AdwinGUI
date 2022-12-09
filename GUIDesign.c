@@ -848,9 +848,9 @@ void BuildUpdateList(double TMatrix[],
 					digval2=digval2+DMat[k][i]*int_power(2,(DChName[k].chnum-100)-1);
 				}
 				//DG3flag
-				if((digchannel>=201)&&(digchannel<=232))
+				if((digchannel>=133)&&(digchannel<=164))
 				{
-					digval3=digval3+DMat[k][i]*int_power(2,(DChName[k].chnum-200)-1);
+					digval3=digval3+DMat[k][i]*int_power(2,(DChName[k].chnum-132)-1);
 				}
 
 			}// finished computing current digital data
@@ -1106,12 +1106,11 @@ void BuildUpdateList(double TMatrix[],
 				{
 					digval2=digval2+DChName[k].resettolow*int_power(2,(DChName[k].chnum-100)-1);
 				}
-				/*
-				if((digchannel>=201)&&(digchannel<=232))
+
+				if((digchannel>=133)&&(digchannel<=164))
 				{
-					digval3=digval3+DChName[k].resettolow*int_power(2,(DChName[k].chnum-200)-1);
+					digval3=digval3+DChName[k].resettolow*int_power(2,(DChName[k].chnum-132)-1);
 				}
-				*/
 
 	//			printf("DChName[%d].chnum %d,DChName[k].resettolow %d, digval %x, digval2 %x \n",k,DChName[k].chnum,DChName[k].resettolow,digval,digval2);
 			}// finished computing current digital data
