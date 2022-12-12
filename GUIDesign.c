@@ -853,7 +853,7 @@ void BuildUpdateList(double TMatrix[],
 					digval3=digval3+DMat[k][i]*int_power(2,(DChName[k].chnum-132)-1);
 					if(digchannel==133)
 					{//testflag
-						printf("Ch 133")
+						printf("\n Ch 133");
 					}
 				}
 
@@ -898,7 +898,7 @@ void BuildUpdateList(double TMatrix[],
 				ChVal[nuptotal]=digval3;
 				*/
 				LastDVal3=digval3;
-				printf("digval3 changed") //testflag
+				printf("digval3 changed"); //testflag
 			}
 
 			count++;
@@ -1118,8 +1118,8 @@ void BuildUpdateList(double TMatrix[],
 				{
 					digval3=digval3+DChName[k].resettolow*int_power(2,(DChName[k].chnum-132)-1);
 					if(digchannel==133)
-					{
-						printf("set Ch133 to low")
+					{//testflag
+						printf("set Ch133 to low");
 					}
 				}
 

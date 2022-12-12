@@ -31,7 +31,7 @@ Save Changes Before Compiling = "Always"
 Hide Windows = False
 Break At First Statement = False
 Sort Type = "File Name"
-Number of Opened Files = 6
+Number of Opened Files = 7
 Window Confinement Region Enabled = True
 MainColumnWidth = 212
 FileDateColumnWidth = 70
@@ -55,7 +55,7 @@ In Projects = "1,"
 Source Window State = "1,7,7,7,19,19,19,0,0,0,0,0,0,0,0,0,0,0,7,19,401,490,1,0,"
 Window Top = 33
 Window Left = 10
-Window Z-Order = 5
+Window Z-Order = 6
 
 [File 0002]
 Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/LaserS"
@@ -84,7 +84,7 @@ In Projects = ""
 Source Window State = "1,2130,2130,2130,12,21,12,0,3,0,0,0,0,0,0,0,2107,0,2130,21,311,742,1,0,"
 Window Top = 33
 Window Left = 10
-Window Z-Order = 6
+Window Z-Order = 7
 
 [File 0005]
 Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/GUIDes"
@@ -106,7 +106,7 @@ In Projects = "1,"
 Source Window State = "1,314,314,314,5,5,5,0,0,0,0,0,0,0,0,0,282,0,314,5,506,726,1,30,"
 Window Top = 168
 Window Left = 4
-Window Z-Order = 4
+Window Z-Order = 5
 
 [File 0007]
 Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/LaserT"
@@ -167,15 +167,15 @@ In Projects = "1,"
 Source Window State = "1,124,124,124,11,11,11,0,0,0,0,0,0,0,0,0,52,0,124,11,401,742,1,0,"
 Window Top = 33
 Window Left = 10
-Window Z-Order = 2
+Window Z-Order = 3
 
 [File 0013]
 Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/GUIDes"
 Path Line0002 = "ign.c"
 File Type = "CSource"
-Disk Date = 3753709022
+Disk Date = 3753710404
 In Projects = "1,"
-Source Window State = "1,1140,1140,1140,25,25,25,0,0,0,0,0,0,0,0,0,991,0,1140,25,401,742,1,0,"
+Source Window State = "1,3965,3965,3965,23,23,23,0,0,0,0,0,0,0,0,0,3945,0,3965,23,401,742,1,0,"
 Window Top = 64
 Window Left = 26
 Window Z-Order = 1
@@ -355,7 +355,7 @@ Window Top = 33
 Window Left = 10
 Window Height = 371
 Window Width = 602
-Window Z-Order = 3
+Window Z-Order = 4
 
 [File 0031]
 Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/GPIB_S"
@@ -746,11 +746,12 @@ Source Window State = "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"
 [File 0075]
 Path = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/vars.h"
 File Type = "Include"
-Disk Date = 3753375802
+Disk Date = 3753709253
 In Projects = "1,"
-Source Window State = "1,161,161,161,0,0,0,0,0,0,0,0,0,0,0,0,118,0,161,0,401,630,1,0,"
+Source Window State = "1,22,22,22,54,54,54,0,0,0,0,0,0,0,0,0,0,0,22,54,401,630,1,0,"
 Window Top = 33
 Window Left = 10
+Window Z-Order = 2
 
 [Tab Order]
 Tab 0001 = "/c/Program Files (x86)/National Instruments/CVI2019/include/userint.h"
@@ -764,6 +765,7 @@ Tab 0005 Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers
 Tab 0005 Line0002 = "lSettings.c"
 Tab 0006 Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Digita"
 Tab 0006 Line0002 = "lSettings.uir"
+Tab 0007 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/vars.h"
 
 [Default Build Config 0001 Debug]
 Generate Browse Info = True
