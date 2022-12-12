@@ -1107,6 +1107,10 @@ void BuildUpdateList(double TMatrix[],
 				if(digchannel<=32)
 				{
 					digval=digval+DChName[k].resettolow*int_power(2,DChName[k].chnum-1);
+					if(digitalchannel==4) //testflag
+					{
+						printf("Ch4 value: %d",DChName[k].resettolow);
+					}
 				}
 
 				if((digchannel>=101)&&(digchannel<=132))
