@@ -851,6 +851,10 @@ void BuildUpdateList(double TMatrix[],
 				if((digchannel>=133)&&(digchannel<=164))
 				{
 					digval3=digval3+DMat[k][i]*int_power(2,(DChName[k].chnum-132)-1);
+					if(digchannel==133)
+					{//testflag
+						printf("Ch 133")
+					}
 				}
 
 			}// finished computing current digital data
@@ -885,13 +889,16 @@ void BuildUpdateList(double TMatrix[],
 			}
 
 			//DG3flag
-			if(!(digval3==LastDVal3))
+			if(digval3!=LastDVal3)
 			{
+				/*testflag
 				nupcurrent++;
 				nuptotal++;
 				ChNum[nuptotal]=103;
 				ChVal[nuptotal]=digval3;
+				*/
 				LastDVal3=digval3;
+				printf("digval3 changed") //testflag
 			}
 
 			count++;
@@ -1110,6 +1117,10 @@ void BuildUpdateList(double TMatrix[],
 				if((digchannel>=133)&&(digchannel<=164))
 				{
 					digval3=digval3+DChName[k].resettolow*int_power(2,(DChName[k].chnum-132)-1);
+					if(digchannel==133)
+					{
+						printf("set Ch133 to low")
+					}
 				}
 
 	//			printf("DChName[%d].chnum %d,DChName[k].resettolow %d, digval %x, digval2 %x \n",k,DChName[k].chnum,DChName[k].resettolow,digval,digval2);
@@ -1129,7 +1140,7 @@ void BuildUpdateList(double TMatrix[],
 		SetData_Long(4,ResetToZeroAtEnd,1,NUMBERANALOGCHANNELS);
 		SetPar(5,digval);
 		SetPar(6,digval2);
-		SetPar(7,digval3); //DG3flag
+		//SetPar(7,digval3); //DG3flag testflag
 
 		// done evaluating channels that are reset to  zero (low)
 		ChangedVals = FALSE;
