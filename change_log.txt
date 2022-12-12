@@ -1,38 +1,6 @@
-Last edited 2021-11-17
+Last edited 2021-04-28
 
 This documents the changes to the ADwin Sequencer program over the years. This file was created 2019-10-01 so knowledge of all previous versions comes from labbooks and notes in the code itself.
-
------------------------
-ADwin Sequencer V17.0.3
-Status: In progress
-In Use: 2021-11-17 to ?
-Changes:
-1) Merged TimingVisulaizer and move scan table
-2) Contains GPIB 16, moved scan table, extended digital channel table and 
-	preliminary timingvisualizer
-
------------------------
-ADwin Sequencer V17.0.2
-Status: In progress
-In Use: 2021 to ?
-Changes:
-1) Moved scan table
-2) Extended digital channels table
-
------------------------
-ADwin Sequencer V17.0.1b
-Status: In progress
-In Use: 2021 to ?
-Changes:
-1) Added GPIB 16 for new lattice FM Rigol
-
------------------------
-ADwin Sequencer V17.0.1a
-Status: In progress
-In Use: 2021 to ?
-Changes:
-1) ???
-
 
 -----------------------
 ADwin Sequencer V17.0.1
