@@ -3,6 +3,14 @@ Last edited 2021-04-28
 This documents the changes to the ADwin Sequencer program over the years. This file was created 2019-10-01 so knowledge of all previous versions comes from labbooks and notes in the code itself.
 
 -----------------------
+ADwin Sequencer V17.1.0
+Status: In progress
+In Use: 2022 to ?
+Changes:
+1) Added third digital card.
+2) Fixed bug with digital channel reset to zero variable being set incorrectly for digital card 1.
+
+-----------------------
 ADwin Sequencer V17.0.1
 Status: In progress
 In Use: 2021 to ?
