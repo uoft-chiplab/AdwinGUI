@@ -847,14 +847,10 @@ void BuildUpdateList(double TMatrix[],
 				{
 					digval2=digval2+DMat[k][i]*int_power(2,(DChName[k].chnum-100)-1);
 				}
-				//DG3flag
+
 				if((digchannel>=133)&&(digchannel<=164))
 				{
 					digval3=digval3+DMat[k][i]*int_power(2,(DChName[k].chnum-132)-1);
-					if((digchannel==133)&&(i==1)) //just print once
-					{//testflag
-						printf("\n Ch 133 exists");
-					}
 				}
 
 			}// finished computing current digital data
@@ -888,17 +884,13 @@ void BuildUpdateList(double TMatrix[],
 				LastDVal2=digval2;
 			}
 
-			//DG3flag
 			if(digval3!=LastDVal3)
 			{
-				/*testflag
 				nupcurrent++;
 				nuptotal++;
 				ChNum[nuptotal]=103;
 				ChVal[nuptotal]=digval3;
-				*/
 				LastDVal3=digval3;
-				printf("digval3 changed"); //testflag
 			}
 
 			count++;
@@ -1099,7 +1091,7 @@ void BuildUpdateList(double TMatrix[],
 
 		digval=0;
 		digval2=0;
-		digval3=0; //DG3flag
+		digval3=0;
 		for(k=1;k<=NUMBERDIGITALCHANNELS;k++)
 			{
 				digchannel=DChName[k].chnum;
@@ -1107,35 +1099,23 @@ void BuildUpdateList(double TMatrix[],
 				if((digchannel>=1)&&(digchannel<=32))
 				{
 					digval=digval+DChName[k].resettolow*int_power(2,DChName[k].chnum-1);
-					printf("\n digchannel %d is %d", digchannel, DChName[k].resettolow);
-					digval3++;
 				}
 
 				if((digchannel>=101)&&(digchannel<=132))
 				{
 					digval2=digval2+DChName[k].resettolow*int_power(2,(DChName[k].chnum-100)-1);
 				}
-				/*
+
 				if((digchannel>=133)&&(digchannel<=164))
 				{
 					digval3=digval3+DChName[k].resettolow*int_power(2,(DChName[k].chnum-132)-1);
-					if(digchannel==133)
-					{//testflag
-						printf("set Ch133 to low");
-					}
-				} */
+				}
 			}// finished computing current digital data
-
-
-		//	printf("digval %x, digval %x \n",digval,digval2);
 
 		SetData_Long(4,ResetToZeroAtEnd,1,NUMBERANALOGCHANNELS);
 		SetPar(5,digval);
-		printf("\ndigval: %d", digval);
 		SetPar(6,digval2);
-		printf("\ndigval2: %d", digval2);
-		printf("\nno. DG1 Ch: %d", digval3);
-		//SetPar(7,digval3); //DG3flag testflag
+		SetPar(7,digval3);
 
 		// done evaluating channels that are reset to zero (low)
 		ChangedVals = FALSE;

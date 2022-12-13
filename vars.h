@@ -20,7 +20,7 @@ typedef int BOOL;
 ADwin Variables and GUI things
 *************************************************************************/
 
-#define SEQUENCER_VERSION "ADwin Sequencer V17.0.4test - "
+#define SEQUENCER_VERSION "ADwin Sequencer V17.1.0 - "
 
 // ADwin info
 #define DefaultEventPeriod (0.100)   // in milliseconds

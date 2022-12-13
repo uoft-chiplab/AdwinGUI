@@ -105,8 +105,6 @@ INIT:
   DigProg2(2,65535)
   DigProg1(3,65535)
   DigProg2(3,65535)
-  DigProg1(4,65535)
-  DigProg2(4,65535)
   
   'Configure cards for synchronous output
   ' digital: 1 is transistor output, not used, 2 and 3 are digital outs

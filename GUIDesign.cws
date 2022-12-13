@@ -31,7 +31,7 @@ Save Changes Before Compiling = "Always"
 Hide Windows = False
 Break At First Statement = False
 Sort Type = "File Name"
-Number of Opened Files = 2
+Number of Opened Files = 4
 Window Confinement Region Enabled = True
 MainColumnWidth = 212
 FileDateColumnWidth = 70
@@ -50,12 +50,12 @@ Batch Build Debug = False
 Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/GUIDes"
 Path Line0002 = "ign.c"
 File Type = "CSource"
-Disk Date = 3753811089
+Disk Date = 3753813634
 In Projects = "1,"
-Source Window State = "1,840,840,840,37,37,37,0,0,0,0,0,0,0,0,0,813,0,840,37,401,490,1,0,"
+Source Window State = "1,697,697,697,36,36,36,0,0,0,0,0,0,0,0,0,1,0,697,36,401,490,1,0,"
 Window Top = 33
 Window Left = 10
-Window Z-Order = 2
+Window Z-Order = 1
 
 [File 0002]
 Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/LaserS"
@@ -75,6 +75,7 @@ In Projects = "1,"
 Source Window State = "1,17,17,17,0,0,0,0,0,0,0,0,0,0,0,0,0,0,17,0,401,749,1,0,"
 Window Top = 33
 Window Left = 10
+Window Z-Order = 4
 
 [File 0004]
 Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/GUIDes"
@@ -172,10 +173,10 @@ Path = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_rep
 File Type = "CSource"
 Disk Date = 3753805536
 In Projects = "1,"
-Source Window State = "1,336,336,336,0,0,0,0,0,0,0,0,0,0,0,0,330,0,336,0,349,700,1,0,"
+Source Window State = "1,8,8,8,21,21,21,0,0,0,0,0,0,0,0,0,0,0,8,21,349,700,1,0,"
 Window Top = 32
 Window Left = 6
-Window Z-Order = 1
+Window Z-Order = 3
 
 [File 0014]
 Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Proces"
@@ -633,11 +634,12 @@ Source Window State = "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"
 [File 0064]
 Path = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/vars.h"
 File Type = "Include"
-Disk Date = 3753711333
+Disk Date = 3753813568
 In Projects = "1,"
-Source Window State = "1,114,114,114,4,4,4,0,0,0,0,0,0,0,0,0,72,0,114,4,401,630,1,0,"
+Source Window State = "1,22,22,22,50,50,50,0,0,0,0,0,0,0,0,0,42,0,22,50,401,630,1,0,"
 Window Top = 33
 Window Left = 10
+Window Z-Order = 2
 
 [File 0065]
 Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Anrits"
@@ -753,6 +755,8 @@ Window Width = 602
 Tab 0001 Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/GUIDes"
 Tab 0001 Line0002 = "ign.c"
 Tab 0002 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/main.c"
+Tab 0003 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/main.h"
+Tab 0004 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/vars.h"
 
 [Default Build Config 0001 Debug]
 Generate Browse Info = True
