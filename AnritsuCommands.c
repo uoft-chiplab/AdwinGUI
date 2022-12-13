@@ -304,17 +304,6 @@ int AnritsuCOMMUNICATE (void)
    t_step =0.05;
    }
 
-   //setting up Anritsu Trigger
-
-   //DChName[68].chname = "Anritsu Trigger";
-   //DChName[68].chnum = 118;
-   //DChName[68].resettolow = 1;
-
-   //DigTableValues[first_col][68][first_page] = 1;
-
-   //DChName[]
-
-   //LaserProperties[3]
    start = time(NULL);
 
 

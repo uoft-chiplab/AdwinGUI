@@ -350,7 +350,7 @@ void initializeAnalogChProps(void){
 }
 
 // Initializes all elements of the DChName global var
-// Note: Zeros everything including the unused 0th indices and the extra rowsrows that correspond to dds/laser/anritsu
+// Note: Zeros everything including the unused 0th indices and the extra rows that correspond to dds/laser/anritsu
 void initializeDigChProps(void){
 
 	int i;

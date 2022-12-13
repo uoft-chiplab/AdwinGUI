@@ -838,7 +838,7 @@ void BuildUpdateList(double TMatrix[],
 			{
 				digchannel=DChName[k].chnum;
 
-				if(digchannel<=32)
+				if((digchannel>=1)&&(digchannel<=32))
 				{
 					digval=digval+DMat[k][i]*int_power(2,DChName[k].chnum-1);
 				}
@@ -851,9 +851,9 @@ void BuildUpdateList(double TMatrix[],
 				if((digchannel>=133)&&(digchannel<=164))
 				{
 					digval3=digval3+DMat[k][i]*int_power(2,(DChName[k].chnum-132)-1);
-					if(digchannel==133)
+					if((digchannel==133)&&(i==1)) //just print once
 					{//testflag
-						printf("\n Ch 133");
+						printf("\n Ch 133 exists");
 					}
 				}
 
@@ -1104,20 +1104,18 @@ void BuildUpdateList(double TMatrix[],
 			{
 				digchannel=DChName[k].chnum;
 
-				if(digchannel<=32)
+				if((digchannel>=1)&&(digchannel<=32))
 				{
 					digval=digval+DChName[k].resettolow*int_power(2,DChName[k].chnum-1);
-					if(digitalchannel==4) //testflag
-					{
-						printf("Ch4 value: %d",DChName[k].resettolow);
-					}
+					printf("\n digchannel %d is %d", digchannel, DChName[k].resettolow);
+					digval3++;
 				}
 
 				if((digchannel>=101)&&(digchannel<=132))
 				{
 					digval2=digval2+DChName[k].resettolow*int_power(2,(DChName[k].chnum-100)-1);
 				}
-
+				/*
 				if((digchannel>=133)&&(digchannel<=164))
 				{
 					digval3=digval3+DChName[k].resettolow*int_power(2,(DChName[k].chnum-132)-1);
@@ -1125,28 +1123,21 @@ void BuildUpdateList(double TMatrix[],
 					{//testflag
 						printf("set Ch133 to low");
 					}
-				}
-
-	//			printf("DChName[%d].chnum %d,DChName[k].resettolow %d, digval %x, digval2 %x \n",k,DChName[k].chnum,DChName[k].resettolow,digval,digval2);
+				} */
 			}// finished computing current digital data
 
 
 		//	printf("digval %x, digval %x \n",digval,digval2);
 
-		//ResetToZeroAtEndDig[1]=digval;// 1-32
-		//ResetToZeroAtEndDig[2]=digval2;// 101-132
-
-		//ResetToZeroAtEnd[25]=0;// lower 16 digital channels
-		//ResetToZeroAtEnd[26]=0;// digital channels 17-24
-//		ResetToZeroAtEnd[27]=0;// master override....if ==1 then reset none
-//		if(checkresettozero==0) { ResetToZeroAtEnd[27]=1;}
-
 		SetData_Long(4,ResetToZeroAtEnd,1,NUMBERANALOGCHANNELS);
 		SetPar(5,digval);
+		printf("\ndigval: %d", digval);
 		SetPar(6,digval2);
+		printf("\ndigval2: %d", digval2);
+		printf("\nno. DG1 Ch: %d", digval3);
 		//SetPar(7,digval3); //DG3flag testflag
 
-		// done evaluating channels that are reset to  zero (low)
+		// done evaluating channels that are reset to zero (low)
 		ChangedVals = FALSE;
 	}
 
