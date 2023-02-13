@@ -323,6 +323,15 @@ void SendGPIBString(int j)
     			return;
     		}
     		break;
+		case RIGOL_2023_ADDR:
+    		sprintf( buffer, RIGOL_2023_NAME );
+    		printf("visa pseudo-addr connect:>>%s<<\n", buffer);
+    		status = viOpen(defaultRM, buffer, VI_NULL, VI_NULL, &instrVISA);
+    		if( status < VI_SUCCESS ){//error
+    			printf("FAILED\n");
+    			return;
+    		}
+    		break;
     	}
 	}
 	else if( GPIBDev[j-1].address >= 0 && GPIBDev[j-1].address <= 30 ){// real GPIB address
