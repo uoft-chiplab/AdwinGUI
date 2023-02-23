@@ -340,8 +340,11 @@ double SRS_amplitude, SRS_offset, SRS_frequency;// SRS_frequency is still live i
 #define RIGOL_2021_NAME ("Rigol_2021")// VISA resouce name or alias of the Rigol 2021 for FM mod
 #define RIGOL_2021_ADDR (102)	// pseudo-address of the Rigol 2021 for FM mod
 
-#define RIGOL_2023_NAME ("Rigol_2023")// VISA resource name or alias of the Rigol 2023 DG1022Z for Raman driver control
-#define RIGOL_2023_ADDR (103)	// pseudo-address of the Rigol 2023 for Raman control
+#define RIGOL_2023a_NAME ("Rigol_2023a")// VISA resource name or alias of the Rigol 2023 DG1022Z for Raman driver control
+#define RIGOL_2023a_ADDR (103)	// pseudo-address of the Rigol 2023 for Raman control
+
+#define RIGOL_2023b_NAME ("Rigol_2023b")// VISA resource name or alias of the other Rigol 2023 DG1022Z for Raman driver control
+#define RIGOL_2023b_ADDR (104)// pseudo-address of the other Rigol 2023 for Raman control
 
 struct GPIBDDeviceProperties{
 	int		address;	// GPIB address (1..32), 0 means: not initialized
