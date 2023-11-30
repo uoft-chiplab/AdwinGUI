@@ -38,7 +38,7 @@ void BuildLaserUpdates(
 	cmdCount=0;
 
 
-	//printf("Building List...\n");
+	printf("Building List...\n"); //debug tag
 
 	for(laserNum=0;laserNum<NUMBERLASERS;laserNum++)
 	{
@@ -50,7 +50,7 @@ void BuildLaserUpdates(
 			DDSCLK=LaserProperties[laserNum].DDS_Clock;
 			DDSDiv=LaserProperties[laserNum].DDS_Div;
 			DDSType=LaserProperties[laserNum].DDS_Type;
-			//printf("DDSType %d\n",DDSType);
+			printf("DDSType %d\n",DDSType); //debug tag
 ///			PFD_DivShadow=0;
 			FreqShadow=0.0;
 			profileShadow=0;//Profile Shadow variable (we only use 1 and 0)
@@ -284,7 +284,7 @@ void BuildLaserUpdates(
 		}
 	}
 	return;
-   //printf("cmdCount = %d\n",cmdCount);
+    printf("cmdCount = %d\n",cmdCount);//debug tag
 }
 
 
@@ -307,7 +307,7 @@ unsigned int tcpConnect(int laserNum)
 	if (connected==0)
 	{
 		SetTableCellAttribute (panelHandle, PANEL_TBL_ANAMES,MakePoint(1,laserNum+NUMBERANALOGCHANNELS+NUMBERDDS+1), ATTR_TEXT_BGCOLOR,VAL_GREEN);
-	///	printf("Connected!\n");
+		printf("Connected!\n"); //debug tag
 	}
 	else if ( connected < 0 ){
 		error=tcp_errorlookup(connected);
@@ -326,8 +326,8 @@ int tcpDisconnect(unsigned int tcp_handle)
 
 	if (tcpErr=DisconnectFromTCPServer (tcp_handle)<0)
 	{
-///		printf("Error Closing Socket\n");
-///		printf(tcp_errorlookup(tcpErr));
+		printf("Error Closing Socket\n"); //debug tag
+		printf(tcp_errorlookup(tcpErr));
 	}
 	return tcpErr;
 
