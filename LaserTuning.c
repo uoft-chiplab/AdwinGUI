@@ -271,7 +271,7 @@ void BuildLaserUpdates(
 				}
 				sprintf(errorBuff,"Error[s] in seq for ");
 				strcat(errorBuff,LaserProperties[laserNum].Name);
-				printf("%s\n", errorBuff) // debug tag
+				printf("%s\n", errorBuff); // debug tag
 				SeqError(errorBuff);
 
 			}
