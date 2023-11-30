@@ -271,6 +271,7 @@ void BuildLaserUpdates(
 				}
 				sprintf(errorBuff,"Error[s] in seq for ");
 				strcat(errorBuff,LaserProperties[laserNum].Name);
+				printf(errorBuff) // debug tag
 				SeqError(errorBuff);
 
 			}
@@ -478,7 +479,7 @@ int tcpSendCmdList(unsigned int tcp_handle,unsigned char* cmdList[MAXCMDNUM],int
 		if(sendErr<0)
 		{	/* try printing the error message */
 			totalErrs++;
-		///	printf("Step: %d  Error %d from ClientTCPWrite: %s  Total Errors: %d\n", i, sendErr, testErrMsg, totalErrs);
+			printf("Step: %d  Error %d from ClientTCPWrite: %s  Total Errors: %d\n", i, sendErr, testErrMsg, totalErrs); //debug tag
 		}
 		if(i%UNCHOKE_INT==0||i==cmdCount-2)	// allow rabbit to unchoke at interval and before last cmd (start seq)
 		{
