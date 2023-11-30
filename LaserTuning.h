@@ -12,7 +12,7 @@
 #include <cvirte.h>
 #include "vars.h"
 
-#define MAXCMDNUM 2000		   //Max number of commands the rabbit can store in a single event list
+#define MAXCMDNUM 2000		   //Max number of commands the rabbit can store in a single event list //debug tag
 #define HEARTCMD 0x7F          //Stay Alive Data Byte sent by rabbit
 
 

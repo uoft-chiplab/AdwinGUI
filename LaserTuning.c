@@ -11,7 +11,7 @@
 
 #define TCP_BUFF 960   //960/2 = max # of bytes per data transmission
 #define UNCHOKE_INT 25 // interval (# of commands) before the sequencer waits for the rabit to "unchoke" itself (process tcp commands)
-#define UNCHOKE_TO 4.0 // timeout for the rabbit during an unchoke in seconds
+#define UNCHOKE_TO 4.0 // timeout for the rabbit during an unchoke in seconds // debug tag // needs more time or more commands for unchoking?
 static int comReady;
 
 
@@ -271,7 +271,7 @@ void BuildLaserUpdates(
 				}
 				sprintf(errorBuff,"Error[s] in seq for ");
 				strcat(errorBuff,LaserProperties[laserNum].Name);
-				printf(errorBuff) // debug tag
+				printf("%s\n", errorBuff) // debug tag
 				SeqError(errorBuff);
 
 			}
@@ -479,7 +479,7 @@ int tcpSendCmdList(unsigned int tcp_handle,unsigned char* cmdList[MAXCMDNUM],int
 		if(sendErr<0)
 		{	/* try printing the error message */
 			totalErrs++;
-			printf("Step: %d  Error %d from ClientTCPWrite: %s  Total Errors: %d\n", i, sendErr, testErrMsg, totalErrs); //debug tag
+			printf("Step: %d  Error %d from ClientTCPWrite: %s  Total Errors: %d  cmdCount: %d\n", i, sendErr, testErrMsg, totalErrs, cmdCount); //debug tag
 		}
 		if(i%UNCHOKE_INT==0||i==cmdCount-2)	// allow rabbit to unchoke at interval and before last cmd (start seq)
 		{
@@ -490,7 +490,7 @@ int tcpSendCmdList(unsigned int tcp_handle,unsigned char* cmdList[MAXCMDNUM],int
 				if(Timer()-ucStart>UNCHOKE_TO)
 				{
 					totalErrs++;
-				///	printf("Step: %d  Timer()-ucStart>UNCHOKE_TO   Total Errors: %d\n",i, totalErrs);
+				    printf("Step: %d  Timer()-ucStart>UNCHOKE_TO   Total Errors: %d   cmdCount: %d\n",i, totalErrs, cmdCount); // debug tag
 					return totalErrs;
 				}
 				ProcessTCPEvents ();
