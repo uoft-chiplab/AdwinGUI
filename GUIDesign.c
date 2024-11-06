@@ -1059,19 +1059,19 @@ void BuildUpdateList(double TMatrix[],
 	// Send the Array to the AdWin Sequencer
 // ------------------------------------------------------------------------------------------------------------------
 		SetPar(2,GlobalDelay);
-	//	timestamp2 = Timer();
+		timestamp2 = Timer();
 		SetData_Long(2,ChNum,1,nuptotal+1);
-	//	timestamp3 = Timer();
+		timestamp3 = Timer();
 		SetData_Float(3,ChVal,1,nuptotal+1);
 // ------------------------------------------------------------------------------------------------------------------
 
-	//	 printf("end at: %s \n", TimeStr());
-	//	 printf("elapsed time (calculating):  %0.3f s\n", timestamp-timestamp1);
-	//	 printf("elapsed time (sending):  %0.3f s\n", Timer()-timestamp);
-	//	 printf("elapsed time (sending global delay):  %0.3f s\n", timestamp2-timestamp);
-	//	 printf("elapsed time (sending ChNum):  %0.3f s, size = %d\n", timestamp3-timestamp2,size1);
-	//	 printf("elapsed time (sending ChVal):  %0.3f s, size = %d\n", Timer()-timestamp3,size2);
-	//	 printf("elapsed time (total):  %0.3f s\n", Timer()-timestamp1);
+		 printf("end at: %s \n", TimeStr()); //debug tag
+		 printf("elapsed time (calculating):  %0.3f s\n", timestamp-timestamp1);
+		 printf("elapsed time (sending):  %0.3f s\n", Timer()-timestamp);
+		 printf("elapsed time (sending global delay):  %0.3f s\n", timestamp2-timestamp);
+		 printf("elapsed time (sending ChNum):  %0.3f s, size = %d\n", timestamp3-timestamp2,size1);
+		 printf("elapsed time (sending ChVal):  %0.3f s, size = %d\n", Timer()-timestamp3,size2);
+		 printf("elapsed time (total):  %0.3f s\n", Timer()-timestamp1);
 
 
 		// determine if we should reset values to zero after a cycle
@@ -1086,7 +1086,7 @@ void BuildUpdateList(double TMatrix[],
 			{
 				ResetToZeroAtEnd[AChName[i].chnum-1]=AChName[i].resettozero;
 			}
-			//printf("Line = %d, Channel = %d, Reset-to-zero = %d \n", i, AChName[i].chnum, ResetToZeroAtEnd[i-1]);
+			printf("Line = %d, Channel = %d, Reset-to-zero = %d \n", i, AChName[i].chnum, ResetToZeroAtEnd[i-1]);
 		}
 
 		digval=0;
@@ -1162,8 +1162,8 @@ void BuildUpdateList(double TMatrix[],
 //	SetCtrlVal(panelHandle, PANEL_LED_GRE, 1);
 
 	timeEnd = Timer();
-	//printf("BuildUpdateTable: EndProcess-StartProcess: %f seconds.\n", timeEndProcess-timeStartProcess);
-	//printf("BuildUpdateTable: End-Start: %f seconds.\n", timeEnd-timeStart);
+	printf("BuildUpdateTable: EndProcess-StartProcess: %f seconds.\n", timeEndProcess-timeStartProcess);
+	printf("BuildUpdateTable: End-Start: %f seconds.\n", timeEnd-timeStart);
 }
 
 //*****************************************************************************************
@@ -1226,12 +1226,13 @@ double CalcFcnValue(int fcn,double Vinit,double Vfinal, double timescale,double 
 				value=Vinit+(aconst*pow(tms,2)+bconst*pow(tms,3));
 			}
 			break;
-		case 5 : // generate a sinewave.  Use Vfinal as the amplitude and timescale as the frequency
+		case 5 : // generate a sinewave.  Use Vfinal as the amplitude and offset
+				// and timescale as the frequency
 			// ignore the 'Simple Timing' option...use the user entered value.
 
 			amplitude=Vfinal;
-		//	frequency=timescale; //consider it to be Hertz (tms is time in milliseconds)
-			value=amplitude * sin(2*3.14159*frequency*tms/1000);
+		//	frequency=timescale; //consider it to be kHz (tms is time in milliseconds)
+			value=amplitude * sin(2*3.14159*frequency*tms) + amplitude;
 	}
 	// Check if the value exceeds the allowed voltage limits.
 	return value;

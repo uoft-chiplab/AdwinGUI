@@ -233,7 +233,7 @@ void BuildLaserUpdates(
 					cmdList[i][0]=ADDEVENT;
 				}
 			}
-			///printf("trigCount %d\n",trigCount);
+			printf("trigCount %d\n",trigCount); // debug tag
 			cmdList[cmdCount]=cmd_startSeq(0,&cmdLengthList[cmdCount]);		//Begin sequence execution (0 Adwin Triggered. for TCP triggering )
 			cmdCount++;
 
@@ -244,8 +244,8 @@ void BuildLaserUpdates(
 				tcpErr=tcpSendCmdList(tcp_handle,cmdList,cmdLengthList,cmdCount);
 
 			//	tcpTriggering(tcp_handle,trigCount);		// for testing with tcp troggering only
-
-				Delay (1.0);
+				printf("Attempting to disconnect...\n"); // debug tag
+				Delay (1.0); // what is this delay for? Is it long enough?
 				tcpDisconnect(tcp_handle);
 
 				SetTableCellAttribute (panelHandle, PANEL_TBL_ANAMES,MakePoint(1,laserNum+NUMBERANALOGCHANNELS+NUMBERDDS+1), ATTR_TEXT_BGCOLOR,0xFF3366L);
@@ -303,7 +303,7 @@ unsigned int tcpConnect(int laserNum)
 
 	tcp_handle=0;
 	connected = ConnectToTCPServer (&tcp_handle,LaserProperties[laserNum].Port,LaserProperties[laserNum].IP,&TCP_Comm_Callback, 0,1000);
-
+	printf("Attempting connection... IP: %s   Port: %d\n", LaserProperties[laserNum].IP, LaserProperties[laserNum].Port); //debug tag
 	if (connected==0)
 	{
 		SetTableCellAttribute (panelHandle, PANEL_TBL_ANAMES,MakePoint(1,laserNum+NUMBERANALOGCHANNELS+NUMBERDDS+1), ATTR_TEXT_BGCOLOR,VAL_GREEN);

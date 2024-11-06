@@ -140,7 +140,7 @@ unsigned char * cmd_powerDDS(unsigned int dds_on,int *cmdLength)
 	{
 		*cmdLength=POWER_DDS_SIZE;
 		cmd[0]=POWER_DDS;
-		///printf("cmd[0] = %x \t POWER_DDS\n",cmd[0]);
+		printf("cmd[0] = %x \t POWER_DDS\n",cmd[0]); // debug tag
 		if ((dds_on==1)||(dds_on==0))
 			cmd[1]=dds_on;
 		else
@@ -159,7 +159,7 @@ unsigned char * cmd_ddsReset(int *cmdLength)
 	unsigned char *cmd = (unsigned char *)malloc(DDSRESET_SIZE*sizeof(char));
 	*cmdLength=DDSRESET_SIZE;
 	cmd[0]=DDSRESET;
-	///printf("cmd[0] = %x \t DDSRESET\n",cmd[0]);
+	printf("cmd[0] = %x \t DDSRESET\n",cmd[0]); // debug tag
 	return cmd;
 }
 /*************************************************************************************************************************/
@@ -171,7 +171,7 @@ unsigned char * cmd_FUD(int *cmdLength)
 	unsigned char *cmd = (unsigned char *)malloc(FUD_SIZE*sizeof(char));
 	*cmdLength=FUD_SIZE;
 	cmd[0]=FUD;
-	///printf("cmd[0] = %x \t FUD\n",cmd[0]);
+	printf("cmd[0] = %x \t FUD\n",cmd[0]); // debug tag
 	return cmd;
 }
 /*************************************************************************************************************************/
@@ -194,7 +194,7 @@ unsigned char* cmd_setFreq(int profile, double frequency,int *cmdLength)
 		{
 			*cmdLength=SETDDS9858FREQ_SIZE;
 			cmd[0]=SETDDSFREQ;
-			///printf("cmd[0] = %x \t SETDDSFREQ\n",cmd[0]);
+			printf("cmd[0] = %x \t SETDDSFREQ\n",cmd[0]); // debug tag
 			ftw_int=(unsigned int)(frequency*pow(2,32)/(DDSCLK));
 			ftw_hex=(unsigned char *)&ftw_int;
 			cmd[1]=profile;
@@ -207,7 +207,7 @@ unsigned char* cmd_setFreq(int profile, double frequency,int *cmdLength)
 		{
 			*cmdLength=SETDDS9854FREQ_SIZE;
 			cmd[0]=SETDDSFREQ;
-			///printf("cmd[0] = %x \t SETDDSFREQ\n",cmd[0]);
+			printf("cmd[0] = %x \t SETDDSFREQ\n",cmd[0]); // debug tag
 			ftw_int=(unsigned int)(frequency*(pow(2,32)/(DDSCLK)));
 			ftw_hex=(unsigned char *)&ftw_int;
 			cmd[1]=0x00;
@@ -247,7 +247,7 @@ unsigned char* cmd_setProfile(int profile, int *cmdLength)
 	if((profile>=0)&&(profile<=3))
 	{
 		cmd[0]=PROFILE_SELECT;
-		///printf("cmd[0] = %x \t PROFILE_SELECT\n",cmd[0]);
+		printf("cmd[0] = %x \t PROFILE_SELECT\n",cmd[0]); // debug tag
 		cmd[1]=profile;
 	}
 	else
@@ -302,7 +302,7 @@ unsigned char* cmd_powerPFD(int power_toggle,int FastLock_enable,int useFTWforFL
 	{
 		*cmdLength=POWER_PFD_SIZE;
 		cmd[0]=POWER_PFD;
-		///printf("cmd[0] = %x \t POWER_PFD\n",cmd[0]);
+		printf("cmd[0] = %x \t POWER_PFD\n",cmd[0]); // debug tag
 		cmd[1]=!useFTWforFL*int_pow(2,0)+FastLock_enable*int_pow(2,1)+!power_toggle*int_pow(2,3);
 	}
 	else
@@ -323,7 +323,7 @@ unsigned char* cmd_setCPRef(int ref, int *cmdLength)
 	{
 		*cmdLength=SETCPUMPREF_SIZE;
 		cmd[0]=SETCPUMPREF;
-		///printf("cmd[0] = %x \t SETCPUMPREF\n",cmd[0]);
+		printf("cmd[0] = %x \t SETCPUMPREF\n",cmd[0]); // debug tag
 		cmd[1]=ref;
 	}
 	else
@@ -457,7 +457,7 @@ unsigned char* cmd_StopDDSRamp(int *cmdLength)
 	unsigned char *cmd = (unsigned char *)malloc(RAMPDDS_END_SIZE*sizeof(char));
 	*cmdLength=RAMPDDS_END_SIZE;
 	cmd[0]=RAMPDDS_END;
-	///printf("cmd[0] = %x \t RAMPDDS_END\n",cmd[0]);
+	printf("cmd[0] = %x \t RAMPDDS_END\n",cmd[0]); // debug tag
 	return cmd;
 }
 /*************************************************************************************************************************/
@@ -605,7 +605,7 @@ unsigned char* cmd_beginDDSRamp(double rampHeight,double rampTime, int *cmdLengt
 				*cmdLength=0;
 			}
 
-			///printf("rampHeight %f rampTime %f dftw_over_dfrrw %f dfrrw: %d   dftw: %d \n",rampHeight,rampTime,dftw_over_dfrrw,dfrrw,dftw);
+			printf("rampHeight %f rampTime %f dftw_over_dfrrw %f dfrrw: %d   dftw: %d \n",rampHeight,rampTime,dftw_over_dfrrw,dfrrw,dftw); // debug tag
 
 			dfrrw_hex=(unsigned char *)&dfrrw;
  			dftw_hex=(unsigned char *)&dftw;
@@ -709,8 +709,7 @@ unsigned char* cmd_beginDDSRamp(double rampHeight,double rampTime, int *cmdLengt
 			//	dftw=(int)(dftw_over_dfrrw*dfrrw);
 
 			slope=(double) dftw/dfrrw;
-			//printf("rHeight %f rTime %f dftw_over_dfrrw %f \t dfrrw: %u \tdftw: %u slope %f\n",rampHeight,rampTime,dftw_over_dfrrw,dfrrw,dftw,slope);
-
+			printf("rHeight %f rTime %f dftw_over_dfrrw %f \t dfrrw: %u \tdftw: %u slope %f\n",rampHeight,rampTime,dftw_over_dfrrw,dfrrw,dftw,slope); //debug tag
 			dfrrw_hex=(unsigned char *)&dfrrw;
  			dftw_hex=(unsigned char *)&dftw;
 
@@ -790,7 +789,7 @@ unsigned char* cmd_ScanDDS(double scanAmplitude,double scanTime, int *cmdLength)
 		{
 			*cmdLength=DDSSCAN_SIZE;
 			cmd[0]=DDSSCAN;
-			///printf("cmd[0] = %x \t DDSSCAN\n",cmd[0]);
+			printf("cmd[0] = %x \t DDSSCAN\n",cmd[0]); // debug tag
 			cmd[1]=1;
 			scanTime_hex=(unsigned char *)&scanTime_int;
 
@@ -813,7 +812,7 @@ unsigned char* cmd_ScanDDS(double scanAmplitude,double scanTime, int *cmdLength)
 
 				dfrrw=(short)(1.0/fabs(dftw_over_dfrrw));
 			}
-			//printf("ScanTime: %dms\tdfrrw: %d\tdftw: %d\n",scanTime_int,dfrrw,dftw);
+			printf("ScanTime: %dms\tdfrrw: %d\tdftw: %d\n",scanTime_int,dfrrw,dftw);
 
 			dfrrw_hex=(unsigned char *)&dfrrw;
 			dftw_hex=(unsigned char *)&dftw;
@@ -855,7 +854,7 @@ unsigned char* cmd_clearEvents(int *cmdLength)
 	unsigned char *cmd = (unsigned char *)malloc(CLEAREVENTS_SIZE*sizeof(char));
 	*cmdLength=CLEAREVENTS_SIZE;
 	cmd[0]=CLEAREVENTS;
-	///printf("cmd[0] = %x \t CLEAREVENTS\n",cmd[0]);
+	printf("cmd[0] = %x \t CLEAREVENTS\n",cmd[0]); // debug tag
 	return cmd;
 }
 /*************************************************************************************************************************/
@@ -869,7 +868,7 @@ unsigned char* cmd_startSeq(int triggerMode, int *cmdLength)
 	{
 		*cmdLength=EXCT_SEQ_SIZE;
 		cmd[0]=EXCT_SEQ;
-		///printf("cmd[0] = %x \t EXCT_SEQ\n",cmd[0]);
+		printf("cmd[0] = %x \t EXCT_SEQ\n",cmd[0]); // debug tag
 		cmd[1]=triggerMode;
 	}
 	else
@@ -890,7 +889,7 @@ unsigned char* cmd_setAutoConfig(int configNum,int *cmdLength)
 	{
 		*cmdLength=INIT_AUTOCONFIG_SIZE;
 		cmd[0]=INIT_AUTOCONFIG;
-		///printf("cmd[0] = %x \t INIT_AUTOCONFIG\n",cmd[0]);
+		printf("cmd[0] = %x \t INIT_AUTOCONFIG\n",cmd[0]); // debug tag
 		cmd[1]=configNum;
 	}
 	else
@@ -909,7 +908,7 @@ unsigned char* cmd_exctAutoConfig(int configNum,int *cmdLength)
 	{
 		*cmdLength=EXCT_AUTOCONFIG_SIZE;
 		cmd[0]=EXCT_AUTOCONFIG;
-		///printf("cmd[0] = %x \t EXCT_AUTOCONFIG\n",cmd[0]);
+		printf("cmd[0] = %x \t EXCT_AUTOCONFIG\n",cmd[0]); // debug tag
 		cmd[1]=configNum;
 	}
 	else
@@ -930,7 +929,7 @@ unsigned char* cmd_tcpTrig(int trigLength, int *cmdLength)
 	{
 		*cmdLength=TCP_TRIG_SIZE;
 		cmd[0]=TCP_TRIG;
-		///printf("cmd[0] = %x \t TCP_TRIG\n",cmd[0]);
+		printf("cmd[0] = %x \t TCP_TRIG\n",cmd[0]); // debug tag
 		cmd[1]=trigLength;
 	}
 	else
@@ -948,7 +947,7 @@ unsigned char* cmd_waitForTrigger(int *cmdLength)
 	unsigned char *cmd = (unsigned char *)malloc(AWAIT_TRIG_SIZE*sizeof(char));
 	*cmdLength=AWAIT_TRIG_SIZE;
 	cmd[0]=AWAIT_TRIG;
-	///printf("cmd[0] = %x \t AWAIT_TRIG\n",cmd[0]);
+	printf("cmd[0] = %x \t AWAIT_TRIG\n",cmd[0]); // debug tag
 	return cmd;
 }
 /*************************************************************************************************************************/
@@ -962,7 +961,7 @@ unsigned char* cmd_setSwitchStates(int lin_or_int,int CPfb_or_DAC,int *cmdLength
 	{
 		*cmdLength=MODE_CFGS_SIZE;
 		cmd[0]=MODE_CFGS;
-		///printf("cmd[0] = %x \t MODE_CFGS\n",cmd[0]);
+		printf("cmd[0] = %x \t MODE_CFGS\n",cmd[0]); // debug tag
 		cmd[1]=CPfb_or_DAC+2*lin_or_int;
 	}
 	else
@@ -979,7 +978,7 @@ unsigned char* cmd_forceMonCon(int *cmdLength)
 	unsigned char *cmd = (unsigned char *)malloc(FORCE_MONCON_SIZE*sizeof(char));
 	*cmdLength=FORCE_MONCON_SIZE;
 	cmd[0]=FORCE_MONCON;
-	///printf("cmd[0] = %x \t FORCE_MONCON\n",cmd[0]);
+	printf("cmd[0] = %x \t FORCE_MONCON\n",cmd[0]); // debug tag
 	return cmd;
 }
 /*************************************************************************************************************************/
@@ -993,7 +992,7 @@ unsigned char* cmd_setDac(double voltage,int *cmdLength)
 	{
 		*cmdLength=SETDAC_SIZE;
 		cmd[0]=SETDAC;
-		///printf("cmd[0] = %x \t SETDAC\n",cmd[0]);
+		printf("cmd[0] = %x \t SETDAC\n",cmd[0]); // debug tag
 		vbin=(short*)&cmd[1];
 		*vbin=voltage/4.095*4095;
 	}
@@ -1017,7 +1016,7 @@ unsigned char* cmd_dacScan(double interval,double VBottom,double VTop,int *cmdLe
 	{
 		*cmdLength=DACSCAN_SIZE;
 		cmd[0]=DACSCAN;
-		///printf("cmd[0] = %x \t DACSCAN\n",cmd[0]);
+		printf("cmd[0] = %x \t DACSCAN\n",cmd[0]); // debug tag
 		step=(short*)&cmd[1];
 		htime=(short*)&cmd[3];
 		bottom=(short*)&cmd[5];

@@ -20,7 +20,7 @@ typedef int BOOL;
 ADwin Variables and GUI things
 *************************************************************************/
 
-#define SEQUENCER_VERSION "ADwin Sequencer V17.1.2 - "
+#define SEQUENCER_VERSION "ADwin Sequencer V17.1.3 - "
 
 // ADwin info
 #define DefaultEventPeriod (0.100)   // in milliseconds
@@ -143,9 +143,9 @@ Color definitions for panel display
 *************************************************************************/
 #define CLR_ANALOG_STEP		0xFF3366L
 #define CLR_ANALOG_LINEAR 	0x33FF66L
-#define CLR_ANALOG_EXP 		0x33CCFFL//VAL_BLUE
+#define CLR_ANALOG_EXP 		0x33CCFFL //VAL_BLUE
 #define CLR_ANALOG_MINJERK 	0xCC33FFL
-#define CLR_ANALOG_SINEWAVE VAL_CYAN
+#define CLR_ANALOG_SINEWAVE 0xFF9933L //VAL_CYAN
 #define CLR_ANALOG_COPYPREV 0xFF99CCL
 
 #define CLR_DIGITAL_HI 		0xFF3366L
