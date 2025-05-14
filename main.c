@@ -17,7 +17,8 @@ The file that starts everything off.
 #include "GPIB_SRS_SETUP.h"
 //#include <userint.h>
 //#include <stdio.h>
-//#include  <Windows.h>
+// #include  <windows.h>
+#include <utility.h> // NI CVI library 
 
 #include "multiscan.h"
 
@@ -487,4 +488,11 @@ void initializeMultiScan(void)
 	PScan.Scan_Active=FALSE;
 	PScan.Use_Scan_List=FALSE;
 	TwoParam=FALSE;
+}
+
+void minimizeConsole(void)
+{
+	// see: https://www.ni.com/docs/en-US/bundle/labwindows-cvi/page/cvi/libref/cvisetstdiowindowoptions.htm
+    // SetStdioWindowOptions (int maximumNumberOfLines, int bringToFrontWhenModified, int showLineNumbers);
+    SetStdioWindowOptions (10000, 0, 0); // Not Used, No, Not Used
 }
