@@ -18,7 +18,7 @@ Window Top = 67
 Window Left = 1284
 Window Bottom = 1908
 Window Right = 2145
-Maximized = False
+Maximized = True
 Maximized Children = True
 Max32 Number Of Errors = 20
 Track Include File Dependencies = True
@@ -52,10 +52,10 @@ Path Line0002 = "ign.c"
 File Type = "CSource"
 Disk Date = 3813766976
 In Projects = "1,"
-Source Window State = "1,1225,1225,1225,39,39,39,0,0,0,0,0,0,0,0,0,1197,0,1225,39,401,525,1,0,"
+Source Window State = "1,20,20,20,10,10,10,0,0,0,0,0,0,0,0,0,1,0,20,10,401,525,1,0,"
 Window Top = 33
 Window Left = 10
-Window Z-Order = 2
+Window Z-Order = 1
 
 [File 0002]
 Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/LaserS"
@@ -110,12 +110,12 @@ Window Left = 10
 [File 0007]
 Path = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/vars.h"
 File Type = "Include"
-Disk Date = 3813767178
+Disk Date = 3813771943
 In Projects = "1,"
-Source Window State = "1,19,19,19,30,30,30,0,0,0,0,0,0,0,0,0,0,0,19,30,401,490,1,0,"
+Source Window State = "1,160,160,160,31,31,31,0,0,0,0,0,0,0,0,0,110,0,160,31,401,490,1,0,"
 Window Top = 33
 Window Left = 10
-Window Z-Order = 1
+Window Z-Order = 2
 
 [File 0008]
 Path = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/main.h"
