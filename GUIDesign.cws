@@ -13,6 +13,8 @@ VXIplug&play Framework 64-bit Dir = "/C/Program Files/IVI Foundation/VISA/win64"
 Number of Projects = 1
 Active Project = 1
 Project 0001 = "GUIDesign.prj"
+Project 0001 Folder Source Files Collapsed = True
+Project 0001 FolderId 0 Collapsed = True
 Drag Bar Left = 217
 Window Top = 67
 Window Left = 1284
@@ -31,7 +33,7 @@ Save Changes Before Compiling = "Always"
 Hide Windows = False
 Break At First Statement = False
 Sort Type = "File Name"
-Number of Opened Files = 5
+Number of Opened Files = 6
 Window Confinement Region Enabled = True
 MainColumnWidth = 200
 FileDateColumnWidth = 70
@@ -47,67 +49,38 @@ Batch Build Release = True
 Batch Build Debug = False
 
 [File 0001]
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Analog"
+Path Line0002 = "Settings.c"
+File Type = "CSource"
+Disk Date = 3702467501
+In Projects = "1,"
+Source Window State = "1,95,95,95,62,62,62,0,0,0,0,0,0,0,0,0,14,0,95,62,401,525,1,0,"
+Window Top = 33
+Window Left = 10
+Window Z-Order = 4
+
+[File 0002]
 Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/GUIDes"
 Path Line0002 = "ign.c"
 File Type = "CSource"
 Disk Date = 3813766976
 In Projects = "1,"
-Source Window State = "1,20,20,20,10,10,10,0,0,0,0,0,0,0,0,0,1,0,20,10,401,525,1,0,"
+Source Window State = "1,11,11,11,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11,0,401,525,1,0,"
 Window Top = 33
 Window Left = 10
-Window Z-Order = 1
-
-[File 0002]
-Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/LaserS"
-Path Line0002 = "ettings.c"
-File Type = "CSource"
-Disk Date = 3702467501
-In Projects = "1,"
-Source Window State = "1,2,2,2,30,30,30,0,0,0,0,0,0,0,0,0,0,0,2,30,401,525,1,0,"
-Window Top = 33
-Window Left = 10
+Window Z-Order = 3
 
 [File 0003]
 Path = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/main.c"
 File Type = "CSource"
-Disk Date = 3753813900
+Disk Date = 3830090740
 In Projects = "1,"
-Source Window State = "1,371,371,371,14,14,14,0,0,0,0,0,0,0,0,0,321,0,371,14,401,525,1,0,"
+Source Window State = "1,25,25,25,21,21,21,0,0,0,0,0,0,0,0,0,0,0,25,21,401,525,1,0,"
 Window Top = 33
 Window Left = 10
-Window Z-Order = 4
+Window Z-Order = 1
 
 [File 0004]
-Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/LaserC"
-Path Line0002 = "ontrol.c"
-File Type = "CSource"
-Disk Date = 3687783374
-In Projects = "1,"
-Source Window State = "1,41,41,41,33,33,33,0,0,0,0,0,0,0,0,0,0,0,41,33,401,525,1,0,"
-Window Top = 33
-Window Left = 10
-
-[File 0005]
-Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/DDSSet"
-Path Line0002 = "tings.c"
-File Type = "CSource"
-Disk Date = 3687783374
-In Projects = "1,"
-Source Window State = "1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,401,518,1,0,"
-Window Top = 33
-Window Left = 10
-
-[File 0006]
-Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/GPIB_S"
-Path Line0002 = "RS_SETUP2.h"
-File Type = "Include"
-Disk Date = 3687783374
-In Projects = "1,"
-Source Window State = "1,18,18,18,6,6,6,0,0,0,0,0,0,0,0,0,0,0,18,6,401,490,1,0,"
-Window Top = 33
-Window Left = 10
-
-[File 0007]
 Path = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/vars.h"
 File Type = "Include"
 Disk Date = 3813771943
@@ -115,19 +88,19 @@ In Projects = "1,"
 Source Window State = "1,160,160,160,31,31,31,0,0,0,0,0,0,0,0,0,110,0,160,31,401,490,1,0,"
 Window Top = 33
 Window Left = 10
-Window Z-Order = 2
+Window Z-Order = 6
 
-[File 0008]
+[File 0005]
 Path = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/main.h"
 File Type = "Include"
-Disk Date = 3720012796
+Disk Date = 3830089767
 In Projects = "1,"
-Source Window State = "1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,401,490,1,0,"
+Source Window State = "1,27,27,27,25,25,25,0,0,0,0,0,0,0,0,0,0,0,27,25,401,490,1,0,"
 Window Top = 33
 Window Left = 10
-Window Z-Order = 5
+Window Z-Order = 2
 
-[File 0009]
+[File 0006]
 Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/savelo"
 Path Line0002 = "ad.c"
 File Type = "CSource"
@@ -136,38 +109,9 @@ In Projects = "1,"
 Source Window State = "1,3662,3662,3662,47,47,47,0,0,0,0,0,0,0,0,0,3634,0,3662,47,401,630,1,0,"
 Window Top = 157
 Window Left = 74
-Window Z-Order = 3
+Window Z-Order = 5
 
-[File 0010]
-Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/ScanTa"
-Path Line0002 = "bleLoader.c"
-File Type = "CSource"
-Disk Date = 3687783374
-In Projects = "1,"
-Source Window State = "1,75,75,75,49,49,49,0,0,0,0,0,0,0,0,0,0,0,75,49,401,630,1,0,"
-Window Top = 219
-Window Left = 106
-
-[File 0011]
-Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/GPIB_S"
-Path Line0002 = "RS_SETUP.h"
-File Type = "Include"
-Disk Date = 3702467501
-In Projects = "1,"
-Source Window State = "1,18,18,18,42,42,42,0,0,0,0,0,0,0,0,0,0,0,18,42,401,630,1,0,"
-Window Top = 95
-Window Left = 42
-
-[File 0012]
-Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/DDSCon"
-Path Line0002 = "trol2.h"
-File Type = "Include"
-Disk Date = 3687783374
-In Projects = "1,"
-Source Window State = "1,7,7,7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,0,400,600,1,0,"
-Window Top = 31
-
-[File 0013]
+[File 0007]
 Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Adwin."
 Path Line0002 = "c"
 File Type = "CSource"
@@ -177,7 +121,87 @@ Source Window State = "1,205,205,205,0,0,0,0,0,0,0,0,0,0,0,0,103,0,205,0,401,742
 Window Top = 95
 Window Left = 42
 
+[File 0008]
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Analog"
+Path Line0002 = "Control.c"
+File Type = "CSource"
+Disk Date = 3687783374
+In Projects = "1,"
+Source Window State = "1,168,168,168,17,17,17,0,0,0,0,0,0,0,0,0,104,0,168,17,401,742,1,0,"
+Window Top = 95
+Window Left = 42
+
+[File 0009]
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Anrits"
+Path Line0002 = "uCommands.c"
+File Type = "CSource"
+Disk Date = 3753813900
+In Projects = "1,"
+Source Window State = "1,460,460,460,0,0,0,0,0,0,0,0,0,0,0,0,441,0,460,0,506,726,1,30,"
+Window Top = 168
+Window Left = 4
+
+[File 0010]
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/DDSCon"
+Path Line0002 = "trol.c"
+File Type = "CSource"
+Disk Date = 3687783374
+In Projects = "1,"
+Source Window State = "1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,401,742,1,0,"
+Window Top = 33
+Window Left = 10
+
+[File 0011]
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/DDSSet"
+Path Line0002 = "tings.c"
+File Type = "CSource"
+Disk Date = 3687783374
+In Projects = "1,"
+Source Window State = "1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,401,518,1,0,"
+Window Top = 33
+Window Left = 10
+
+[File 0012]
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/ddstra"
+Path Line0002 = "nslator.c"
+File Type = "CSource"
+Disk Date = 3687783374
+In Projects = "1,"
+Source Window State = "1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,64,0,0,0,401,742,1,0,"
+Window Top = 64
+Window Left = 26
+
+[File 0013]
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Digita"
+Path Line0002 = "lSettings.c"
+File Type = "CSource"
+Disk Date = 3753813900
+In Projects = "1,"
+Source Window State = "1,29,29,29,18,18,18,0,0,0,0,0,0,0,0,0,0,0,29,18,401,742,1,0,"
+Window Top = 33
+Window Left = 10
+
 [File 0014]
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/LaserC"
+Path Line0002 = "ontrol.c"
+File Type = "CSource"
+Disk Date = 3687783374
+In Projects = "1,"
+Source Window State = "1,41,41,41,33,33,33,0,0,0,0,0,0,0,0,0,0,0,41,33,401,525,1,0,"
+Window Top = 33
+Window Left = 10
+
+[File 0015]
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/LaserS"
+Path Line0002 = "ettings.c"
+File Type = "CSource"
+Disk Date = 3702467501
+In Projects = "1,"
+Source Window State = "1,2,2,2,30,30,30,0,0,0,0,0,0,0,0,0,0,0,2,30,401,525,1,0,"
+Window Top = 33
+Window Left = 10
+
+[File 0016]
 Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/LaserT"
 Path Line0002 = "uning.c"
 File Type = "CSource"
@@ -186,26 +210,6 @@ In Projects = "1,"
 Source Window State = "1,26,26,26,38,38,38,0,0,0,0,0,0,0,0,0,1,0,26,38,401,630,1,0,"
 Window Top = 64
 Window Left = 26
-
-[File 0015]
-Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/GUIDes"
-Path Line0002 = "ign2.h"
-File Type = "Include"
-Disk Date = 3687783374
-In Projects = "1,"
-Source Window State = "1,33,33,33,0,0,0,0,0,0,0,0,0,0,0,0,0,0,33,0,401,630,1,0,"
-Window Top = 219
-Window Left = 106
-
-[File 0016]
-Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Rabbit"
-Path Line0002 = "Com9858.h"
-File Type = "Include"
-Disk Date = 3784660488
-In Projects = "1,"
-Source Window State = "1,1042,1042,1042,46,46,46,0,0,0,0,0,0,0,0,0,940,0,1042,46,401,742,1,0,"
-Window Top = 312
-Window Left = 154
 
 [File 0017]
 Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/multis"
@@ -218,116 +222,22 @@ Window Top = 33
 Window Left = 10
 
 [File 0018]
-Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/GUIDes"
-Path Line0002 = "ign.h"
-File Type = "Include"
-Disk Date = 3720012796
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/NumSet"
+Path Line0002 = ".c"
+File Type = "CSource"
+Disk Date = 3687783374
 In Projects = "1,"
-Source Window State = "1,223,223,223,19,19,19,0,0,0,0,0,0,0,0,0,151,0,223,19,401,630,1,0,"
-Window Top = 126
-Window Left = 58
+Source Window State = "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"
 
 [File 0019]
-Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/LaserC"
-Path Line0002 = "ontrol.h"
-File Type = "Include"
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Proces"
+Path Line0002 = "sor.c"
+File Type = "CSource"
 Disk Date = 3687783374
 In Projects = "1,"
-Source Window State = "1,25,25,25,26,26,26,0,0,0,0,0,0,0,0,0,0,0,25,26,401,742,1,0,"
-Window Top = 219
-Window Left = 106
+Source Window State = "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"
 
 [File 0020]
-Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/LaserC"
-Path Line0002 = "ontrol2.h"
-File Type = "Include"
-Disk Date = 3702467501
-In Projects = "1,"
-Source Window State = "1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,401,742,1,0,"
-Window Top = 126
-Window Left = 58
-
-[File 0021]
-Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/LaserS"
-Path Line0002 = "ettings.h"
-File Type = "Include"
-Disk Date = 3687783374
-In Projects = "1,"
-Source Window State = "1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,401,742,1,0,"
-Window Top = 188
-Window Left = 90
-
-[File 0022]
-Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/LaserS"
-Path Line0002 = "ettings2.h"
-File Type = "Include"
-Disk Date = 3687783374
-In Projects = "1,"
-Source Window State = "1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,401,742,1,0,"
-Window Top = 157
-Window Left = 74
-
-[File 0023]
-Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/LaserT"
-Path Line0002 = "uning.h"
-File Type = "Include"
-Disk Date = 3784204405
-In Projects = "1,"
-Source Window State = "1,35,35,35,0,0,0,0,0,0,0,0,0,0,0,0,0,0,35,0,401,742,1,0,"
-Window Top = 250
-Window Left = 122
-
-[File 0024]
-Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Analog"
-Path Line0002 = "Control.c"
-File Type = "CSource"
-Disk Date = 3687783374
-In Projects = "1,"
-Source Window State = "1,168,168,168,17,17,17,0,0,0,0,0,0,0,0,0,104,0,168,17,401,742,1,0,"
-Window Top = 95
-Window Left = 42
-
-[File 0025]
-Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Anrits"
-Path Line0002 = "uCommands.c"
-File Type = "CSource"
-Disk Date = 3753813900
-In Projects = "1,"
-Source Window State = "1,460,460,460,0,0,0,0,0,0,0,0,0,0,0,0,441,0,460,0,506,726,1,30,"
-Window Top = 168
-Window Left = 4
-
-[File 0026]
-Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/DDSCon"
-Path Line0002 = "trol.c"
-File Type = "CSource"
-Disk Date = 3687783374
-In Projects = "1,"
-Source Window State = "1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,401,742,1,0,"
-Window Top = 33
-Window Left = 10
-
-[File 0027]
-Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/ddstra"
-Path Line0002 = "nslator.c"
-File Type = "CSource"
-Disk Date = 3687783374
-In Projects = "1,"
-Source Window State = "1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,64,0,0,0,401,742,1,0,"
-Window Top = 64
-Window Left = 26
-
-[File 0028]
-Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Digita"
-Path Line0002 = "lSettings.c"
-File Type = "CSource"
-Disk Date = 3753813900
-In Projects = "1,"
-Source Window State = "1,29,29,29,18,18,18,0,0,0,0,0,0,0,0,0,0,0,29,18,401,742,1,0,"
-Window Top = 33
-Window Left = 10
-
-[File 0029]
 Path = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/scan.c"
 File Type = "CSource"
 Disk Date = 3687783374
@@ -336,71 +246,17 @@ Source Window State = "1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,158,0,0,0,401,630,1,0,"
 Window Top = 64
 Window Left = 26
 
-[File 0030]
-Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Adwin."
-Path Line0002 = "h"
-File Type = "Include"
-Disk Date = 3687783374
-In Projects = "1,"
-Source Window State = "1,31,31,31,17,17,17,0,0,0,0,0,0,0,0,0,25,0,31,17,401,630,1,0,"
-Window Top = 157
-Window Left = 74
-
-[File 0031]
-Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Digita"
-Path Line0002 = "lSettings2.h"
-File Type = "Include"
-Disk Date = 3687783374
-In Projects = "1,"
-Source Window State = "1,16,16,16,0,0,0,0,0,0,0,0,0,0,0,0,0,0,16,0,401,630,1,0,"
-Window Top = 126
-Window Left = 58
-
-[File 0032]
-Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/multis"
-Path Line0002 = "can.h"
-File Type = "Include"
-Disk Date = 3720013191
-In Projects = "1,"
-Source Window State = "1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,401,630,1,0,"
-Window Top = 126
-Window Left = 58
-
-[File 0033]
+[File 0021]
 Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/ScanTa"
-Path Line0002 = "bleLoader2.h"
-File Type = "Include"
-Disk Date = 3687783374
-In Projects = "1,"
-Source Window State = "1,9,9,9,5,5,5,0,0,0,0,0,0,0,0,0,0,0,9,5,401,630,1,0,"
-Window Top = 188
-Window Left = 90
-
-[File 0034]
-Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Analog"
-Path Line0002 = "Settings.c"
-File Type = "CSource"
-Disk Date = 3702467501
-In Projects = "1,"
-Source Window State = "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"
-
-[File 0035]
-Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/NumSet"
-Path Line0002 = ".c"
+Path Line0002 = "bleLoader.c"
 File Type = "CSource"
 Disk Date = 3687783374
 In Projects = "1,"
-Source Window State = "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"
+Source Window State = "1,75,75,75,49,49,49,0,0,0,0,0,0,0,0,0,0,0,75,49,401,630,1,0,"
+Window Top = 219
+Window Left = 106
 
-[File 0036]
-Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Proces"
-Path Line0002 = "sor.c"
-File Type = "CSource"
-Disk Date = 3687783374
-In Projects = "1,"
-Source Window State = "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"
-
-[File 0037]
+[File 0022]
 Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Timing"
 Path Line0002 = "Visualizer.c"
 File Type = "CSource"
@@ -410,7 +266,7 @@ Source Window State = "1,36,36,36,27,27,27,0,0,0,0,0,0,0,0,0,9,0,36,27,401,630,1
 Window Top = 250
 Window Left = 122
 
-[File 0038]
+[File 0023]
 Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/VISA_S"
 Path Line0002 = "RS_SETUP.c"
 File Type = "CSource"
@@ -421,7 +277,17 @@ Window Top = 417
 Window Left = 1567
 Window Released = True
 
-[File 0039]
+[File 0024]
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Adwin."
+Path Line0002 = "h"
+File Type = "Include"
+Disk Date = 3687783374
+In Projects = "1,"
+Source Window State = "1,31,31,31,17,17,17,0,0,0,0,0,0,0,0,0,25,0,31,17,401,630,1,0,"
+Window Top = 157
+Window Left = 74
+
+[File 0025]
 Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Analog"
 Path Line0002 = "Control.h"
 File Type = "Include"
@@ -431,7 +297,7 @@ Source Window State = "1,22,22,22,9,32,32,0,3,0,0,0,0,0,0,0,0,0,22,9,401,581,1,0
 Window Top = 33
 Window Left = 10
 
-[File 0040]
+[File 0026]
 Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Analog"
 Path Line0002 = "Control2.h"
 File Type = "Include"
@@ -439,7 +305,7 @@ Disk Date = 3687783374
 In Projects = "1,"
 Source Window State = "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"
 
-[File 0041]
+[File 0027]
 Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Analog"
 Path Line0002 = "Settings.h"
 File Type = "Include"
@@ -449,7 +315,7 @@ Source Window State = "1,18,18,18,9,34,9,0,3,0,0,0,0,0,0,0,8,0,18,34,401,742,1,0
 Window Top = 126
 Window Left = 58
 
-[File 0042]
+[File 0028]
 Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Analog"
 Path Line0002 = "Settings2.h"
 File Type = "Include"
@@ -459,7 +325,7 @@ Source Window State = "1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,401,742,1,0,"
 Window Top = 281
 Window Left = 138
 
-[File 0043]
+[File 0029]
 Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Anrits"
 Path Line0002 = "uControl.h"
 File Type = "Include"
@@ -469,7 +335,7 @@ Source Window State = "1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,401,602,1,0,"
 Window Top = 33
 Window Left = 10
 
-[File 0044]
+[File 0030]
 Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Anrits"
 Path Line0002 = "uControl2.h"
 File Type = "Include"
@@ -479,7 +345,7 @@ Source Window State = "1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,401,630,1,0,"
 Window Top = 95
 Window Left = 42
 
-[File 0045]
+[File 0031]
 Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Anrits"
 Path Line0002 = "uSettings.h"
 File Type = "Include"
@@ -489,7 +355,7 @@ Source Window State = "1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,401,630,1,0,"
 Window Top = 126
 Window Left = 58
 
-[File 0046]
+[File 0032]
 Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Anrits"
 Path Line0002 = "uSettings2.h"
 File Type = "Include"
@@ -499,7 +365,7 @@ Source Window State = "1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,401,630,1,0,"
 Window Top = 157
 Window Left = 74
 
-[File 0047]
+[File 0033]
 Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/DDSCon"
 Path Line0002 = "trol.h"
 File Type = "Include"
@@ -507,7 +373,16 @@ Disk Date = 3687783374
 In Projects = "1,"
 Source Window State = "1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,400,600,0,0,"
 
-[File 0048]
+[File 0034]
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/DDSCon"
+Path Line0002 = "trol2.h"
+File Type = "Include"
+Disk Date = 3687783374
+In Projects = "1,"
+Source Window State = "1,7,7,7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,0,400,600,1,0,"
+Window Top = 31
+
+[File 0035]
 Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/DDSSet"
 Path Line0002 = "tings.h"
 File Type = "Include"
@@ -515,7 +390,7 @@ Disk Date = 3687783374
 In Projects = "1,"
 Source Window State = "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"
 
-[File 0049]
+[File 0036]
 Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/DDSSet"
 Path Line0002 = "tings2.h"
 File Type = "Include"
@@ -523,7 +398,7 @@ Disk Date = 3687783374
 In Projects = "1,"
 Source Window State = "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"
 
-[File 0050]
+[File 0037]
 Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/ddstra"
 Path Line0002 = "nslator.h"
 File Type = "Include"
@@ -531,7 +406,7 @@ Disk Date = 3687783374
 In Projects = "1,"
 Source Window State = "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"
 
-[File 0051]
+[File 0038]
 Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Digita"
 Path Line0002 = "lSettings.h"
 File Type = "Include"
@@ -541,7 +416,117 @@ Source Window State = "1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,401,630,1,0,"
 Window Top = 95
 Window Left = 42
 
-[File 0052]
+[File 0039]
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Digita"
+Path Line0002 = "lSettings2.h"
+File Type = "Include"
+Disk Date = 3687783374
+In Projects = "1,"
+Source Window State = "1,16,16,16,0,0,0,0,0,0,0,0,0,0,0,0,0,0,16,0,401,630,1,0,"
+Window Top = 126
+Window Left = 58
+
+[File 0040]
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/GPIB_S"
+Path Line0002 = "RS_SETUP.h"
+File Type = "Include"
+Disk Date = 3702467501
+In Projects = "1,"
+Source Window State = "1,18,18,18,42,42,42,0,0,0,0,0,0,0,0,0,0,0,18,42,401,630,1,0,"
+Window Top = 95
+Window Left = 42
+
+[File 0041]
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/GPIB_S"
+Path Line0002 = "RS_SETUP2.h"
+File Type = "Include"
+Disk Date = 3687783374
+In Projects = "1,"
+Source Window State = "1,18,18,18,6,6,6,0,0,0,0,0,0,0,0,0,0,0,18,6,401,490,1,0,"
+Window Top = 33
+Window Left = 10
+
+[File 0042]
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/GUIDes"
+Path Line0002 = "ign.h"
+File Type = "Include"
+Disk Date = 3720012796
+In Projects = "1,"
+Source Window State = "1,223,223,223,19,19,19,0,0,0,0,0,0,0,0,0,151,0,223,19,401,630,1,0,"
+Window Top = 126
+Window Left = 58
+
+[File 0043]
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/GUIDes"
+Path Line0002 = "ign2.h"
+File Type = "Include"
+Disk Date = 3687783374
+In Projects = "1,"
+Source Window State = "1,33,33,33,0,0,0,0,0,0,0,0,0,0,0,0,0,0,33,0,401,630,1,0,"
+Window Top = 219
+Window Left = 106
+
+[File 0044]
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/LaserC"
+Path Line0002 = "ontrol.h"
+File Type = "Include"
+Disk Date = 3687783374
+In Projects = "1,"
+Source Window State = "1,25,25,25,26,26,26,0,0,0,0,0,0,0,0,0,0,0,25,26,401,742,1,0,"
+Window Top = 219
+Window Left = 106
+
+[File 0045]
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/LaserC"
+Path Line0002 = "ontrol2.h"
+File Type = "Include"
+Disk Date = 3702467501
+In Projects = "1,"
+Source Window State = "1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,401,742,1,0,"
+Window Top = 126
+Window Left = 58
+
+[File 0046]
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/LaserS"
+Path Line0002 = "ettings.h"
+File Type = "Include"
+Disk Date = 3687783374
+In Projects = "1,"
+Source Window State = "1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,401,742,1,0,"
+Window Top = 188
+Window Left = 90
+
+[File 0047]
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/LaserS"
+Path Line0002 = "ettings2.h"
+File Type = "Include"
+Disk Date = 3687783374
+In Projects = "1,"
+Source Window State = "1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,401,742,1,0,"
+Window Top = 157
+Window Left = 74
+
+[File 0048]
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/LaserT"
+Path Line0002 = "uning.h"
+File Type = "Include"
+Disk Date = 3784204405
+In Projects = "1,"
+Source Window State = "1,35,35,35,0,0,0,0,0,0,0,0,0,0,0,0,0,0,35,0,401,742,1,0,"
+Window Top = 250
+Window Left = 122
+
+[File 0049]
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/multis"
+Path Line0002 = "can.h"
+File Type = "Include"
+Disk Date = 3720013191
+In Projects = "1,"
+Source Window State = "1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,401,630,1,0,"
+Window Top = 126
+Window Left = 58
+
+[File 0050]
 Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/NumSet"
 Path Line0002 = ".h"
 File Type = "Include"
@@ -549,7 +534,7 @@ Disk Date = 3687783374
 In Projects = "1,"
 Source Window State = "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"
 
-[File 0053]
+[File 0051]
 Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Proces"
 Path Line0002 = "sor.h"
 File Type = "Include"
@@ -559,7 +544,17 @@ Source Window State = "1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,401,742,1,0,"
 Window Top = 343
 Window Left = 170
 
-[File 0054]
+[File 0052]
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Rabbit"
+Path Line0002 = "Com9858.h"
+File Type = "Include"
+Disk Date = 3784660488
+In Projects = "1,"
+Source Window State = "1,1042,1042,1042,46,46,46,0,0,0,0,0,0,0,0,0,940,0,1042,46,401,742,1,0,"
+Window Top = 312
+Window Left = 154
+
+[File 0053]
 Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/savelo"
 Path Line0002 = "ad.h"
 File Type = "Include"
@@ -567,14 +562,14 @@ Disk Date = 3702467502
 In Projects = "1,"
 Source Window State = "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"
 
-[File 0055]
+[File 0054]
 Path = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Scan.h"
 File Type = "Include"
 Disk Date = 3687783374
 In Projects = "1,"
 Source Window State = "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"
 
-[File 0056]
+[File 0055]
 Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/scan2."
 Path Line0002 = "h"
 File Type = "Include"
@@ -582,13 +577,23 @@ Disk Date = 3687783374
 In Projects = "1,"
 Source Window State = "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"
 
-[File 0057]
+[File 0056]
 Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/ScanTa"
 Path Line0002 = "bleLoader.h"
 File Type = "Include"
 Disk Date = 3687783374
 In Projects = "1,"
 Source Window State = "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"
+
+[File 0057]
+Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/ScanTa"
+Path Line0002 = "bleLoader2.h"
+File Type = "Include"
+Disk Date = 3687783374
+In Projects = "1,"
+Source Window State = "1,9,9,9,5,5,5,0,0,0,0,0,0,0,0,0,0,0,9,5,401,630,1,0,"
+Window Top = 188
+Window Left = 90
 
 [File 0058]
 Path Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Timing"
@@ -777,11 +782,13 @@ Window Width = 602
 [Tab Order]
 Tab 0001 Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/GUIDes"
 Tab 0001 Line0002 = "ign.c"
-Tab 0002 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/main.c"
-Tab 0003 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/main.h"
-Tab 0004 Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/savelo"
-Tab 0004 Line0002 = "ad.c"
-Tab 0005 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/vars.h"
+Tab 0002 Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/savelo"
+Tab 0002 Line0002 = "ad.c"
+Tab 0003 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/vars.h"
+Tab 0004 Line0001 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/Analog"
+Tab 0004 Line0002 = "Settings.c"
+Tab 0005 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/main.c"
+Tab 0006 = "/c/Users/coldatoms/Documents/Lab/LocalCode/ADwin_sequencers/AdwinGUI_repo/main.h"
 
 [Default Build Config 0001 Debug]
 Generate Browse Info = True

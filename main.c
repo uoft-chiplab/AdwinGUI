@@ -6,6 +6,7 @@ The file that starts everything off.
 #define ALLOC_GLOBALS
 #define VAR_DECLS 1
 
+
 #include <formatio.h>
 
 #include "main.h"
@@ -17,8 +18,8 @@ The file that starts everything off.
 #include "GPIB_SRS_SETUP.h"
 //#include <userint.h>
 //#include <stdio.h>
-// #include  <windows.h>
-#include <utility.h> // NI CVI library 
+
+#include <utility.h> // NI CVI library
 
 #include "multiscan.h"
 
@@ -26,6 +27,13 @@ The file that starts everything off.
 
 int main (int argc, char *argv[])
 {
+	// see: https://www.ni.com/docs/en-US/bundle/labwindows-cvi/page/cvi/libref/cvisetstdiowindowoptions.htm
+    // SetStdioWindowOptions (int maximumNumberOfLines, int bringToFrontWhenModified, int showLineNumbers);
+    SetStdioWindowOptions (10000, 0, 0); // Not Used, No, Not Used
+
+	// for some reason, printf has to be called immediately after for this to work
+	printf("Starting sequencer...\n");
+
 	int i;
 	int fileHandle;
 
@@ -490,9 +498,3 @@ void initializeMultiScan(void)
 	TwoParam=FALSE;
 }
 
-void minimizeConsole(void)
-{
-	// see: https://www.ni.com/docs/en-US/bundle/labwindows-cvi/page/cvi/libref/cvisetstdiowindowoptions.htm
-    // SetStdioWindowOptions (int maximumNumberOfLines, int bringToFrontWhenModified, int showLineNumbers);
-    SetStdioWindowOptions (10000, 0, 0); // Not Used, No, Not Used
-}

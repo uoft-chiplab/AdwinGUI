@@ -29,5 +29,4 @@ void initializeDdsTables(void);
 void initializeMultiScan(void);
 void minimizeConsole(void);
 
-
 #endif
