@@ -56,6 +56,7 @@ struct LaserTableClip{
 	double fval;
 }LaserClip[NUMBERLASERS+1];
 
+int runningCycle = 0;
 
 extern int Active_DDS_PANEL;
 
@@ -85,12 +86,15 @@ int CVICALLBACK CMD_RUN_CALLBACK (int panel, int control, int event,
 			if(repeat==TRUE)
 			{
 				SetCtrlAttribute (panelHandle, PANEL_TIMER, ATTR_ENABLED, 1);
+				runningCycle = 1;
 				//activate timer:  calls TIMER_CALLBACK to restart the RunOnce commands after a set time.
 			}
 			else
 			{
-				SetCtrlAttribute (panelHandle, PANEL_TIMER, ATTR_ENABLED, 0);
-				//deactivate timer
+				SetCtrlAttribute (panelHandle, PANEL_TIMER, ATTR_ENABLED, 1);
+				runningCycle = 0;
+				//tells timer to stop running after current cycle
+				// timer is deactivated in timer_callback function
 			}
 			RunOnce();		// starts the routine to build the ADwin data.
 			break;
@@ -148,6 +152,7 @@ int CVICALLBACK CMD_SCAN_CALLBACK (int panel, int control, int event,
 				repeat=TRUE;
 				SetCtrlVal(panelHandle,PANEL_TOGGLEREPEAT,repeat); 		//sets "repeat" button to active
 				SetCtrlAttribute (panelHandle, PANEL_TIMER, ATTR_ENABLED, 1);   //Turn on the timer
+				runningCycle = 1;
 				RunOnce();		// starts the routine to build the ADwin data.
 			}
 			break;
@@ -167,80 +172,96 @@ int CVICALLBACK TIMER_CALLBACK (int panel, int control, int event,
 		void *callbackData, int eventData1, int eventData2)
 {
 	int runafterscan, repeat;
+
 	switch (event)
 		{
 		case EVENT_TIMER_TICK:
-			SetCtrlAttribute (panelHandle, PANEL_TIMER, ATTR_ENABLED, FALSE);
-			//disable timer and re-enable in the update list loop, if the repeat butn is pressed.
-			//reset the timer too and set a timer time of 50ms?
+			if (runningCycle == 1)
+			{ 	//SetCtrlAttribute (panelHandle, PANEL_TIMER, ATTR_ENABLED, FALSE);
+				//disable timer and re-enable in the update list loop, if the repeat butn is pressed.
+				//reset the timer too and set a timer time of 50ms?
 
-			if (parameterscanmode == 0)
-			{	// Multi-parameter scan (leaving old code untouched in else statement - 2012-10-07)
-				if (MultiScan.Active)
-				{   // Update parameter values if scan is active and run cycle afterwards.
-					if (!MultiScan.Done)
-					{
-						// Look for and read next commands_00000.txt file
-						GetNewMultiScanCommands();
-						// Advance to new set of values in scan.
-						// (sets MultiScan.Done to TRUE if done)
-						UpdateMultiScanValues(FALSE);
-						writeToScanInfoFile();
-						SetCtrlVal (panelHandle, PANEL_MULTISCAN_LED2, MultiScan.Done);
-						if (MultiScan.Done)
-							SetCtrlAttribute(panelHandle,PANEL_MULTISCAN_DECORATION,
-									ATTR_FRAME_COLOR,CLR_SCAN_ANALOG);
-						else
-							SetCtrlAttribute(panelHandle,PANEL_MULTISCAN_DECORATION,
-									ATTR_FRAME_COLOR,VAL_TRANSPARENT);
-					}
-					if (MultiScan.Done)
-					{	// Check whether run should stop after finished scan.
-						GetCtrlVal(panelHandle,PANEL_SCAN_KEEPRUNNING_CHK,&runafterscan);
-						if(!runafterscan)
-						{   // Stop cycle after scan is done and save scan parameters ...
-							SetCtrlVal(panelHandle,PANEL_TOGGLEREPEAT,FALSE);
-							MultiScan.Active = FALSE;
-							MultiScan.Done = FALSE;
-							AutoExportMultiScanBuffer(); // save to file
-							EnableScanControls();
-							SetCtrlVal (panelHandle, PANEL_MULTISCAN_LED1, MultiScan.Active);
+				if (parameterscanmode == 0)
+				{	// Multi-parameter scan (leaving old code untouched in else statement - 2012-10-07)
+					if (MultiScan.Active)
+					{   // Update parameter values if scan is active and run cycle afterwards.
+						if (!MultiScan.Done)
+						{
+							// Look for and read next commands_00000.txt file
+							GetNewMultiScanCommands();
+							// Advance to new set of values in scan.
+							// (sets MultiScan.Done to TRUE if done)
+							UpdateMultiScanValues(FALSE);
+							writeToScanInfoFile();
 							SetCtrlVal (panelHandle, PANEL_MULTISCAN_LED2, MultiScan.Done);
-							SetCtrlAttribute(panelHandle,PANEL_MULTISCAN_DECORATION,
-									ATTR_FRAME_COLOR,VAL_TRANSPARENT);
-							DrawNewTable(TRUE);
+							if (MultiScan.Done)
+								SetCtrlAttribute(panelHandle,PANEL_MULTISCAN_DECORATION,
+										ATTR_FRAME_COLOR,CLR_SCAN_ANALOG);
+							else
+								SetCtrlAttribute(panelHandle,PANEL_MULTISCAN_DECORATION,
+										ATTR_FRAME_COLOR,VAL_TRANSPARENT);
+						}
+						if (MultiScan.Done)
+						{	// Check whether run should stop after finished scan.
+							GetCtrlVal(panelHandle,PANEL_SCAN_KEEPRUNNING_CHK,&runafterscan);
+							if(!runafterscan)
+							{   // Stop cycle after scan is done and save scan parameters ...
+								SetCtrlVal(panelHandle,PANEL_TOGGLEREPEAT,FALSE);
+								MultiScan.Active = FALSE;
+								MultiScan.Done = FALSE;
+								AutoExportMultiScanBuffer(); // save to file
+								EnableScanControls();
+								SetCtrlVal (panelHandle, PANEL_MULTISCAN_LED1, MultiScan.Active);
+								SetCtrlVal (panelHandle, PANEL_MULTISCAN_LED2, MultiScan.Done);
+								SetCtrlAttribute(panelHandle,PANEL_MULTISCAN_DECORATION,
+										ATTR_FRAME_COLOR,VAL_TRANSPARENT);
+								DrawNewTable(TRUE);
+
+								// disable timer without reenabling
+								SetCtrlAttribute (panelHandle, PANEL_TIMER, ATTR_ENABLED, FALSE);
+								// enable "run cycle" button
+								SetCtrlAttribute (panelHandle, PANEL_CMD_RUN, ATTR_DIMMED, FALSE);
+							}
+							else
+							{   // .. or keep going if requested
+								// (repeat button stays ON and scan is saved upon pressing STOP)
+								RunOnce();
+							}
 						}
 						else
-						{   // .. or keep going if requested
-							// (repeat button stays ON and scan is saved upon pressing STOP)
+						{   // Keep going with the scan if not done.
 							RunOnce();
 						}
 					}
 					else
-					{   // Keep going with the scan if not done.
+					{
+						// Run cycle if timer was enabled and the scan is not active (normal operation)
 						RunOnce();
 					}
 				}
 				else
-				{
-					// Run cycle if timer was enabled and the scan is not active (normal operation)
-					RunOnce();
-				}
-			}
-			else
-			{   // Not touching for now ... if everything works fine, then all this can be changed into a
-				// switch question ... I guess that will never happen ...
-				if(PScan.Scan_Active==TRUE)
-				{
-					UpdateScanValue(FALSE);
-				}
-				if(PScan.ScanDone==FALSE||PScan.Scan_Active==FALSE)
-				{
-					RunOnce();
-				}
+				{   // Not touching for now ... if everything works fine, then all this can be changed into a
+					// switch question ... I guess that will never happen ...
+					if(PScan.Scan_Active==TRUE)
+					{
+						UpdateScanValue(FALSE);
+					}
+					if(PScan.ScanDone==FALSE||PScan.Scan_Active==FALSE)
+					{
+						RunOnce();
+					}
+				}}
+
+			else 
+			{
+				// disable timer without reenabling
+				SetCtrlAttribute (panelHandle, PANEL_TIMER, ATTR_ENABLED, FALSE);
+				// reenable run cycle button
+				SetCtrlAttribute (panelHandle, PANEL_CMD_RUN, ATTR_DIMMED, FALSE);
 			}
 
 			break;
+		
 		}
 	return 0;
 }
@@ -261,9 +282,10 @@ int CVICALLBACK CMDSTOP_CALLBACK (int panel, int control, int event,
 	switch (event)
 		{
 		case EVENT_COMMIT:
+
 			// Stop timer and switch repeat off.
-			SetCtrlAttribute (panelHandle, PANEL_TIMER, ATTR_ENABLED, 0);
 			SetCtrlVal(panelHandle,PANEL_TOGGLEREPEAT,0);
+			runningCycle = 0;
 
 			SetCtrlVal(panelHandle, PANEL_LED_RED, 0); // Build-indicator LEDs
 			SetCtrlVal(panelHandle, PANEL_LED_YEL, 0);
@@ -315,6 +337,7 @@ int CVICALLBACK CMDSTOP_CALLBACK (int panel, int control, int event,
 
 				}
 			}
+
 			DrawNewTable(TRUE);
 			break;
 		}
@@ -653,7 +676,7 @@ void BuildUpdateList(double TMatrix[],
 	int ResetToZeroAtEnd[110]; //1-24 for analog, ...but for now, if [1]=1 then all zero, else no change
 	float ResetToZeroAtEndDig[3]; //1-24 for analog, ...but for now, if [1]=1 then all zero, else no change
 	int timemult,t,c,bigger;
-	double cycletime=0;
+	double cycletime=0; 
 	int GlobalDelay=40000;
 	char buff[100];
 	int repeat=0;
@@ -1138,7 +1161,10 @@ void BuildUpdateList(double TMatrix[],
 		//Fill IN
 	}
 
+	// change "run cycle" button color
 	SetCtrlAttribute (panelHandle, PANEL_CMD_RUN,ATTR_CMD_BUTTON_COLOR, 0x00B0B0B0);
+	// disable "run cycle" button
+	SetCtrlAttribute (panelHandle, PANEL_CMD_RUN, ATTR_DIMMED, True);
 
 	// NOTE: This should better be part of the Timer Callback routine!
 	//re-enable the timer if necessary
@@ -1149,6 +1175,7 @@ void BuildUpdateList(double TMatrix[],
 		repeat=FALSE;
 		SetCtrlVal(panelHandle,PANEL_TOGGLEREPEAT,repeat);
 	}
+		
 	// Reenable and reset timer if awaiting next cycle.
 	if(repeat==TRUE)
 	{

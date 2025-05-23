@@ -27,6 +27,5 @@ void initializeLaserArrays(void);
 void initializeGpibDevArray(void);
 void initializeDdsTables(void);
 void initializeMultiScan(void);
-void minimizeConsole(void);
 
 #endif
