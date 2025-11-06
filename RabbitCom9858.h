@@ -171,7 +171,7 @@ unsigned char * cmd_FUD(int *cmdLength)
 	unsigned char *cmd = (unsigned char *)malloc(FUD_SIZE*sizeof(char));
 	*cmdLength=FUD_SIZE;
 	cmd[0]=FUD;
-	printf("cmd[0] = %x \t FUD\n",cmd[0]); // debug tag
+	//printf("cmd[0] = %x \t FUD\n",cmd[0]); // debug tag
 	return cmd;
 }
 /*************************************************************************************************************************/
