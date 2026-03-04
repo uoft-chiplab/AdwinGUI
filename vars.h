@@ -20,7 +20,7 @@ typedef int BOOL;
 ADwin Variables and GUI things
 *************************************************************************/
 
-#define SEQUENCER_VERSION "ADwin Sequencer V17.1.4 - "
+#define SEQUENCER_VERSION "ADwin Sequencer V17.1.5 - "
 
 // ADwin info
 #define DefaultEventPeriod (0.100)   // in milliseconds
@@ -68,10 +68,10 @@ Analog and Digital Channels (and laser table and necessary parts of dds and anri
 									// reserved for DDS2
 									// reserved for DDS3
 									// 2 for Micro and PhaseO triggers
-#define NUMBERDDS (3)				// Number of DDS's
+#define NUMBERDDS (3)				// Number of DDS's (old)
 #define DDS2_CLOCK (983.04)			// clock speed of DDS 2 in MHz
 #define DDS3CLOCK (300.0)			// clock speed of DDS 2 in MHz
-#define NUMBERLASERS (4)			// Number of Lasers
+#define NUMBERLASERS (4)			// Number of Lasers which are actually DDS's and Eval boards
 #define NUMBEROFANRITSU (1) 	 	// Number of microwave generators (on the off chance we get more than one)
 
 //Explicitly make extra space in analog and digital arrays
@@ -269,6 +269,7 @@ struct LaserProps{
 	int ICP_FL_Mult;			  // Final Loop
 	unsigned int DDS_Div;
 	unsigned int DDS_Type;		  // either 9854 or 9858. NewExtavour
+	int useUDP;						// flag for UDP connection (GP DDS only)
 }LaserProperties[NUMBERLASERS];
 
 

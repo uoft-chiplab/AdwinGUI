@@ -20,11 +20,14 @@
 
 
 void BuildLaserUpdates(struct LaserTableValues MetaLaserArray[NUMBERLASERS][500],double MetaTimeArray[500],unsigned int MetaTriggerArray[NUMBERLASERS][500],int numtimes,int forceBuild);
-unsigned int tcpConnect(int laserNum);
+unsigned int laserConnect(int laserNum);
 int tcpDisconnect(unsigned int tcp_handle);
+int laserDisconnect(unsigned int handle, int laserNum);
+int laserSendCmdList(unsigned int handle, int laserNum, unsigned char* cmdList[MAXCMDNUM],int* cmdLengthList,int cmdCount);
 int TCP_Comm_Callback(unsigned handle, int xType, int errCode, void *callbackData);
 char* tcp_errorlookup(int tcp_error_code);
 int tcpSendCmdList(unsigned int tcp_handle,unsigned char* cmdList[MAXCMDNUM],int* cmdLengthList,int cmdCount);
+int UDP_Comm_Callback(unsigned channel, int eventType, int errCode, void *callbackData);
 ///Alma int checkDividerSetting(double newLaserFreq);
 ///ALma double calcRamp(double laserStartFreq,double laserEndFreq,int *dividerUpdate,double *newDDSFreq);
 double calcRamp(double laserStartFreq,double laserEndFreq);

@@ -850,7 +850,7 @@ void BuildUpdateList(double TMatrix[],
 
 				if((digchannel>=133)&&(digchannel<=164))
 				{
-					digval3=digval3+DMat[k][i]*int_power(2,(DChName[k].chnum-132)-1);
+					digval3=digval3+DMat[k][i]*int_power(2,(DChName[k].chnum-132)-1); // this should have been 200 to keep the convention going
 				}
 
 			}// finished computing current digital data
@@ -865,7 +865,12 @@ void BuildUpdateList(double TMatrix[],
 			LastDVal=digval;
 
 			/*** Check if any Lasers need triggering */
-			/* Lasers are on digital card 2 */
+			/* Lasers are on digital card 2
+			This is because the output of a digital card is a 32-bit integer. In bits this becomes like
+			Channel: 8 7 6 5 4 3 2 1
+			Bit:     0 0 0 1 0 1 0 0 = 20
+			lasTrigVal is 2^(0 to 31) and simply specifies which channel the DDS trig is outputting on.
+			Laser is a stupid vestigal term for the DDS's*/
 			lasTrigVal=0;
 			for(k=0;k<NUMBERLASERS;k++)
 			{
@@ -880,7 +885,7 @@ void BuildUpdateList(double TMatrix[],
 				nupcurrent++;
 				nuptotal++;
 				ChNum[nuptotal]=102;
-				ChVal[nuptotal]=digval2+lasTrigVal;
+				ChVal[nuptotal]=digval2+lasTrigVal; // Adds laser triggers to the second digital card output
 				LastDVal2=digval2;
 			}
 

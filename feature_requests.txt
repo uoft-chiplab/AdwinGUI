@@ -10,6 +10,12 @@ Stop the sequence based on condition
 	Writing to a communication file as interlock.
 	Check things are okay before starting a new cycle.
 	
+Add capability for arbitrary ramps.
+
+Add text box to sequencer face and include checks smart enough to warn the user if important things are off, like optical pumping or imaging triggers.
+
+Add capability to queue scans or possibly load scan lists from other external files.
+	
 ------
 Minor:
 ------
@@ -31,6 +37,7 @@ Decouple multiscan max scan params from saved GUI (and some other substructs)
 
 int ColorTable has hardcoded number of digital channels, change to match macro
 	
+
 ----------
 Completed:
 ----------

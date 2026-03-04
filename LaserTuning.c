@@ -3,6 +3,7 @@
 	Purpose: Generates and programs event sequences for the Rabbits based on parameters entered into the GUI. (via tcp)
 	Additionally generates the trigger array required to program the adwin. */
 
+#include <udpsupp.h>
 #include <utility.h>
 #include "LaserTuning.h"
 #include "GUIDesign.h"
@@ -12,6 +13,7 @@
 #define TCP_BUFF 960   //960/2 = max # of bytes per data transmission
 #define UNCHOKE_INT 25 // interval (# of commands) before the sequencer waits for the rabit to "unchoke" itself (process tcp commands)
 #define UNCHOKE_TO 4.0 // timeout for the rabbit during an unchoke in seconds // debug tag // needs more time or more commands for unchoking?
+
 static int comReady;
 
 
@@ -34,6 +36,8 @@ void BuildLaserUpdates(
 	double FreqShadow,rampHeight,newFreq;
 	int i,j,tcpErr,destProfile,cmodeShadow;
 	unsigned int tcp_handle,trigCount=0;
+	unsigned int conn_handle;
+	int connErr;
 	char errorBuff[100];
 	cmdCount=0;
 
@@ -82,10 +86,12 @@ void BuildLaserUpdates(
 					initCmdCount++;
 				}
 
-				cmdList[cmdCount]=cmd_setSwitchStates(0,1,&cmdLengthList[cmdCount]); // sets to integral mode and enables feedback
-				cmdCount++;
-				initCmdCount++;
-
+				if(DDSType != 9910)
+				{
+					cmdList[cmdCount]=cmd_setSwitchStates(0,1,&cmdLengthList[cmdCount]); // sets to integral mode and enables feedback
+					cmdCount++;
+					initCmdCount++;
+				}
 				//loop through event table
 				for(i=1;i<=numtimes;i++)
 				{
@@ -98,7 +104,7 @@ void BuildLaserUpdates(
 
 					if(MetaLaserArray[laserNum][i].fval/DDSDiv!=FreqShadow||cmdCount==initCmdCount) // Set freq if its changed or this is first runthrough
 					{
-						if(cmode==1)
+						if(cmode==1) // freq step
 						{
 							if(DDSType==9858)
 							{
@@ -118,7 +124,7 @@ void BuildLaserUpdates(
 
 							MetaTriggerArray[laserNum][i]=1;
 							}
-							else if(DDSType==9854)
+							else if(DDSType==9854 || DDSType==9910)
 							{
 							cmdList[cmdCount]=cmd_waitForTrigger(&cmdLengthList[cmdCount]);
 							cmdCount++;
@@ -129,6 +135,7 @@ void BuildLaserUpdates(
 							cmdCount++;
 							MetaTriggerArray[laserNum][i]=1;
 							}
+
 						}
 						else if(cmode==2)			 //freq ramp
 						{
@@ -175,6 +182,19 @@ void BuildLaserUpdates(
 								cmdCount++;
 
 								cmdList[cmdCount]=cmd_begin9854DDSRamp(rampHeight,MetaTimeArray[i],MetaLaserArray[laserNum][i].fval/DDSDiv,&cmdLengthList[cmdCount]);
+								cmdCount++;
+
+								MetaTriggerArray[laserNum][i]=1;
+							}
+							else if (DDSType==9910)
+							{
+								rampHeight=calcRamp(FreqShadow, MetaLaserArray[laserNum][i].fval/DDSDiv);
+								cmdList[cmdCount]=cmd_waitForTrigger(&cmdLengthList[cmdCount]);
+								cmdCount++;
+								trigCount++;
+								cmdList[cmdCount]=cmd_setFreq(1,MetaLaserArray[laserNum][i-1].fval/DDSDiv,&cmdLengthList[cmdCount]);
+								cmdCount++;
+								cmdList[cmdCount]=cmd_begin9910DDSRamp(rampHeight,MetaTimeArray[i],MetaLaserArray[laserNum][i].fval/DDSDiv,&cmdLengthList[cmdCount]);
 								cmdCount++;
 
 								MetaTriggerArray[laserNum][i]=1;
@@ -233,26 +253,29 @@ void BuildLaserUpdates(
 					cmdList[i][0]=ADDEVENT;
 				}
 			}
-			//printf("trigCount %d\n",trigCount); // debug tag
+			printf("trigCount %d\n",trigCount); // debug tag
 			cmdList[cmdCount]=cmd_startSeq(0,&cmdLengthList[cmdCount]);		//Begin sequence execution (0 Adwin Triggered. for TCP triggering )
 			cmdCount++;
 
 			if(RB9858ErrorCount==0) // Communicate and Execute sequence so long as all settings good
 			{
+				/*tcp_handle=tcpConnect(laserNum);
+				tcpErr=tcpSendCmdList(tcp_handle,cmdList,cmdLengthList,cmdCount);*/
+				conn_handle = laserConnect(laserNum);
 
-				tcp_handle=tcpConnect(laserNum);
-				tcpErr=tcpSendCmdList(tcp_handle,cmdList,cmdLengthList,cmdCount);
+				connErr = laserSendCmdList(conn_handle, laserNum, cmdList, cmdLengthList, cmdCount);
 
 			//	tcpTriggering(tcp_handle,trigCount);		// for testing with tcp troggering only
-				//printf("Attempting to disconnect...\n"); // debug tag
+				printf("Attempting to disconnect...\n"); // debug tag
 				Delay (1.0); // what is this delay for? Is it long enough?
-				tcpDisconnect(tcp_handle);
+				laserDisconnect(conn_handle, laserNum);
+				//tcpDisconnect(tcp_handle)
 
 				SetTableCellAttribute (panelHandle, PANEL_TBL_ANAMES,MakePoint(1,laserNum+NUMBERANALOGCHANNELS+NUMBERDDS+1), ATTR_TEXT_BGCOLOR,0xFF3366L);
 
-				if(tcpErr>0)
+				if(connErr>0)
 				{
-					sprintf(errorBuff,"%d Error[s] sending seq to ", tcpErr);
+					sprintf(errorBuff,"%d Error[s] sending seq to ", connErr);
 					strcat(errorBuff,LaserProperties[laserNum].Name);
 					SeqError(errorBuff);
 				}
@@ -287,10 +310,6 @@ void BuildLaserUpdates(
     printf("cmdCount = %d\n",cmdCount);//debug tag
 }
 
-
-
-
-
 /*************************************************************************************************************************/
 unsigned int tcpConnect(int laserNum)
 {
@@ -302,12 +321,15 @@ unsigned int tcpConnect(int laserNum)
 	unsigned int tcp_handle;
 
 	tcp_handle=0;
+	printf("LaserNum is %d\n", laserNum);
+	printf("Port: %d\n", LaserProperties[laserNum].Port);
+	printf("IP: %s\n", LaserProperties[laserNum].IP);
 	connected = ConnectToTCPServer (&tcp_handle,LaserProperties[laserNum].Port,LaserProperties[laserNum].IP,&TCP_Comm_Callback, 0,1000);
-	//printf("Attempting connection... IP: %s   Port: %d\n", LaserProperties[laserNum].IP, LaserProperties[laserNum].Port); //debug tag
+	printf("Attempting connection... IP: %s   Port: %d\n", LaserProperties[laserNum].IP, LaserProperties[laserNum].Port); //debug tag
 	if (connected==0)
 	{
 		SetTableCellAttribute (panelHandle, PANEL_TBL_ANAMES,MakePoint(1,laserNum+NUMBERANALOGCHANNELS+NUMBERDDS+1), ATTR_TEXT_BGCOLOR,VAL_GREEN);
-		//printf("Connected!\n"); //debug tag
+		printf("Connected!\n"); //debug tag
 	}
 	else if ( connected < 0 ){
 		error=tcp_errorlookup(connected);
@@ -316,6 +338,48 @@ unsigned int tcpConnect(int laserNum)
 	return tcp_handle;
 
 }
+unsigned int udpConnect(int laserNum)
+{
+    int result;
+    unsigned int udp_handle = 0;
+	unsigned char hb = 0x7F;
+    printf("LaserNum is %d\n", laserNum);
+    printf("Port: %d\n", LaserProperties[laserNum].Port);
+    printf("IP: %s\n", LaserProperties[laserNum].IP);
+
+    // CreateUDPChannelConfig lets us pass the callback directly
+    // localAddr = NULL (any), exclusive = 0
+    result = CreateUDPChannelConfig(LaserProperties[laserNum].Port, NULL, 0, UDP_Comm_Callback, 0, &udp_handle);
+
+    printf("Attempting UDP channel... IP: %s   Port: %d\n",
+           LaserProperties[laserNum].IP, LaserProperties[laserNum].Port);
+
+	printf("CreateUDPChannelConfig result=%d: %s\n", result, GetUDPErrorString(result));
+    if (result == 0)
+    {
+        SetTableCellAttribute(panelHandle, PANEL_TBL_ANAMES,
+            MakePoint(1, laserNum + NUMBERANALOGCHANNELS + NUMBERDDS + 1),
+            ATTR_TEXT_BGCOLOR, VAL_GREEN);
+        printf("UDP Channel Created!\n");
+		UDPWrite(udp_handle, LaserProperties[laserNum].Port, LaserProperties[laserNum].IP, &hb, 1);
+		printf("Sent initial heartbeat.\n");
+    }
+    else
+    {
+        printf("UDP Create Error %d: %s\n", result, GetUDPErrorString(result));
+    }
+
+    return udp_handle;
+}
+
+unsigned int laserConnect(int laserNum)
+{
+	if (LaserProperties[laserNum].useUDP)
+		return udpConnect(laserNum);
+	else
+		return tcpConnect(laserNum);
+}
+
 /*************************************************************************************************************************/
 int tcpDisconnect(unsigned int tcp_handle)
 /*  Closes tcp socket identified by tcp_handle.
@@ -332,6 +396,32 @@ int tcpDisconnect(unsigned int tcp_handle)
 	return tcpErr;
 
 }
+int laserDisconnect(unsigned int handle, int laserNum)
+/*  Closes connection identified by handle.
+    Returns: 0 for successful completion, negative number if unsuccessful */
+{
+    int err;
+
+    if (LaserProperties[laserNum].useUDP)
+    {
+		return err;
+        /*if ((err = DisposeUDPChannel(handle)) < 0)
+        {
+            printf("Error Closing UDP Channel\n");
+            printf(GetUDPErrorString(err));
+        }*/
+    }
+    else
+    {
+        if ((err = DisconnectFromTCPServer(handle)) < 0)
+        {
+            printf("Error Closing Socket\n");
+            printf(tcp_errorlookup(err));
+        }
+    }
+    return err;
+}
+
 /*************************************************************************************************************************/
 int TCP_Comm_Callback(unsigned handle, int xType, int errCode, void *callbackData)
 /*  Callback function called when a TCP traffic is received for any sockets opened by NI CVI
@@ -344,6 +434,7 @@ int TCP_Comm_Callback(unsigned handle, int xType, int errCode, void *callbackDat
 	int maxData;
 	int i;
 
+	printf("TCP_Comm_Callback fired: xType=%d errCode=%d\n",  xType, errCode);
 
 	switch (xType)
 	{
@@ -352,14 +443,51 @@ int TCP_Comm_Callback(unsigned handle, int xType, int errCode, void *callbackDat
 		break;
 
 		case TCP_DATAREADY:
+			printf("TCP_DATAREADY received\n");
 			ClientTCPRead (handle, buffer, TCP_BUFF-1, 0);
-		comReady=1;
+			comReady=1;
 
-		break;
+			break;
 	}
 	return 0;
 }
 
+// NEW UDP callback signature:
+// from Claude, expect possible weirdness
+int CVICALLBACK UDP_Comm_Callback(unsigned channel, int eventType,
+                                   int errCode, void* callbackData)
+{
+    char buffer[1024] = {0};
+    char srcIP[64]    = {0};
+    unsigned int srcPort = 0;
+    int bytesRead = 0;
+
+	printf("UDP_Comm_Callback fired: eventType=%d errCode=%d\n",  eventType, errCode);
+
+    if (eventType == UDP_DATAREADY)
+    {
+		printf("UDP_DATAREADY received\n");
+        bytesRead = UDPRead(channel, buffer, sizeof(buffer) - 1,
+                            1000, &srcPort, srcIP);  // &srcPort BEFORE srcIP
+		//printf("bytesRead=%d srcIP=%s srcPort=%d\n", bytesRead, srcIP, srcPort);
+        if (bytesRead > 0)
+        {
+            // your heartbeat/comReady logic here
+			 /*printf("UDP HB received, buffer contents: ");
+			 for(int i=0; i<bytesRead; i++)
+			 {
+				 	printf("%02X ", (unsigned char)buffer[i]);
+			 }
+			printf("\n");*/
+            comReady = 1;
+        }
+		else
+		{
+			printf("UDPRead failed or returned 0.");
+		}
+    }
+    return 0;
+}
 /*************************************************************************************************************************/
 char* tcp_errorlookup(int tcp_error_code)
 /*  Given the tcp_error_code - returns the explanation of the error as a string */
@@ -501,6 +629,61 @@ int tcpSendCmdList(unsigned int tcp_handle,unsigned char* cmdList[MAXCMDNUM],int
 	}
 	return totalErrs;
 
+}
+int udpSendCmdList(unsigned int udp_handle, int laserNum,
+                   unsigned char* cmdList[MAXCMDNUM],
+                   int* cmdLengthList, int cmdCount)
+/*  Sends cmdList over UDP to the Rabbit identified by udp_handle. */
+{
+    int i, sendErr, totalErrs = 0;
+    double ucStart;
+
+    for (i = 1; i < cmdCount; i++)
+    {
+        sendErr = 0;
+
+        // Unlike TCP, UDP requires destination IP+port on every send
+        sendErr = UDPWrite(udp_handle,
+						   LaserProperties[laserNum].Port,
+                           LaserProperties[laserNum].IP,
+                           cmdList[i],
+                           cmdLengthList[i]);
+		Delay(0.001);
+        if (sendErr < 0)
+        {
+            totalErrs++;
+            printf("Step: %d  Error %d from UDPWrite  Total Errors: %d  cmdCount: %d\n",
+                   i, sendErr, totalErrs, cmdCount);
+        }
+
+		// don't unchoke b/c fk it we ball
+		// jk I think this is something TCP wants to do not UDP
+        /*if (i % UNCHOKE_INT == 0 || i == cmdCount - 2)
+        {
+            ucStart = Timer();
+            comReady = 0;
+            while (!comReady)
+            {
+                if (Timer() - ucStart > UNCHOKE_TO)
+                {
+                    totalErrs++;
+                    printf("Step: %d  Timer()-ucStart>UNCHOKE_TO   Total Errors: %d   cmdCount: %d\n",
+                           i, totalErrs, cmdCount);
+                    return totalErrs;
+                }
+                ProcessSystemEvents();  // UDP uses ProcessSystemEvents, not ProcessTCPEvents
+            }
+        }*/
+    }
+    return totalErrs;
+}
+
+int laserSendCmdList(unsigned int handle, int laserNum, unsigned char* cmdList[MAXCMDNUM], int* cmdLengthList, int cmdCount)
+{
+	if (LaserProperties[laserNum].useUDP)
+		return udpSendCmdList(handle, laserNum, cmdList, cmdLengthList, cmdCount);
+	else
+		return tcpSendCmdList(handle, cmdList, cmdLengthList, cmdCount);
 }
 /*************************************************************************************************************************/
 ///ALma double calcRamp(double laserStartFreq,double laserEndFreq,int *dividerUpdate,double *newDDSFreq)

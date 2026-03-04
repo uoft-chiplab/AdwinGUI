@@ -28,6 +28,7 @@ int CVICALLBACK LaserSelect (int panel, int control, int event,
 	switch (event)  {
 		case EVENT_COMMIT:
 			GetCtrlVal (panel, control, &laserNum);
+			printf("Laser num is %d", laserNum);
 			FillLaserTable(laserNum);
 			break;
 	}
@@ -87,6 +88,9 @@ int CVICALLBACK LaserSettingsTable (int panel, int control, int event,
 				break;
 				case 7:
 					GetTableCellVal (panelHandle10, PANEL_LASER_SET_TABLE,MakePoint(2,7),&LaserProperties[laserNum].DDS_Type);
+					break;
+				case 8:
+					GetTableCellVal (panelHandle10, PANEL_LASER_SET_TABLE,MakePoint(2,8),&LaserProperties[laserNum].useUDP);
 					break;
 			}
 			break;
@@ -152,6 +156,7 @@ void FillLaserTable(int laserNum)
 	SetTableCellVal (panelHandle10, PANEL_LASER_SET_TABLE,MakePoint(2,5),LaserProperties[laserNum].DDS_Clock);
 	SetTableCellVal (panelHandle10, PANEL_LASER_SET_TABLE,MakePoint(2,6),LaserProperties[laserNum].DDS_Div);
 	SetTableCellVal (panelHandle10, PANEL_LASER_SET_TABLE,MakePoint(2,7),LaserProperties[laserNum].DDS_Type);
+	SetTableCellVal (panelHandle10, PANEL_LASER_SET_TABLE,MakePoint(2,8),LaserProperties[laserNum].useUDP);
 	SetCtrlVal (panelHandle10, PANEL_LASER_TOGGLE, LaserProperties[laserNum].Active);
 }
 

@@ -1778,11 +1778,13 @@ long getLaserPropsFromFile(FILE *fbuff, long fpos_eof)
 	int elems_read;
 
 	fpos = readHeader(fbuff, stag, &elem_size, &num_dims, dims, max_dims, fpos_eof);
+	printf("DEBUG: after readHeader, fpos=%ld, elem_size=%d\n", fpos, elem_size);
 	// Do some simple checks
 	if( fpos < 0 ){// if there was an err in readHeader (printf's in readHeader)
 		return fpos;
 	}
 	for( int i=0; i<max_dims; ++i ){ linear_size *= dims[i]; }// calculate linear_size
+	printf("DEBUG: linear_size=%d, sizeof(LaserProperties)=%d\n", linear_size, sizeof(LaserProperties));  // add
 	if( elem_size*linear_size != sizeof(LaserProperties) ){
 		printf("Binary data read from file for tag |%s| is not the correct size\n", stag);
 		return -1;
@@ -1790,13 +1792,23 @@ long getLaserPropsFromFile(FILE *fbuff, long fpos_eof)
 
 	fseek(fbuff, fpos, SEEK_SET);// seek to the start of the binary data
 	elems_read = fread(&LaserProperties, elem_size, linear_size, fbuff);// load the binary data directly into the array
+	printf("DEBUG: after fread, elems_read=%d\n", elems_read);  // add
 	if( elems_read != linear_size ){// didn't read expected number of elements
 		printf("Expected to read more elements from file for tag |%s|\n", stag);
 		return -1;
 	}
-	SetLaserLabels();// update the row labels for the lasers
 
+
+// If loaded from old file format, useUDP won't be set - default to 0 (TCP)
+	/*if( elem_size < sizeof(LaserProperties[0]) ){
+	    for(int i = 0; i < NUMBERLASERS; i++){
+	        LaserProperties[i].useUDP = 0;
+    	}
+	}*/
+	SetLaserLabels();// update the row labels for the lasers
+	printf("DEBUG: about to checkFooter\n");  // add
 	fpos = checkFooter(fbuff, etag, fpos_eof);
+	printf("DEBUG: getLaserPropsFromFile done, returning fpos=%ld\n", fpos);  // add
 	if( fpos < 0 ){// pass though signal, either -1 for error or -2 for eof
 		return fpos;
 	}

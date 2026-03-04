@@ -249,6 +249,7 @@ int  CVICALLBACK TOGGLE_ALL_CALLBACK(int panel, int control, int event, void *ca
 int  CVICALLBACK VALS_CHANGED_CALLBACK(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);
 int  CVICALLBACK VisualizeTimingCallback(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);
 
+
 #ifdef __cplusplus
     }
 #endif

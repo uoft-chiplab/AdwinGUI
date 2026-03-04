@@ -9,6 +9,8 @@
 #define MAXRBERRS 20
 #define RBREADY 0x7E
 
+#define RAMP_STEP_RATE_9910 50000 // 50000 * 4ns = 100 us between steps
+
 /* Command Headers and lengths for tcp commands for AD9858 control (can be added to an event sequence) */
 
 #define POWER_DDS 0xA0		   // Powers up and down DDS Core
@@ -29,12 +31,18 @@
 #define SETDDSFREQ 0xA5        // Sets DDS Frequency Tuning Word (FTW)
 #define SETDDS9858FREQ_SIZE 6      // 2nd byte: selects profile to write to: last bytes 3-6 set the FTW
 #define SETDDS9854FREQ_SIZE 8
+#define SETDDS9910FREQ_SIZE 6 // AD9910
 
 #define POWER_PFD 0xA6         // Powers up and down the DSS' phase frequency detector circuitry & charge pumps
 #define POWER_PFD_SIZE 2       // 2nd byte set PFDs on or off, and toggles Fast Locking
 
+//AD9910
+#define PHASE_OFFSET_WORD 0xA6	// MSB first
+#define PHASE_OFFSET_WORD_SIZE 3
+
 #define SETCPUMPREF 0xA7       // Sets the Charge Pump Reference
 #define SETCPUMPREF_SIZE 2     // 2nd bit: 0=GND REF, 1=Supply Ref
+// not sure what this is
 
 ///#define SET_PFD_DIVIDER 0xA8   // Sets the divisor ratio on the PLL comp 2 (ROSA) input (FUD reqd)
 ///#define SET_PFD_DIVIDER_SIZE 2 // 2nd byte holds divisor ratio (1,2,or 4)
@@ -44,6 +52,7 @@
 
 #define DDSSCAN 0xAA		   // To initiate DDS Scanning (back and forth freq sweeps between two frequencies)
 #define DDSSCAN_SIZE 12		   // 2nd bit toggle on/off, bit 3-6 DFTW, bit 7-8 DFTRR, bit 9-12 ScanTime
+// unsure if this is used
 
 #define RAMPDDS_END 0xAB       // Ends DDS ramp (Prof Change reqd)
 #define RAMPDDS_END_SIZE 1
@@ -51,7 +60,15 @@
 #define RAMPDDS_START 0xAC     // Begins a DDS ramp (FUD reqd)
 #define RAMPDDS_START_SIZE 7   // Byte 2-5 are DFTW, byte 6-7 are the DFRRW
 #define RAMP9854DDS_START_SIZE 16   // Byte 2-7 are DFTW, byte 8-10 are the DFRRW , 11-16 are stop freq
+#define RAMP9910DDS_START_SIZE 16 	// AD9910:
+//Byte 2-3 ignored (LS bytes of Digital Ramp Step Size)
+// 4-7 Digital Ramp Step Size (LS to MS)
+// 8 Ignored (LS byte of DR Rate)
+// 9-10 DR Rate, LS to MS bytes
+//11-12 ignored (LS bytes of stop freq)
+// 13-16 Stop Freq (LS to MS)
 
+// are these commands even used? -KX
 #define SETDAC 0xAD
 #define SETDAC_SIZE 3 			 // Byte 2 and 3 hold the 12 bit value to set the DAC to LSB first
 
@@ -81,9 +98,14 @@
 
 #define TCP_TRIG 0xC5          // TCP trigger signal when executing in TCP triggered mode
 #define TCP_TRIG_SIZE 2        // 2nd byte indicates trig type 0 is short (continue execution), 1 is long (break)
+#define AD9910_TCP_TRIG_SIZE 1 // fudge
 
 #define FORCE_MONCON 0xC6	   // Tells the rabbit to attemp to connect to the monitor console
 #define FORCE_MONCON_SIZE 1
+
+// AD9910
+#define FREQ_STEPS_TYPE 0xC6
+#define FREQS_STEPS_TYPE_SIZE 2 // second byte = 0x01 fixes phase to 90 deg (?) when change freq, otherwise smooth transition
 
 static double DDSCLK;          //the clock speed of the DDS in MHz
 static int DDSDiv;
@@ -139,10 +161,10 @@ unsigned char * cmd_powerDDS(unsigned int dds_on,int *cmdLength)
 	else
 	{
 		*cmdLength=POWER_DDS_SIZE;
-		cmd[0]=POWER_DDS;
+		cmd[0]=POWER_DDS; // 0xA0
 		printf("cmd[0] = %x \t POWER_DDS\n",cmd[0]); // debug tag
 		if ((dds_on==1)||(dds_on==0))
-			cmd[1]=dds_on;
+			cmd[1]=dds_on; //1 or 0
 		else
 		{
 			RB9858LibErr("INVALID powerDDS Command\n");
@@ -216,6 +238,21 @@ unsigned char* cmd_setFreq(int profile, double frequency,int *cmdLength)
 			for (i=0;i<4;i++)										  // @@ this algoriothm can be improved
 			{
 				cmd[i+4]=ftw_hex[i];
+			}
+		}
+		else if(DDSType==9910)
+		{
+			*cmdLength=SETDDS9910FREQ_SIZE; // 6-byte
+			cmd[0]=SETDDSFREQ;
+			printf("cmd[0] = %x \t SETDDSFREQ\n",cmd[0]); // debug tag
+			ftw_int=(unsigned int)(frequency*(pow(2,32)/(DDSCLK)));
+			ftw_hex=(unsigned char *)&ftw_int;
+			cmd[1]=0x00;
+			for (i=0;i<4;i++)
+			{
+				//printf("ftw_hex is %x\n", ftw_hex[i]); //debug
+				// for 1 MHz we expect 0x00418937 ( see Alan's website)
+				cmd[i+2]=ftw_hex[i];	// is this LS to MS?
 			}
 		}
 	}
@@ -309,6 +346,7 @@ unsigned char* cmd_powerPFD(int power_toggle,int FastLock_enable,int useFTWforFL
 	{
 		RB9858LibErr("Bad PFD Setting\n");
 printf("Error:  Bad PFD Setting [RCh281]\n" );             ///ALAN
+printf("GP DDS was never properly set up for this. Somehow you got here. Fix it please."); // KX 2026
 		*cmdLength=0;
 	}
 	return cmd;
@@ -551,6 +589,7 @@ unsigned char* cmd_StopDDSRamp(int *cmdLength)
 unsigned char* cmd_beginDDSRamp(double rampHeight,double rampTime, int *cmdLength)
 /*	rampHeight in MHz (can be negative),rampTime in ms
     cmd[1]-cmd[4] are DFTW, cmd[5]-cmd[6] are the DFRRW */
+// this seems to be for the 9858
 {
 	unsigned char *cmd = (unsigned char *)malloc(RAMPDDS_START_SIZE*sizeof(char));
 	unsigned short dfrrw=0;
@@ -617,10 +656,10 @@ unsigned char* cmd_beginDDSRamp(double rampHeight,double rampTime, int *cmdLengt
 			{
 				cmd[i+1]=dftw_hex[i];
 			}
-			//printf("Message: ");
-   		   	//for (i=0;i<8;i++)
-   		   	//	printf("%d ",cmd[i]);
-   		    //printf("\n");
+			printf("Message: "); //debug
+   		   	for (i=0;i<8;i++)
+   		   		printf("%d ",cmd[i]);
+   		    printf("\n");
 	}
 	else
 	{
@@ -755,6 +794,76 @@ unsigned char* cmd_beginDDSRamp(double rampHeight,double rampTime, int *cmdLengt
 	return cmd;
 
 }
+
+
+ unsigned char* cmd_begin9910DDSRamp(double rampHeight,double rampTime, double stopFreq, int *cmdLength)
+/*	rampHeight in MHz,rampTime in ms
+    cmd[1]-cmd[2] are ignored, cmd[3]-cmd[6] are the Digital Ramp Step Size, cmd[7] is ignored ,
+    cmd[8]-cmd[9] is digital ramp rate, cmd[10]-cmd[11] is ignored, cmd[12-15] is Stop Freq */
+{	// Modulation limit is 4/clock rate apparently
+
+	unsigned char *cmd = (unsigned char *)malloc(RAMP9910DDS_START_SIZE*sizeof(char));
+	int i;
+	// stop freq word
+	unsigned int stopFTW=(unsigned int)(stopFreq*1e6*4.294967296); // 4.29.. is 2^32/10^9. Fixing the DDS clock frequency is "safer" b/c of floating point issues
+
+	// Not really sure if the rampheight maximum makes sense, I just copied and modified this code - KX 2026
+	if ((fabs(rampHeight)>0.0)&&(fabs(rampHeight)<400.0)&&(rampTime>0.0)&&(rampTime<pow(10,9)))
+	{
+		// calculate step size based on ramp time
+		double rampHeightFTW = fabs(rampHeight)*1e6*4.294967296;
+		double stepRateSec = RAMP_STEP_RATE_9910 * 4e-9;
+		double rampTimeSec = rampTime / 1000.0;
+		unsigned int stepSize = (unsigned int)(rampHeightFTW * stepRateSec / rampTimeSec);
+		if (stepSize<1) stepSize = 1; // minimum 1
+
+		// debug
+		printf("DEBUG ramp: Ramp change of %.3fMHz over %.1fms  stepSize=%u\n",
+	    rampHeight, rampTime, stepSize);
+		double stepSizeHz = stepSize / 4.294967296;  // convert FTW back to Hz
+		double numSteps   = rampHeightFTW / stepSize;
+		double actualTime = numSteps * stepRateSec;
+
+		printf("DEBUG: stepSize=%.4f Hz per step, numSteps=%.0f, actualTime=%.3f ms\n",
+	       stepSizeHz, numSteps, actualTime * 1000.0);
+		*cmdLength=RAMP9910DDS_START_SIZE;
+		cmd[0]=RAMPDDS_START;
+		printf("cmd[0] = %x \t RAMPDDS_START\n",cmd[0]);
+		cmd[1] = 0x00;
+		cmd[2] = 0x00;
+
+		// Step size LSB first
+		// bit shifting and masking to get the lowest byte is kinda sick
+		cmd[3]= (stepSize)	& 0xFF;
+		cmd[4]= (stepSize >> 8)	& 0xFF;
+		cmd[5]= (stepSize >> 16)	& 0xFF;
+		cmd[6]= (stepSize >> 24)	& 0xFF;
+
+		cmd[7]=0;
+
+		// Step Rate LSB first
+		cmd[8]= (RAMP_STEP_RATE_9910)	& 0xFF;
+		cmd[9]= (RAMP_STEP_RATE_9910 >> 8)	& 0xFF;
+
+		cmd[10]=0;
+		cmd[11]=0;
+
+		// Sto FTW LSB first
+		cmd[12] = (stopFTW)				& 0xFF;
+		cmd[13] = (stopFTW >> 8)		& 0xFF;
+		cmd[14] = (stopFTW >> 16)		& 0xFF;
+		cmd[15] = (stopFTW >> 24)		& 0xFF;
+	}
+	else
+	{
+		RB9858LibErr("Fatal Ramp Error\n");
+		printf("Error:  Fatal Ramp Error [RCh509]\nThis error is from the GP DDS. You probably set some crazy value. This code was cobbled together and the limits may not make sense. -KX 2026." );
+		*cmdLength=0;
+	}
+	return cmd;
+
+}
+
 
 
 /*************************************************************************************************************************/
