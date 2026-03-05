@@ -805,6 +805,22 @@ void BuildUpdateList(double TMatrix[],
 
 		//Go through for each column that needs to be updated
 
+		// Precompute digital channel card assignments and bitmasks.
+		// DChName[k].chnum never changes during a run, so this avoids
+		// repeated int_power(2, x) calls inside the hot inner loop.
+		{
+			int digCard_pre[NUMBERDIGITALCHANNELS+1];
+			unsigned int digMask_pre[NUMBERDIGITALCHANNELS+1];
+			int ch_pre;
+			for (k = 1; k <= NUMBERDIGITALCHANNELS; k++)
+			{
+				ch_pre = DChName[k].chnum;
+				if      (ch_pre >= 1   && ch_pre <= 32)  { digCard_pre[k] = 1; digMask_pre[k] = 1u << (ch_pre - 1);   }
+				else if (ch_pre >= 101 && ch_pre <= 132) { digCard_pre[k] = 2; digMask_pre[k] = 1u << (ch_pre - 101); }
+				else if (ch_pre >= 133 && ch_pre <= 164) { digCard_pre[k] = 3; digMask_pre[k] = 1u << (ch_pre - 133); }
+				else                                     { digCard_pre[k] = 0; digMask_pre[k] = 0; }
+			}
+
 		//Important Variables:
 		//count: Number of Adwin events until the current position
 		//nupcurrent: number of updates for the current Adwin event
@@ -844,23 +860,12 @@ void BuildUpdateList(double TMatrix[],
 			digval3=0;
 			for(k=1;k<=NUMBERDIGITALCHANNELS;k++)
 			{
-				digchannel=DChName[k].chnum;
-
-				if((digchannel>=1)&&(digchannel<=32))
+				if(DMat[k][i] && digMask_pre[k])
 				{
-					digval=digval+DMat[k][i]*int_power(2,DChName[k].chnum-1);
+					if     (digCard_pre[k]==1) digval  |= digMask_pre[k];
+					else if(digCard_pre[k]==2) digval2 |= digMask_pre[k];
+					else if(digCard_pre[k]==3) digval3 |= digMask_pre[k];
 				}
-
-				if((digchannel>=101)&&(digchannel<=132))
-				{
-					digval2=digval2+DMat[k][i]*int_power(2,(DChName[k].chnum-100)-1);
-				}
-
-				if((digchannel>=133)&&(digchannel<=164))
-				{
-					digval3=digval3+DMat[k][i]*int_power(2,(DChName[k].chnum-132)-1); // this should have been 200 to keep the convention going
-				}
-
 			}// finished computing current digital data
 
 			if(digval!=LastDVal)
@@ -884,7 +889,7 @@ void BuildUpdateList(double TMatrix[],
 			{
 				if(LaserTriggerArray[k][i]>0)
 				{
-					lasTrigVal+=int_power(2,(LaserProperties[k].DigitalChannel-100)-1);
+					lasTrigVal += 1u << (LaserProperties[k].DigitalChannel - 101);
 				}
 			}
 
@@ -974,6 +979,7 @@ void BuildUpdateList(double TMatrix[],
 			}//Done this element of the TMatrix
 
 		}//done scanning over times array
+		}// end digCard_pre / digMask_pre scope
 
 		//Find the largest of the arrays
 //		bigger=count;
@@ -1102,7 +1108,7 @@ void BuildUpdateList(double TMatrix[],
 			{
 				ResetToZeroAtEnd[AChName[i].chnum-1]=AChName[i].resettozero;
 			}
-			printf("Line = %d, Channel = %d, Reset-to-zero = %d \n", i, AChName[i].chnum, ResetToZeroAtEnd[i-1]);
+			//DEBUG: printf("Line = %d, Channel = %d, Reset-to-zero = %d \n", i, AChName[i].chnum, ResetToZeroAtEnd[i-1]);
 		}
 
 		digval=0;
@@ -1110,21 +1116,11 @@ void BuildUpdateList(double TMatrix[],
 		digval3=0;
 		for(k=1;k<=NUMBERDIGITALCHANNELS;k++)
 			{
-				digchannel=DChName[k].chnum;
-
-				if((digchannel>=1)&&(digchannel<=32))
+				if(DChName[k].resettolow && digMask_pre[k])
 				{
-					digval=digval+DChName[k].resettolow*int_power(2,DChName[k].chnum-1);
-				}
-
-				if((digchannel>=101)&&(digchannel<=132))
-				{
-					digval2=digval2+DChName[k].resettolow*int_power(2,(DChName[k].chnum-100)-1);
-				}
-
-				if((digchannel>=133)&&(digchannel<=164))
-				{
-					digval3=digval3+DChName[k].resettolow*int_power(2,(DChName[k].chnum-132)-1);
+					if     (digCard_pre[k]==1) digval  |= digMask_pre[k];
+					else if(digCard_pre[k]==2) digval2 |= digMask_pre[k];
+					else if(digCard_pre[k]==3) digval3 |= digMask_pre[k];
 				}
 			}// finished computing current digital data
 
