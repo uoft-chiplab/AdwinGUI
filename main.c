@@ -24,6 +24,7 @@ The file that starts everything off.
 #include "multiscan.h"
 
 #include "saveload.h"// for testing saveload functionality only
+#include "SeqWarnings.h"
 
 int main (int argc, char *argv[])
 {
@@ -336,6 +337,17 @@ void initializeGUI()// initialzie the GUI by setting menu's and arranging things
 	strcpy (buff,SEQUENCER_VERSION);
 	strcat (buff,"untitled panel");
 	SetPanelAttribute (panelHandle, ATTR_TITLE, buff);
+
+	// Create warnings text box on the right vertical strip (to the right of the analog table)
+	{
+		int tableLeft, tableWidth;
+		GetCtrlAttribute(panelHandle, PANEL_ANALOGTABLE, ATTR_LEFT, &tableLeft);
+		GetCtrlAttribute(panelHandle, PANEL_ANALOGTABLE, ATTR_WIDTH, &tableWidth);
+		warningBoxCtrl = NewCtrl(panelHandle, CTRL_TEXT_BOX, "Warnings",
+		                         140, tableLeft + tableWidth + 10);
+		SetCtrlAttribute(panelHandle, warningBoxCtrl, ATTR_WIDTH, 250);
+		SetCtrlAttribute(panelHandle, warningBoxCtrl, ATTR_HEIGHT, 400);
+	}
 }
 
 // Initializes all elements of the AChName global var

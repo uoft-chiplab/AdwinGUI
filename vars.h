@@ -195,6 +195,7 @@ int panelHandle11,panelHandle12,panelHandle13,panelHandle14;
 int panelHandleANRITSU, panelHandleANRITSUSETTINGS;
 int panelHandle_sub1,panelHandle_sub2;
 int menuHandle;
+int warningBoxCtrl;  // Control ID for the warnings text box (created at runtime)
 
 
 /************************************************************************
