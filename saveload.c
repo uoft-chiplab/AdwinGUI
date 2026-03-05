@@ -108,8 +108,7 @@ void SaveSettings(int version)
 
 	// Update the title of the sequencer
 	SplitPath(panFilePath, NULL, panFileDir, panFileName);
-	strcpy(buff, SEQUENCER_VERSION);
-	strcat(buff, panFileName);
+	snprintf(buff, sizeof(buff), "%s%s", SEQUENCER_VERSION, panFileName);
 	SetPanelAttribute(panelHandle, ATTR_TITLE, buff);
 
 	// Create the run folder

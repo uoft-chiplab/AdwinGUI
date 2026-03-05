@@ -3757,7 +3757,7 @@ void CVICALLBACK Analog_Cell_Paste(int panelHandle, int controlID, int MenuItemI
 	}
 
 	//Paste Made into single Cell
-	else if(selection.top==0);
+	else if(selection.top==0)
 	{
 		GetActiveTableCell (panelHandle, PANEL_ANALOGTABLE, &pval);
 		if(pval.y<=NUMBERANALOGCHANNELS)
