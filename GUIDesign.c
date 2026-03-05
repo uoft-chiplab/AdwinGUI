@@ -386,10 +386,8 @@ void RunOnce (void)
 	// SetCtrlVal(panelHandle, PANEL_LED_YEL, 0);
 	// SetCtrlVal(panelHandle, PANEL_LED_GRE, 0);
 
-
 	SeqErrorCount=0;  // For each run reset error count to zero
 	RunWarningChecks();  // Update warnings text box
-
 
 	isdimmed=TRUE;
 	lastpagenum=10;
