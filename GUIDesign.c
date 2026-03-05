@@ -674,16 +674,17 @@ void BuildUpdateList(double TMatrix[],
 	int ii=0,jj=0,kk=0,tt=0; // variables for loops
 	int start_offset=0;
 	time_t tstart,tstop;
-	double timestamp, timestamp1,timestamp2,timestamp3;
-	int size1, size2;
+	double timestamp, timestamp1,timestamp2,timestamp3,timestamp4;
+	int size1, size2, size3;
 	int runafterscan;
 
-	// V16.1.6: Make UpdateNum, ChNum, and ChVal static pointers.
+	// V16.1.6: Make UpdateNum, ChNum, ChVal, ChDigVal static pointers.
 	//			UpdateNumInitialized is 0 if UpdateNum etc. do not point to memory locations.
 	static int UpdateNumInitialized = 0;
 	static int *UpdateNum = NULL;
 	static int *ChNum = NULL;
 	static float *ChVal = NULL;
+	static long *ChDigVal = NULL;  // Must be long to avoid float precision error
 	static int timesum = 0;
 
 	double timeStart, timeEnd;
@@ -713,7 +714,7 @@ void BuildUpdateList(double TMatrix[],
 	GlobalDelay=EventPeriod/AdwinTick; // AdwintTick=0.000025ms=AW clock cycle (Gives #of clock cycles/update)
 
 
-	// V16.1.6: Check each time if UpdateNum, ChNum, and ChVal need to be extended.
+	// V16.1.6: Check each time if UpdateNum, ChNum, ChDigVal and ChVal need to be extended.
 
 	//make a new time list...converting the TimeTable from milliseconds to number of events (numtimes=total #of columns)
 	temp_timesum = 0;
@@ -739,6 +740,10 @@ void BuildUpdateList(double TMatrix[],
 		ChVal = calloc((int)((double)temp_timesum*4),sizeof(double));
 		if( ChVal == NULL ){ exit(1); }
 
+		free(ChDigVal);
+		ChDigVal = calloc((int)((double)temp_timesum*4),sizeof(long));
+		if( ChDigVal == NULL ){ exit(1); }
+
 		UpdateNumInitialized = 1;
 	}
 	if( !UpdateNumInitialized ){// Just in case.
@@ -751,6 +756,9 @@ void BuildUpdateList(double TMatrix[],
 
 		ChVal=calloc((int)((double)temp_timesum*4),sizeof(double));
 		if( ChVal == NULL ){ exit(1); }
+
+		ChDigVal=calloc((int)((double)temp_timesum*4),sizeof(long));
+		if( ChDigVal == NULL ){ exit(1); }
 
 		UpdateNumInitialized = 1;
 	}
@@ -860,7 +868,7 @@ void BuildUpdateList(double TMatrix[],
 				nupcurrent++;
 				nuptotal++;
 				ChNum[nuptotal]=101;
-				ChVal[nuptotal]=digval;
+				ChDigVal[nuptotal]=(long)digval;
 			}
 			LastDVal=digval;
 
@@ -885,7 +893,7 @@ void BuildUpdateList(double TMatrix[],
 				nupcurrent++;
 				nuptotal++;
 				ChNum[nuptotal]=102;
-				ChVal[nuptotal]=digval2+lasTrigVal; // Adds laser triggers to the second digital card output
+				ChDigVal[nuptotal]=(long)(digval2+lasTrigVal); // Adds laser triggers to the second digital card output
 				LastDVal2=digval2;
 			}
 
@@ -894,7 +902,7 @@ void BuildUpdateList(double TMatrix[],
 				nupcurrent++;
 				nuptotal++;
 				ChNum[nuptotal]=103;
-				ChVal[nuptotal]=digval3;
+				ChDigVal[nuptotal]=(long)digval3;
 				LastDVal3=digval3;
 			}
 
@@ -917,7 +925,7 @@ void BuildUpdateList(double TMatrix[],
 					nupcurrent++;
 					nuptotal++;
 					ChNum[nuptotal]=102;
-					ChVal[nuptotal]=LastDVal2;
+					ChDigVal[nuptotal]=(long)LastDVal2;
 					lasTrigVal=0;
 				}
 
@@ -1068,6 +1076,8 @@ void BuildUpdateList(double TMatrix[],
 		SetData_Long(2,ChNum,1,nuptotal+1);
 		timestamp3 = Timer();
 		SetData_Float(3,ChVal,1,nuptotal+1);
+		timestamp4 = Timer();
+		SetData_Long(4,ChDigVal,1,nuptotal+1);
 // ------------------------------------------------------------------------------------------------------------------
 
 		 printf("end at: %s \n", TimeStr()); //debug tag
@@ -1076,6 +1086,7 @@ void BuildUpdateList(double TMatrix[],
 		 printf("elapsed time (sending global delay):  %0.3f s\n", timestamp2-timestamp);
 		 printf("elapsed time (sending ChNum):  %0.3f s, size = %d\n", timestamp3-timestamp2,size1);
 		 printf("elapsed time (sending ChVal):  %0.3f s, size = %d\n", Timer()-timestamp3,size2);
+		 printf("elapsed time (sending ChDigVal):  %0.3f s, size = %d\n", Timer()-timestamp4,size3);
 		 printf("elapsed time (total):  %0.3f s\n", Timer()-timestamp1);
 
 
@@ -1117,7 +1128,7 @@ void BuildUpdateList(double TMatrix[],
 				}
 			}// finished computing current digital data
 
-		SetData_Long(4,ResetToZeroAtEnd,1,NUMBERANALOGCHANNELS);
+		SetData_Long(5,ResetToZeroAtEnd,1,NUMBERANALOGCHANNELS);
 		SetPar(5,digval);
 		SetPar(6,digval2);
 		SetPar(7,digval3);

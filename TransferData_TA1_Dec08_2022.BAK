@@ -34,13 +34,14 @@
 dim DATA_1[5000000] as long  'A list which specifies how many channels will be updated per event
 dim DATA_2[5000000] as long  'A list of channels to be updated
 dim data_3[5000000] as float 'A list of values for the channels
+dim data_4[5000000] as long  'A list of digital values to be updated
 'DATA_2 and data_3 have a 1:1 correspondence.  
 'Stepping through DATA_2 and data_3 is controlled by DATA_1
 'Computer send an integer to Par_1.  This tells us how many
 'events to write. 
 
 'data_4 is the enactment of the reset to zero function in the sequencer code
-dim data_4[100] as long     ' a list of which channels are reset to zero on completion
+dim data_5[100] as long     ' a list of which channels are reset to zero on completion
 
 
 'Channels 1-48 refer to Analog output lines
@@ -105,6 +106,8 @@ INIT:
   DigProg2(2,65535)
   DigProg1(3,65535)
   DigProg2(3,65535)
+  DigProg1(4,65535)
+  DigProg2(4,65535)
   
   'Configure cards for synchronous output
   ' digital: 1 is transistor output, not used, 2 and 3 are digital outs
@@ -193,17 +196,17 @@ EVENT:
 
       '***********************Digital outs***************
       if(ch=101) then
-        val_lower=Data_3[updates]
+        val_lower=Data_4[updates]
         DIG_WRITELATCH32(2,val_lower) 'Writes Digital Channels 1-32
       endif
   
       if(ch=102) then
-        val_upper=Data_3[updates]
+        val_upper=Data_4[updates]
         DIG_WRITELATCH32(3,val_upper) 'Writes Digital Channels 101-132
       endif
       
       if(ch=103) then 'for 3rd digital card
-        val_upper=Data_3[updates]
+        val_upper=Data_4[updates]
         DIG_WRITELATCH32(4,val_upper) 'Writes Digital Channels 133-164
       endif
             
@@ -219,22 +222,22 @@ FINISH:
 
   'if Data_4[j]=0, i.e. channel should be set to zero, then set to zero
   For i= 1 to 8
-    if(Data_4[i]=1) then
+    if(Data_5[i]=1) then
       WRITEDAC(1,i,V(0))   
     ENDIF
-    if(Data_4[i+8]=1) then
+    if(Data_5[i+8]=1) then
       WRITEDAC(2,i,V(0))   
     ENDIF
-    if(Data_4[i+16]=1) then
+    if(Data_5[i+16]=1) then
       WRITEDAC(3,i,V(0))   
     ENDIF
-    if(Data_4[i+24]=1) then
+    if(Data_5[i+24]=1) then
       WRITEDAC(4,i,V(0))   
     ENDIF
-    if(Data_4[i+32]=1) then
+    if(Data_5[i+32]=1) then
       WRITEDAC(5,i,V(0))   
     ENDIF
-    if(Data_4[i+40]=1) then
+    if(Data_5[i+40]=1) then
       WRITEDAC(6,i,V(0))   
     ENDIF
   Next i
