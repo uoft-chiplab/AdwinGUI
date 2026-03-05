@@ -18,6 +18,7 @@
 #include <string.h>
 #include "Scan.h"
 #include <userint.h>
+#include "SeqWarnings.h"
 #include "GUIDesign.h"
 #include "GUIDesign2.h"
 #include "AnalogSettings.h"
@@ -387,6 +388,7 @@ void RunOnce (void)
 
 
 	SeqErrorCount=0;  // For each run reset error count to zero
+	RunWarningChecks();  // Update warnings text box
 
 
 	isdimmed=TRUE;
@@ -3768,7 +3770,7 @@ void CVICALLBACK Analog_Cell_Paste(int panelHandle, int controlID, int MenuItemI
 	}
 
 	//Paste Made into single Cell
-	else if(selection.top==0);
+	else if(selection.top==0)
 	{
 		GetActiveTableCell (panelHandle, PANEL_ANALOGTABLE, &pval);
 		if(pval.y<=NUMBERANALOGCHANNELS)
