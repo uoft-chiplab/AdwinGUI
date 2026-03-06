@@ -668,6 +668,9 @@ void BuildUpdateList(double TMatrix[],
 	double DDSoffset=0.0,DDS2offset=0.0,DDS3offset=0.0;
 	int digchannelsum;
 	int newcount=0;
+	int digCard_pre[NUMBERDIGITALCHANNELS+1];
+	unsigned int digMask_pre[NUMBERDIGITALCHANNELS+1];
+	int ch_pre;
 	// variables for timechannel optimization
 	int ZeroThreshold=50;
 	int lastfound=0;
@@ -808,18 +811,14 @@ void BuildUpdateList(double TMatrix[],
 		// Precompute digital channel card assignments and bitmasks.
 		// DChName[k].chnum never changes during a run, so this avoids
 		// repeated int_power(2, x) calls inside the hot inner loop.
+		for (k = 1; k <= NUMBERDIGITALCHANNELS; k++)
 		{
-			int digCard_pre[NUMBERDIGITALCHANNELS+1];
-			unsigned int digMask_pre[NUMBERDIGITALCHANNELS+1];
-			int ch_pre;
-			for (k = 1; k <= NUMBERDIGITALCHANNELS; k++)
-			{
-				ch_pre = DChName[k].chnum;
-				if      (ch_pre >= 1   && ch_pre <= 32)  { digCard_pre[k] = 1; digMask_pre[k] = 1u << (ch_pre - 1);   }
-				else if (ch_pre >= 101 && ch_pre <= 132) { digCard_pre[k] = 2; digMask_pre[k] = 1u << (ch_pre - 101); }
-				else if (ch_pre >= 133 && ch_pre <= 164) { digCard_pre[k] = 3; digMask_pre[k] = 1u << (ch_pre - 133); }
-				else                                     { digCard_pre[k] = 0; digMask_pre[k] = 0; }
-			}
+			ch_pre = DChName[k].chnum;
+			if      (ch_pre >= 1   && ch_pre <= 32)  { digCard_pre[k] = 1; digMask_pre[k] = 1u << (ch_pre - 1);   }
+			else if (ch_pre >= 101 && ch_pre <= 132) { digCard_pre[k] = 2; digMask_pre[k] = 1u << (ch_pre - 101); }
+			else if (ch_pre >= 133 && ch_pre <= 164) { digCard_pre[k] = 3; digMask_pre[k] = 1u << (ch_pre - 133); }
+			else                                     { digCard_pre[k] = 0; digMask_pre[k] = 0; }
+		}
 
 		//Important Variables:
 		//count: Number of Adwin events until the current position
@@ -979,7 +978,6 @@ void BuildUpdateList(double TMatrix[],
 			}//Done this element of the TMatrix
 
 		}//done scanning over times array
-		}// end digCard_pre / digMask_pre scope
 
 		//Find the largest of the arrays
 //		bigger=count;
@@ -1029,6 +1027,7 @@ void BuildUpdateList(double TMatrix[],
 
 
 		tstop=clock();
+		printf("DEBUG: Array build time: %.3f s\n", (double)(tstop-tstart)/CLOCKS_PER_SEC);
 
 		// Boot and load transfer file
 		if(processorT1x==0)
