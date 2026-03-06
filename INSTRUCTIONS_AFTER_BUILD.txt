@@ -1,0 +1,8 @@
+After building, go up one directory and make a folder "AdwinGUI Vxx.x.x".
+Copy the newly built GUIDesign.exe inside this folder.
+Copy the processordefault.txt and most recent TransferData.TA1 files.
+
+TransferData.TA1 is the compiled version of the adbasic code. We tend to save versions 
+with dated filenames, then copy the most recent one and call it "TransferData.TA1".
+
+The sequence must load this when the GUI is first run. 
