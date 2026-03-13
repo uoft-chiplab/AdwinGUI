@@ -405,11 +405,11 @@ int laserDisconnect(unsigned int handle, int laserNum)
     if (LaserProperties[laserNum].useUDP)
     {
 		return err;
-        /*if ((err = DisposeUDPChannel(handle)) < 0)
+        if ((err = DisposeUDPChannel(handle)) < 0)
         {
             printf("Error Closing UDP Channel\n");
             printf(GetUDPErrorString(err));
-        }*/
+        }
     }
     else
     {

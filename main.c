@@ -344,7 +344,7 @@ void initializeGUI()// initialzie the GUI by setting menu's and arranging things
 		GetCtrlAttribute(panelHandle, PANEL_ANALOGTABLE, ATTR_LEFT, &tableLeft);
 		GetCtrlAttribute(panelHandle, PANEL_ANALOGTABLE, ATTR_WIDTH, &tableWidth);
 		warningBoxCtrl = NewCtrl(panelHandle, CTRL_TEXT_BOX, "Warnings",
-		                         290, tableLeft + tableWidth + 80);
+		                         290, tableLeft + tableWidth + 85);
 		SetCtrlAttribute(panelHandle, warningBoxCtrl, ATTR_WIDTH, 80);
 		SetCtrlAttribute(panelHandle, warningBoxCtrl, ATTR_HEIGHT, 400);
 		SetCtrlAttribute(panelHandle, warningBoxCtrl, ATTR_WRAP_MODE, VAL_WORD_WRAP);

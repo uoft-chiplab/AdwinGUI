@@ -2,13 +2,14 @@ Last edited 2021-04-28
 
 This documents the changes to the ADwin Sequencer program over the years. This file was created 2019-10-01 so knowledge of all previous versions comes from labbooks and notes in the code itself.
 -----------------------
-ADwin Sequencer V17.1.5
+ADwin Sequencer V17.2.1
 Status: In progress
 In Use: Feb 2026 to ?
 Changes:
 1) Implemented General Purpose DDS, including code for UDP connection. 
 The above replaces the Rb evaporator "DDS1", which had glitchy issues.
 There are now only Rabbit DDS devices in use -- Phaseo, micro, and GP.
+2) Optimized the array building to make the cycle slightly faster. 
 -----------------------
 ADwin Sequencer V17.1.1
 Status: In progress
@@ -27,7 +28,7 @@ Changes:
 -----------------------
 ADwin Sequencer V17.0.1
 Status: Done
-In Use: 2021 to ?
+In Use: 2021 to 2022
 Changes:
 1) Added 8 new digital channels.
 2) Moved scan list to side, decreasing the number of visible scan parameters

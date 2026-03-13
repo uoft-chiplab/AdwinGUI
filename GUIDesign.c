@@ -677,7 +677,7 @@ void BuildUpdateList(double TMatrix[],
 	int ii=0,jj=0,kk=0,tt=0; // variables for loops
 	int start_offset=0;
 	time_t tstart,tstop;
-	double timestamp, timestamp1,timestamp2,timestamp3,timestamp4;
+	double timestamp, timestamp1,timestamp2,timestamp3,timestamp4,timestamp5;
 	int size1, size2, size3;
 	int runafterscan;
 
@@ -1025,7 +1025,6 @@ void BuildUpdateList(double TMatrix[],
 			}
 		}
 
-
 		tstop=clock();
 		printf("DEBUG: Array build time: %.3f s\n", (double)(tstop-tstart)/CLOCKS_PER_SEC);
 
@@ -1074,6 +1073,7 @@ void BuildUpdateList(double TMatrix[],
 			SetData_Long(1,UpdateNum,1,count+1);
 		}
 
+		timestamp = Timer();
 	// Send the Array to the AdWin Sequencer
 // ------------------------------------------------------------------------------------------------------------------
 		SetPar(2,GlobalDelay);
@@ -1083,6 +1083,7 @@ void BuildUpdateList(double TMatrix[],
 		SetData_Float(3,ChVal,1,nuptotal+1);
 		timestamp4 = Timer();
 		SetData_Long(4,ChDigVal,1,nuptotal+1);
+		timestamp5 = Timer();
 // ------------------------------------------------------------------------------------------------------------------
 
 		 printf("end at: %s \n", TimeStr()); //debug tag
@@ -1090,10 +1091,9 @@ void BuildUpdateList(double TMatrix[],
 		 printf("elapsed time (sending):  %0.3f s\n", Timer()-timestamp);
 		 printf("elapsed time (sending global delay):  %0.3f s\n", timestamp2-timestamp);
 		 printf("elapsed time (sending ChNum):  %0.3f s, size = %d\n", timestamp3-timestamp2,size1);
-		 printf("elapsed time (sending ChVal):  %0.3f s, size = %d\n", Timer()-timestamp3,size2);
-		 printf("elapsed time (sending ChDigVal):  %0.3f s, size = %d\n", Timer()-timestamp4,size3);
+		 printf("elapsed time (sending ChVal):  %0.3f s, size = %d\n", timestamp4-timestamp3,size2);
+		 printf("elapsed time (sending ChDigVal):  %0.3f s, size = %d\n", timestamp5-timestamp4,size3);
 		 printf("elapsed time (total):  %0.3f s\n", Timer()-timestamp1);
-
 
 		// determine if we should reset values to zero after a cycle
 		GetMenuBarAttribute (menuHandle, MENU_SETTINGS_RESETZERO, ATTR_CHECKED,&checkresettozero);

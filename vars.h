@@ -20,7 +20,7 @@ typedef int BOOL;
 ADwin Variables and GUI things
 *************************************************************************/
 
-#define SEQUENCER_VERSION "ADwin Sequencer V17.2.0 - "
+#define SEQUENCER_VERSION "ADwin Sequencer V17.2.2 - "
 
 // ADwin info
 #define DefaultEventPeriod (0.100)   // in milliseconds
@@ -196,7 +196,6 @@ int panelHandleANRITSU, panelHandleANRITSUSETTINGS;
 int panelHandle_sub1,panelHandle_sub2;
 int menuHandle;
 int warningBoxCtrl;  // Control ID for the warnings text box (created at runtime)
-
 
 /************************************************************************
 DDS variables
