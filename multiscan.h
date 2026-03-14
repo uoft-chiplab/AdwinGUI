@@ -8,6 +8,7 @@
 
 // MultiScan functions
 int SetupScanFiles(int version, char *outputCmdsFileDir);
+int SetupScanFilesAuto(const char *seqFilePath, char *outputCmdsDirPath);
 void UpdateMultiScanValues(int);
 void GetNewMultiScanCommands(void);
 void AutoExportMultiScanBuffer(void);

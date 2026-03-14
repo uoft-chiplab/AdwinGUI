@@ -22,6 +22,7 @@ The file that starts everything off.
 #include <utility.h> // NI CVI library
 
 #include "multiscan.h"
+#include "jobqueue.h"
 
 #include "saveload.h"// for testing saveload functionality only
 #include "SeqWarnings.h"
@@ -349,6 +350,9 @@ void initializeGUI()// initialzie the GUI by setting menu's and arranging things
 		SetCtrlAttribute(panelHandle, warningBoxCtrl, ATTR_HEIGHT, 400);
 		SetCtrlAttribute(panelHandle, warningBoxCtrl, ATTR_WRAP_MODE, VAL_WORD_WRAP);
 	}
+
+	// Create the job queue panel
+	initializeQueuePanel();
 }
 
 // Initializes all elements of the AChName global var
@@ -509,5 +513,11 @@ void initializeMultiScan(void)
 	PScan.Scan_Active=FALSE;
 	PScan.Use_Scan_List=FALSE;
 	TwoParam=FALSE;
+
+	// Initialize job queue globals
+	QueueLength = 0;
+	CurrentJobIndex = -1;
+	QueueActive = FALSE;
+	queuePanelHandle = -1;
 }
 

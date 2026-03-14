@@ -311,6 +311,102 @@ int SetupScanFiles(int version, char *outputCmdsDirPath){
 }
 
 
+//*********************************************************************
+// SetupScanFilesAuto
+// Non-interactive variant of SetupScanFiles for use by the job queue.
+// Takes a full .seq filepath, creates the directory structure, saves
+// the .seq file, and sets MultiScan.CommandsFilePath / ScanDirPath.
+// Returns 1 on success, -1 on error.
+//*********************************************************************
+int SetupScanFilesAuto(const char *seqFilePath, char *outputCmdsDirPath)
+{
+	FILE *fpini;
+	char panFilePath[MAX_PATHNAME_LEN];
+	char panFileDir[MAX_PATHNAME_LEN];
+	char panFileName[MAX_PATHNAME_LEN];
+	char runDirPath[MAX_PATHNAME_LEN];
+	char commandsDirPath[MAX_PATHNAME_LEN];
+	char plotsDirPath[MAX_PATHNAME_LEN];
+	char imgsDirPath[MAX_PATHNAME_LEN];
+	char mscanFileDirPath[MAX_PATHNAME_LEN];
+	char buff[MAX_PATHNAME_LEN];
+	char *buffPtr;
+	int runDirStatus, commandsDirStatus, plotsDirStatus, imgsDirStatus;
+	int loadonboot;
+
+	strncpy(panFilePath, seqFilePath, MAX_PATHNAME_LEN - 1);
+	panFilePath[MAX_PATHNAME_LEN - 1] = '\0';
+
+	printf("SetupScanFilesAuto: seqFilePath = >%s<\n", panFilePath);
+
+	// Update gui.ini
+	GetMenuBarAttribute(menuHandle, MENU_FILE_BOOTLOAD, ATTR_CHECKED, &loadonboot);
+	if ((fpini = fopen("gui.ini", "w")) != NULL) {
+		fprintf(fpini, panFilePath);
+		fprintf(fpini, "\n%d", loadonboot);
+		fclose(fpini);
+	}
+
+	// Save the .seq file using V17 format
+	SaveSequenceV17(panFilePath, strlen(panFilePath));
+
+	// Update panel title
+	SplitPath(panFilePath, NULL, panFileDir, panFileName);
+	strcpy(buff, SEQUENCER_VERSION);
+	strcat(buff, panFileName);
+	SetPanelAttribute(panelHandle, ATTR_TITLE, buff);
+
+	// Derive the run directory name (panFileName minus ".seq")
+	strcpy(buff, panFileName);
+	buff[strlen(buff) - 4] = '\0';
+	MakePathname(panFileDir, buff, runDirPath);
+
+	printf("SetupScanFilesAuto: runDirPath = >%s<\n", runDirPath);
+
+	// Create run directory (accept -9 = already exists)
+	runDirStatus = MakeDir(runDirPath);
+	if (runDirStatus < 0 && runDirStatus != -9) {
+		printf("SetupScanFilesAuto: MakeDir error %d\n", runDirStatus);
+		MessagePopup("Directory Error",
+		             "Failed to create scan run directory for queued job.");
+		return -1;
+	}
+
+	// Create subdirectories
+	strcpy(buff, "commands");
+	MakePathname(runDirPath, buff, commandsDirPath);
+	strcpy(buff, "plots");
+	MakePathname(runDirPath, buff, plotsDirPath);
+	strcpy(buff, "imgs");
+	MakePathname(runDirPath, buff, imgsDirPath);
+
+	commandsDirStatus = MakeDir(commandsDirPath);
+	plotsDirStatus    = MakeDir(plotsDirPath);
+	imgsDirStatus     = MakeDir(imgsDirPath);
+
+	if ((commandsDirStatus < 0 && commandsDirStatus != -9) ||
+	    (plotsDirStatus    < 0 && plotsDirStatus    != -9) ||
+	    (imgsDirStatus     < 0 && imgsDirStatus     != -9)) {
+		MessagePopup("Directory Error",
+		             "Failed to create scan subdirectories for queued job.");
+		return -1;
+	}
+
+	// Set outputs
+	strcpy(outputCmdsDirPath, commandsDirPath);
+
+	strcpy(buff, panFileName);
+	buffPtr = buff + strlen(buff) - 3; // point to 's' in ".seq"
+	strcpy(buffPtr, "mscan");
+	MakePathname(runDirPath, buff, mscanFileDirPath);
+	strcpy(MultiScan.ScanDirPath, mscanFileDirPath);
+
+	printf("SetupScanFilesAuto: commandsDirPath = >%s<\n", commandsDirPath);
+	printf("SetupScanFilesAuto: mscanFileDirPath = >%s<\n", mscanFileDirPath);
+
+	return 1;
+}
+
 
 //*****************************************************************************************
 // 2012-10-06 --- Stefan Trotzky --- Started:V16.0.0
@@ -1421,6 +1517,11 @@ void AutoExportMultiScanBuffer(void)
 	int fileSelectStatus;
 
 
+    // When queue is running, auto-save to the pre-configured location without asking.
+    if (QueueActive) {
+    	strcpy(mscanFileNameWithPath, MultiScan.ScanDirPath);
+    	printf("Queue: auto-saving .mscan to %s\n", mscanFileNameWithPath);
+    } else {
     manualSaveStatus = ConfirmPopup ( "Scan Finished",
     						"Save .mscan file to standard location?");
     if( manualSaveStatus == 1 ){// User selected yes
@@ -1461,6 +1562,7 @@ void AutoExportMultiScanBuffer(void)
 		// If the code can continue, try to save to the standard location.
 		strcpy(mscanFileNameWithPath,MultiScan.ScanDirPath);
 	}
+    } // end else (not QueueActive)
 
     // We should now have a valid filename.
     // Try to open file.

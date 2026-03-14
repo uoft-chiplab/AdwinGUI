@@ -434,6 +434,33 @@ struct MultiScanValues{
 	struct	MultiScanParameters Par[NUMMAXSCANPARAMETERS];
 } MultiScan;
 
+// Job Queue for sequential multi-scans
+// Each QueueJob captures a full snapshot of the multiscan config plus an output filename.
+// Status: 0=Pending, 1=Running, 2=Done, 3=Error
+#define MAX_QUEUE_JOBS 20
+#define QUEUE_STATUS_PENDING 0
+#define QUEUE_STATUS_RUNNING 1
+#define QUEUE_STATUS_DONE    2
+#define QUEUE_STATUS_ERROR   3
+
+struct QueueJob {
+	char   filename[MAX_PATHNAME_LEN];                         // Full .seq path for this job
+	char   csvpath[MAX_PATHNAME_LEN];                          // CSV source path (empty = none)
+	int    numPars;                                            // Number of scan parameters
+	int    numSteps;                                           // Number of scan steps
+	int    posPage[NUMMAXSCANPARAMETERS];                      // POS_TABLE row 1: page per param
+	int    posCol [NUMMAXSCANPARAMETERS];                      // POS_TABLE row 2: col per param
+	int    posRow [NUMMAXSCANPARAMETERS];                      // POS_TABLE row 3: row per param
+	double values[SCANBUFFER_LENGTH][NUMMAXSCANPARAMETERS];    // VAL_TABLE values
+	int    status;
+};
+
+struct QueueJob JobQueue[MAX_QUEUE_JOBS];
+int   QueueLength;       // Number of jobs in queue
+int   CurrentJobIndex;   // Which job is running (-1 if none)
+int   QueueActive;       // TRUE while queue is executing
+int   queuePanelHandle;  // Runtime-created queue panel handle
+
 // These should be local variables in UpdateMultiScanTable function but there is precedence for
 // putting things here.
 // Sentinel REPEAT_LAST_SENTINEL causes a holding pattern where the last line in the scan table

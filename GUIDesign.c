@@ -38,6 +38,7 @@
 
 #include "saveload.h"
 #include "multiscan.h"
+#include "jobqueue.h"
 
 
 //Clipboard for copy/paste functions
@@ -203,13 +204,18 @@ int CVICALLBACK TIMER_CALLBACK (int panel, int control, int event,
 							SetCtrlVal(panelHandle,PANEL_TOGGLEREPEAT,FALSE);
 							MultiScan.Active = FALSE;
 							MultiScan.Done = FALSE;
-							AutoExportMultiScanBuffer(); // save to file
-							EnableScanControls();
-							SetCtrlVal (panelHandle, PANEL_MULTISCAN_LED1, MultiScan.Active);
-							SetCtrlVal (panelHandle, PANEL_MULTISCAN_LED2, MultiScan.Done);
-							SetCtrlAttribute(panelHandle,PANEL_MULTISCAN_DECORATION,
-									ATTR_FRAME_COLOR,VAL_TRANSPARENT);
-							DrawNewTable(TRUE);
+							AutoExportMultiScanBuffer(); // save to file (auto-silent when QueueActive)
+							if (QueueActive) {
+								// Queue mode: advance to and start the next job
+								Queue_AdvanceToNextJob();
+							} else {
+								EnableScanControls();
+								SetCtrlVal (panelHandle, PANEL_MULTISCAN_LED1, MultiScan.Active);
+								SetCtrlVal (panelHandle, PANEL_MULTISCAN_LED2, MultiScan.Done);
+								SetCtrlAttribute(panelHandle,PANEL_MULTISCAN_DECORATION,
+										ATTR_FRAME_COLOR,VAL_TRANSPARENT);
+								DrawNewTable(TRUE);
+							}
 						}
 						else
 						{   // .. or keep going if requested
