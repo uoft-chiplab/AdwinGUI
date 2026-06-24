@@ -390,6 +390,7 @@ static int ml_read_panel_config(void){
 int CVICALLBACK ML_Refresh_Callback(int panel, int control, int event, void *cbd, int e1, int e2){
 	int numCols, j, page, col, row, oldRows;
 	char name[64];
+	char cellbuf[32];
 
 	if(event != EVENT_COMMIT) return 0;
 
@@ -409,10 +410,12 @@ int CVICALLBACK ML_Refresh_Callback(int panel, int control, int event, void *cbd
 		GetTableCellVal(panelHandle, PANEL_MULTISCAN_POS_TABLE, MakePoint(j+1,3), &row);
 		sprintf(name, "p%d", j+1);
 
-		SetTableCellVal(mlPanel, mlParamTable, MakePoint(MLCOL_NAME,  j+1), name);
-		SetTableCellVal(mlPanel, mlParamTable, MakePoint(MLCOL_PAGE,  j+1), (double)page);
-		SetTableCellVal(mlPanel, mlParamTable, MakePoint(MLCOL_COL,   j+1), (double)col);
-		SetTableCellVal(mlPanel, mlParamTable, MakePoint(MLCOL_ROW,   j+1), (double)row);
+		// Page/Col/Row are string columns so they always render reliably.
+		SetTableCellVal(mlPanel, mlParamTable, MakePoint(MLCOL_NAME, j+1), name);
+		sprintf(cellbuf, "%d", page); SetTableCellVal(mlPanel, mlParamTable, MakePoint(MLCOL_PAGE, j+1), cellbuf);
+		sprintf(cellbuf, "%d", col);  SetTableCellVal(mlPanel, mlParamTable, MakePoint(MLCOL_COL,  j+1), cellbuf);
+		sprintf(cellbuf, "%d", row);  SetTableCellVal(mlPanel, mlParamTable, MakePoint(MLCOL_ROW,  j+1), cellbuf);
+		// Bounds stay numeric so Start can read them back as doubles.
 		SetTableCellVal(mlPanel, mlParamTable, MakePoint(MLCOL_LOWER, j+1), 0.0);
 		SetTableCellVal(mlPanel, mlParamTable, MakePoint(MLCOL_UPPER, j+1), 1.0);
 	}
@@ -568,13 +571,26 @@ void BuildMLOptPanel(void){
 	SetCtrlAttribute(mlPanel, mlParamTable, ATTR_WIDTH, 520);
 	SetCtrlAttribute(mlPanel, mlParamTable, ATTR_HEIGHT, 150);
 	InsertTableColumns(mlPanel, mlParamTable, 1, MLNUMCOLS, VAL_CELL_NUMERIC);
+	// Param/Page/Col/Row are display-only string columns (always render); the two
+	// bound columns stay numeric so Start reads them back as doubles.
 	SetTableColumnAttribute(mlPanel, mlParamTable, MLCOL_NAME, ATTR_CELL_TYPE, VAL_CELL_STRING);
-	SetTableColumnAttribute(mlPanel, mlParamTable, MLCOL_NAME,  ATTR_LABEL_TEXT, "Param");
+	SetTableColumnAttribute(mlPanel, mlParamTable, MLCOL_PAGE, ATTR_CELL_TYPE, VAL_CELL_STRING);
+	SetTableColumnAttribute(mlPanel, mlParamTable, MLCOL_COL,  ATTR_CELL_TYPE, VAL_CELL_STRING);
+	SetTableColumnAttribute(mlPanel, mlParamTable, MLCOL_ROW,  ATTR_CELL_TYPE, VAL_CELL_STRING);
+
+	SetTableColumnAttribute(mlPanel, mlParamTable, MLCOL_NAME,  ATTR_LABEL_TEXT, "Parameter");
 	SetTableColumnAttribute(mlPanel, mlParamTable, MLCOL_PAGE,  ATTR_LABEL_TEXT, "Page");
-	SetTableColumnAttribute(mlPanel, mlParamTable, MLCOL_COL,   ATTR_LABEL_TEXT, "Col");
+	SetTableColumnAttribute(mlPanel, mlParamTable, MLCOL_COL,   ATTR_LABEL_TEXT, "Column");
 	SetTableColumnAttribute(mlPanel, mlParamTable, MLCOL_ROW,   ATTR_LABEL_TEXT, "Row");
-	SetTableColumnAttribute(mlPanel, mlParamTable, MLCOL_LOWER, ATTR_LABEL_TEXT, "Lower");
-	SetTableColumnAttribute(mlPanel, mlParamTable, MLCOL_UPPER, ATTR_LABEL_TEXT, "Upper");
+	SetTableColumnAttribute(mlPanel, mlParamTable, MLCOL_LOWER, ATTR_LABEL_TEXT, "Lower bound");
+	SetTableColumnAttribute(mlPanel, mlParamTable, MLCOL_UPPER, ATTR_LABEL_TEXT, "Upper bound");
+
+	SetTableColumnAttribute(mlPanel, mlParamTable, MLCOL_NAME,  ATTR_COLUMN_WIDTH, 80);
+	SetTableColumnAttribute(mlPanel, mlParamTable, MLCOL_PAGE,  ATTR_COLUMN_WIDTH, 55);
+	SetTableColumnAttribute(mlPanel, mlParamTable, MLCOL_COL,   ATTR_COLUMN_WIDTH, 60);
+	SetTableColumnAttribute(mlPanel, mlParamTable, MLCOL_ROW,   ATTR_COLUMN_WIDTH, 55);
+	SetTableColumnAttribute(mlPanel, mlParamTable, MLCOL_LOWER, ATTR_COLUMN_WIDTH, 100);
+	SetTableColumnAttribute(mlPanel, mlParamTable, MLCOL_UPPER, ATTR_COLUMN_WIDTH, 100);
 
 	// --- Cost file + parse format ---
 	top = 195;
