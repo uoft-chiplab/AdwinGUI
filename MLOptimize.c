@@ -568,7 +568,7 @@ void BuildMLOptPanel(void){
 
 	// --- Parameter table ---
 	mlParamTable = NewCtrl(mlPanel, CTRL_TABLE, "Parameters (bounds)", 30, 20);
-	SetCtrlAttribute(mlPanel, mlParamTable, ATTR_WIDTH, 520);
+	SetCtrlAttribute(mlPanel, mlParamTable, ATTR_WIDTH, 540);
 	SetCtrlAttribute(mlPanel, mlParamTable, ATTR_HEIGHT, 150);
 	InsertTableColumns(mlPanel, mlParamTable, 1, MLNUMCOLS, VAL_CELL_NUMERIC);
 	// Param/Page/Col/Row are display-only string columns (always render); the two
@@ -578,6 +578,13 @@ void BuildMLOptPanel(void){
 	SetTableColumnAttribute(mlPanel, mlParamTable, MLCOL_COL,  ATTR_CELL_TYPE, VAL_CELL_STRING);
 	SetTableColumnAttribute(mlPanel, mlParamTable, MLCOL_ROW,  ATTR_CELL_TYPE, VAL_CELL_STRING);
 
+	// A column shows its number unless ATTR_USE_LABEL_TEXT is TRUE, in which case it
+	// shows ATTR_LABEL_TEXT. Enable text labels on every column.
+	{
+		int c;
+		for(c = 1; c <= MLNUMCOLS; c++)
+			SetTableColumnAttribute(mlPanel, mlParamTable, c, ATTR_USE_LABEL_TEXT, 1);
+	}
 	SetTableColumnAttribute(mlPanel, mlParamTable, MLCOL_NAME,  ATTR_LABEL_TEXT, "Parameter");
 	SetTableColumnAttribute(mlPanel, mlParamTable, MLCOL_PAGE,  ATTR_LABEL_TEXT, "Page");
 	SetTableColumnAttribute(mlPanel, mlParamTable, MLCOL_COL,   ATTR_LABEL_TEXT, "Column");
