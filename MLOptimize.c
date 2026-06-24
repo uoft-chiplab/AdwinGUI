@@ -417,12 +417,6 @@ int CVICALLBACK ML_Refresh_Callback(int panel, int control, int event, void *cbd
 		SetTableCellVal(mlPanel, mlParamTable, MakePoint(MLCOL_UPPER, j+1), 1.0);
 	}
 
-	// Make Page/Col/Row read-only; bounds editable.
-	SetTableColumnAttribute(mlPanel, mlParamTable, MLCOL_NAME, ATTR_CELL_MODE, VAL_INDICATOR);
-	SetTableColumnAttribute(mlPanel, mlParamTable, MLCOL_PAGE, ATTR_CELL_MODE, VAL_INDICATOR);
-	SetTableColumnAttribute(mlPanel, mlParamTable, MLCOL_COL,  ATTR_CELL_MODE, VAL_INDICATOR);
-	SetTableColumnAttribute(mlPanel, mlParamTable, MLCOL_ROW,  ATTR_CELL_MODE, VAL_INDICATOR);
-
 	ml_status("Parameters refreshed. Enter lower/upper bounds, then Start.");
 	return 0;
 }
@@ -585,7 +579,7 @@ void BuildMLOptPanel(void){
 	// --- Cost file + parse format ---
 	top = 195;
 	mlCostPath   = ml_new_str(top, 20, "Cost file template (use %05d for shot #)", MLOpt.CostPathTemplate, 380);
-	mlBrowseBtn  = NewCtrl(mlPanel, CTRL_COMMAND_BUTTON, "Browse", top, 470);
+	mlBrowseBtn  = NewCtrl(mlPanel, CTRL_SQUARE_COMMAND_BUTTON, "Browse", top, 470);
 	InstallCtrlCallback(mlPanel, mlBrowseBtn, ML_Browse_Callback, 0);
 
 	top += 35;
@@ -624,14 +618,14 @@ void BuildMLOptPanel(void){
 
 	// --- Buttons ---
 	top += 35;
-	mlRefreshBtn = NewCtrl(mlPanel, CTRL_COMMAND_BUTTON, "Refresh Params", top, 20);
+	mlRefreshBtn = NewCtrl(mlPanel, CTRL_SQUARE_COMMAND_BUTTON, "Refresh Params", top, 20);
 	InstallCtrlCallback(mlPanel, mlRefreshBtn, ML_Refresh_Callback, 0);
-	mlStartBtn   = NewCtrl(mlPanel, CTRL_COMMAND_BUTTON, "Start", top, 170);
+	mlStartBtn   = NewCtrl(mlPanel, CTRL_SQUARE_COMMAND_BUTTON, "Start", top, 170);
 	InstallCtrlCallback(mlPanel, mlStartBtn, ML_Start_Callback, 0);
-	mlStopBtn    = NewCtrl(mlPanel, CTRL_COMMAND_BUTTON, "Stop", top, 270);
+	mlStopBtn    = NewCtrl(mlPanel, CTRL_SQUARE_COMMAND_BUTTON, "Stop", top, 270);
 	InstallCtrlCallback(mlPanel, mlStopBtn, ML_Stop_Callback, 0);
 	SetCtrlAttribute(mlPanel, mlStopBtn, ATTR_DIMMED, 1);
-	mlExportBtn  = NewCtrl(mlPanel, CTRL_COMMAND_BUTTON, "Export Log", top, 370);
+	mlExportBtn  = NewCtrl(mlPanel, CTRL_SQUARE_COMMAND_BUTTON, "Export Log", top, 370);
 	InstallCtrlCallback(mlPanel, mlExportBtn, ML_ExportLog_Callback, 0);
 
 	// --- Menu-bar launcher on the main menu ---
