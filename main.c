@@ -25,6 +25,7 @@ The file that starts everything off.
 
 #include "saveload.h"// for testing saveload functionality only
 #include "SeqWarnings.h"
+#include "MLOptimize.h"
 
 int main (int argc, char *argv[])
 {
@@ -107,6 +108,11 @@ int main (int argc, char *argv[])
 	// Sets the labels on the left
 	// Needs the rest of the gui to be initialized.
 	LaserSettingsInit();
+
+	// Build the ML optimization panel and its menu launcher.
+	// Must follow initializeGUI() so menuHandle is valid.
+	InitMLOptDefaults();
+	BuildMLOptPanel();
 
 	// Initialize debug tracker for number of GPIB writes since program start.
 	DEBUG_NUMBER_IBWRT_CALLS = 0;

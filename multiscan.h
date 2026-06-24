@@ -13,6 +13,7 @@ void GetNewMultiScanCommands(void);
 void AutoExportMultiScanBuffer(void);
 void ExportMultiScanBuffer(void);
 void updateScannedCellsWithScanTableLine(int);
+void applyValueToScannedCell(int j, double value);
 void updateScannedCellsWithOriginalValues(void);
 void writeToScanInfoFile(void);
 void EnableScanControls(void);

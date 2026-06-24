@@ -454,6 +454,51 @@ struct MultiScanValues{
 
 
 
+/************************************************************************
+ML Optimization (MLOptimize.c)
+*************************************************************************/
+// Machine-learning optimization of experimental parameters using an external
+// scikit-optimize (gp_minimize) Python process. The GUI owns the loop: it applies
+// the optimizer's suggested parameter vector to the device tables, runs one cycle,
+// waits, reads a cost/fitness value from a file written by the (separate) atom-cloud
+// fitting computer, and hands (params, cost) back to Python via files.
+//
+// Parameter selection reuses MultiScan.Par[] (populated by the existing right-click
+// "Scan cell value" menu). Each selected parameter gets a [Lower, Upper] bound here.
+
+#define MLOPT_OBJ_MAXIMIZE	(0)
+#define MLOPT_OBJ_MINIMIZE	(1)
+
+struct MLOptParameters{
+	double	Lower;	// optimization lower bound
+	double	Upper;	// optimization upper bound
+};
+struct MLOptState{
+	BOOL	Active;			// TRUE while an optimization run is in progress
+	BOOL	Done;			// TRUE once the optimizer signalled completion (DONE token)
+	int		NumPars;		// number of parameters (mirrors MultiScan.NumPars at start)
+	int		CurrentIter;	// index of the shot/suggestion currently being run (0-based)
+	int		TotalCalls;	    // total number of optimizer evaluations to perform
+	int		InitPoints;	    // number of initial (Sobol) sampling points
+	int		Direction;		// MLOPT_OBJ_MAXIMIZE or MLOPT_OBJ_MINIMIZE
+	double	Suggested[NUMMAXSCANPARAMETERS];	// current parameter vector from Python
+	double	CurrentCost;	// cost read for the current shot
+	double	BestCost;		// best (already sign-adjusted: higher=better) cost so far
+	int		HaveBest;		// whether BestCost/BestParams are populated yet
+	double	BestParams[NUMMAXSCANPARAMETERS];
+	struct	MLOptParameters Bounds[NUMMAXSCANPARAMETERS];
+	char	WorkDir[MAX_PATHNAME_LEN];		// IPC dir (config/suggest/result/log files)
+	char	CostPathTemplate[MAX_PATHNAME_LEN];	// user-defined, e.g. "Z:\\fit\\cost_%05d.txt"
+	char	CostScanFmt[64];				// user-defined parse fmt, default "%f"
+	int		SettleDelayMs;					// dwell after shot before reading cost
+	int		CostTimeoutMs;					// max poll time for cost / suggest file
+	char	PythonExe[MAX_PATHNAME_LEN];	// python interpreter (e.g. "python")
+	char	OptimizerScript[MAX_PATHNAME_LEN];	// ml_optimizer.py path
+} MLOpt;
+
+
+
+
 
 /************************************************************************
 Misc

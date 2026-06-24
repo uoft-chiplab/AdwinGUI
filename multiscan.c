@@ -1644,83 +1644,84 @@ void ExportMultiScanBuffer(void)
 // Separate out the action of changing values from the logic of which
 // set of values to change to.
 //*********************************************************************
+// Applies a single value to the device table cell described by MultiScan.Par[j]
+// (page/col/row/type). Factored out of updateScannedCellsWithScanTableLine so it can be
+// reused by the ML optimizer (MLOptimize.c), which sources values from the optimizer
+// rather than from the scan value table.
+void applyValueToScannedCell(int j, double value){
+
+	int page, col, row, drow;
+
+	if (!MultiScan.Par[j].CellExists)
+		return;
+
+	// Just for easier code reading.
+	page = MultiScan.Par[j].Page;
+	col  = MultiScan.Par[j].Column;
+	row  = MultiScan.Par[j].Row;
+
+	MultiScan.Par[j].CurrentScanValue = value;
+
+	switch (MultiScan.Par[j].Type)
+	{
+	case 0: // time scan
+		TimeArray[col][page] = value;
+		break;
+	case 1: // analog channel end value scan
+		AnalogTable[col][row][page].fval = value;
+		break;
+	case 11: // analog channel timescale scan
+		drow = row - NUMANALOGTIMESCALEOFFSET;// multipurposing drow as temp variable
+		AnalogTable[col][drow][page].tscale = value;
+		break;
+	case 2: // DDS scan TBD:: check whether this works or whether ddstables need updates!
+		switch (row-NUMBERANALOGCHANNELS)
+		{ // ugly because of the way the ddstables are built
+		case 1: ddstable[col][page].end_frequency = value; break;
+		case 2: dds2table[col][page].end_frequency = value; break;
+		case 3: dds3table[col][page].end_frequency = value; break;
+		}
+		break;
+	case 22: // DDS EOR offset scan
+		switch (row-NUMBERANALOGCHANNELS)
+		{ // ugly because of the way the ddstables are built
+		case 1: SetCtrlVal(panelHandle,PANEL_NUM_DDS_OFFSET,value); break;
+		case 2: SetCtrlVal(panelHandle,PANEL_NUM_DDS2_OFFSET,value); break;
+		case 3: SetCtrlVal(panelHandle,PANEL_NUM_DDS3_OFFSET,value); break;
+		}
+		break;
+	case 3:	// Laser scan
+		LaserTable[row-NUMBERANALOGCHANNELS-NUMBERDDS-1][col][page].fval = value;
+		break;
+	case 4: // Anritsu scan
+		AnalogTable[col][row][page].fval = value;
+		break;
+	case 5: // GPIB scan
+		GPIBDev[row-NUMGPIBSCANOFFSET-1].value[col-1] = value;
+		break;
+	case 9: // Digital channel scan -- interprets positive values as high
+		drow = row-NUMDIGITALSCANOFFSET;
+		MultiScan.Par[j].CurrentScanValue = (double)(ToDigital(value));
+		DigTableValues[col][drow][page] = ToDigital(value);
+		break;
+	}
+}
+
 void updateScannedCellsWithScanTableLine(int scanTableLine){
 	// scanTableLine normally is MultiScan.CurrentStep+1
 
 	int j;
-	int page, col, row, drow;
 	double value;
 
 	for(j=0;j<MultiScan.NumPars;j++)
 	{   // Read in values from scan list and update tables.
 
-		//printf("USCWSTL next par: %i\n", j);
-		//printf("USCWSTL cell exists: %i\n", MultiScan.Par[j].CellExists);
-
 		if (MultiScan.Par[j].CellExists)
 		{
-			//printf("USCWSTL par %i cell exists\n", j);
-
-			// Just for easier code reading.
-			page = MultiScan.Par[j].Page;
-			col = MultiScan.Par[j].Column;
-			row = MultiScan.Par[j].Row;
-
 			// Read next parameter value from table control.
 			GetTableCellVal(panelHandle, PANEL_MULTISCAN_VAL_TABLE,
 				MakePoint(j+1,scanTableLine), &value);
-			MultiScan.Par[j].CurrentScanValue = value;
-
-			//printf("USCWSTL page: %i\n", page);
-			//printf("USCWSTL col: %i\n", col);
-			//printf("USCWSTL row: %i\n", row);
-			//printf("USCWSTL value: %f\n", value);
-
-			//printf("USCWSTL type: %i\n", MultiScan.Par[j].Type);
-
-			switch (MultiScan.Par[j].Type)
-			{
-			case 0: // time scan
-				TimeArray[col][page] = value;
-				break;
-			case 1: // analog channel end value scan
-				AnalogTable[col][row][page].fval = value;
-				break;
-			case 11: // analog channel timescale scan
-				drow = row - NUMANALOGTIMESCALEOFFSET;// multipurposing drow as temp variable
-				AnalogTable[col][drow][page].tscale = value;
-				break;
-			case 2: // DDS scan TBD:: check whether this works or whether ddstables need updates!
-				switch (row-NUMBERANALOGCHANNELS)
-				{ // ugly because of the way the ddstables are built
-				case 1: ddstable[col][page].end_frequency = value; break;
-				case 2: dds2table[col][page].end_frequency = value; break;
-				case 3: dds3table[col][page].end_frequency = value; break;
-				}
-				break;
-			case 22: // DDS EOR offset scan
-				switch (row-NUMBERANALOGCHANNELS)
-				{ // ugly because of the way the ddstables are built
-				case 1: SetCtrlVal(panelHandle,PANEL_NUM_DDS_OFFSET,value); break;
-				case 2: SetCtrlVal(panelHandle,PANEL_NUM_DDS2_OFFSET,value); break;
-				case 3: SetCtrlVal(panelHandle,PANEL_NUM_DDS3_OFFSET,value); break;
-				}
-				break;
-			case 3:	// Laser scan
-				LaserTable[row-NUMBERANALOGCHANNELS-NUMBERDDS-1][col][page].fval = value;
-				break;
-			case 4: // Anritsu scan
-				AnalogTable[col][row][page].fval = value;
-				break;
-			case 5: // GPIB scan
-				GPIBDev[row-NUMGPIBSCANOFFSET-1].value[col-1] = value;
-				break;
-			case 9: // Digital channel scan -- interprets positive values as high
-				drow = row-NUMDIGITALSCANOFFSET;
-				MultiScan.Par[j].CurrentScanValue = (double)(ToDigital(value));
-				DigTableValues[col][drow][page] = ToDigital(value);
-				break;
-			}
+			applyValueToScannedCell(j, value);
 		}
 	}
 }

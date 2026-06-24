@@ -38,6 +38,7 @@
 
 #include "saveload.h"
 #include "multiscan.h"
+#include "MLOptimize.h"
 
 
 //Clipboard for copy/paste functions
@@ -175,6 +176,14 @@ int CVICALLBACK TIMER_CALLBACK (int panel, int control, int event,
 			//disable timer and re-enable in the update list loop, if the repeat butn is pressed.
 			//reset the timer too and set a timer time of 50ms?
 
+			if (MLOpt.Active)
+			{	// ML optimization owns the loop (see MLOptimize.c). It reads the cost
+				// for the shot that just ran, feeds it to the optimizer, applies the next
+				// suggestion and calls RunOnce() (which re-arms the timer), or finishes.
+				MLOpt_Step();
+				break;
+			}
+
 			if (parameterscanmode == 0)
 			{	// Multi-parameter scan (leaving old code untouched in else statement - 2012-10-07)
 				if (MultiScan.Active)
@@ -269,6 +278,12 @@ int CVICALLBACK CMDSTOP_CALLBACK (int panel, int control, int event,
 			SetCtrlVal(panelHandle, PANEL_LED_RED, 0); // Build-indicator LEDs
 			SetCtrlVal(panelHandle, PANEL_LED_YEL, 0);
 			SetCtrlVal(panelHandle, PANEL_LED_GRE, 0);
+
+			if (MLOpt.Active)
+			{	// ML optimization run: restore original values and stop cleanly.
+				MLOpt_Finish();
+				break;
+			}
 
 			//check to see if we need to export a Scan history
 			if (parameterscanmode == 0)
