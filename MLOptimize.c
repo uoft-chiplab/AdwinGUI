@@ -533,7 +533,7 @@ void InitMLOptDefaults(void){
 	MLOpt.InitPoints   = 16;
 	MLOpt.TotalCalls   = 80;
 	MLOpt.Direction    = MLOPT_OBJ_MAXIMIZE;
-	MLOpt.SettleDelayMs = 500;
+	MLOpt.SettleDelayMs = 1000;
 	MLOpt.CostTimeoutMs = 30000;
 	strcpy(MLOpt.CostScanFmt, "%lf");
 	strcpy(MLOpt.PythonExe,   "python");
@@ -601,12 +601,12 @@ void BuildMLOptPanel(void){
 
 	// --- Cost file + parse format ---
 	top = 195;
-	mlCostPath   = ml_new_str(top, 20, "Cost file template (use %05d for shot #)", MLOpt.CostPathTemplate, 380);
+	mlCostPath   = ml_new_str(top, 40, "Cost file template e.g. Z:\\fit\\cost_%03d.txt", MLOpt.CostPathTemplate, 380);
 	mlBrowseBtn  = NewCtrl(mlPanel, CTRL_SQUARE_COMMAND_BUTTON, "Browse", top, 470);
 	InstallCtrlCallback(mlPanel, mlBrowseBtn, ML_Browse_Callback, 0);
 
 	top += 35;
-	mlCostFmt    = ml_new_str(top, 20, "Cost parse format", MLOpt.CostScanFmt, 120);
+	mlCostFmt    = ml_new_str(top, 20, "Cost parse format (%lf takes first line)", MLOpt.CostScanFmt, 120);
 
 	// --- Numeric settings ---
 	top += 40;
