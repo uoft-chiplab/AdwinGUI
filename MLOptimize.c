@@ -469,9 +469,29 @@ int CVICALLBACK ML_Start_Callback(int panel, int control, int event, void *cbd, 
 	ml_write_config();
 	{
 		char cmd[3*MAX_PATHNAME_LEN];
-		sprintf(cmd, "\"%s\" \"%s\" \"%s\"", MLOpt.PythonExe, MLOpt.OptimizerScript, MLOpt.WorkDir);
-		if( LaunchExecutableEx(cmd, LE_SHOWNORMAL, &mlPythonHandle) < 0 ){
-			ml_status("ERROR: failed to launch Python optimizer.");
+		char msg[3*MAX_PATHNAME_LEN + 128];
+		int rc;
+
+		// The script must be findable. A bare/relative name resolves against the GUI's
+		// working directory, which is rarely what you want -- warn early and clearly.
+		if( FileExists(MLOpt.OptimizerScript, 0) != 1 ){
+			sprintf(msg, "Cannot find optimizer script:\n%s\n\nUse the full path to ml_optimizer.py "
+			             "in the 'Optimizer script' field.", MLOpt.OptimizerScript);
+			ml_status("ERROR: optimizer script not found (see popup).");
+			MessagePopup("ML Optimizer", msg);
+			return 0;
+		}
+
+		// Launch via the Windows command processor so the Python exe resolves through
+		// PATH (LaunchExecutableEx does not search PATH for a bare "python").
+		sprintf(cmd, "cmd /c \"\"%s\" \"%s\" \"%s\"\"",
+		        MLOpt.PythonExe, MLOpt.OptimizerScript, MLOpt.WorkDir);
+		rc = LaunchExecutableEx(cmd, LE_SHOWNORMAL, &mlPythonHandle);
+		if( rc < 0 ){
+			sprintf(msg, "Failed to launch Python (error %d).\n\nCommand:\n%s\n\n"
+			             "Check the 'Python exe' path (try the full path to python.exe).", rc, cmd);
+			ml_status("ERROR: failed to launch Python optimizer (see popup).");
+			MessagePopup("ML Optimizer", msg);
 			return 0;
 		}
 	}
