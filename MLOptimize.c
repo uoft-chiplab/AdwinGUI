@@ -564,8 +564,8 @@ void InitMLOptDefaults(void){
 	MLOpt.SettleDelayMs = 1000;
 	MLOpt.CostTimeoutMs = 30000;
 	strcpy(MLOpt.CostScanFmt, "%lf");
-	strcpy(MLOpt.PythonExe,   "python");
-	strcpy(MLOpt.OptimizerScript, "ml_optimizer.py");
+	strcpy(MLOpt.PythonExe,   "C:\\Users\\coldatoms\\AppData\\Local\\Programs\\Python\\Python311\\python.exe");
+	strcpy(MLOpt.OptimizerScript, "C:\\Users\\coldatoms\\Documents\\Lab\\LocalCode\\ADwin_sequencers\\AdwinGUI_repo\\ml_optimizer.py");
 	MLOpt.CostPathTemplate[0] = '\0';
 }
 
