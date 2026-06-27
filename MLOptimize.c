@@ -350,6 +350,7 @@ void MLOpt_Finish(void){
 static int ml_read_panel_config(void){
 	int j, numRows;
 	double lo, hi;
+	char lobuf[64], hibuf[64];
 
 	GetCtrlVal(mlPanel, mlCostPath,    MLOpt.CostPathTemplate);
 	if(MLOpt.CostPathTemplate[0] == '\0'){ ml_status("Set the cost file template first."); return 0; }
@@ -371,8 +372,15 @@ static int ml_read_panel_config(void){
 		return 0;
 	}
 	for(j=0; j<MLOpt.NumPars; j++){
-		GetTableCellVal(mlPanel, mlParamTable, MakePoint(MLCOL_LOWER, j+1), &lo);
-		GetTableCellVal(mlPanel, mlParamTable, MakePoint(MLCOL_UPPER, j+1), &hi);
+		// Bound columns are string cells; parse them explicitly (avoids any
+		// numeric-table-cell data-type ambiguity at runtime).
+		lobuf[0] = '\0'; hibuf[0] = '\0';
+		GetTableCellVal(mlPanel, mlParamTable, MakePoint(MLCOL_LOWER, j+1), lobuf);
+		GetTableCellVal(mlPanel, mlParamTable, MakePoint(MLCOL_UPPER, j+1), hibuf);
+		if(sscanf(lobuf, "%lf", &lo) != 1 || sscanf(hibuf, "%lf", &hi) != 1){
+			ml_status("Bounds must be numbers - check the Lower/Upper columns.");
+			return 0;
+		}
 		if(hi <= lo){ ml_status("Each upper bound must exceed its lower bound."); return 0; }
 		MLOpt.Bounds[j].Lower = lo;
 		MLOpt.Bounds[j].Upper = hi;
@@ -415,9 +423,9 @@ int CVICALLBACK ML_Refresh_Callback(int panel, int control, int event, void *cbd
 		sprintf(cellbuf, "%d", page); SetTableCellVal(mlPanel, mlParamTable, MakePoint(MLCOL_PAGE, j+1), cellbuf);
 		sprintf(cellbuf, "%d", col);  SetTableCellVal(mlPanel, mlParamTable, MakePoint(MLCOL_COL,  j+1), cellbuf);
 		sprintf(cellbuf, "%d", row);  SetTableCellVal(mlPanel, mlParamTable, MakePoint(MLCOL_ROW,  j+1), cellbuf);
-		// Bounds stay numeric so Start can read them back as doubles.
-		SetTableCellVal(mlPanel, mlParamTable, MakePoint(MLCOL_LOWER, j+1), 0.0);
-		SetTableCellVal(mlPanel, mlParamTable, MakePoint(MLCOL_UPPER, j+1), 1.0);
+		// Bounds are string cells; Start parses them with sscanf.
+		SetTableCellVal(mlPanel, mlParamTable, MakePoint(MLCOL_LOWER, j+1), "0");
+		SetTableCellVal(mlPanel, mlParamTable, MakePoint(MLCOL_UPPER, j+1), "1");
 	}
 
 	ml_status("Parameters refreshed. Enter lower/upper bounds, then Start.");
@@ -573,10 +581,14 @@ void BuildMLOptPanel(void){
 	InsertTableColumns(mlPanel, mlParamTable, 1, MLNUMCOLS, VAL_CELL_NUMERIC);
 	// Param/Page/Col/Row are display-only string columns (always render); the two
 	// bound columns stay numeric so Start reads them back as doubles.
-	SetTableColumnAttribute(mlPanel, mlParamTable, MLCOL_NAME, ATTR_CELL_TYPE, VAL_CELL_STRING);
-	SetTableColumnAttribute(mlPanel, mlParamTable, MLCOL_PAGE, ATTR_CELL_TYPE, VAL_CELL_STRING);
-	SetTableColumnAttribute(mlPanel, mlParamTable, MLCOL_COL,  ATTR_CELL_TYPE, VAL_CELL_STRING);
-	SetTableColumnAttribute(mlPanel, mlParamTable, MLCOL_ROW,  ATTR_CELL_TYPE, VAL_CELL_STRING);
+	SetTableColumnAttribute(mlPanel, mlParamTable, MLCOL_NAME,  ATTR_CELL_TYPE, VAL_CELL_STRING);
+	SetTableColumnAttribute(mlPanel, mlParamTable, MLCOL_PAGE,  ATTR_CELL_TYPE, VAL_CELL_STRING);
+	SetTableColumnAttribute(mlPanel, mlParamTable, MLCOL_COL,   ATTR_CELL_TYPE, VAL_CELL_STRING);
+	SetTableColumnAttribute(mlPanel, mlParamTable, MLCOL_ROW,   ATTR_CELL_TYPE, VAL_CELL_STRING);
+	// Bounds are string cells too, parsed with sscanf at Start -- this avoids the
+	// runtime numeric-cell data-type ambiguity that made reads come back wrong.
+	SetTableColumnAttribute(mlPanel, mlParamTable, MLCOL_LOWER, ATTR_CELL_TYPE, VAL_CELL_STRING);
+	SetTableColumnAttribute(mlPanel, mlParamTable, MLCOL_UPPER, ATTR_CELL_TYPE, VAL_CELL_STRING);
 
 	// A column shows its number unless ATTR_USE_LABEL_TEXT is TRUE, in which case it
 	// shows ATTR_LABEL_TEXT. Enable text labels on every column.
