@@ -468,8 +468,9 @@ int CVICALLBACK ML_Start_Callback(int panel, int control, int event, void *cbd, 
 	// 4) Hand the configuration to Python and launch the optimizer.
 	ml_write_config();
 	{
-		char cmd[3*MAX_PATHNAME_LEN];
+		char cmd[4*MAX_PATHNAME_LEN];
 		char msg[3*MAX_PATHNAME_LEN + 128];
+		char logpath[MAX_PATHNAME_LEN];
 		int rc;
 
 		// The script must be findable. A bare/relative name resolves against the GUI's
@@ -483,9 +484,12 @@ int CVICALLBACK ML_Start_Callback(int panel, int control, int event, void *cbd, 
 		}
 
 		// Launch via the Windows command processor so the Python exe resolves through
-		// PATH (LaunchExecutableEx does not search PATH for a bare "python").
-		sprintf(cmd, "cmd /c \"\"%s\" \"%s\" \"%s\"\"",
-		        MLOpt.PythonExe, MLOpt.OptimizerScript, MLOpt.WorkDir);
+		// PATH (LaunchExecutableEx does not search PATH for a bare "python"). The GUI has
+		// no console, so a cmd window would not appear -- redirect all optimizer output
+		// (stdout+stderr) to ml_python.log in the work dir so it can be inspected.
+		ml_workpath("ml_python.log", logpath);
+		sprintf(cmd, "cmd /c \"\"%s\" \"%s\" \"%s\" > \"%s\" 2>&1\"",
+		        MLOpt.PythonExe, MLOpt.OptimizerScript, MLOpt.WorkDir, logpath);
 		rc = LaunchExecutableEx(cmd, LE_SHOWNORMAL, &mlPythonHandle);
 		if( rc < 0 ){
 			sprintf(msg, "Failed to launch Python (error %d).\n\nCommand:\n%s\n\n"
