@@ -231,6 +231,90 @@ static void ml_append_log(int n, double cost){
 	fclose(f);
 }
 
+// Record one physical shot into the scan history, mirroring the per-cycle
+// bookkeeping a regular multi-parameter scan does in UpdateMultiScanValues()
+// (multiscan.c): one entry appended to the in-memory ScanBuffer[] (written to the
+// .mscan file by AutoExportMultiScanBuffer at finish) and one line appended to
+// incremental.txt during the run. The parameter values come from MultiScan.Par[]
+// (the currently-applied suggestion, set by applyValueToScannedCell). The format
+// is kept identical to a regular scan so the same downstream tools parse it; the
+// cost is not recorded here (it lives in ml_log.csv). One row per physical shot:
+// with IterPerPoint>1 the repeated shots share the same parameter values.
+static void ml_record_shot(void){
+	char path[MAX_PATHNAME_LEN];
+	char line[512], part[64];
+	FILE *f;
+	int j, hour, minute, second;
+	int step = MLOpt.CurrentIter;                                    // which suggestion
+	int iter = (MLOpt.RepeatIndex > 0) ? MLOpt.RepeatIndex - 1 : 0;  // shot within it
+
+	GetSystemTime(&hour, &minute, &second);
+
+	// In-memory buffer -> .mscan at finish (same layout the scan engine uses).
+	if( MultiScan.Counter < SCANBUFFER_LENGTH ){
+		ScanBuffer[MultiScan.Counter].Step      = step;
+		ScanBuffer[MultiScan.Counter].Iteration = iter;
+		for(j=0; j<MultiScan.NumPars; j++)
+			ScanBuffer[MultiScan.Counter].MultiScanValue[j] = MultiScan.Par[j].CurrentScanValue;
+		ScanBuffer[0].BufferSize = MultiScan.Counter;
+		sprintf(ScanBuffer[MultiScan.Counter].Time, "%02d:%02d:%02d", hour, minute, second);
+	}
+	else {
+		printf("ML: scan buffer full; .mscan will be missing entries.\n");
+	}
+
+	// incremental.txt: counter, params..., step, iteration, time (matches multiscan.c).
+	ml_workpath("incremental.txt", path);
+	f = fopen(path, "a");
+	if(!f){
+		printf("ML: cannot open incremental.txt\n");
+	}
+	else {
+		sprintf(line, "%i ", MultiScan.Counter);
+		for(j=0; j<MultiScan.NumPars; j++){
+			sprintf(part, "%f ", MultiScan.Par[j].CurrentScanValue);
+			strcat(line, part);
+		}
+		sprintf(part, "%i %i %02i:%02i:%02i", step, iter, hour, minute, second);
+		strcat(line, part);
+		fprintf(f, "%s\n", line);
+		fclose(f);
+	}
+
+	MultiScan.Counter++;
+}
+
+// Rewrite info.txt with a live snapshot of where the optimization is, mirroring the
+// layout of a regular scan's info.txt (writeToScanInfoFile, multiscan.c) so the same
+// downstream reader works. Truncated and rewritten before every shot. Field mapping
+// (scan meaning -> ML value):
+//   line 1: shot/cycle number about to run   = MultiScan.Counter
+//   line 2: next scan-table line (1-based)    = MLOpt.CurrentIter+1 (which suggestion)
+//   line 3: total lines, meaningful-flag      = MLOpt.TotalCalls, 1 (always meaningful)
+//   then one line per scanned parameter:      "page col row valid|invalid"
+// Per-shot repeat/cost detail lives in ml_log.csv; like the scan version, info.txt
+// carries only the parameter positions and progress. Kept to the exact same line
+// structure (no extra lines) so a reader written for scan info.txt is not broken.
+static void ml_write_info(void){
+	char path[MAX_PATHNAME_LEN];
+	FILE *f;
+	int j;
+
+	ml_workpath("info.txt", path);
+	f = fopen(path, "w");
+	if(!f){ printf("ML: cannot open info.txt\n"); return; }
+
+	fprintf(f, "%i\n", MultiScan.Counter);
+	fprintf(f, "%i\n", MLOpt.CurrentIter + 1);
+	fprintf(f, "%i %i\n", MLOpt.TotalCalls, 1);
+	for(j=0; j<MultiScan.NumPars; j++){
+		fprintf(f, "%i %i %i %s\n",
+		        MultiScan.Par[j].Page, MultiScan.Par[j].Column, MultiScan.Par[j].Row,
+		        MultiScan.Par[j].CellExists ? "valid" : "invalid");
+	}
+	fclose(f);
+}
+
 
 // ===========================================================================
 // Applying suggestions / tracking the best result
@@ -326,6 +410,10 @@ void MLOpt_Step(void){
 	MLOpt.ShotCounter++;
 	MLOpt.RepeatIndex++;
 
+	// Log this physical shot to the scan history (ScanBuffer + incremental.txt),
+	// just like a regular scan records each cycle.
+	ml_record_shot();
+
 	sprintf(buf, "Iter %d/%d  repeat %d/%d  shot %d: cost=%.6g",
 	        MLOpt.CurrentIter+1, MLOpt.TotalCalls, MLOpt.RepeatIndex, MLOpt.IterPerPoint,
 	        MLOpt.ShotCounter-1, cost);
@@ -333,6 +421,7 @@ void MLOpt_Step(void){
 
 	// 3) Need more repeats of the SAME parameters? Just run again (no new suggestion).
 	if(MLOpt.RepeatIndex < MLOpt.IterPerPoint){
+		ml_write_info(); // snapshot for the shot about to run
 		ChangedVals = TRUE;
 		RunOnce();
 		return;
@@ -371,6 +460,7 @@ void MLOpt_Step(void){
 	MLOpt.RepeatIndex = 0;
 	ml_apply_suggestion();
 	DrawNewTable(TRUE);
+	ml_write_info(); // snapshot for the shot about to run
 	ChangedVals = TRUE;
 	RunOnce();
 }
@@ -390,6 +480,11 @@ void MLOpt_Finish(void){
 	// Stop the cycle.
 	SetCtrlVal(panelHandle, PANEL_TOGGLEREPEAT, 0);
 	SetCtrlAttribute(panelHandle, PANEL_TIMER, ATTR_ENABLED, 0);
+
+	// Save the .mscan scan-history file (same path/format/prompt as a regular scan;
+	// path was set in MultiScan.ScanDirPath by SetupScanFiles at Start). Skip if no
+	// shots ran so an aborted setup does not pop the save dialog on an empty buffer.
+	if( MultiScan.Counter > 0 ) AutoExportMultiScanBuffer();
 
 	EnableScanControls();
 	if(mlStartBtn) SetCtrlAttribute(mlPanel, mlStartBtn, ATTR_DIMMED, 0);
@@ -533,6 +628,20 @@ int CVICALLBACK ML_Start_Callback(int panel, int control, int event, void *cbd, 
 	MultiScan.Active = FALSE; // ML drives the loop, not the MultiScan engine.
 	MLOpt.NumPars    = MultiScan.NumPars; // keep in sync with the actual selection
 
+	// Start the scan history fresh. UpdateMultiScanValues(TRUE) reset the counter
+	// but also appended one "reset" entry (the original, pre-optimization values) to
+	// the buffer and incremental.txt -- discard it so we log exactly one row per
+	// physical shot from shot 0. Truncate incremental.txt via "w" (avoids the
+	// windows.h DeleteFile macro).
+	MultiScan.Counter        = 0;
+	ScanBuffer[0].BufferSize = 0;
+	{
+		char incrPath[MAX_PATHNAME_LEN];
+		FILE *ftrunc;
+		ml_workpath("incremental.txt", incrPath);
+		if( (ftrunc = fopen(incrPath, "w")) != NULL ) fclose(ftrunc);
+	}
+
 	// 3) Read config + bounds from the panel. (ml_read_panel_config checks that the
 	//    bound-table row count matches MLOpt.NumPars, i.e. that Refresh was pressed
 	//    after the most recent change to the parameter selection.)
@@ -594,6 +703,7 @@ int CVICALLBACK ML_Start_Callback(int panel, int control, int event, void *cbd, 
 	SetCtrlAttribute(panelHandle, PANEL_TIMER, ATTR_ENABLED, 1);
 	ChangedVals = TRUE;
 	ml_status("Run started.");
+	ml_write_info(); // snapshot for the first shot about to run
 	RunOnce();
 	return 0;
 }
