@@ -1749,8 +1749,10 @@ void OptimizeTimeLoop(int *UpdateNum,int count, int *newcount)
 	// the existing stuff (Stefan Trotzky -- 2012-10-07 -- V16.0.0)
 	if (parameterscanmode == 0)
 	{ 	// MultiScan -- check for each scan parameter whether it is on the current page and highlight if scan is active
-		if (MultiScan.Active == TRUE)
-		{   // Only highlight if  scan is active.
+		if (MultiScan.Active == TRUE || MLOpt.Active == TRUE)
+		{   // Only highlight if a MultiScan or ML optimization run is active. The ML optimizer
+			// populates MultiScan.Par[] the same way (via UpdateMultiScanValues) but drives the
+			// loop itself, so it leaves MultiScan.Active FALSE -- highlight for it explicitly.
 			for(j=0;j<MultiScan.NumPars;j++)
 			{   // Go through all scanned parameters
 				if ((currentpage == MultiScan.Par[j].Page) && (MultiScan.Par[j].CellExists))

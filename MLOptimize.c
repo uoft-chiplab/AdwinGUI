@@ -34,12 +34,14 @@ static int mlPanel        = 0;
 static int mlParamTable   = 0;
 static int mlCostPath     = 0;
 static int mlBrowseBtn    = 0;
+static int mlAutoGen      = 0;
 static int mlCostFmt      = 0;
 static int mlSettleDelay  = 0;
 static int mlCostTimeout  = 0;
 static int mlInitPoints   = 0;
 static int mlTotalCalls   = 0;
 static int mlDirection    = 0;
+static int mlIterPerPoint = 0;
 static int mlPythonExe    = 0;
 static int mlScriptPath   = 0;
 static int mlStatusCtrl   = 0;
@@ -50,6 +52,9 @@ static int mlExportBtn    = 0;
 static int mlRefreshBtn   = 0;
 
 static int mlPythonHandle = 0;   // handle returned by LaunchExecutableEx
+
+// Costs of the repeated shots for the current suggestion (median-aggregated).
+static double mlCostBuffer[MLOPT_MAX_REPEATS];
 
 // Columns of the parameter table (1-based, CVI convention).
 #define MLCOL_NAME   1
@@ -226,6 +231,90 @@ static void ml_append_log(int n, double cost){
 	fclose(f);
 }
 
+// Record one physical shot into the scan history, mirroring the per-cycle
+// bookkeeping a regular multi-parameter scan does in UpdateMultiScanValues()
+// (multiscan.c): one entry appended to the in-memory ScanBuffer[] (written to the
+// .mscan file by AutoExportMultiScanBuffer at finish) and one line appended to
+// incremental.txt during the run. The parameter values come from MultiScan.Par[]
+// (the currently-applied suggestion, set by applyValueToScannedCell). The format
+// is kept identical to a regular scan so the same downstream tools parse it; the
+// cost is not recorded here (it lives in ml_log.csv). One row per physical shot:
+// with IterPerPoint>1 the repeated shots share the same parameter values.
+static void ml_record_shot(void){
+	char path[MAX_PATHNAME_LEN];
+	char line[512], part[64];
+	FILE *f;
+	int j, hour, minute, second;
+	int step = MLOpt.CurrentIter;                                    // which suggestion
+	int iter = (MLOpt.RepeatIndex > 0) ? MLOpt.RepeatIndex - 1 : 0;  // shot within it
+
+	GetSystemTime(&hour, &minute, &second);
+
+	// In-memory buffer -> .mscan at finish (same layout the scan engine uses).
+	if( MultiScan.Counter < SCANBUFFER_LENGTH ){
+		ScanBuffer[MultiScan.Counter].Step      = step;
+		ScanBuffer[MultiScan.Counter].Iteration = iter;
+		for(j=0; j<MultiScan.NumPars; j++)
+			ScanBuffer[MultiScan.Counter].MultiScanValue[j] = MultiScan.Par[j].CurrentScanValue;
+		ScanBuffer[0].BufferSize = MultiScan.Counter;
+		sprintf(ScanBuffer[MultiScan.Counter].Time, "%02d:%02d:%02d", hour, minute, second);
+	}
+	else {
+		printf("ML: scan buffer full; .mscan will be missing entries.\n");
+	}
+
+	// incremental.txt: counter, params..., step, iteration, time (matches multiscan.c).
+	ml_workpath("incremental.txt", path);
+	f = fopen(path, "a");
+	if(!f){
+		printf("ML: cannot open incremental.txt\n");
+	}
+	else {
+		sprintf(line, "%i ", MultiScan.Counter);
+		for(j=0; j<MultiScan.NumPars; j++){
+			sprintf(part, "%f ", MultiScan.Par[j].CurrentScanValue);
+			strcat(line, part);
+		}
+		sprintf(part, "%i %i %02i:%02i:%02i", step, iter, hour, minute, second);
+		strcat(line, part);
+		fprintf(f, "%s\n", line);
+		fclose(f);
+	}
+
+	MultiScan.Counter++;
+}
+
+// Rewrite info.txt with a live snapshot of where the optimization is, mirroring the
+// layout of a regular scan's info.txt (writeToScanInfoFile, multiscan.c) so the same
+// downstream reader works. Truncated and rewritten before every shot. Field mapping
+// (scan meaning -> ML value):
+//   line 1: shot/cycle number about to run   = MultiScan.Counter
+//   line 2: next scan-table line (1-based)    = MLOpt.CurrentIter+1 (which suggestion)
+//   line 3: total lines, meaningful-flag      = MLOpt.TotalCalls, 1 (always meaningful)
+//   then one line per scanned parameter:      "page col row valid|invalid"
+// Per-shot repeat/cost detail lives in ml_log.csv; like the scan version, info.txt
+// carries only the parameter positions and progress. Kept to the exact same line
+// structure (no extra lines) so a reader written for scan info.txt is not broken.
+static void ml_write_info(void){
+	char path[MAX_PATHNAME_LEN];
+	FILE *f;
+	int j;
+
+	ml_workpath("info.txt", path);
+	f = fopen(path, "w");
+	if(!f){ printf("ML: cannot open info.txt\n"); return; }
+
+	fprintf(f, "%i\n", MultiScan.Counter);
+	fprintf(f, "%i\n", MLOpt.CurrentIter + 1);
+	fprintf(f, "%i %i\n", MLOpt.TotalCalls, 1);
+	for(j=0; j<MultiScan.NumPars; j++){
+		fprintf(f, "%i %i %i %s\n",
+		        MultiScan.Par[j].Page, MultiScan.Par[j].Column, MultiScan.Par[j].Row,
+		        MultiScan.Par[j].CellExists ? "valid" : "invalid");
+	}
+	fclose(f);
+}
+
 
 // ===========================================================================
 // Applying suggestions / tracking the best result
@@ -277,33 +366,83 @@ static void ml_show_best(void){
 }
 
 
+// Median of the first n entries of a[] (robust to unreproducible cost spikes).
+static double ml_median(double *a, int n){
+	double tmp[MLOPT_MAX_REPEATS];
+	int i, j;
+	double t;
+
+	if(n <= 0) return 0.0;
+	if(n > MLOPT_MAX_REPEATS) n = MLOPT_MAX_REPEATS;
+	for(i=0; i<n; i++) tmp[i] = a[i];
+
+	// Simple insertion sort (n is small).
+	for(i=1; i<n; i++){
+		t = tmp[i];
+		for(j=i-1; j>=0 && tmp[j]>t; j--) tmp[j+1] = tmp[j];
+		tmp[j+1] = t;
+	}
+
+	if(n & 1) return tmp[n/2];
+	return 0.5 * (tmp[n/2 - 1] + tmp[n/2]);
+}
+
+
 // ===========================================================================
 // Run lifecycle: start / per-cycle step / finish
 // ===========================================================================
 
-// Per-cycle handler. Called from TIMER_CALLBACK after the shot for the current
-// iteration has been executed on the ADwin.
+// Per-cycle handler. Called from TIMER_CALLBACK after a physical shot has been
+// executed on the ADwin. Each optimizer suggestion is run IterPerPoint times; the
+// median of those costs is fed back to the optimizer (noise/outlier robustness).
 void MLOpt_Step(void){
 	int ok, sret;
-	char buf[128];
+	char buf[160];
+	double cost;
 
-	// 1) Let the fitting computer finish writing its result.
+	// 1) Let the fitting computer finish writing its result for this shot.
 	if(MLOpt.SettleDelayMs > 0) Delay((double)MLOpt.SettleDelayMs / 1000.0);
 
-	// 2) Read the cost for the shot that just ran.
-	MLOpt.CurrentCost = ml_read_cost(MLOpt.CurrentIter, &ok);
+	// 2) Read the cost for the physical shot that just ran.
+	cost = ml_read_cost(MLOpt.ShotCounter, &ok);
 	if(!ok){ MLOpt_Finish(); return; }
+	mlCostBuffer[MLOpt.RepeatIndex] = cost;
+	MLOpt.ShotCounter++;
+	MLOpt.RepeatIndex++;
 
-	// 3) Track the best, log, and report the cost back to the optimizer.
+	// Log this physical shot to the scan history (ScanBuffer + incremental.txt),
+	// just like a regular scan records each cycle.
+	ml_record_shot();
+
+	sprintf(buf, "Iter %d/%d  repeat %d/%d  shot %d: cost=%.6g",
+	        MLOpt.CurrentIter+1, MLOpt.TotalCalls, MLOpt.RepeatIndex, MLOpt.IterPerPoint,
+	        MLOpt.ShotCounter-1, cost);
+	ml_status(buf);
+
+	// 3) Need more repeats of the SAME parameters? Just run again (no new suggestion).
+	if(MLOpt.RepeatIndex < MLOpt.IterPerPoint){
+		ml_write_info(); // snapshot for the shot about to run
+		ChangedVals = TRUE;
+		RunOnce();
+		return;
+	}
+
+	// 4) All repeats collected: aggregate with the median and report it back.
+	MLOpt.CurrentCost = ml_median(mlCostBuffer, MLOpt.IterPerPoint);
 	ml_update_best(MLOpt.CurrentCost);
 	ml_append_log(MLOpt.CurrentIter, MLOpt.CurrentCost);
 	ml_write_result(MLOpt.CurrentIter, MLOpt.CurrentCost);
 	ml_show_best();
 
-	sprintf(buf, "Iteration %d / %d  cost=%.6g", MLOpt.CurrentIter+1, MLOpt.TotalCalls, MLOpt.CurrentCost);
+	if(MLOpt.IterPerPoint > 1)
+		sprintf(buf, "Iteration %d / %d  median cost=%.6g (of %d shots)",
+		        MLOpt.CurrentIter+1, MLOpt.TotalCalls, MLOpt.CurrentCost, MLOpt.IterPerPoint);
+	else
+		sprintf(buf, "Iteration %d / %d  cost=%.6g",
+		        MLOpt.CurrentIter+1, MLOpt.TotalCalls, MLOpt.CurrentCost);
 	ml_status(buf);
 
-	// 4) Fetch the next suggestion.
+	// 5) Fetch the next suggestion.
 	sret = ml_read_suggestion(MLOpt.CurrentIter + 1);
 	if(sret == 0){ ml_status("Optimization complete (optimizer signalled DONE)."); MLOpt_Finish(); return; }
 	if(sret < 0){ MLOpt_Finish(); return; }
@@ -315,11 +454,13 @@ void MLOpt_Step(void){
 		return;
 	}
 
-	// 5) Apply and run the next shot. RunOnce() re-arms the timer because the
-	//    repeat toggle is on, continuing the loop on the next tick.
+	// 6) Apply the next suggestion and run its first shot. RunOnce() re-arms the
+	//    timer because the repeat toggle is on, continuing the loop on the next tick.
 	MLOpt.CurrentIter++;
+	MLOpt.RepeatIndex = 0;
 	ml_apply_suggestion();
 	DrawNewTable(TRUE);
+	ml_write_info(); // snapshot for the shot about to run
 	ChangedVals = TRUE;
 	RunOnce();
 }
@@ -328,14 +469,22 @@ void MLOpt_Step(void){
 void MLOpt_Finish(void){
 	// Restore the original cell values (reuse MultiScan helper).
 	updateScannedCellsWithOriginalValues();
+
+	// Clear Active first so the redraw below removes the yellow scan-cell highlight
+	// (DrawNewTable only highlights while a run is active -- see GUIDesign.c).
+	MLOpt.Active = FALSE;
+	MLOpt.Done   = TRUE;
+
 	DrawNewTable(TRUE);
 
 	// Stop the cycle.
 	SetCtrlVal(panelHandle, PANEL_TOGGLEREPEAT, 0);
 	SetCtrlAttribute(panelHandle, PANEL_TIMER, ATTR_ENABLED, 0);
 
-	MLOpt.Active = FALSE;
-	MLOpt.Done   = TRUE;
+	// Save the .mscan scan-history file (same path/format/prompt as a regular scan;
+	// path was set in MultiScan.ScanDirPath by SetupScanFiles at Start). Skip if no
+	// shots ran so an aborted setup does not pop the save dialog on an empty buffer.
+	if( MultiScan.Counter > 0 ) AutoExportMultiScanBuffer();
 
 	EnableScanControls();
 	if(mlStartBtn) SetCtrlAttribute(mlPanel, mlStartBtn, ATTR_DIMMED, 0);
@@ -363,6 +512,12 @@ static int ml_read_panel_config(void){
 	GetCtrlVal(mlPanel, mlInitPoints,  &MLOpt.InitPoints);
 	GetCtrlVal(mlPanel, mlTotalCalls,  &MLOpt.TotalCalls);
 	GetCtrlVal(mlPanel, mlDirection,   &MLOpt.Direction);
+	GetCtrlVal(mlPanel, mlIterPerPoint, &MLOpt.IterPerPoint);
+	if(MLOpt.IterPerPoint < 1) MLOpt.IterPerPoint = 1;
+	if(MLOpt.IterPerPoint > MLOPT_MAX_REPEATS){
+		MLOpt.IterPerPoint = MLOPT_MAX_REPEATS;
+		SetCtrlVal(mlPanel, mlIterPerPoint, MLOpt.IterPerPoint);
+	}
 
 	// Bounds come from the parameter table (one row per parameter).
 	GetNumTableRows(mlPanel, mlParamTable, &numRows);
@@ -454,11 +609,38 @@ int CVICALLBACK ML_Start_Callback(int panel, int control, int event, void *cbd, 
 	if(status != 1){ ml_status("Setup cancelled or failed."); return 0; }
 	strcpy(MultiScan.CommandsFilePath, MLOpt.WorkDir); // so reused MultiScan funcs work
 
+	// 1a) Optionally auto-generate the cost file path from the run folder. WorkDir is the
+	//     run folder's "commands" subdir, so its parent is the run folder; SetupScanFiles
+	//     also created an "imgs" subfolder there. Write the template into the panel field
+	//     so it flows through ml_read_panel_config (and is visible to the user).
+	GetCtrlVal(mlPanel, mlAutoGen, &MLOpt.AutoGenPath);
+	if(MLOpt.AutoGenPath){
+		char runDir[MAX_PATHNAME_LEN], imgsDir[MAX_PATHNAME_LEN], costPath[MAX_PATHNAME_LEN];
+		SplitPath(MLOpt.WorkDir, NULL, runDir, NULL);
+		MakePathname(runDir, "imgs", imgsDir);
+		MakePathname(imgsDir, "cost_%03d.txt", costPath);
+		SetCtrlVal(mlPanel, mlCostPath, costPath);
+	}
+
 	// 2) Populate MultiScan.Par[] (types + original values) from the POS table.
 	UpdateMultiScanValues(TRUE);
 	MultiScan.Done   = FALSE;
 	MultiScan.Active = FALSE; // ML drives the loop, not the MultiScan engine.
 	MLOpt.NumPars    = MultiScan.NumPars; // keep in sync with the actual selection
+
+	// Start the scan history fresh. UpdateMultiScanValues(TRUE) reset the counter
+	// but also appended one "reset" entry (the original, pre-optimization values) to
+	// the buffer and incremental.txt -- discard it so we log exactly one row per
+	// physical shot from shot 0. Truncate incremental.txt via "w" (avoids the
+	// windows.h DeleteFile macro).
+	MultiScan.Counter        = 0;
+	ScanBuffer[0].BufferSize = 0;
+	{
+		char incrPath[MAX_PATHNAME_LEN];
+		FILE *ftrunc;
+		ml_workpath("incremental.txt", incrPath);
+		if( (ftrunc = fopen(incrPath, "w")) != NULL ) fclose(ftrunc);
+	}
 
 	// 3) Read config + bounds from the panel. (ml_read_panel_config checks that the
 	//    bound-table row count matches MLOpt.NumPars, i.e. that Refresh was pressed
@@ -502,6 +684,8 @@ int CVICALLBACK ML_Start_Callback(int panel, int control, int event, void *cbd, 
 
 	// 5) Initialize run state and fetch the first suggestion.
 	MLOpt.CurrentIter = 0;
+	MLOpt.RepeatIndex = 0;
+	MLOpt.ShotCounter = 0;
 	MLOpt.HaveBest    = 0;
 	MLOpt.BestCost    = 0.0;
 	MLOpt.Active      = TRUE;
@@ -510,6 +694,7 @@ int CVICALLBACK ML_Start_Callback(int panel, int control, int event, void *cbd, 
 	sret = ml_read_suggestion(0);
 	if(sret != 1){ ml_status("ERROR: no initial suggestion from optimizer."); MLOpt.Active = FALSE; return 0; }
 	ml_apply_suggestion();
+	DrawNewTable(TRUE); // redraw so the scanned cells show the yellow highlight immediately
 
 	// 6) Start cycling. RunOnce() arms the timer because the repeat toggle is on.
 	SetCtrlAttribute(mlPanel, mlStartBtn, ATTR_DIMMED, 1);
@@ -518,6 +703,7 @@ int CVICALLBACK ML_Start_Callback(int panel, int control, int event, void *cbd, 
 	SetCtrlAttribute(panelHandle, PANEL_TIMER, ATTR_ENABLED, 1);
 	ChangedVals = TRUE;
 	ml_status("Run started.");
+	ml_write_info(); // snapshot for the first shot about to run
 	RunOnce();
 	return 0;
 }
@@ -564,6 +750,7 @@ void InitMLOptDefaults(void){
 	memset(&MLOpt, 0, sizeof(MLOpt));
 	MLOpt.InitPoints   = 16;
 	MLOpt.TotalCalls   = 80;
+	MLOpt.IterPerPoint = 1;
 	MLOpt.Direction    = MLOPT_OBJ_MAXIMIZE;
 	MLOpt.SettleDelayMs = 1000;
 	MLOpt.CostTimeoutMs = 30000;
@@ -571,6 +758,7 @@ void InitMLOptDefaults(void){
 	strcpy(MLOpt.PythonExe,   "C:\\Users\\coldatoms\\AppData\\Local\\Programs\\Python\\Python311\\python.exe");
 	strcpy(MLOpt.OptimizerScript, "C:\\Users\\coldatoms\\Documents\\Lab\\LocalCode\\ADwin_sequencers\\AdwinGUI_repo\\ml_optimizer.py");
 	MLOpt.CostPathTemplate[0] = '\0';
+	MLOpt.AutoGenPath = 1; // default on: auto-fill the cost path from the run folder
 }
 
 // Helper: a labelled numeric control with integer data type.
@@ -594,7 +782,7 @@ void BuildMLOptPanel(void){
 	int top;
 	int mlMenu;
 
-	mlPanel = NewPanel(0, "ML Optimization", 60, 60, 470, 560);
+	mlPanel = NewPanel(0, "ML Optimization", 60, 60, 500, 560);
 	SetPanelAttribute(mlPanel, ATTR_CLOSE_ITEM_VISIBLE, 1);
 	InstallPanelCallback(mlPanel, ML_Panel_Callback, 0);
 
@@ -641,8 +829,18 @@ void BuildMLOptPanel(void){
 	mlBrowseBtn  = NewCtrl(mlPanel, CTRL_SQUARE_COMMAND_BUTTON, "Browse", top, 470);
 	InstallCtrlCallback(mlPanel, mlBrowseBtn, ML_Browse_Callback, 0);
 
+<<<<<<< HEAD
 	top += 35;
 	mlCostFmt    = ml_new_str(top, 20, "Cost parse format (%lf takes first line)", MLOpt.CostScanFmt, 120);
+=======
+	// Optionally derive the cost path from the run folder at Start (§ML_Start_Callback).
+	top += 26;
+	mlAutoGen = NewCtrl(mlPanel, CTRL_CHECK_BOX, "auto-generate path upon start?", top, 20);
+	SetCtrlVal(mlPanel, mlAutoGen, MLOpt.AutoGenPath);
+
+	top += 30;
+	mlCostFmt    = ml_new_str(top, 20, "Cost parse format", MLOpt.CostScanFmt, 120);
+>>>>>>> 9a87f12537d5dee8e2861cb898ea811838b2f11a
 
 	// --- Numeric settings ---
 	top += 40;
@@ -658,6 +856,7 @@ void BuildMLOptPanel(void){
 	InsertListItem(mlPanel, mlDirection, 0, "Maximize", MLOPT_OBJ_MAXIMIZE);
 	InsertListItem(mlPanel, mlDirection, 1, "Minimize", MLOPT_OBJ_MINIMIZE);
 	SetCtrlVal(mlPanel, mlDirection, MLOpt.Direction);
+	mlIterPerPoint = ml_new_int(top, 200, "Shots per point (median)", MLOpt.IterPerPoint);
 
 	// --- Python config ---
 	top += 40;

@@ -468,6 +468,7 @@ ML Optimization (MLOptimize.c)
 
 #define MLOPT_OBJ_MAXIMIZE	(0)
 #define MLOPT_OBJ_MINIMIZE	(1)
+#define MLOPT_MAX_REPEATS	(64)	// cap on shots-per-point (IterPerPoint)
 
 struct MLOptParameters{
 	double	Lower;	// optimization lower bound
@@ -477,10 +478,13 @@ struct MLOptState{
 	BOOL	Active;			// TRUE while an optimization run is in progress
 	BOOL	Done;			// TRUE once the optimizer signalled completion (DONE token)
 	int		NumPars;		// number of parameters (mirrors MultiScan.NumPars at start)
-	int		CurrentIter;	// index of the shot/suggestion currently being run (0-based)
+	int		CurrentIter;	// index of the optimizer suggestion currently being run (0-based)
 	int		TotalCalls;	    // total number of optimizer evaluations to perform
 	int		InitPoints;	    // number of initial (Sobol) sampling points
 	int		Direction;		// MLOPT_OBJ_MAXIMIZE or MLOPT_OBJ_MINIMIZE
+	int		IterPerPoint;	// physical shots run per suggestion (median-aggregated for noise)
+	int		RepeatIndex;	// 0..IterPerPoint-1: which repeat of the current suggestion
+	int		ShotCounter;	// physical-shot index (cost file number), increments every shot
 	double	Suggested[NUMMAXSCANPARAMETERS];	// current parameter vector from Python
 	double	CurrentCost;	// cost read for the current shot
 	double	BestCost;		// best (already sign-adjusted: higher=better) cost so far
@@ -489,6 +493,7 @@ struct MLOptState{
 	struct	MLOptParameters Bounds[NUMMAXSCANPARAMETERS];
 	char	WorkDir[MAX_PATHNAME_LEN];		// IPC dir (config/suggest/result/log files)
 	char	CostPathTemplate[MAX_PATHNAME_LEN];	// user-defined, e.g. "Z:\\fit\\cost_%05d.txt"
+	int		AutoGenPath;					// if TRUE, derive CostPathTemplate from the run folder at Start
 	char	CostScanFmt[64];				// user-defined parse fmt, default "%f"
 	int		SettleDelayMs;					// dwell after shot before reading cost
 	int		CostTimeoutMs;					// max poll time for cost / suggest file
