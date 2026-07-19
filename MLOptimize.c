@@ -825,22 +825,20 @@ void BuildMLOptPanel(void){
 
 	// --- Cost file + parse format ---
 	top = 195;
-	mlCostPath   = ml_new_str(top, 40, "Cost file template e.g. Z:\\fit\\cost_%03d.txt", MLOpt.CostPathTemplate, 380);
+	mlCostPath   = ml_new_str(top, 40, "Cost file template e.g. Z:\\fit\\cost_%04d.txt", MLOpt.CostPathTemplate, 380);
 	mlBrowseBtn  = NewCtrl(mlPanel, CTRL_SQUARE_COMMAND_BUTTON, "Browse", top, 470);
 	InstallCtrlCallback(mlPanel, mlBrowseBtn, ML_Browse_Callback, 0);
 
-<<<<<<< HEAD
 	top += 35;
 	mlCostFmt    = ml_new_str(top, 20, "Cost parse format (%lf takes first line)", MLOpt.CostScanFmt, 120);
-=======
 	// Optionally derive the cost path from the run folder at Start (§ML_Start_Callback).
 	top += 26;
 	mlAutoGen = NewCtrl(mlPanel, CTRL_CHECK_BOX, "auto-generate path upon start?", top, 20);
 	SetCtrlVal(mlPanel, mlAutoGen, MLOpt.AutoGenPath);
 
-	top += 30;
-	mlCostFmt    = ml_new_str(top, 20, "Cost parse format", MLOpt.CostScanFmt, 120);
->>>>>>> 9a87f12537d5dee8e2861cb898ea811838b2f11a
+//	top += 30;
+//	mlCostFmt    = ml_new_str(top, 20, "Cost parse format", MLOpt.CostScanFmt, 120);
+//>>>>>>> 9a87f12537d5dee8e2861cb898ea811838b2f11a
 
 	// --- Numeric settings ---
 	top += 40;
