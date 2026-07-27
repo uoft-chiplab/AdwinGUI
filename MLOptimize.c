@@ -328,6 +328,45 @@ static void ml_apply_suggestion(void){
 		applyValueToScannedCell(j, MLOpt.Suggested[j]);
 }
 
+// Snapshot each scanned cell's value *before* the run into MLOpt.OrigValue[], so it
+// can be put back verbatim when the run ends. Called once at Start, right after
+// UpdateMultiScanValues(TRUE) has populated MultiScan.Par[] (types + the pre-run
+// per-cell originals) and *before* the first suggestion is applied. We copy the
+// values into our own buffer here rather than re-reading MultiScan.Par[] at finish
+// (as updateScannedCellsWithOriginalValues does) so the restore cannot be defeated
+// by anything that mutates the shared MultiScan bookkeeping during the run. The
+// value chosen per type matches exactly what applyValueToScannedCell() writes, so
+// restoring is a plain applyValueToScannedCell(j, OrigValue[j]).
+static void ml_capture_originals(void){
+	int j;
+	for(j=0; j<MultiScan.NumPars; j++){
+		if(!MultiScan.Par[j].CellExists){ MLOpt.OrigValue[j] = 0.0; continue; }
+		switch(MultiScan.Par[j].Type){
+			case 0:  MLOpt.OrigValue[j] = MultiScan.Par[j].Time;            break; // time
+			case 1:  MLOpt.OrigValue[j] = MultiScan.Par[j].Analog.fval;     break; // analog end value
+			case 11: MLOpt.OrigValue[j] = MultiScan.Par[j].Analog.tscale;   break; // analog timescale
+			case 2:  MLOpt.OrigValue[j] = MultiScan.Par[j].DDS.fval;        break; // DDS frequency
+			case 22: MLOpt.OrigValue[j] = MultiScan.Par[j].DDS.fval;        break; // DDS EOR offset
+			case 3:  MLOpt.OrigValue[j] = MultiScan.Par[j].Laser.fval;      break; // laser
+			case 4:  MLOpt.OrigValue[j] = MultiScan.Par[j].Anritsu.fval;    break; // Anritsu
+			case 5:  MLOpt.OrigValue[j] = MultiScan.Par[j].GPIBvalue;       break; // GPIB
+			case 9:  MLOpt.OrigValue[j] = (double)MultiScan.Par[j].Digital; break; // digital
+			default: MLOpt.OrigValue[j] = MultiScan.Par[j].CurrentScanValue; break;
+		}
+	}
+}
+
+// Put every scanned cell back to the value it held before the run (snapshotted by
+// ml_capture_originals). Uses the same applyValueToScannedCell() path the optimizer
+// suggestions use, so it targets exactly the cells that were changed.
+static void ml_restore_originals(void){
+	int j;
+	for(j=0; j<MultiScan.NumPars; j++){
+		if(MultiScan.Par[j].CellExists)
+			applyValueToScannedCell(j, MLOpt.OrigValue[j]);
+	}
+}
+
 // Update the best-so-far record (direction aware: maximize keeps the largest
 // cost, minimize keeps the smallest).
 static void ml_update_best(double cost){
@@ -467,8 +506,10 @@ void MLOpt_Step(void){
 
 // Cleanly end the optimization run.
 void MLOpt_Finish(void){
-	// Restore the original cell values (reuse MultiScan helper).
-	updateScannedCellsWithOriginalValues();
+	// Restore every scanned cell to the value it held before the run, from the
+	// snapshot taken at Start (ml_capture_originals). Self-contained so it can't be
+	// defeated by mid-run changes to the shared MultiScan bookkeeping.
+	ml_restore_originals();
 
 	// Clear Active first so the redraw below removes the yellow scan-cell highlight
 	// (DrawNewTable only highlights while a run is active -- see GUIDesign.c).
@@ -627,6 +668,10 @@ int CVICALLBACK ML_Start_Callback(int panel, int control, int event, void *cbd, 
 	MultiScan.Done   = FALSE;
 	MultiScan.Active = FALSE; // ML drives the loop, not the MultiScan engine.
 	MLOpt.NumPars    = MultiScan.NumPars; // keep in sync with the actual selection
+
+	// Snapshot every scanned cell's pre-run value now, before any suggestion is
+	// applied, so MLOpt_Finish can put them back exactly as the user left them.
+	ml_capture_originals();
 
 	// Start the scan history fresh. UpdateMultiScanValues(TRUE) reset the counter
 	// but also appended one "reset" entry (the original, pre-optimization values) to

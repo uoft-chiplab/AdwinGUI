@@ -486,6 +486,7 @@ struct MLOptState{
 	int		RepeatIndex;	// 0..IterPerPoint-1: which repeat of the current suggestion
 	int		ShotCounter;	// physical-shot index (cost file number), increments every shot
 	double	Suggested[NUMMAXSCANPARAMETERS];	// current parameter vector from Python
+	double	OrigValue[NUMMAXSCANPARAMETERS];	// each scanned cell's value before the run (restored at finish)
 	double	CurrentCost;	// cost read for the current shot
 	double	BestCost;		// best (already sign-adjusted: higher=better) cost so far
 	int		HaveBest;		// whether BestCost/BestParams are populated yet
